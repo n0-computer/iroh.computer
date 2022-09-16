@@ -1,0 +1,197 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section style="background-image:url('/img/kv/iroh_kv_1.png')" class="min-h-1/3 lg:min-h-1/3 pt-40 bg-cover">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 lg:mt-100">
+    <div class="mt-14 min-h-[70vh] sm:w-2/3 lg:w-6/12">
+      <h1 class="text-4xl font-space-mono leading-tight">
+        Efficient IPFS for the whole world right now.
+      </h1>
+      <h3 class="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh takes IPFS beyond the theoretical, to offers developers efficient infrastructure that scales data distribution past 10M devices.</h3>
+      <a href="https://docs.iroh.computer" class="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Deploy Iroh</a>
+    </div>
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-40 flex flex-col sm:flex-row">
+  <div class="w-auto sm:w-3/12 mb-5">
+    <h4 class="font-space-mono text-lg text-irohPurple-500">01</h4>
+  </div>
+  <div class="w-auto sm:w-7/12 text-lg leading-normal">
+    <h4 class="mb-5">Purpose-built for efficiency.</h4>
+    <h4 class="mb-5">We have been working on and around IPFS nearly since it's inception, and are building Iroh to realize what we believe IPFS can be</h4>
+    <h4 class="mb-5">With five plus years of experience building open distributed systems each, our team understands the importance of collaboration and accessibility when it comes to developing innovative software and conducting research.</h4>
+  </div>
+</section>
+<section class="w-full text-n0gray-900 py-40 sm:py-80 px-10 bg-white bg-cover bg-center shadow-inner flex flex-col sm:flex-row">
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row">
+    <div class="w-0 sm:w-3/12"></div>
+    <div class="w-auto sm:w-7/12 lg:w-6/12">
+      <div class="flex mb-8">
+        <div class="w-10 mr-5 flex-1 flex flex-col">
+          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_faster.svg" />
+          <div class="grow w-0.5 mt-2 mx-auto bg-irohGray-200">
+            <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div>
+          </div>
+        </div>
+        <div class="w-10/12">
+          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Faster</h3>
+          <p class="text-sm">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
+          <p class="text-sm">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+          <div class="my-8">
+            <div class="flex pt-4 pb-6 border-b">
+              <div class="w-5/12">
+                <h5 class="text-md">Max Throughput</h5>
+                <label class="text-xs">req/second</label>
+              </div>
+              <div class="w-7/12">
+                <div class="flex flex-cols mb-2">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Iroh</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohPurple-500 w-14 h-5 mr-2 mt-1 float-left"></div>
+                    <div>12,456</div>
+                  </div>
+                </div>
+                <div class="flex flex-cols">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Kubo</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohGray-900 w-6 h-5 mr-2 mt-1 float-left"></div>
+                    <div>1,234</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex py-6 border-b">
+              <div class="w-5/12">
+                <h5 class="text-md">Memory Consumption</h5>
+                <label class="text-xs">at 5k req/second</label>
+              </div>
+              <div class="w-7/12">
+                <div class="flex flex-cols mb-2">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Iroh</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohPurple-500 w-14 h-5 mr-2 mt-1 float-left"></div>
+                    <div>12,456</div>
+                  </div>
+                </div>
+                <div class="flex flex-cols">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Kubo</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohGray-900 w-6 h-5 mr-2 mt-1 float-left"></div>
+                    <div>1,234</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex py-6 border-b">
+              <div class="w-5/12">
+                <h5 class="text-md">Avg CPU Load</h5>
+                <label class="text-xs">at 5k req/second</label>
+              </div>
+              <div class="w-7/12">
+                <div class="flex flex-cols mb-2">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Iroh</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohPurple-500 w-20 h-5 mr-2 mt-1 float-left"></div>
+                    <div>12,456</div>
+                  </div>
+                </div>
+                <div class="flex flex-cols">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Kubo</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohGray-900 w-10 h-5 mr-2 mt-1 float-left"></div>
+                    <div>1,234</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex py-6 border-b">
+              <div class="w-5/12">
+                <h5 class="text-md">Avg time to First Byte</h5>
+                <label class="text-xs">at 5k req/second</label>
+              </div>
+              <div class="w-7/12">
+                <div class="flex flex-cols mb-2">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Iroh</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohPurple-500 w-20 h-5 mr-2 mt-1 float-left"></div>
+                    <div>12,456</div>
+                  </div>
+                </div>
+                <div class="flex flex-cols">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Kubo</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohGray-900 w-10 h-5 mr-2 mt-1 float-left"></div>
+                    <div>1,234</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex mb-8">
+        <div class="w-10 mr-5 flex-1 flex flex-col">
+          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_practical.svg" />
+          <div class="grow w-0.5 mt-2 mx-auto bg-irohGray-200">
+            <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div>
+          </div>
+        </div>
+        <div class="w-10/12">
+          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Practical</h3>
+          <p class="text-md">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
+          <p class="text-md">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+        </div>
+      </div>
+      <div class="flex mb-8">
+        <div class="w-10 mr-5 flex-1">
+          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_open.svg" />
+        </div>
+        <div class="w-10/12">
+          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Open</h3>
+          <p class="text-md">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
+          <p class="text-md">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-40 flex flex-col sm:flex-row">
+  <div class="w-auto sm:w-2/12">
+    <h4 class="font-space-mono text-lg text-irohPurple-500">04</h4>
+  </div>
+  <div class="w-auto sm:w-4/12 sm:mr-10">
+    <h2 class="text-2xl">Getting Started</h2>
+    <p>Join us in our first year as a team</p>
+  </div>
+  <ul class="w-auto sm:w-4/12 mt-10 sm:mt-0">
+    <li><a href="https://twitter.com/n0computer" class="block w-full mb-5 py-3 px-5 bg-n0pink-600 text-n0gray-900 transition-colors hover:bg-n0pink-500">
+      follow n0 on twitter
+    </a></li>
+    <li><a href="https://github.com/n0-computer" class="block w-full my-5 py-3 px-5 bg-n0pink-600 text-n0gray-900 transition-colors hover:bg-n0pink-500">
+      follow on github
+    </a></li>
+    <!-- <li><a href="#" class="block w-full my-5 py-3 px-5 bg-n0pink-600 text-n0gray-900 transition-colors hover:bg-n0pink-500">
+      careers
+    </a></li> -->
+  </div>
+</section>
+{% endblock content %}

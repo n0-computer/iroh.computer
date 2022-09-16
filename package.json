@@ -1,0 +1,15 @@
+{
+  "name": "n0_website",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "parcel build src/styles/style.css --dist-dir static/styles --no-source-maps && zola build",
+    "dev": "zola serve & parcel watch src/styles/style.css --dist-dir static/styles --no-hmr --no-source-maps"
+  },
+  "dependencies": {
+    "autoprefixer": "10.4.7",
+    "parcel": "2.0.0",
+    "postcss": "8.2.1",
+    "tailwindcss": "3.1.6"
+  }
+}

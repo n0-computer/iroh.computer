@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+#page-content {
+  font-size: 15px;
+  line-height: 1.7em;
+}
+
+#page-content h1 { font-size: 26px; }
+#page-content h2 { font-size: 24px; }
+#page-content h3 { font-size: 22px; }
+#page-content h4 { font-size: 20px; }
+#page-content h5 { font-size: 18px; }
+#page-content h6 { font-size: 16px; }
+
+#page-content h1,
+#page-content h2,
+#page-content h3,
+#page-content h4,
+#page-content h5,
+#page-content h6 {
+  line-height: 1.8em;
+  font-weight: bold;
+  margin-top: 12px;
+  font-family: "Space Mono";
+}
+
+#page-content p {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+#page-content p code {
+  background-color: #eee;
+  padding: 0 4px;
+}
+
+#page-content code {
+  font-size: 14px;
+  font-family: "Space Mono", monospace;
+}
+
+#page-content a {
+  text-decoration: underline;
+  text-decoration-color: #ddd;
+}
+
+#page-content table th,
+#page-content table td {
+  border: 1px solid #ddd;
+  padding: 4px;
+}
+
+#page-content table th {
+  background: #efefef;
+}
+
+pre {
+  font-family: "Space Mono", monospace;
+  /* padding: 8px 8px; */
+  margin-bottom: 15px;
+  padding: 1rem;
+  overflow: auto;
+}
+/* The line numbers already provide some kind of left/right padding */
+pre[data-linenos] {
+  padding: 1rem 0;
+}
+pre table td {
+  padding: 0;
+}
+/* The line number cells */
+pre table td:nth-of-type(1) {
+  text-align: center;
+  user-select: none;
+}
+pre mark {
+  /* // If you want your highlights to take the full width. */
+  display: block;
+  /* // The default background colour of a mark is bright yellow */
+  background-color: rgba(254, 252, 232, 0.9);
+}
+pre table {
+  width: 100%;
+  border-collapse: collapse;
+}

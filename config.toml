@@ -1,0 +1,43 @@
+# The URL the site will be built for
+base_url = "https://iroh.computer"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = false
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+[extra]
+# Put all your custom variables here
+
+# Index page
+[extra.index]
+title = "Main title"
+image = "https://via.placeholder.com/200"
+image_alt = "Placeholder text describing the index's image."
+
+[extra.default_author]
+name = "John Doe"
+avatar = "https://via.placeholder.com/200"
+avatar_alt = "Placeholder text describing the default author's avatar."
+
+[extra.social]
+github = "https://github.com/johndoe"
+gitlab = "https://gitlab.com/johndoe"
+twitter = "https://twitter.com/johndoe"
+linkedin = "https://www.linkedin.com/in/john-doe-b1234567/"
+email = "john.doe@gmail.com"
+
+[extra.favicon]
+favicon = "/icons/favicon.ico"
+favicon_16x16 = "/icons/favicon-16x16.png"
+favicon_32x32 = "/icons/favicon-32x32.png"
+apple_touch_icon = "/icons/apple-touch-icon.png"
+android_chrome_512 = "/icons/android-chrome-512x512.png"
+android_chrome_192 = "/icons/android-chrome-192x192.png"
+manifest = "/icons/site.webmanifest"
