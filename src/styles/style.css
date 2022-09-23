@@ -59,6 +59,17 @@
   background: #efefef;
 }
 
+#page-content code {
+  background: #efefef;
+  padding: 1px 2px;
+}
+
+#page-content aside {
+  display: block;
+  padding: 6px;
+  background: #efefef;
+}
+
 pre {
   font-family: "Space Mono", monospace;
   /* padding: 8px 8px; */

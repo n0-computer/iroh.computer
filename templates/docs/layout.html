@@ -41,6 +41,12 @@
 
     <link href="/styles/style.css" rel="stylesheet">
 
+    <!-- Include only the reset -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/reset-min.css" integrity="sha256-QlHlZdbSVxaYkUHxhMFhAj/L3pJiW1LuomSCONXBWms=" crossorigin="anonymous">
+    <!-- or include the full Satellite theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css" integrity="sha256-TehzF/2QvNKhGQrrNpoOb2Ck4iGZ1J/DI4pkd2oUsBc=" crossorigin="anonymous">
+
+
     <title>
       {% block title %}
       {{ config.title }}
@@ -72,6 +78,11 @@
           
           <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
             <div class="flex space-x-5">
+              <div class="lg:hidden">
+                <button onclick="openModal('modal')">
+                  <img class="w-4 h-4 ml-1 my-2" src="/img/icon/icon_search.svg" />
+                </button>
+              </div>
               <a href="/docs" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">docs</a>
               <a href="https://github.com/n0-computer" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
               <a href="https://twitter.com/n0-computer" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">twitter</a>
@@ -92,55 +103,56 @@
   </nav>
   {% endblock navbar %}
 
+  {% block mobile_docs_nav %}
+    {% if page %}{% set title = page.title %}{% endif %}
+    {% if section %} {% set title = section.title %} {% endif %}
+    <div class="fixed block mt-20 bg-irohGray-100 lg:hidden w-full py-2 px-10 align-middle flex">
+      <button onclick="openSidebar()" class="mr-5">
+          <img class="w-6 h-6" src="/img/icon/icon_menu.svg" />
+      </button>
+      <div>
+        {% if page.extra.section %}
+        <span class="mr-5 text-sm">{{ page.extra.section }}</span> 
+        {% endif %}
+        <span class="text-sm">{{ title }}</span>
+      </div>
+    </div>
+  {% endblock mobile_docs_nav %}
+
   <div class="m-auto w-full max-w-7xl min-h-screen">
     {% block sidebar %}
-    <nav class="hidden align-top lg:inline-block lg:sticky lg:top-px lg:w-2/12 h-90 overflow-auto">
-      <div class="pt-11 px-3 mt-20">
-        <div class="border w-full py-2 mb-4 rounded">
+    <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-2/12">
+      <div class="pt-11 px-3 mt-20 lg:mt-0">
+        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openModal('modal')">
           <img class="w-4 h-4 float-left mr-3 ml-1 my-1" src="/img/icon/icon_search.svg" />
           <h6 class="font-xs text-irohGray-400">Quick Search...</h6>
         </div>
-        <ul class="text-irohGray-500">
-          <li class="mb-3">
-            <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">iroh</h3>
-            <ul>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs">Overview</a></li>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs/iroh-and-kubo">Iroh & Kubo (go-IPFS)</a></li>
-            </ul>
-          </li>
-
-          <li class="mb-3">
-            <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">iroh mobile</h3>
-            <ul>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs/mobile">Overview</a></li>
-            </ul>
-          </li>
-
-          <li class="mb-3">
-            <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">iroh one</h3>
-            <ul>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs/one">Overview</a></li>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/one/data-locations">Data Locations</a></li>
-            </ul>
-          </li>
-
-          <li class="mb-3">
-            <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">iroh cloud</h3>
-            <ul>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs/cloud">Overview</a></li>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/docs/cloud/quickstart-gateway">Quickstart: Gateway</a></li>
-              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500"><a href="/one/data-locations">Data Locations</a></li>
-            </ul>
-          </li>
-
-        </ul>
+        {% if config.extra.docs_sidebar %}
+          <ul class="text-irohGray-500">
+            {% for section in config.extra.docs_sidebar %}
+              <li class="mb-3">
+                  <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">{{ section.section }}</h3>
+                  {% if section.links %}
+                      <ul>
+                          {% for link in section.links %}
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="{{ link.path | safe }}">{{ link.title }}</a>
+                              </li>
+                          {% endfor %}
+                      </ul>
+                  {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </div>
     </nav>
+    <div onclick="closeSidebar()" id="sidebar-bg" class="fixed hidden z-40 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal"></div>
     {% endblock sidebar %}
   
     {% block content %}
-    <div class="w-full inline-block sm:w-[calc(100%-25%-20px)] lg:w-[calc(100%-16.7%-20px-25%)] overflow-auto">
-      <main id="page-content" class="pt-6 px-10 pb-44 mt-20">
+    <div class="w-full inline-block  overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(100%-16.7%-20px-25%)]">
+      <main id="page-content" class="px-10 pb-44 mt-20 sm:mt-32">
         {% if page.extra.section %}
         <h5 class="text-irohPurple-500 bold leading-tight -mb-5">{{ page.extra.section }}</h5>
         {% endif %}
@@ -157,7 +169,7 @@
       </main>
     </div>
 
-    <div class="hidden align-top sm:inline-block sm:sticky sm:top-px sm:w-3/12 h-screen overflow-auto px-10 pt-24 mt-20">
+    <div class="hidden align-top h-screen overflow-auto px-10 pt-24 mt-20 sm:pt-32 sm:inline-block sm:sticky sm:top-px sm:w-3/12">
       {% if page %}{% set toc = page.toc %}{% endif %}
       {% if section %} {% set toc = section.toc %} {% endif %}
       {% if toc %}
@@ -180,12 +192,24 @@
       {% endif %}
     </div>
     {% endblock content %}
-  
+  </div>
+
+  <div id="modal" onclick="closeModal('modal')" class="fixed hidden z-50 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal">
+    <div onclick="((e) => { e.stopPropagation(); })(event)" class="relative top-40 mx-auto w-50 shadow-xl rounded-md bg-white max-w-2xl">
+      <div class="min-h-48">
+        <div id="searchbox"></div>
+        <div class="overflow-y-auto">
+          <div id="hits"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!--- scripts --->
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.14.2/dist/algoliasearch-lite.umd.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.46/dist/instantsearch.production.min.js" crossorigin="anonymous"></script>
   <script defer src="/js/site.js"></script>
-  <script defer data-domain="n0.computer" src="https://plausible.io/js/plausible.js"></script>
+  <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>	
   {% block extra_js %}
   {% endblock extra_js %}
 </body>

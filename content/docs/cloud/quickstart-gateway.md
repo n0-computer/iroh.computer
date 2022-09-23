@@ -18,13 +18,13 @@ This guide will walk you through running iroh cloud on your local machine, using
 
 we’ve prepped a bash file one-liner for you:
 
-```text
+```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh -s -- quickstart
 ```
 
 Running stuff from the internet directly on your terminal is generally a bad idea. Feel free to read through the script first 😄 by dropping the pipe `|` character and everything after it to print [`setup.sh`](https://sh.iroh.computer/setup.sh) to your terminal. The setup script takes a bit of time to fetch precompiled binaries. Once up and running you should see terminal output that looks like this:
 
-```text
+```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh-s--quickstart
 Fetching https://vorc.iroh.computer/bin/iroh-gateway/darwin/aarch64/latest
 Fetching https://vorc.iroh.computer/bin/iroh-p2p/darwin/aarch64/latest
@@ -52,7 +52,7 @@ Open a web browser and visit `http://127.0.0.1:9050/ipfs/QmbWqxBEKC3P8tqsKc98xmW
 
 Run `~/.iroh/bin/iroh-ctl status` to get a summary of the health of your iroh cloud services. You should see something like:
 
-```text
+```
 ~/.iroh/bin/iroh-ctl status
 Process     Number    Status
 gateway     1/1       Serving
@@ -66,7 +66,7 @@ This indicates all three services are running & healthy.
 
 This setup script includes a few options, which you can see by replacing `quickstart` with `-h`:
 
-```text
+```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh -s -- -h
 iroh quickstart
 
@@ -85,13 +85,13 @@ FLAGS:
 
 The help text includes a reference to a `stop` command. Let’s run that:
 
-```text
+```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh -s -- stop
 ```
 
 You should see output looking like this:
 
-```text
+```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh -s -- stop
 stopping iroh-gateway...
 stopping iroh-p2p...

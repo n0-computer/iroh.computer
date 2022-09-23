@@ -43,3 +43,87 @@ window.addEventListener("scroll", () => {
     nb.classList.remove('bg-n0gray-900')
   }
 });
+
+
+// algolia search setup
+const searchClient = algoliasearch('XAW7N510XH', 'a002be45b589b61bd6d596ad865e626e');
+
+const search = instantsearch({
+  indexName: 'iroh.computer',
+  searchClient,
+});
+
+search.addWidgets([
+  instantsearch.widgets.searchBox({
+    container: '#searchbox',
+  }),
+
+  instantsearch.widgets.hits({
+    container: '#hits',
+    templates: {
+      item(hit, { html, components }) {
+        return html`
+          <a href=${hit.url}>
+            <h2>${components.Highlight({ hit, attribute: 'title' })}</h2>
+            <p>${components.Snippet({ hit, attribute: 'description' })}</p>
+          </a>
+        `;
+      },
+    }
+  })
+]);
+
+search.start();
+
+// modal config
+window.openModal = function(modalId) {
+  document.getElementById(modalId).style.display = 'block'
+  document.getElementsByTagName('body')[0].classList.add('overflow-y-hidden')
+}
+
+window.closeModal = function(modalId) {
+  document.getElementById(modalId).style.display = 'none'
+  document.getElementsByTagName('body')[0].classList.remove('overflow-y-hidden')
+}
+
+swallow = function(event) {
+  event.stopPropagation();
+}
+
+openSidebar = function() {
+  ['sidebar', 'sidebar-bg']
+    .map((selector) => document.getElementById(selector))
+    .forEach((el) => {
+      el.style.display = 'block';
+      el.style.position = 'fixed'
+      el.setAttribute('data-open', true);
+    });
+}
+
+closeSidebar = function () {
+  ['sidebar', 'sidebar-bg']
+    .map((selector) => document.getElementById(selector))
+    .forEach((el) => { 
+      el.removeAttribute('style')
+      el.removeAttribute('data-open')
+    });
+}
+
+// Close all modals when press ESC
+document.onkeydown = function(event) {
+  event = event || window.event;
+  if (event.keyCode === 27) {
+    document.getElementsByTagName('body')[0].classList.remove('overflow-y-hidden')
+    let modals = document.getElementsByClassName('modal');
+    Array.prototype.slice.call(modals).forEach(i => {
+      i.style.display = 'none'
+    })
+  }
+};
+
+// watch widnow width, close docs sidebar if it exceeds sm size
+addEventListener('resize', (event) => {
+  if (window.innerWidth > 1024 && document.getElementById('sidebar')?.getAttribute('data-open')) {
+    closeSidebar();
+  }
+});
