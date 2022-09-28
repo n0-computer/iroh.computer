@@ -1,0 +1,43 @@
+version: 2.1
+
+orbs: 
+  aws-cli: circleci/aws-cli@3.1.1
+
+executors:
+  default:
+    docker:
+      - image: cimg/node:18.7.0
+
+jobs:
+  build_release:
+    executor: default
+    steps:
+      - checkout
+      - run:
+          name: setup
+          command: |
+            wget https://github.com/barnumbirr/zola-debian/releases/download/v0.16.0-1/zola_0.16.0-1_amd64_bullseye.deb
+            sudo dpkg -i zola_0.16.0-1_amd64_bullseye.deb
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          name: build
+          command: |
+            yarn install
+            yarn build
+      - run:
+          name: push to s3
+          command: |
+            aws s3 cp public s3://iroh.computer/ --recursive
+
+workflows:
+  version: 2.1
+
+  n0-website:
+    jobs:
+      - build_release:
+          name: "build and push release"
+          context: aws_s3
+          filters:
+            branches:
+              only: main
