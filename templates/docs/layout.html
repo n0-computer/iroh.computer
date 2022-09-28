@@ -79,7 +79,7 @@
           <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
             <div class="flex space-x-5">
               <div class="lg:hidden">
-                <button onclick="openModal('modal')">
+                <button onclick="openModal('quick_search')">
                   <img class="w-4 h-4 ml-1 my-2" src="/img/icon/icon_search.svg" />
                 </button>
               </div>
@@ -123,7 +123,7 @@
     {% block sidebar %}
     <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-2/12">
       <div class="pt-11 px-3 mt-20 lg:mt-0">
-        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openModal('modal')">
+        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openModal('quick_search')">
           <img class="w-4 h-4 float-left mr-3 ml-1 my-1" src="/img/icon/icon_search.svg" />
           <h6 class="font-xs text-irohGray-400">Quick Search...</h6>
         </div>
@@ -194,7 +194,7 @@
     {% endblock content %}
   </div>
 
-  <div id="modal" onclick="closeModal('modal')" class="fixed hidden z-50 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal">
+  <div id="quick_search" onclick="closeModal('quick_search')" class="fixed hidden z-50 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal">
     <div onclick="((e) => { e.stopPropagation(); })(event)" class="relative top-40 mx-auto w-50 shadow-xl rounded-md bg-white max-w-2xl">
       <div class="min-h-48">
         <div id="searchbox"></div>

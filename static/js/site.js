@@ -81,6 +81,12 @@ window.openModal = function(modalId) {
   document.getElementsByTagName('body')[0].classList.add('overflow-y-hidden')
 }
 
+window.openQuickSearch = function() {
+  document.getElementById('quick_search').style.display = 'block'
+  document.getElementsByTagName('body')[0].classList.add('overflow-y-hidden')
+  document.getElementsByClassName('ais-SearchBox-input')[0].focus();
+}
+
 window.closeModal = function(modalId) {
   document.getElementById(modalId).style.display = 'none'
   document.getElementsByTagName('body')[0].classList.remove('overflow-y-hidden')
@@ -109,15 +115,21 @@ closeSidebar = function () {
     });
 }
 
-// Close all modals when press ESC
 document.onkeydown = function(event) {
   event = event || window.event;
-  if (event.keyCode === 27) {
+  console.log(event);
+  if (event.key === "Escape") {
+    // Close all modals when press ESC
     document.getElementsByTagName('body')[0].classList.remove('overflow-y-hidden')
     let modals = document.getElementsByClassName('modal');
     Array.prototype.slice.call(modals).forEach(i => {
       i.style.display = 'none'
     })
+
+    // TODO: close sidebar
+  } else if (event.key === "k" && event.composed) {
+    event.preventDefault();
+    openQuickSearch('quick_search');
   }
 };
 
