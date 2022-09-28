@@ -64,6 +64,10 @@
   padding: 1px 2px;
 }
 
+#page-content pre code {
+  background: transparent;
+}
+
 #page-content aside {
   display: block;
   padding: 20px 15px;

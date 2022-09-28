@@ -55,7 +55,7 @@
 </head>
 <body class="text-irohGray-600 justify-between font-space">
   {% block navbar %}
-  <nav id="navbar" class="fixed w-full transition-colors ease-in duration-1000 bg-irohGray-100">
+  <nav id="docs_navbar" class="fixed w-full transition-colors ease-in duration-1000 bg-irohGray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
       <div class="relative flex items-center justify-between h-20">
         <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
@@ -72,14 +72,14 @@
         </div>
 
         <div class="flex-1 flex sm:items-stretch sm:justify-start">
-          <a href="/" class="block flex-shrink-0 flex items-center mr-auto">
+          <a href="/" class="block flex-shrink-0 flex items-center ml-2 mr-auto">
             <img class="block h-8 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh">
           </a>
           
           <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
             <div class="flex space-x-5">
               <div class="lg:hidden">
-                <button onclick="openModal('quick_search')">
+                <button onclick="openQuickSearch('quick_search')">
                   <img class="w-4 h-4 ml-1 my-2" src="/img/icon/icon_search.svg" />
                 </button>
               </div>
@@ -119,11 +119,11 @@
     </div>
   {% endblock mobile_docs_nav %}
 
-  <div class="m-auto w-full max-w-7xl min-h-screen">
+  <div class="m-auto w-full max-w-7xl min-h-screen px-4 sm:px-6 lg:px-10">
     {% block sidebar %}
     <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-2/12">
       <div class="pt-11 px-3 mt-20 lg:mt-0">
-        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openModal('quick_search')">
+        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openQuickSearch('quick_search')">
           <img class="w-4 h-4 float-left mr-3 ml-1 my-1" src="/img/icon/icon_search.svg" />
           <h6 class="font-xs text-irohGray-400">Quick Search...</h6>
         </div>
@@ -152,7 +152,7 @@
   
     {% block content %}
     <div class="w-full inline-block  overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(100%-16.7%-20px-25%)]">
-      <main id="page-content" class="px-10 pb-44 mt-20 sm:mt-32">
+      <main id="page-content" class="px-10 pb-44 mt-32 sm:px-4">
         {% if page.extra.section %}
         <h5 class="text-irohPurple-500 bold leading-tight -mb-5">{{ page.extra.section }}</h5>
         {% endif %}

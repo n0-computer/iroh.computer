@@ -432,6 +432,14 @@ img, video {
   margin-bottom: -1.25rem;
 }
 
+.ml-2 {
+  margin-left: .5rem;
+}
+
+.mt-32 {
+  margin-top: 8rem;
+}
+
 .block {
   display: block;
 }
@@ -1034,6 +1042,10 @@ img, video {
   padding: 1px 2px;
 }
 
+#page-content pre code {
+  background: none;
+}
+
 #page-content aside {
   background: #efefef;
   padding: 20px 15px;
@@ -1185,6 +1197,21 @@ pre table {
     padding-bottom: 20rem;
   }
 
+  .sm\:px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .sm\:px-0 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sm\:px-5 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
   .sm\:pr-0 {
     padding-right: 0;
   }
@@ -1244,6 +1271,11 @@ pre table {
   .lg\:px-10 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
+  }
+
+  .lg\:px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
