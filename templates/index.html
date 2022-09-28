@@ -7,8 +7,8 @@
       <h1 class="text-4xl font-space-mono leading-tight">
         Efficient IPFS for the whole world right now.
       </h1>
-      <h3 class="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh takes IPFS beyond the theoretical, to offers developers efficient infrastructure that scales data distribution past 10M devices.</h3>
-      <a href="https://docs.iroh.computer" class="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Deploy Iroh</a>
+      <h3 class="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh takes IPFS beyond the theoretical, to offer developers efficient infrastructure that scales data distribution past 10M devices.</h3>
+      <a href="/docs" class="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Run Iroh Now</a>
     </div>
   </div>
 </section>
@@ -16,13 +16,14 @@
   <div class="w-auto sm:w-3/12 mb-5">
     <h4 class="font-space-mono text-lg text-irohPurple-500">01</h4>
   </div>
-  <div class="w-auto sm:w-7/12 text-lg leading-normal">
+  <div class="w-auto sm:w-6/12 text-lg leading-normal">
     <h4 class="mb-5 text-2xl">Purpose-built for efficiency.</h4>
-    <h4 class="mb-5">We have been working on and around IPFS nearly since it's inception, and are building Iroh to realize what we believe IPFS can be</h4>
-    <h4 class="mb-5">With five plus years of experience building open distributed systems each, our team understands the importance of collaboration and accessibility when it comes to developing innovative software and conducting research.</h4>
+    <p class="mb-5">We have been working on and around IPFS nearly since it's inception, and are starting out on a new implementation because we have unfinished business with IPFS.</p>
+    <p class="mb-5">We believe the best days of the protocol are <a class="text-irohPurple-500" href="https://youtu.be/ASf8LQVVVqg?t=681">ahead</a>, but to get there we need to ship an order-of-magnitude improvement that unlocks new platforms and use cases.</p>
+    <p>We're building iroh to see just how far we can take IPFS.</p>
   </div>
 </section>
-<section class="w-full text-n0gray-900 py-40 sm:py-80 px-10 bg-white bg-cover bg-center shadow-inner flex flex-col sm:flex-row">
+<section class="w-full text-n0gray-900 py-40 px-10 bg-white bg-cover bg-center shadow-inner flex flex-col sm:flex-row">
   <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row">
     <div class="w-0 sm:w-3/12"></div>
     <div class="w-auto sm:w-7/12 lg:w-6/12">
@@ -30,13 +31,13 @@
         <div class="w-10 mr-5 flex-1 flex flex-col">
           <img class="w-14 h-14 mx-auto" src="/img/icon/icon_faster.svg" />
           <div class="grow w-0.5 mt-2 mx-auto bg-irohGray-200">
-            <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div>
+            <!-- <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div> -->
           </div>
         </div>
         <div class="w-10/12">
           <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Faster</h3>
-          <p class="text-sm">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
-          <p class="text-sm">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+          <p class="text-sm">Iroh consistently outperforms Kubo, using fewer resources to serve more requests.</p>
+          <p class="text-sm">There is a ring of truth to the "rewrite it in Rust" cliché. Adding in lessons learned while working with IPFS over the years doesn't hurt either.</p>
           <div class="my-8">
             <div class="flex pt-4 pb-6 border-b">
               <div class="w-5/12">
@@ -66,6 +67,33 @@
             </div>
 
             <div class="flex py-6 border-b">
+              <div class="w-5/12">
+                <h5 class="text-md">Adding Content</h5>
+                <label class="text-xs">100mb Files</label>
+              </div>
+              <div class="w-7/12">
+                <div class="flex flex-cols mb-2">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Iroh</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohPurple-500 w-14 h-5 mr-2 mt-1 float-left"></div>
+                    <div>265Mb/s</div>
+                  </div>
+                </div>
+                <div class="flex flex-cols">
+                  <div class="text-right w-20 pr-2">
+                    <label class="text-xs">Kubo</label>
+                  </div>
+                  <div class="grow">
+                    <div class="bg-irohGray-900 w-6 h-5 mr-2 mt-1 float-left"></div>
+                    <div>128MB/s</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="flex py-6 border-b">
               <div class="w-5/12">
                 <h5 class="text-md">Memory Consumption</h5>
                 <label class="text-xs">at 5k req/second</label>
@@ -144,7 +172,8 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
+
           </div>
         </div>
       </div>
@@ -152,23 +181,36 @@
         <div class="w-10 mr-5 flex-1 flex flex-col">
           <img class="w-14 h-14 mx-auto" src="/img/icon/icon_practical.svg" />
           <div class="grow w-0.5 mt-2 mx-auto bg-irohGray-200">
-            <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div>
+            <!-- <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div> -->
           </div>
         </div>
         <div class="w-10/12">
           <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Practical</h3>
-          <p class="text-md">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
-          <p class="text-md">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+          <p class="text-md mb-5">Iroh does fewer things than kubo, with more polish. Iroh targets a subset of the kubo API, aiming at the most commonly-used features of IPFS, while steering users away from pitfalls that have been trapped in kubo to maintain backward compatibility.</p>
+          <p class="text-md mb-16">If it's shipped in iroh, it will just work.</p>
+        </div>
+      </div>
+      <div class="flex mb-8">
+        <div class="w-10 mr-5 flex-1 flex flex-col">
+          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_platforms.svg" />
+          <div class="grow w-0.5 mt-2 mx-auto bg-irohGray-200">
+            <!-- <div class="w-0.5 h-10 mx-auto bg-irohPurple-500"></div> -->
+          </div>
+        </div>
+        <div class="w-10/12">
+          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Platform Specific</h3>
+          <p class="text-md mb-5">Running a single binary in the cloud doesn't make much sense. Neither does duplicating files locally when running IPFS on the desktop</p>
+          <p class="text-md mb-16">Iroh is a single codebase with multiple platform targets, allowing iroh to be microservices in the cloud, use more natural defaults on desktop.</p>
         </div>
       </div>
       <div class="flex mb-8">
         <div class="w-10 mr-5 flex-1">
-          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_open.svg" />
+          <img class="w-14 h-14 mx-auto" src="/img/icon/icon_mobile.svg" />
         </div>
         <div class="w-10/12">
-          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Open</h3>
-          <p class="text-md">Rewrite it in Rust. Add some hard-earned lessens while we're at it.</p>
-          <p class="text-md">Iroh consistently outeperforms Kubo, using fewer resources to serve more requests.</p>
+          <h3 class="text-xl mb-5 text-md sm:text-md text-n0gray-400">Mobile Support</h3>
+          <p class="text-md mb-5">Finally, IPFS on a phone.</p>
+          <p class="text-md mb-16">Iroh can be embedded into iOS & Android applications to speak the IPFS protocol natively. It's not a device-overheating afterthought, it's a ground-up rethink of what IPFS on a phone should look like.</p>
         </div>
       </div>
     </div>
