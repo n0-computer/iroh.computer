@@ -28,7 +28,6 @@ section = "iroh cloud"
 links = [
   { title = "Overview", path = "/docs/cloud" },
   { title = "Quickstart: Gateway", path = "/docs/cloud/quickstart-gateway" },
-  { title = "Configuration", path = "/docs/cloud/configuration" },
 ]
 
 # [[extra.docs_sidebar]]

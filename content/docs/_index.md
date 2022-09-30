@@ -8,22 +8,16 @@ section="iroh"
 
 # What is iroh?
 
-Iroh is software that implements a [communication protocol](https://en.wikipedia.org/wiki/Communication_protocol) for transferring and synchronizing data over a distributed network. Iroh refers to data in the network by its hash. Calculating hashes on creation & verifying hashes on receipt makes data, immutable, verifiable, permanently cached, and serve-able by any node in the network that has the data. We call this refer-by-hash concept *content addressing,* which iroh uses as foundation of to make the network more efficient as a whole with systems like multi-party data synchronization.
+Iroh is a next-generation implementation the Interplanetary File System ([IPFS](https://ipfs.io)) for Cloud & Mobile platforms. IPFS is a networking protocol for exchanging content-addressed blocks of immutable data. _content-addressed_ means referring to data by the [hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function) of it’s content, which makes the reference both unique and verifiable. These two properties make it possible to get data from *any* node in the network that speaks the IPFS protocol, including IPFS content being served by other implementations of the protocol.
 
-Under the hood, Iroh is a next-generation implementation the Interplanetary File System ([IPFS](https://ipfs.io)) for Cloud & Mobile platforms. IPFS is a networking protocol for exchanging content-addressed blocks of immutable data. “content-addressed” means referring to data by the *hash of it’s content*, which makes the reference unique and verifiable. These two properties make it possible to get data from *any* node in the network that speaks the IPFS protocol, including IPFS content being served by other implementations of the protocol.
+We announced the start of work on iroh at [IPFS þing 2022](https://2022.ipfs-thing.io/):
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qPBR2K2X6cs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<br />
 <aside>
 🚧 <b>Under Construction</b><br />
-We’re working iroh towards a first stable release, which we expect will happen in October
+We’re working iroh towards a first stable release, which we expect will happen around <a href="https://github.com/n0-computer/iroh/milestone/2">October 25th</a>
 </aside>
-
-Here’s a video from [IPFS þing 2022](https://2022.ipfs-thing.io/) introducing Iroh:
-
-[https://youtu.be/qPBR2K2X6cs?t=108](https://youtu.be/qPBR2K2X6cs?t=108)
-
-## Open Source
-
-Iroh is open source, code is hosted at [https://github.com/n0-computer/iroh](https://github.com/n0-computer/iroh) 
 
 ## Platforms
 

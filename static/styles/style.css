@@ -388,6 +388,10 @@ img, video {
   margin-top: .25rem;
 }
 
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
 .mr-auto {
   margin-right: auto;
 }
@@ -438,10 +442,6 @@ img, video {
 
 .-mb-5 {
   margin-bottom: -1.25rem;
-}
-
-.mb-16 {
-  margin-bottom: 4rem;
 }
 
 .block {
@@ -558,14 +558,6 @@ img, video {
 
 .w-1\/2 {
   width: 50%;
-}
-
-.w-8 {
-  width: 2rem;
-}
-
-.w-12 {
-  width: 3rem;
 }
 
 .max-w-7xl {
@@ -768,9 +760,9 @@ img, video {
   padding-right: .5rem;
 }
 
-.py-20 {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pt-40 {
@@ -821,12 +813,16 @@ img, video {
   padding-top: 6rem;
 }
 
-.pt-5 {
-  padding-top: 1.25rem;
+.pt-16 {
+  padding-top: 4rem;
 }
 
-.pt-10 {
-  padding-top: 2.5rem;
+.pt-32 {
+  padding-top: 8rem;
+}
+
+.pt-28 {
+  padding-top: 7rem;
 }
 
 .text-right {
@@ -1194,6 +1190,10 @@ pre table {
     width: 25%;
   }
 
+  .sm\:w-6\/12 {
+    width: 50%;
+  }
+
   .sm\:w-7\/12 {
     width: 58.3333%;
   }
@@ -1206,8 +1206,16 @@ pre table {
     width: calc(75% - 20px);
   }
 
-  .sm\:w-6\/12 {
-    width: 50%;
+  .sm\:w-\[calc\(100\%-16rem-20px\)\] {
+    width: calc(100% - 16rem - 20px);
+  }
+
+  .sm\:w-\[calc\(100\%-17rem-20px\)\] {
+    width: calc(100% - 17rem - 20px);
+  }
+
+  .sm\:w-\[calc\(100\%-256px-20px\)\] {
+    width: calc(100% - 276px);
   }
 
   .sm\:flex-row {
@@ -1227,19 +1235,9 @@ pre table {
     padding-right: 1.5rem;
   }
 
-  .sm\:py-80 {
-    padding-top: 20rem;
-    padding-bottom: 20rem;
-  }
-
   .sm\:px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  .sm\:py-40 {
-    padding-top: 10rem;
-    padding-bottom: 10rem;
   }
 
   .sm\:pr-0 {
@@ -1252,8 +1250,28 @@ pre table {
 }
 
 @media (min-width: 768px) {
+  .md\:sticky {
+    position: sticky;
+  }
+
+  .md\:top-px {
+    top: 1px;
+  }
+
   .md\:block {
     display: block;
+  }
+
+  .md\:inline-block {
+    display: inline-block;
+  }
+
+  .md\:w-3\/12 {
+    width: 25%;
+  }
+
+  .md\:pt-32 {
+    padding-top: 8rem;
   }
 }
 
@@ -1264,6 +1282,10 @@ pre table {
 
   .lg\:top-20 {
     top: 5rem;
+  }
+
+  .lg\:top-px {
+    top: 1px;
   }
 
   .lg\:mt-0 {
@@ -1294,6 +1316,50 @@ pre table {
     width: calc(58.3% - 20px);
   }
 
+  .lg\:w-3\/12 {
+    width: 25%;
+  }
+
+  .lg\:w-64 {
+    width: 16rem;
+  }
+
+  .lg\:w-60 {
+    width: 15rem;
+  }
+
+  .lg\:w-\[calc\(100\%-16\.7\%-20px-16rem\)\] {
+    width: calc(83.3% - 20px - 16rem);
+  }
+
+  .lg\:w-\[calc\(100\%-16\.7\%-20px-17rem\)\] {
+    width: calc(83.3% - 20px - 17rem);
+  }
+
+  .lg\:w-\[calc\(100\%-16\.7\%-20px-256px\)\] {
+    width: calc(83.3% - 276px);
+  }
+
+  .lg\:w-\[calc\(59\.3\%-20px\)\] {
+    width: calc(59.3% - 20px);
+  }
+
+  .lg\:w-\[calc\(50\.3\%-20px\)\] {
+    width: calc(50.3% - 20px);
+  }
+
+  .lg\:w-\[calc\(54\.3\%\)\] {
+    width: 54.3%;
+  }
+
+  .lg\:w-\[calc\(53\.3\%\)\] {
+    width: 53.3%;
+  }
+
+  .lg\:w-\[calc\(52\.3\%\)\] {
+    width: 52.3%;
+  }
+
   .lg\:bg-transparent {
     background-color: #0000;
   }
@@ -1301,6 +1367,32 @@ pre table {
   .lg\:px-10 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
+  }
+
+  .lg\:pt-32 {
+    padding-top: 8rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:sticky {
+    position: sticky;
+  }
+
+  .xl\:top-px {
+    top: 1px;
+  }
+
+  .xl\:inline-block {
+    display: inline-block;
+  }
+
+  .xl\:w-3\/12 {
+    width: 25%;
+  }
+
+  .xl\:pt-32 {
+    padding-top: 8rem;
   }
 }
 

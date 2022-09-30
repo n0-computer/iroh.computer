@@ -84,8 +84,7 @@
                 </button>
               </div>
               <a href="/docs" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">docs</a>
-              <a href="https://github.com/n0-computer" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
-              <a href="https://twitter.com/n0-computer" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">twitter</a>
+              <a href="https://github.com/n0-compute/iroh" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
             </div>
           </div>
         </div>
@@ -96,8 +95,7 @@
     <div id="mobile-menu" class="hidden bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000" aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <a href="/docs" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">docs</a>
-        <a href="https://github.com/n0-computer" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">github</a>
-        <a href="https://twitter.com/n0computer" class="text-irohGray-400 hover:bg-irohGray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">twitter</a>
+        <a href="https://github.com/n0-computer/iroh" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">github</a>
       </div>
     </div>
   </nav>
@@ -121,11 +119,11 @@
 
   <div class="m-auto w-full max-w-7xl min-h-screen px-4 sm:px-6 lg:px-10">
     {% block sidebar %}
-    <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-2/12">
+    <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-64">
       <div class="pt-11 px-3 mt-20 lg:mt-0">
         <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openQuickSearch('quick_search')">
-          <img class="w-4 h-4 float-left mr-3 ml-1 my-1" src="/img/icon/icon_search.svg" />
-          <h6 class="font-xs text-irohGray-400">Quick Search...</h6>
+          <img class="w-4 h-4 float-left mr-3 ml-2 my-1" src="/img/icon/icon_search.svg" />
+          <h6 class="text-sm text-irohGray-400">Quick Search...</h6>
         </div>
         {% if config.extra.docs_sidebar %}
           <ul class="text-irohGray-500">
@@ -151,7 +149,7 @@
     {% endblock sidebar %}
   
     {% block content %}
-    <div class="w-full inline-block  overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(100%-16.7%-20px-25%)]">
+    <div class="w-full inline-block overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(52.3%)]">
       <main id="page-content" class="px-10 pb-44 mt-32 sm:px-4">
         {% if page.extra.section %}
         <h5 class="text-irohPurple-500 bold leading-tight -mb-5">{{ page.extra.section }}</h5>
@@ -169,7 +167,7 @@
       </main>
     </div>
 
-    <div class="hidden align-top h-screen overflow-auto px-10 pt-24 mt-20 sm:pt-32 sm:inline-block sm:sticky sm:top-px sm:w-3/12">
+    <div class="hidden align-top h-screen overflow-auto px-10 pt-28 mt-20 xl:inline-block xl:sticky xl:top-px xl:w-3/12">
       {% if page %}{% set toc = page.toc %}{% endif %}
       {% if section %} {% set toc = section.toc %} {% endif %}
       {% if toc %}
@@ -206,10 +204,11 @@
   </div>
 
   <!--- scripts --->
-  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.14.2/dist/algoliasearch-lite.umd.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.46/dist/instantsearch.production.min.js" crossorigin="anonymous"></script>
   <script defer src="/js/site.js"></script>
   <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>	
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.14.2/dist/algoliasearch-lite.umd.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.46/dist/instantsearch.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   {% block extra_js %}
   {% endblock extra_js %}
 </body>

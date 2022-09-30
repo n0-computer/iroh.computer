@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function toggleMobileMenu() {
   const nb = document.getElementById('navbar')
+  if (!nb) {
+    nb = document.getElementById('docs_navbar')
+  }
+
   const menu = document.getElementById('mobile-menu');
   if (menu.getAttribute('aria-hidden') === 'true') {
     menu.setAttribute('aria-hidden', 'false')
@@ -36,11 +40,11 @@ window.addEventListener("scroll", () => {
   // check position and update nav
   const nb = document.getElementById('navbar')
   if (!nb?.classList.contains('bg-n0gray-900') && window.scrollY >= 100) {
-    nb.classList.remove('bg-transparent');
-    nb.classList.add('bg-n0gray-900');
+    nb?.classList.remove('bg-transparent');
+    nb?.classList.add('bg-n0gray-900');
   } else if (nb?.classList.contains('bg-n0gray-900') && window.scrollY <= 100) {
-    nb.classList.add('bg-transparent');
-    nb.classList.remove('bg-n0gray-900')
+    nb?.classList.add('bg-transparent');
+    nb?.classList.remove('bg-n0gray-900')
   }
 });
 
@@ -117,7 +121,7 @@ closeSidebar = function () {
 
 document.onkeydown = function(event) {
   event = event || window.event;
-  console.log(event);
+
   if (event.key === "Escape") {
     // Close all modals when press ESC
     document.getElementsByTagName('body')[0].classList.remove('overflow-y-hidden')

@@ -5,7 +5,8 @@
   "scripts": {
     "build": "parcel build src/styles/style.css --dist-dir static/styles --no-source-maps && zola build",
     "dev": "node dev",
-    "parcel": "parcel watch src/styles/style.css --dist-dir static/styles --no-hmr --no-source-maps"
+    "parcel": "parcel watch src/styles/style.css --dist-dir static/styles --no-hmr --no-source-maps",
+    "build_index": "node build_index"
   },
   "dependencies": {
     "autoprefixer": "10.4.7",

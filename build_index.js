@@ -46,6 +46,7 @@ getFileList('content').then((files) => {
         return acc
       }, []);
     // console.log(JSON.stringify(records));
+    console.log('writing file to records.json');
     fs.writeFileSync('records.json',JSON.stringify(records));
     console.log('done');
 });
