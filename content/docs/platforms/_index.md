@@ -1,20 +1,12 @@
 +++
-title = "iroh docs"
-description = ""
+title = "Platforms"
+description = "run an HTTP gateway with iroh cloud"
 template="docs/page.html"
 [extra]
-section="iroh"
+section="platforms"
 +++
 
-# What is iroh?
-
-Iroh is a next-generation implementation the Interplanetary File System ([IPFS](https://ipfs.io)) for Cloud, Mobile & Desktop platforms. IPFS is a networking protocol for exchanging content-addressed blocks of immutable data. _content-addressed_ means referring to data by the [hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function) of it’s content, which makes the reference both unique and verifiable. These two properties make it possible to get data from *any* node in the network that speaks the IPFS protocol, including IPFS content being served by other implementations of the protocol.
-
-We announced the start of work on iroh at [IPFS þing 2022](https://2022.ipfs-thing.io/):
-
-
-## Platforms
-
+# Platforms
 Iroh uses a common-core codebase to ship three purpose-built distributions:
 
 | Platform | Description |

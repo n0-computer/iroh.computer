@@ -19,15 +19,32 @@ highlight_code = true
 section = "iroh"
 links = [
  { title = "Overview", path = "/docs" },
+ { title = "Install", path = "/docs/install" },
+ { title = "Quickstart", path = "/docs/quickstart" },
+ { title = "Services", path = "/docs/services" },
+ { title = "Metrics", path = "/docs/metrics" },
+ { title = "Concepts", path = "/docs/concepts" },
  { title = "Iroh & Kubo (go-IPFS)", path = "/docs/iroh-and-kubo" },
- { title = "Data Locations", path = "/docs/data-locations" },
+ { title = "Use Cases", path = "/docs/use-cases" },
 ]
 
 [[extra.docs_sidebar]]
-section = "iroh cloud"
+section = "platforms"
 links = [
-  { title = "Overview", path = "/docs/cloud" },
-  { title = "Quickstart: Gateway", path = "/docs/cloud/quickstart-gateway" },
+  { title = "Overview", path = "/docs/platforms" },
+  { title = "cloud", path = "/docs/platforms/cloud" },
+  { title = "mobile", path = "/docs/platforms/mobile" },
+]
+
+[[extra.docs_sidebar]]
+section = "reference"
+links = [
+  { title = "Data Locations", path = "/docs/data-locations" },
+  { title = "CLI", path = "/docs/cli" },
+  { title = "configuration", path = "/docs/config" },
+  { title = "configuration: store", path = "/docs/cloud/quickstart-gateway" },
+  { title = "configuration: p2p", path = "/docs/cloud/quickstart-gateway" },
+  { title = "configuration: gateway", path = "/docs/cloud/quickstart-gateway" },
 ]
 
 # [[extra.docs_sidebar]]

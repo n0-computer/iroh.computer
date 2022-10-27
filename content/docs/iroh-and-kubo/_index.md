@@ -12,11 +12,12 @@ section="iroh"
 
 <div>
   <div id="commands_table"></div>
-  <script type="text/javascript"charset="utf-8">
+  <script type="text/javascript" src="/docs/iroh-and-kubo/d3.v3.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
     const csvFields = ["command name", "group", "iroh core support", "iroh mobile support"]
     window.addEventListener("load", function() {
         d3.csv(
-            "/docs/iroh-and-kubo.csv",
+            "/docs/iroh-and-kubo/iroh-and-kubo.csv",
             (d) => csvFields.map((f) => d[f]),
         )
         .then((parsedCSV) => {
