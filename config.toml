@@ -20,9 +20,9 @@ section = "iroh"
 links = [
  { title = "Overview", path = "/docs" },
  { title = "Install", path = "/docs/install" },
- { title = "Quickstart", path = "/docs/quickstart" },
+#  { title = "Quickstart", path = "/docs/quickstart" },
  { title = "Services", path = "/docs/services" },
- { title = "Metrics", path = "/docs/metrics" },
+#  { title = "Metrics", path = "/docs/metrics" },
  { title = "Concepts", path = "/docs/concepts" },
  { title = "Iroh & Kubo (go-IPFS)", path = "/docs/iroh-and-kubo" },
  { title = "Use Cases", path = "/docs/use-cases" },
@@ -42,13 +42,8 @@ links = [
   { title = "Data Locations", path = "/docs/data-locations" },
   { title = "CLI", path = "/docs/cli" },
   { title = "configuration", path = "/docs/config" },
-  { title = "configuration: store", path = "/docs/cloud/quickstart-gateway" },
-  { title = "configuration: p2p", path = "/docs/cloud/quickstart-gateway" },
-  { title = "configuration: gateway", path = "/docs/cloud/quickstart-gateway" },
+  { title = "config: store", path = "/docs/config/store" },
+  { title = "config: p2p", path = "/docs/config/p2p" },
+  { title = "config: gateway", path = "/docs/config/gateway" },
+  { title = "config: cli", path = "/docs/config/cli" },
 ]
-
-# [[extra.docs_sidebar]]
-# section = "iroh one"
-# links = [
-#   { title = "Overview", path = "/docs/one" },
-# ]

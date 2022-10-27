@@ -548,6 +548,10 @@ img, video {
   width: 5rem;
 }
 
+.w-8 {
+  width: 2rem;
+}
+
 .w-6 {
   width: 1.5rem;
 }
@@ -558,14 +562,6 @@ img, video {
 
 .w-1\/2 {
   width: 50%;
-}
-
-.w-12 {
-  width: 3rem;
-}
-
-.w-8 {
-  width: 2rem;
 }
 
 .max-w-7xl {
@@ -1072,6 +1068,18 @@ img, video {
   background: #efefef;
   padding: 20px 15px;
   display: block;
+}
+
+#commands_table .support-none {
+  background-color: #efefef;
+}
+
+#commands_table .support-partial {
+  background-color: #e0d5aa;
+}
+
+#commands_table .support-full {
+  background-color: #b1dd9b;
 }
 
 pre {
