@@ -548,6 +548,10 @@ img, video {
   width: 5rem;
 }
 
+.w-8 {
+  width: 2rem;
+}
+
 .w-6 {
   width: 1.5rem;
 }
@@ -760,11 +764,6 @@ img, video {
   padding-right: .5rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .pt-40 {
   padding-top: 10rem;
 }
@@ -807,18 +806,6 @@ img, video {
 
 .pb-44 {
   padding-bottom: 11rem;
-}
-
-.pt-24 {
-  padding-top: 6rem;
-}
-
-.pt-16 {
-  padding-top: 4rem;
-}
-
-.pt-32 {
-  padding-top: 8rem;
 }
 
 .pt-28 {
@@ -1083,6 +1070,18 @@ img, video {
   display: block;
 }
 
+#commands_table .support-none {
+  background-color: #efefef;
+}
+
+#commands_table .support-partial {
+  background-color: #e0d5aa;
+}
+
+#commands_table .support-full {
+  background-color: #b1dd9b;
+}
+
 pre {
   margin-bottom: 15px;
   padding: 1rem;
@@ -1158,24 +1157,12 @@ pre table {
 }
 
 @media (min-width: 640px) {
-  .sm\:sticky {
-    position: sticky;
-  }
-
   .sm\:inset-auto {
     inset: auto;
   }
 
-  .sm\:top-px {
-    top: 1px;
-  }
-
   .sm\:block {
     display: block;
-  }
-
-  .sm\:inline-block {
-    display: inline-block;
   }
 
   .sm\:hidden {
@@ -1206,18 +1193,6 @@ pre table {
     width: calc(75% - 20px);
   }
 
-  .sm\:w-\[calc\(100\%-16rem-20px\)\] {
-    width: calc(100% - 16rem - 20px);
-  }
-
-  .sm\:w-\[calc\(100\%-17rem-20px\)\] {
-    width: calc(100% - 17rem - 20px);
-  }
-
-  .sm\:w-\[calc\(100\%-256px-20px\)\] {
-    width: calc(100% - 276px);
-  }
-
   .sm\:flex-row {
     flex-direction: row;
   }
@@ -1243,35 +1218,11 @@ pre table {
   .sm\:pr-0 {
     padding-right: 0;
   }
-
-  .sm\:pt-32 {
-    padding-top: 8rem;
-  }
 }
 
 @media (min-width: 768px) {
-  .md\:sticky {
-    position: sticky;
-  }
-
-  .md\:top-px {
-    top: 1px;
-  }
-
   .md\:block {
     display: block;
-  }
-
-  .md\:inline-block {
-    display: inline-block;
-  }
-
-  .md\:w-3\/12 {
-    width: 25%;
-  }
-
-  .md\:pt-32 {
-    padding-top: 8rem;
   }
 }
 
@@ -1282,10 +1233,6 @@ pre table {
 
   .lg\:top-20 {
     top: 5rem;
-  }
-
-  .lg\:top-px {
-    top: 1px;
   }
 
   .lg\:mt-0 {
@@ -1308,52 +1255,8 @@ pre table {
     width: 50%;
   }
 
-  .lg\:w-2\/12 {
-    width: 16.6667%;
-  }
-
-  .lg\:w-\[calc\(100\%-16\.7\%-20px-25\%\)\] {
-    width: calc(58.3% - 20px);
-  }
-
-  .lg\:w-3\/12 {
-    width: 25%;
-  }
-
   .lg\:w-64 {
     width: 16rem;
-  }
-
-  .lg\:w-60 {
-    width: 15rem;
-  }
-
-  .lg\:w-\[calc\(100\%-16\.7\%-20px-16rem\)\] {
-    width: calc(83.3% - 20px - 16rem);
-  }
-
-  .lg\:w-\[calc\(100\%-16\.7\%-20px-17rem\)\] {
-    width: calc(83.3% - 20px - 17rem);
-  }
-
-  .lg\:w-\[calc\(100\%-16\.7\%-20px-256px\)\] {
-    width: calc(83.3% - 276px);
-  }
-
-  .lg\:w-\[calc\(59\.3\%-20px\)\] {
-    width: calc(59.3% - 20px);
-  }
-
-  .lg\:w-\[calc\(50\.3\%-20px\)\] {
-    width: calc(50.3% - 20px);
-  }
-
-  .lg\:w-\[calc\(54\.3\%\)\] {
-    width: 54.3%;
-  }
-
-  .lg\:w-\[calc\(53\.3\%\)\] {
-    width: 53.3%;
   }
 
   .lg\:w-\[calc\(52\.3\%\)\] {
@@ -1367,10 +1270,6 @@ pre table {
   .lg\:px-10 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-  }
-
-  .lg\:pt-32 {
-    padding-top: 8rem;
   }
 }
 
@@ -1389,10 +1288,6 @@ pre table {
 
   .xl\:w-3\/12 {
     width: 25%;
-  }
-
-  .xl\:pt-32 {
-    padding-top: 8rem;
   }
 }
 

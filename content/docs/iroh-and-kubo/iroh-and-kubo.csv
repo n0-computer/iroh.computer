@@ -1,5 +1,5 @@
-﻿command name,iroh core support,iroh mobile support,depth,group,description,flag count,arguments
-root command,alias: iroh,partial,0,,,,
+﻿command name,iroh support,iroh mobile support,depth,group,description,flag count,arguments
+ipfs,alias: iroh,partial,0,,,,
 version,full,partial,1," tool "," Show IPFS version information ",4,
 "daemon ",full,partial,1," advanced "," Start a long-running daemon process ",17,
 swarm,full,partial,1," network"," Manage connections to the p2p network ",0,

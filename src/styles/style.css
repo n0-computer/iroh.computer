@@ -74,6 +74,16 @@
   background: #efefef;
 }
 
+#commands_table .support-none {
+  background-color: #efefef;
+}
+#commands_table .support-partial {
+  background-color: #E0D5AA;
+}
+#commands_table .support-full {
+  background-color: #B1DD9B;
+}
+
 pre {
   font-family: "Space Mono", monospace;
   /* padding: 8px 8px; */

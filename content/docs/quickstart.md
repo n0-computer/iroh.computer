@@ -1,10 +1,12 @@
 +++
-title = "Quickstart: HTTP Gateway"
-description = "run an HTTP gateway with iroh cloud"
+title = "quickstart"
+description = ""
 template="docs/page.html"
 [extra]
-section="cloud"
+section="iroh"
 +++
+
+# TODO (B5) - copy kasey's talk outline into this page
 
 # Quickstart: Gateway
 
