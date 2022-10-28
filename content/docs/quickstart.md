@@ -13,12 +13,12 @@ section="iroh"
 This guide will walk you through running iroh cloud on your local machine, using the default configuration of a gateway backed by a p2p and store service. Once a gateway is up & running we’ll use it to fetch content from the IPFS network by requesting content from a web browser.
 
 <aside class="px-5 py-10 block border rounded">
-⚠️ The quickstart script currently only works for macOS & linux
+⚠️ The quickstart script currently only works for macOS & Linux
 </aside>
 
 ## Run Iroh locally
 
-we’ve prepped a bash file one-liner for you:
+We’ve prepped a bash file one-liner for you:
 
 ```
 $ curl -fsSL https://sh.iroh.computer/setup.sh | sh -s -- quickstart

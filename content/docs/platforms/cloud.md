@@ -26,7 +26,7 @@ Achieve higher throughput than existing IPFS solutions, make better use of cloud
 Design each service to work with load balancers, caching tools, other databases, etc.
 
 ##### **Cloud-specific configuration**
-Cache retention, rate-limiting, CID deny lists, provide configuration geared toward running high-throughput system.
+Cache retention, rate-limiting, CID deny lists, provide configuration geared toward running a high-throughput system.
 
 ##### **Rich, uniform metrics**
 Metrics connected throughout each service provide customizable monitoring & reporting via industry-standard tools like Grafana & Prometheus.

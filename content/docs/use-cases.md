@@ -8,7 +8,7 @@ section="iroh"
 
 # Use Cases
 
-While there are countless permutations of a data transfer protocol & concrete applications, some common use cases stand out a starting point for deploying iroh:
+While there are countless permutations of a data transfer protocol & concrete applications, some common use cases stand out as a starting point for deploying iroh:
 
 ## HTTP Gateway
 
@@ -18,7 +18,7 @@ Iroh Gateway is the bridge that connects the IPFS protocol to HTTP. It is compli
 
 Iroh’s horizontal and vertical scaling make it the first cloud-native IPFS gateway. Making it the most resource-efficient IPFS implementation to date and delivering best-in-class performance.
 
-Iroh integrated seamlessly with existing metrics pipelines, and all services come ready-to-wire to Prometheus.
+Iroh integrates seamlessly with existing metrics pipelines, and all services come ready-to-wire to Prometheus.
 
 ## Device-in Content Delivery Network
 

@@ -10,4 +10,4 @@ section="iroh"
 
 _For info on how iroh currently performs, see our [homepage benchmarks](https://iroh.computer)._
 
-Iroh is configured to emit metrics to a logging service like prometheus, which can be queried & visualized with grafana.
+Iroh is configured to emit metrics to a logging service like Prometheus, which can be queried & visualized with Grafana.
