@@ -41,9 +41,9 @@ section = "reference"
 links = [
   { title = "Data Locations", path = "/docs/data-locations" },
   { title = "CLI", path = "/docs/cli" },
-  { title = "configuration", path = "/docs/config" },
-  { title = "config: store", path = "/docs/config/store" },
-  { title = "config: p2p", path = "/docs/config/p2p" },
-  { title = "config: gateway", path = "/docs/config/gateway" },
-  { title = "config: cli", path = "/docs/config/cli" },
+  # { title = "configuration", path = "/docs/config" },
+  # { title = "config: store", path = "/docs/config/store" },
+  # { title = "config: p2p", path = "/docs/config/p2p" },
+  # { title = "config: gateway", path = "/docs/config/gateway" },
+  # { title = "config: cli", path = "/docs/config/cli" },
 ]
