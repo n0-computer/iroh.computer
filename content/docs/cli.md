@@ -258,7 +258,7 @@ Service status can be in one of four states:
 ```
 Use the --watch flag to continually poll for changes.
 
-Status reports no metrics about the running system aside from current service health. Instead all metrics are emitted through uniform tracing collection & reporting, which is intended to be consumed by tools like prometheus and grafana. For more info on metrics collection, see [metrics](/docs/metrics)
+Status reports no metrics about the running system aside from current service health. Instead all metrics are emitted through uniform tracing collection & reporting, which is intended to be consumed by tools like Prometheus and Grafana. For more info on metrics collection, see [metrics](/docs/metrics)
 
 ## iroh stop
 ```

@@ -15,17 +15,17 @@ Services work together to fullfill requests:
 Services are designed to do as much work as they can when another
 
 ## storage
-A database of IPFS content. The storage service
+A database of IPFS content. The storage service.
 
 ## p2p
 _uses storage service_
 
-peer-2-peer networking functionality
+Peer-2-peer networking functionality.
 
 ## gateway
 _uses storage & p2p services_
 
-bridge the IPFS network to HTTP
+Bridge the IPFS network to HTTP.
 
 # Iroh CLI
 _uses storage & p2p services_

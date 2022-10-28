@@ -8,11 +8,11 @@ section="iroh"
 
 # Installation
 
-iroh works on macOS & Linux. Our current release is for iroh cloud, a collection of four binaries no external dependencies.
+Iroh works on macOS & Linux. Our current release is for iroh cloud, a collection of four binaries with no external dependencies.
 
 <aside>
 🚧 <b>Windows Support</b><br />
-We're actively working on supporting windows in an upcoming release.
+We're actively working on supporting Windows in an upcoming release.
 </aside>
 
 ## Installing iroh on your laptop
