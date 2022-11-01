@@ -150,7 +150,7 @@
   
     {% block content %}
     <div class="w-full inline-block overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(52.3%)]">
-      <main id="page-content" class="px-10 pb-44 mt-32 sm:px-4">
+      <main id="page-content" class="px-10 pb-10 mt-32 sm:px-4">
         {% if page.extra.section %}
         <h5 class="text-irohPurple-500 bold leading-tight -mb-5">{{ page.extra.section }}</h5>
         {% endif %}
@@ -164,7 +164,12 @@
         {% if section.content %}
         {{ section.content | safe }}
         {% endif %}
+        <footer class="docs-content-page-footer mt-32">
+          <p><span class="text-irohGray-400">Found an error in the docs? </span><a class="text-irohPurple-500" href="https://github.com/n0-computer/iroh.computer">Suggest a change on github</a></p>
+        </footer>
       </main>
+      {% block content_footer %}
+      {% endblock footer %}
     </div>
 
     <div class="hidden align-top h-screen overflow-auto px-10 pt-28 mt-20 xl:inline-block xl:sticky xl:top-px xl:w-3/12">

@@ -444,6 +444,10 @@ img, video {
   margin-bottom: -1.25rem;
 }
 
+.mt-40 {
+  margin-top: 10rem;
+}
+
 .block {
   display: block;
 }
@@ -810,6 +814,10 @@ img, video {
 
 .pt-28 {
   padding-top: 7rem;
+}
+
+.pb-10 {
+  padding-bottom: 2.5rem;
 }
 
 .text-right {
