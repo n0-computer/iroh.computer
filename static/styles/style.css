@@ -991,6 +991,10 @@ img, video {
   transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 
+* {
+  font-variant-ligatures: none;
+}
+
 #page-content {
   font-size: 15px;
   line-height: 1.7em;
