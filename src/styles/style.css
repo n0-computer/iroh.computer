@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-variant-ligatures: none;
+}
+
 
 #page-content {
   font-size: 15px;
