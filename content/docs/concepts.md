@@ -24,7 +24,7 @@ Sometimes you may see a shorter form of CID that looks like this:
 QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR
 ```
 
-These are older "v0" hashes. Iroh can read them, but does not produce them. IPFS evolved past this form because they don't work un URLs.
+These are older "v0" hashes. Iroh can read them, but does not produce them. IPFS evolved past this form because they don't work in case-insensitive DNS parts of URLs and some file systems.
 
 A great tool for learning about CIDs is the [CID inspector](https://cid.ipfs.tech)
 
