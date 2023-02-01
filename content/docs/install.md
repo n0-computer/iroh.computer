@@ -39,4 +39,4 @@ To remove iroh from your machine, delete the following directories:
 `~/Library/Application Support/iroh`
 
 ### Linux
-`$XDG_CONFIG_HOME` or `$HOME/.config/iroh`
+`$XDG_CONFIG_HOME/iroh` or `$HOME/.config/iroh`
