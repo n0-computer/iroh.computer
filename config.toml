@@ -14,36 +14,34 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
-
 [[extra.docs_sidebar]]
-section = "iroh"
+section = "Iroh"
 links = [
- { title = "Overview", path = "/docs" },
- { title = "Install", path = "/docs/install" },
-#  { title = "Quickstart", path = "/docs/quickstart" },
- { title = "Services", path = "/docs/services" },
-#  { title = "Metrics", path = "/docs/metrics" },
- { title = "Concepts", path = "/docs/concepts" },
- { title = "Iroh & Kubo (go-IPFS)", path = "/docs/iroh-and-kubo" },
- { title = "Use Cases", path = "/docs/use-cases" },
-]
-
-[[extra.docs_sidebar]]
-section = "platforms"
-links = [
-  { title = "Overview", path = "/docs/platforms" },
-  { title = "cloud", path = "/docs/platforms/cloud" },
-  { title = "mobile", path = "/docs/platforms/mobile" },
-]
-
-[[extra.docs_sidebar]]
-section = "reference"
-links = [
-  { title = "Data Locations", path = "/docs/data-locations" },
+  { title = "Overview", path = "/docs/"},
+  { title = "Install", path = "/docs/install" },
   { title = "CLI", path = "/docs/cli" },
-  # { title = "configuration", path = "/docs/config" },
-  # { title = "config: store", path = "/docs/config/store" },
-  # { title = "config: p2p", path = "/docs/config/p2p" },
-  # { title = "config: gateway", path = "/docs/config/gateway" },
-  # { title = "config: cli", path = "/docs/config/cli" },
+]
+
+[[extra.docs_sidebar]]
+section = "Beetle"
+links = [
+  { title = "Overview", path = "/docs/beetle" },
+  { title = "Install", path = "/docs/beetle/install" },
+  { title = "Services", path = "/docs/beetle/services" },
+  { title = "CLI", path = "/docs/beetle/cli" },
+  { title = "Data Locations", path = "/docs/beetle/data-locations" },
+  { title = "Beetle & Kubo (go-IPFS)", path = "/docs/beetle/beetle-and-kubo" },
+]
+
+[[extra.design_docs_sidebar]]
+section = "Iroh Design Documents"
+links = [
+  { title = "0. Introduction", path = "/design" },
+  { title = "1. Iroh", path = "/design/iroh" },
+  { title = "2. Content Addressing", path = "/design/content-addressing" },
+  { title = "3. DSHT", path = "/design/dsht" },
+  { title = "4. Data Transfer", path = "/design/data-transfer" },
+  # { title = "concepts", path = "/design/concepts" },
+  # { title = "FAQ", path = "/design/faq" },
+  # { title = "For IPFS Veterans", path = "/design/for-ipfs-veterans" },
 ]

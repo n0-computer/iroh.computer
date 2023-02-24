@@ -6,9 +6,11 @@ module.exports = {
  darkMode: 'class', // or 'media' or 'class'
  theme: {
    extend: {
-    fontFamily: {
-      'space': ['Space Grotesk', 'sans-serif'], 
-      'space-mono': ['Space Mono', 'sans-serif'] 
+    backgroundImage: {
+      'iroh-kv-1': "url('../../static/img/kv/iroh-kv-1.png')",
+      'iroh-kv-2': "url('../../static/img/kv/iroh-kv-2.png')",
+      'iroh-kv-3': "url('../../static/img/kv/iroh-kv-3.png')",
+      'iroh-kv-4': "url('../../static/img/kv/iroh-kv-4.png')",
     },
     colors: {
      'n0pink': {
@@ -38,6 +40,10 @@ module.exports = {
      'irohPurple': {
         500: "#7C7CFF",
      }
+    },
+    fontFamily: {
+      'space': ['Space Grotesk', 'sans-serif'], 
+      'space-mono': ['Space Mono', 'sans-serif'] 
     },
    },
  },

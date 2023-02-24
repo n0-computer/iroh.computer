@@ -8,35 +8,22 @@ section="iroh"
 
 # Installation
 
-Iroh works on macOS & Linux. Our current release is for iroh cloud, a collection of four binaries with no external dependencies.
+Iroh works on macOS, Windows & Linux.
 
-<aside>
-🚧 <b>Windows Support</b><br />
-We're actively working on supporting Windows in an upcoming release.
-</aside>
-
-## Installing iroh on your laptop
+## Installing Iroh
 Run this script to get started:
 ```
-curl -fsSL https://sh.iroh.computer/install_laptop.sh | sh
+curl -fsSL https://sh.iroh.computer/install.sh | sh
 ```
 
-Running this script will put iroh cloud on your laptop. In our testing, iroh cloud works well on laptops, and we wholly recommend running it. The above script automatically configures iroh for the laptop environment. We set up a racing gateway so you can cache IPFS content locally, and leave p2p communication off until you explicitly turn it on. You can be on a zoom call with iroh cloud running in the background.
-
 # Package Managers
-We haven't yet begin to distribute iroh to package managers, but we're planning on it. More soon.
+Iroh is not currently available on package managers.
 
 # Docker
-We don't yet have official docker images for iroh. More soon.
+We don't yet have official docker images for iroh.
 
-## Building from Source
-Information about how to build from source can be found in our repo's [Developer documentation](https://github.com/n0-computer).
+# Building from Source
+Information about how to build from source can be found in our repo's [Developer documentation](https://github.com/n0-computer/iroh).
 
-## Removing Iroh
-To remove iroh from your machine, delete the following directories:
-
-### macOS
-`~/Library/Application Support/iroh`
-
-### Linux
-`$XDG_CONFIG_HOME` or `$HOME/.config/iroh`
+# Removing Iroh
+Iroh only caches data in `/tmp` directories, which are automatically purged when you restart your computer. To remove Iroh, remove the CLI binary.

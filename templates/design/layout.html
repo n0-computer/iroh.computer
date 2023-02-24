@@ -1,0 +1,181 @@
+<!doctype html>
+  <html lang="{{lang}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@n0computer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="n0.computer"/>
+    <meta name="twitter:title" content="Iroh Design: {{ config.title }}" />
+    <meta property="og:title" content="Iroh Design: {{ config.title }}" />
+    <meta name="twitter:description" content="Reducing net work for networks" />
+    <meta property="og:description" content="Reducing net work for networks" />
+    <meta name="twitter:image" content="{{ get_url(path='img/logos/wordmark-small-salmon.svg') }}" />
+    <meta property="og:image" content="{{ get_url(path='img/logos/wordmark-small-salmon.svg') }}" />
+    <meta name="twitter:image-alt" content="n0" />
+    <meta property="og:url" content="{{ get_url(path='') }}" />
+
+    {% if config.extra.favicon.webmanifest %}
+    <link href="{{ config.extra.favicon.manifest }}"" rel="manifest" />
+    {% endif %}
+    {% if config.extra.favicon.favicon_16x16 %}
+    <link href='{{ config.extra.favicon.favicon_16x16 }}' rel="icon" sizes="16x16" type="image/png" />
+    {% endif %}
+    {% if config.extra.favicon.favicon_32x32 %}
+    <link href='{{ config.extra.favicon.favicon_32x32 }}' rel="icon" sizes="32x32" type="image/png" />
+    {% endif %}
+    {% if config.extra.favicon.android_chrome_512 %}
+    <link href='{{ config.extra.favicon.android_chrome_512 }}' rel="android-chrome" sizes="512x512" />
+    {% endif %}
+    {% if config.extra.favicon.android_chrome_192 %}
+    <link href='{{ config.extra.favicon.android_chrome_192 }}' rel="android-chrome" sizes="192x192" />
+    {% endif %}
+    {% if config.extra.favicon.apple_touch_icon %}
+    <link href='{{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180" />
+    {% endif %}
+    {% if config.extra.favicon.apple_touch_icon %}
+    <link href='{{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180" />
+    {% endif %}
+
+    <link href="/styles/style.css" rel="stylesheet">
+
+    <!-- Include only the reset -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/reset-min.css" integrity="sha256-QlHlZdbSVxaYkUHxhMFhAj/L3pJiW1LuomSCONXBWms=" crossorigin="anonymous">
+    <!-- or include the full Satellite theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css" integrity="sha256-TehzF/2QvNKhGQrrNpoOb2Ck4iGZ1J/DI4pkd2oUsBc=" crossorigin="anonymous">
+
+    <title>
+      {% block title %}
+      {{ config.title }}
+      {% endblock title %}
+    </title>
+</head>
+<body class="text-irohGray-600 justify-between font-space">
+  <div class="m-auto w-full pt-10 pb-20 px-10 lg:px-20 bg-iroh-kv-3 bg-cover bg-top-right">
+    <div class="flex-1 flex sm:items-stretch sm:justify-start">
+      <a href="/" class="block flex-shrink-0 flex items-center ml-2 mr-auto">
+        <img class="block h-8 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh">
+      </a>
+      
+      <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
+        <div class="flex space-x-5">
+          <div class="lg:hidden">
+            <button onclick="openQuickSearch('quick_search')">
+              <img class="w-4 h-4 ml-1 my-2" src="/img/icon/icon_search.svg" />
+            </button>
+          </div>
+          <a href="/docs" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">docs</a>
+          <a href="/design" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">design</a>
+          <a href="https://github.com/n0-computer/iroh" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
+        </div>
+      </div>
+    </div>
+
+    {% block table_of_contents %}
+    <div id="design-docs-toc" class="pt-11 px-3 mt-24 lg:mt-96">
+      {% if config.extra.design_docs_sidebar %}
+        <ul class="text-irohGray-500">
+          {% for section in config.extra.design_docs_sidebar %}
+            <li class="mb-3">
+                <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">{{ section.section }}</h3>
+                {% if section.links %}
+                    <ul class="links">
+                        {% for link in section.links %}
+                            <li class="leading-loose text-irohGray-400 hover:text-irohPurple-500">
+                                <a href="{{ link.path | safe }}">{{ link.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endblock table_of_contents %}
+  </div>
+
+  <div class="m-auto w-full min-h-screen px-4 sm:px-6 lg:px-20">
+    {% block content %}
+    <div class="w-full inline-block overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(51%)]">
+      <main class="px-10 pb-10 mt-24 sm:px-4">
+        {% if page.extra.section %}
+        <h5 class="text-irohGray-400">{{ page.extra.section }}</h5>
+        {% endif %}
+        {% if section.extra.section %}
+        <h5 class="text-irohGray-400">{{ section.extra.section }}</h5>
+        {% endif %}
+        
+        {% if page %}{% set title = page.title %}{% endif %}
+        {% if section %} {% set title = section.title %} {% endif %}
+        <h1 class="text-4xl text-irohPurple-500 font-space-mono mb-10">{{ title }}</h1>
+
+        <div id="page-content">
+          {% if page.content %}
+          {{ page.content | safe }}
+          {% endif %}
+  
+          {% if section.content %}
+          {{ section.content | safe }}
+          {% endif %}
+          <footer class="docs-content-page-footer mt-32">
+            <p><span class="text-irohGray-400">Found an error in the docs? </span><a class="text-irohPurple-500" href="https://github.com/n0-computer/iroh.computer">Suggest a change on github</a></p>
+          </footer>
+        </div>
+      </main>
+      {% block content_footer %}
+      {% endblock footer %}
+    </div>
+
+    <div class="hidden align-top h-screen overflow-auto px-10 pt-28 mt-20 xl:inline-block xl:sticky xl:top-px xl:w-3/12">
+      <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openQuickSearch('quick_search')">
+        <img class="w-4 h-4 float-left mr-3 ml-2 my-1" src="/img/icon/icon_search.svg" />
+        <h6 class="text-sm text-irohGray-400">Quick Search...</h6>
+      </div>
+      {% if page %}{% set toc = page.toc %}{% endif %}
+      {% if section %} {% set toc = section.toc %} {% endif %}
+      {% if toc %}
+        <ul class="text-irohGray-300 text-sm leading-loose">
+        {% for h1 in toc %}
+            <li>
+                <a class="text-md bold mb-1 hover:text-irohPurple-500" href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+                {% if h1.children %}
+                    <ul>
+                        {% for h2 in h1.children %}
+                            <li class="pl-3 hover:text-irohPurple-500">
+                                <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+    {% endblock content %}
+  </div>
+
+  <div id="quick_search" onclick="closeModal('quick_search')" class="fixed hidden z-50 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal">
+    <div onclick="((e) => { e.stopPropagation(); })(event)" class="relative top-40 mx-auto w-50 shadow-xl rounded-md bg-white max-w-2xl">
+      <div class="min-h-48">
+        <div id="searchbox"></div>
+        <div class="overflow-y-auto">
+          <div id="hits"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--- scripts --->
+  <script defer src="/js/site.js"></script>
+  <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>	
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.14.2/dist/algoliasearch-lite.umd.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.46/dist/instantsearch.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  {% block extra_js %}
+  {% endblock extra_js %}
+</body>
+</html>

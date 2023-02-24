@@ -10,8 +10,8 @@
 
 
 #page-content {
-  font-size: 15px;
-  line-height: 1.7em;
+  font-size: 16px;
+  line-height: 1.65em;
 }
 
 #page-content h1 { font-size: 26px; }
@@ -28,14 +28,15 @@
 #page-content h5,
 #page-content h6 {
   line-height: 1.8em;
-  font-weight: bold;
-  margin-top: 12px;
-  font-family: "Space Mono";
+  margin-top: 1.15em;
+  margin-bottom: 0;
+  /* font-weight: bold; */
+  /* font-family: "Space Mono"; */
 }
 
 #page-content p {
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 0.1em;
+  margin-bottom: 0.9em;
 }
 
 #page-content p code {
@@ -76,6 +77,11 @@
   display: block;
   padding: 20px 15px;
   background: #efefef;
+}
+
+#page-content ol {
+  list-style: decimal;
+  padding-left: 16px;
 }
 
 #commands_table .support-none {

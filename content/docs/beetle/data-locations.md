@@ -1,20 +1,20 @@
 +++
 title = "data locations"
-description = "Where iroh stores data"
+description = "Where beetle stores data"
 template="docs/page.html"
 [extra]
-section="iroh"
+section="beetle"
 +++
 
 # Data Locations
 
-Iroh follows operating system conventions for storing files & folders, using an `iroh` directory as a common wrapper for iroh data, regardless of platform.
+Beetle follows operating system conventions for storing files & folders, using an `beetle` directory as a common wrapper for beetle data, regardless of platform.
 
 | platform | configuration files | application files |
 | -------- | ------------- | ---------------- |
-| Linux    | `$XDG_CONFIG_HOME/iroh` or `$HOME/.config/iroh` | `$XDG_DATA_HOME/iroh` or `$HOME/.local/share/iroh` |
-| MacOS    | `$HOME/Library/Application Support/iroh` | `$HOME/Library/Application Support/iroh` |
-| Windows  | `{FOLDERID_RoamingAppData}/iroh` | `{FOLDERID_RoamingAppData}/iroh` |
+| Linux    | `$XDG_CONFIG_HOME/beetle` or `$HOME/.config/beetle` | `$XDG_DATA_HOME/beetle` or `$HOME/.local/share/beetle` |
+| MacOS    | `$HOME/Library/Application Support/beetle` | `$HOME/Library/Application Support/beetle` |
+| Windows  | `{FOLDERID_RoamingAppData}/beetle` | `{FOLDERID_RoamingAppData}/beetle` |
 | iOS      | N/A: Configured via code | app-local rocksDB instance |
 | Android  | N/A: Configured via code | app-local rocksDB instance |
 
@@ -26,19 +26,19 @@ Configuration files are stored in the configuration directory, and follow a `${s
 
 | service | configuration filename |
 | ------- | ---------------------- |
-| iroh cloud p2p | `p2p.config.toml` |
-| iroh cloud store | `store.config.toml` |
-| iroh cloud gateway | `gateway.config.toml` |
-| iroh one | `one.config.toml` |
+| beetle cloud p2p | `p2p.config.toml` |
+| beetle cloud store | `store.config.toml` |
+| beetle cloud gateway | `gateway.config.toml` |
+| beetle one | `one.config.toml` |
 
 
 # Private Keys
 
-Private keys are considered configuration data. Each key is storead as a separate file using the same naming conventions as [`OpenSSH`](https://www.openssh.com/). Examining a common iroh config directory will look like this:
+Private keys are considered configuration data. Each key is storead as a separate file using the same naming conventions as [`OpenSSH`](https://www.openssh.com/). Examining a common beetle config directory will look like this:
 
 ```
 $ tree .
-iroh
+beetle
 ├── id_p2p_ed25519_0
 ├── store.config.toml
 ├── gateway.config.toml
