@@ -6,22 +6,30 @@ template="design/page.html"
 section="1."
 +++
 
-Iroh is a peer-2-peer protocol for caching and distributing arbitrary blobs of data in networks with high churn. It is an experimental re-implementation of IPFS [1] focused on improving performance, reliability, scalability, and network efficiency. Like IPFS, Iroh is a content addressed system. It uses hashes as identifiers for all data free authority over data from locality, allowing data to originate anywhere, propagate verifiably, and replicate ubiquitously.
+Iroh is a networking protocol for caching and distributing arbitrary blobs of data in networks with _high churn_. Iroh aims unlock the scaling potential of millions of tiny edge devices. Applications embed Iroh to become a network that grows network power with device count, even when individual devices are only online for seconds at a time, and only provide compute & network resources associated with typical web browsing.
 
-Iroh assumes users provide some external solution for ensuring data is available, for example by leaving a computer connected to the network, or using a high-availability backing service, similar to [9]. This is distinct from networks like BitTorrent [7], which go to great lengths to preserve content availability. Instead Iroh optimizes for a majority of nodes on the network being under extermely high churn. Iroh assumes most nodes will only be present for very short session lengths measured in minutes or even seconds, and do optimial provider matching on this timescale.
+At the technical level, Iroh is an experimental re-implementation of IPFS object storage [1] focused on improving performance, reliability, scalability, and network efficiency. Like IPFS, Iroh is a content addressed system. It uses hashes as identifiers for all data free authority over data from locality, allowing data to originate anywhere, propagate verifiably, and replicate ubiquitously.
+
+Iroh assumes users provide some external solution for ensuring data is available, for example by leaving at least one computer connected to the network, or using a high-availability backing service, similar to [9]. This is distinct from networks like BitTorrent [7], which go to great lengths to preserve content availability, at the expense of saturating resources like uplink capacity. Instead Iroh attempts to effectively diffuse object replication across a network where providers and getters are joining and leaving the network on the order of seconds.
+
+A network that can diffuse work at this timescale brings power law scaling to common internet workloads. The utility of this approach inversely correlates with object size: bigger stuff will work better, because it necessitates longer transfer times that benefit more from request parallelism. We broaden the utility of this approach with _collections_ which aggregate objects.
 
 # Iroh Overview
 
 <img src="/design/iroh/iroh_fig_1_system_overview.svg" />
 
+## Content Addressing
+
+Iroh _hashes_ an object by calculating the BLAKE3 hash of byte contents. Iroh stores the root hash as a _content identifier_ and the intermediate hash as metadata for incremental verification during data transfer. See [2. Content Addressing](/design/content-addressing) for details.
+
 ## Content Routing
 
 Iroh uses a Distributed Sloppy Hash Table as a *sloppy pointer machine* that connects content identifiers with available providers of that content. The DSHT is described in [3. DSHT](/design/dsht).
 
-- the iroh DSHT supports **stealth peers,** which act as lightweight clients that hydrate their routing tables via updates appended to responses from service nodes
-- stealth peers can read and write DHT records, and provide content
 
 ## Data Transfer
+
+Iroh supports a custom multi-peer data transfer protocol and HTTP fetching + whole-object checksumming. See [4. Data Transfer](/design/data-transfer) for more.
 
 <a class="next-page-button" href="/design/content-addressing">
 Next: 2. Content Addressing

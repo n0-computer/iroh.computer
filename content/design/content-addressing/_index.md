@@ -36,13 +36,7 @@ Collections are content addressed in the exact same manner as blobs, but use dif
 
 Queries can be performed to animate collection sets into graph structures. A typical example is constructing file system directories from the set using slash separators combined with a prefix query. We have yet to begin researching collection querying and will have more to report in the future, but know that prefix querying will be supported at a minimum.
 
-## Size Proofs
 
-Given that Iroh operates in a low-trust context, all metadata Iroh computes from blobs must be proven, including blob byte lengths. The size of a blob can be proven with a subset of tree hashes, and the last chunk of byte data:
-
-<img class="figure" src="/design/content-addressing/fig_3_size_proofs.svg">
-
-This is possible because BLAKE3 encodes the sequential chunk number within leaf hashes.
 
 
 <a class="next-page-button" href="/design/dsht">
