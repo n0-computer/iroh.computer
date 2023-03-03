@@ -27,6 +27,7 @@
 #page-content h4,
 #page-content h5,
 #page-content h6 {
+  color: #52525b;
   line-height: 1.8em;
   margin-top: 1.15em;
   margin-bottom: 0;
@@ -82,6 +83,16 @@
 #page-content ol {
   list-style: decimal;
   padding-left: 16px;
+}
+
+#page-content .next-page-button {
+  display: inline-block;
+  margin: 60px 0 60px auto;
+  color: #7C7CFF;
+  font-size: 1.5em;
+  background-color: #F8F8F8;
+  text-decoration: none;
+  padding: 12px 20px;
 }
 
 #commands_table .support-none {

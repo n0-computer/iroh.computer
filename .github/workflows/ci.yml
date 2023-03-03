@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_release:
+    name: build and push release
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@master
+      with:
+        submodules: recursive
+
+    - name: setup
+      run: |
+        wget https://github.com/barnumbirr/zola-debian/releases/download/v0.16.0-1/zola_0.16.0-1_amd64_bullseye.deb
+        sudo dpkg -i zola_0.16.0-1_amd64_bullseye.deb
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18.7
+
+    - name: build
+      run: |
+        yarn install
+        yarn build
+    
+    - name: push to s3, clear cloudfront
+      if: github.ref_name=='main'
+      run: |
+        export AWS_ACCESS_KEY_ID=${{secrets.S3_ACCESS_KEY_ID}}
+        export AWS_SECRET_ACCESS_KEY=${{secrets.S3_ACCESS_KEY}}
+        export AWS_DEFAULT_REGION=us-west-2
+        
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -q awscliv2.zip
+        sudo ./aws/install --update
+
+        aws s3 cp public s3://n0.computer/ --recursive
+        aws cloudfront create-invalidation --distribution-id ${{secrets.CLOUDFRONT_DISTRIBUTION_ID}} --paths /*

@@ -408,10 +408,6 @@ img, video {
   margin-bottom: 1.5rem;
 }
 
-.mb-96 {
-  margin-bottom: 24rem;
-}
-
 .ml-2 {
   margin-left: .5rem;
 }
@@ -420,8 +416,8 @@ img, video {
   margin-left: .25rem;
 }
 
-.mt-20 {
-  margin-top: 5rem;
+.mt-24 {
+  margin-top: 6rem;
 }
 
 .mb-3 {
@@ -432,16 +428,16 @@ img, video {
   margin-bottom: .25rem;
 }
 
-.mt-24 {
-  margin-top: 6rem;
-}
-
 .mb-10 {
   margin-bottom: 2.5rem;
 }
 
 .mt-32 {
   margin-top: 8rem;
+}
+
+.mt-20 {
+  margin-top: 5rem;
 }
 
 .mb-4 {
@@ -454,10 +450,6 @@ img, video {
 
 .-mb-5 {
   margin-bottom: -1.25rem;
-}
-
-.mt-96 {
-  margin-top: 24rem;
 }
 
 .block {
@@ -474,10 +466,6 @@ img, video {
 
 .inline-flex {
   display: inline-flex;
-}
-
-.contents {
-  display: contents;
 }
 
 .hidden {
@@ -792,6 +780,11 @@ img, video {
   padding-right: .5rem;
 }
 
+.px-20 {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
 .pt-40 {
   padding-top: 10rem;
 }
@@ -1061,6 +1054,7 @@ img, video {
 }
 
 #page-content h1, #page-content h2, #page-content h3, #page-content h4, #page-content h5, #page-content h6 {
+  color: #52525b;
   margin-top: 1.15em;
   margin-bottom: 0;
   line-height: 1.8em;
@@ -1112,6 +1106,16 @@ img, video {
 #page-content ol {
   padding-left: 16px;
   list-style: decimal;
+}
+
+#page-content .next-page-button {
+  color: #7c7cff;
+  background-color: #f8f8f8;
+  margin: 60px 0 60px auto;
+  padding: 12px 20px;
+  font-size: 1.5em;
+  text-decoration: none;
+  display: inline-block;
 }
 
 #commands_table .support-none {
@@ -1279,12 +1283,12 @@ pre table {
     top: 5rem;
   }
 
-  .lg\:mt-0 {
-    margin-top: 0;
-  }
-
   .lg\:mt-96 {
     margin-top: 24rem;
+  }
+
+  .lg\:mt-0 {
+    margin-top: 0;
   }
 
   .lg\:block {
@@ -1303,28 +1307,16 @@ pre table {
     width: 50%;
   }
 
-  .lg\:w-\[calc\(52\.3\%\)\] {
-    width: 52.3%;
+  .lg\:w-\[calc\(51\%\)\] {
+    width: 51%;
   }
 
   .lg\:w-64 {
     width: 16rem;
   }
 
-  .lg\:w-1\/2 {
-    width: 50%;
-  }
-
-  .lg\:w-\[calc\(55\%\)\] {
-    width: 55%;
-  }
-
-  .lg\:w-\[calc\(52\%\)\] {
-    width: 52%;
-  }
-
-  .lg\:w-\[calc\(51\%\)\] {
-    width: 51%;
+  .lg\:w-\[calc\(52\.3\%\)\] {
+    width: 52.3%;
   }
 
   .lg\:bg-transparent {

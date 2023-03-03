@@ -6,17 +6,17 @@ template="design/page.html"
 section="1."
 +++
 
-# Abstract
+Iroh is a peer-2-peer protocol for caching and distributing arbitrary blobs of data in networks with high churn. It is an experimental re-implementation of IPFS [1] focused on improving performance, reliability, scalability, and network efficiency. Like IPFS, Iroh is a content addressed system. It uses hashes as identifiers for all data free authority over data from locality, allowing data to originate anywhere, propagate verifiably, and replicate ubiquitously.
 
-Iroh is a peer-2-peer protocol for caching and distributing arbitrary blobs of data in networks with high churn. Written by veterans of the IPFS community, Iroh is a ground up effort focused on performance, reliability, scalability, and efficiency.
-
-Iroh is a caching and distribution network. It assumes users some outside solution to the data availability, for example, by leaving a computer connected to the network, or using a high-availability backing service. This is distinct from networks like BitTorrent [7], which go to great lengths to preserve content availability.
+Iroh assumes users provide some external solution for ensuring data is available, for example by leaving a computer connected to the network, or using a high-availability backing service, similar to [9]. This is distinct from networks like BitTorrent [7], which go to great lengths to preserve content availability. Instead Iroh optimizes for a majority of nodes on the network being under extermely high churn. Iroh assumes most nodes will only be present for very short session lengths measured in minutes or even seconds, and do optimial provider matching on this timescale.
 
 # Iroh Overview
 
+<img src="/design/iroh/iroh_fig_1_system_overview.svg" />
+
 ## Content Routing
 
-The DSHT is outlined [in another paper](/design/dsht). Iroh uses a DSHT as a ****sloppy**** *pointer machine* that connects content identifiers with available providers of that content
+Iroh uses a Distributed Sloppy Hash Table as a *sloppy pointer machine* that connects content identifiers with available providers of that content. The DSHT is described in [3. DSHT](/design/dsht).
 
 - the iroh DSHT supports **stealth peers,** which act as lightweight clients that hydrate their routing tables via updates appended to responses from service nodes
 - stealth peers can read and write DHT records, and provide content

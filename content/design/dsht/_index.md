@@ -6,13 +6,11 @@ template="design/page.html"
 section="3."
 +++
 
-# Abstract
+The Iroh distributed sloppy hash table (DSHT) is the primary source of _content routing_ within Iroh. The Hash Table functions as a _pointer machine_ linking content identifiers to provider network addresses who can fulfill requests using an out-of-band data transfer mechanism.
 
-The Iroh distributed sloppy hash table (DSHT) is the primary source of **content routing** within Iroh. The Hash Table functions as a pointer machine linking content identifiers to the addresses of providers who are willing to fulfill requests using an out-of-band data transfer mechanism. The Iroh DSHT is not a new technology, but rather a composition of prior research into DHTs, tailored to the content routing use case.
+The Iroh DSHT is not a new technology, but rather a composition of prior research into DHTs, tailored to the content routing use case. The foundation of the Iroh DSHT is a Kademlia distributed hash table [1], which uses the exclusive-OR (XOR) distance metric. From there we make modifications to optimize for many writes, security, and performance, all of which is collaged from prior research.
 
 # Introduction
-
-The foundation of the Iroh DSHT is a Kademlia distributed hash table [1], which uses the exclusive-OR (XOR) distance metric. From there we make modifications to optimize for many writes, security, and performance, all of which are collaged from prior research into DHTs.
 
 - many writers: In a p2p file-sharing application, all content fetches have the potential to end in one or more writes back to the DHT in the event a node wishes to provide that content back to other nodes.
 - natural inequality in compute & networking capabilities across peers
@@ -23,15 +21,13 @@ The foundation of the Iroh DSHT is a Kademlia distributed hash table [1], which 
 
 ## Kademlia
 
-Iroh DSHT uses a base *b* value of 256 bits, all content in the routing table are BLAKE3 hashes. Node Identifiers (nodeIds) are the public component of an ED2559 keypair, which is also 256 bits in length, which we co-mingle in the same keyspace. Storing unhashed `nodeID` allows message validation without indirection beyond what is stored in the routing table. Buckets use a default **k** value of 8 but can grow to reduce hops, as discussed later.
+Iroh DSHT uses a base *b* value of 256 bits, which co-mingles content keys and peer identifiers in the same keyspace. Content keys  are BLAKE3 hashes. Peer Identifiers (`peerID`s) are the public component of an ED2559 keypair. Storing unhashed `peerIDs` allows message validation without indirection beyond what is stored in the routing table. Buckets use a default **k** value of 8 but can grow to reduce hops, as discussed later.
 
-We implement an *aggressive lookup strategy* as seen in [3]: initial lookup parallelism *α* is set to 4, and max number of queries set when a response is received *β* is set to 3.
-
-Traditional Kademlia network bootstrapping involves
+We implement an _aggressive lookup strategy_ as seen in [3]: initial lookup parallelism *α* is set to 4, and max number of queries set when a response is received *β* is set to 3.
 
 ## Sloppy Storage
 
-Iroh is a peer-2-peer file sharing service, which exhibits a write-on-read pattern. When operating normally, successful content retrieval ends with a new “provider record” written back to the DHST, signaling the peer is able to provide newly fetched content back to others. DHTs are originally designed around a single-writer, many-reader use case. To accommodate this difference we relax consistency guarantees for writes & reads to improve performance in the presence of many writers.
+Iroh is a peer-2-peer file sharing service, which exhibits a write-on-read pattern. When operating normally, successful content retrieval ends with a new “provider record” written back to the DHST, signaling the peer is able to provide newly fetched content back to others. DHTs are originally designed around a single-writer, many-reader use case. To accommodate this difference we relax consistency guarantees for writes & reads to improve performance in the presence of a more even read/write ratio.
 
 Iroh DSHT implements a *sloppy storage layer,* as described in [5]. Any key in the DSHT can store multiple values, and the API for `get(key)` need only return some subset of the values stored for a key. Nodes have a maximum number of values they will store for a key, and `put` requests that exceed this maximum are spread across multiple nodes.
 
@@ -39,9 +35,9 @@ Our implementation of `get(key)` returns an asynchronous channel of result messa
 
 ## Stealth & Service Nodes
 
-We intend to use ****one**** system for all content routing within iroh, regardless of device capabilities or usage patterns. 
+We intend to use **one** system for all content routing within iroh, regardless of device capabilities or usage patterns. 
 
-Acknowledging the natural disparity in peer capabilities, nodes are split into ******stealth****** and ******service****** types******,****** as described in [7]. Service nodes are “servers” that remain online, while stealth nodes are “clients” that communicate through service nodes. Nodes participating in the network are able to assume either role. Nothing in practical terms should stop a low-power device like a phone from operating as a service node, given such a case is required.
+Acknowledging the natural disparity in peer capabilities, nodes are split into *stealth* and *service* types, as described in [7]. Service nodes are “servers” that remain online, while stealth nodes are “clients” that communicate through service nodes. Nodes participating in the network are able to assume either role. Nothing in practical terms should stop a low-power device like a phone from operating as a service node, given such a case is required.
 
 All nodes begin as stealth nodes, and only “upgrade” themselves to being service nodes once a number of connectivity & uptime checks have been passed. As a result, the process of joining the DSHT starts
 
@@ -63,11 +59,11 @@ Service nodes should be publicly dial-able on the open internet. Service node ad
 
 We do not use any form of Session Traversal Utilities for NAT (STUN) for service nodes. As described in [6], DHT messaging patterns involve a high number of very short messages, which makes tools like STUN an impractical overhead. Because stealth nodes only initiate ****requests, they are able to participate in the network without utilizing NAT traversal techniques.
 
-STUN is, however, a completely acceptable pattern for establishing a connection to an address passed as a ******value****** by the DSHT, which is beyond the scope of this paper. We intend to use STUN extensively for data transfer. To increase the utility of the network, we build on the assumption that all service nodes are publicly accessible, and incorporate the transport-reflexive addresses into DSHT PING message responses, effectively turning all service nodes into STUN servers.
+STUN is, however, a completely acceptable pattern for establishing a connection to an address passed as a _value_ by the DSHT, which is beyond the scope of this paper. We intend to use STUN extensively for data transfer. To increase the utility of the network, we build on the assumption that all service nodes are publicly accessible, and incorporate the transport-reflexive addresses into DSHT PING message responses, effectively turning all service nodes into STUN servers.
 
 ### Variable K bucket size
 
-The default **k** value bucket size is 20. However, larger values of *k* increases the number of **reduce the number of hops required at the cost of increased memory, and as demonstrated in [8]. To reduce hops, buckets are enlarged in proportion to the probability of being used in a lookup, with the first buckets holding 128, 64, and 32 nodes respectively. All remaining buckets hold the default 20 values.
+The default _k_ value bucket size is 20. However, larger values of _k_ increases the number of **reduce the number of hops required at the cost of increased memory, and as demonstrated in [8]. To reduce hops, buckets are enlarged in proportion to the probability of being used in a lookup, with the first buckets holding 128, 64, and 32 nodes respectively. All remaining buckets hold the default 20 values.
 
 ## Routing Table Management
 
