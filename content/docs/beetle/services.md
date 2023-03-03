@@ -3,16 +3,16 @@ title = "iroh services"
 description = ""
 template="docs/page.html"
 [extra]
-section="iroh"
+section="beetle"
 +++
 
-# Iroh Services
+# Beetle Services
 Services work together to fullfill requests:
 
-<img src="/docs/diagrams/fig_1_iroh_cloud_gateway.svg" />
+<img src="/docs/beetle/diagrams/fig_1_iroh_cloud_gateway.svg" />
 
 
-Services are designed to do as much work as they can when another
+Services are designed to do as much work as they can when another service is down.
 
 ## storage
 A database of IPFS content. The storage service.
@@ -27,6 +27,6 @@ _uses storage & p2p services_
 
 Bridge the IPFS network to HTTP.
 
-# Iroh CLI
+# Beetle CLI
 _uses storage & p2p services_
-While not technically a "service", the iroh command line interface also uses services to do nearly all of it's work.
+While not technically a "service", the beetle command line interface also uses services to do nearly all of it's work.

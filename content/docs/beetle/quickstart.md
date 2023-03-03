@@ -6,8 +6,6 @@ template="docs/page.html"
 section="iroh"
 +++
 
-# TODO (B5) - copy kasey's talk outline into this page
-
 # Quickstart: Gateway
 
 This guide will walk you through running iroh cloud on your local machine, using the default configuration of a gateway backed by a p2p and store service. Once a gateway is up & running we’ll use it to fetch content from the IPFS network by requesting content from a web browser.

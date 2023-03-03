@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+  highlightDocsTOCPage();
+
   // ---------------- Selected Navbar Link -------------------------
   let navbar_links = document.querySelectorAll('.nav-links a');
   let trim_last_slash = window.location.href.replace(/\/$/, '');
@@ -13,6 +15,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
   document.getElementById('toggle-mobile-menu')?.addEventListener('click', toggleMobileMenu);
 });
+
+function highlightDocsTOCPage() {
+  let toc_links = document.querySelectorAll('#design-docs-toc a');
+  let trim_last_slash = window.location.href.replace(/\/$/, '');
+  let selected_navbar_link = [...toc_links].filter((item) => {
+    return ((item.href === trim_last_slash) || (item.href === window.location.href))
+  })
+  if (selected_navbar_link.length !== 0) {
+    for (let element of selected_navbar_link) {
+      element.parentNode.className = "leading-loose text-irohPurple-500"
+    }
+  }
+}
 
 function toggleMobileMenu() {
   const nb = document.getElementById('navbar')
