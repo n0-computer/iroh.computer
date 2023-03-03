@@ -40,6 +40,10 @@
   margin-bottom: 0.9em;
 }
 
+#page-content a {
+  color: #7C7CFF;
+}
+
 #page-content p code {
   background-color: #eee;
   padding: 0 4px;
