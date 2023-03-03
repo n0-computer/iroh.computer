@@ -1065,6 +1065,10 @@ img, video {
   margin-bottom: .9em;
 }
 
+#page-content a {
+  color: #7c7cff;
+}
+
 #page-content p code {
   background-color: #eee;
   padding: 0 4px;

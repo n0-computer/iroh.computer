@@ -57,13 +57,13 @@ To join the network, stealth nodes perform the first half of the network joining
 
 Service nodes should be publicly dial-able on the open internet. Service node addresses should be *transitive*: for a service node A, node C can dial A with an address given to it by node B, which can also dial A. Service node addresses should also be *persistent:* for the duration the service node is running, connectivity properties should remain the same.
 
-We do not use any form of Session Traversal Utilities for NAT (STUN) for service nodes. As described in [6], DHT messaging patterns involve a high number of very short messages, which makes tools like STUN an impractical overhead. Because stealth nodes only initiate ****requests, they are able to participate in the network without utilizing NAT traversal techniques.
+We do not use any form of Session Traversal Utilities for NAT (STUN) for service nodes. As described in [6], DHT messaging patterns involve a high number of very short messages, which makes tools like STUN an impractical overhead. Because stealth nodes only initiate requests, they are able to participate in the network without utilizing NAT traversal techniques.
 
 STUN is, however, a completely acceptable pattern for establishing a connection to an address passed as a _value_ by the DSHT, which is beyond the scope of this paper. We intend to use STUN extensively for data transfer. To increase the utility of the network, we build on the assumption that all service nodes are publicly accessible, and incorporate the transport-reflexive addresses into DSHT PING message responses, effectively turning all service nodes into STUN servers.
 
 ### Variable K bucket size
 
-The default _k_ value bucket size is 20. However, larger values of _k_ increases the number of **reduce the number of hops required at the cost of increased memory, and as demonstrated in [8]. To reduce hops, buckets are enlarged in proportion to the probability of being used in a lookup, with the first buckets holding 128, 64, and 32 nodes respectively. All remaining buckets hold the default 20 values.
+The default _k_ value bucket size is 20. However, larger values of _k_ reduce the number of hops required at the cost of increased memory, and as demonstrated in [8]. To reduce hops, buckets are enlarged in proportion to the probability of being used in a lookup, with the first buckets holding 128, 64, and 32 nodes respectively. All remaining buckets hold the recommended default 20 values.
 
 ## Routing Table Management
 
@@ -71,12 +71,12 @@ We implement the NICE routing table refresh strategy as described in [3]: On a r
 
 We also include a bias toward nodes with low round-trip-times (RTTs). a newly discovered nodes that has a lower RTT than an existing node can replace it in the bucket. We have to exercise caution with this technique, however. From the S/Kademlia paper [2]:
 
-> [Eclipse Attacks] can be prevented first, if a node can not choose its nodeId freely and secondly, when it is hard to influence the other nodes routing table. **Because Kademlia favors long-living nodes in its k-buckets and nodes are only added**, if a bucket is not already full, the latter is easy to achieve as soon as the network has bootstrapped
-> 
+> [Eclipse Attacks] can be prevented first, if a node can not choose its nodeId freely and secondly, when it is hard to influence the other nodes routing table. **Because Kademlia favors long-living nodes in its k-buckets and nodes are only added**, if a bucket is not already full, the latter is easy to achieve as soon as the network has bootstrapped 
+
 
 ## Security
 
-All values stored in the Iroh DSHT must be signed by their authoring nodeID. All messages must use a nonce value to prevent replay attacks. nonces are an incrementing numerical counter, which double as a method of expiring prior messages with a lower nonce value.
+All values stored in the Iroh DSHT must be signed by their authoring peerID. All messages must use a nonce value to prevent replay attacks. Nonces are an incrementing numerical counter, which double as a method of expiring prior messages with a lower nonce value.
 
 ### Service node crypto puzzle
 
