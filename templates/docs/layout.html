@@ -48,9 +48,15 @@
 
 
     <title>
-      {% block title %}
-      {{ config.title }}
-      {% endblock title %}
+      {%- block title -%}
+        {% if page.title %}
+          {{ page.title }}
+        {% elif config.title %}
+          {{ config.title }}
+        {% else %}
+        Iroh
+        {% endif %}
+      {%- endblock title -%}
     </title>
 </head>
 <body class="text-irohGray-600 justify-between font-space">

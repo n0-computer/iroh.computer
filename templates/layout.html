@@ -42,9 +42,15 @@
     <link href="/styles/style.css" rel="stylesheet">
 
     <title>
-      {% block title %}
-      {{ config.title }}
-      {% endblock title %}
+      {%- block title -%}
+        {% if page.title %}
+          {{ page.title }}
+        {% elif config.title %}
+          {{ config.title }}
+        {% else %}
+        Iroh
+        {% endif %}
+      {%- endblock title -%}
     </title>
 </head>
 <body class="bg-irohGray-900 text-irohGray-700 h-screen justify-between font-space">
