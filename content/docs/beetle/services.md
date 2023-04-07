@@ -7,7 +7,7 @@ section="beetle"
 +++
 
 # Beetle Services
-Services work together to fullfill requests:
+Services work together to fulfill requests:
 
 <img src="/docs/beetle/diagrams/fig_1_iroh_cloud_gateway.svg" />
 

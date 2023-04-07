@@ -14,7 +14,7 @@ These _design documents_ describe at a high level how we are building Iroh. Thin
 
 ## These are not specs
 
-We're reserving the word _specs_ for finished, detailed descriptions of how Iroh actually works. You should be able to write an interoperable implementation of Iroh from specs. Iroh is currently pre-1.0 sofware, and has no formalized specs. 
+We're reserving the word _specs_ for finished, detailed descriptions of how Iroh actually works. You should be able to write an interoperable implementation of Iroh from specs. Iroh is currently pre-1.0 software, and has no formalized specs. 
 
 ## These are not docs
 
