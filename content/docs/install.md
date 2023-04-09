@@ -17,7 +17,16 @@ curl -fsSL https://sh.iroh.computer/install.sh | sh
 ```
 
 # Package Managers
-Iroh is not currently available on package managers.
+
+Iroh is available on [tea](https://tea.xyz/) for macOS and Linux. To install, run:
+
+```
+$ curl tea.xyz | sh
+# ^^ installs the tea package manager
+
+$ iroh --help
+# ^^ tea installs iroh automagically!
+```
 
 # Docker
 We don't yet have official docker images for iroh.
