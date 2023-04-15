@@ -7,7 +7,7 @@ section="iroh"
 +++
 
 # CLI Commands
-Beetle has a single command line interface, common to all platforms & distributions.
+Iroh has a single command line interface, common to all platforms & distributions.
 
 
 ## iroh
@@ -18,8 +18,14 @@ Usage: iroh [OPTIONS] <COMMAND>
 
 Commands:
   provide     Serve the data from the given path
+  list        List hashes
+  validate    Validate hashes
+  shutdown    Shutdown provider
+  id          Identify provider
+  add         Add data from the given path
   get         Fetch the data from the hash
   get-ticket  Fetch the data using a ticket for all provider information and authentication.
+  addresses   List addresses
   help        Print this message or the help of the given subcommand(s)
 
 Options:
@@ -38,10 +44,58 @@ Arguments:
   [PATH]
 
 Options:
-  -a, --addr <ADDR>              Optional port, defaults to 127.0.01:4433
+  -a, --addr <ADDR>              Optional listening address, defaults to 127.0.0.1:4433
       --auth-token <AUTH_TOKEN>  Auth token, defaults to random generated
-      --key <KEY>                If this path is provided and it exists, the private key is read from this file and used, if it does not exist the private key will be persisted to this location
+      --rpc-port <RPC_PORT>      Optional rpc port, defaults to 4919. Set to 0 to disable RPC [default: 4919]
   -h, --help                     Print help
+```
+
+## iroh list
+```
+List hashes
+
+Usage: iroh list [OPTIONS]
+
+Options:
+      --rpc-port <RPC_PORT>  Optional rpc port, defaults to 4919 [default: 4919]
+  -h, --help
+```
+
+## iroh shutdown
+```
+Shutdown provider
+
+Usage: iroh shutdown [OPTIONS]
+
+Options:
+      --force                Shutdown mode. Hard shutdown will immediately terminate the process, soft shutdown will wait for all connections to close
+      --rpc-port <RPC_PORT>  Optional rpc port, defaults to 4919 [default: 4919]
+  -h, --help
+```
+
+## iroh id
+```
+Identify provider
+
+Usage: iroh id [OPTIONS]
+
+Options:
+      --rpc-port <RPC_PORT>  Optional rpc port, defaults to 4919 [default: 4919]
+  -h, --help
+```
+
+## iroh add
+```
+Add data from the given path
+
+Usage: iroh add [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  The path to the file or folder to add
+
+Options:
+      --rpc-port <RPC_PORT>  Optional rpc port, defaults to 4919 [default: 4919]
+  -h, --help                 Print help
 ```
 
 ## iroh get
@@ -58,7 +112,7 @@ Options:
       --auth-token <AUTH_TOKEN>  The authentication token to present to the server
   -a, --addr <ADDR>              Optional address of the provider, defaults to 127.0.0.1:4433
   -o, --out <OUT>                Optional path to a new directory in which to save the file(s). If none is specified writes the data to STDOUT
-  -h, --help                     Print help
+  -h, --help
 ```
 
 
@@ -80,4 +134,15 @@ Options:
 
   -h, --help
           Print help (see a summary with '-h')
+```
+
+## iroh addresses
+```
+List addresses
+
+Usage: iroh addresses [OPTIONS]
+
+Options:
+      --rpc-port <RPC_PORT>  Optional rpc port, defaults to 4919 [default: 4919]
+  -h, --help
 ```
