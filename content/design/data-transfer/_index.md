@@ -158,56 +158,6 @@ Next, the *provider* sends all the blobs in the collection on the stream.  Blobs
 
 During sending a *provider* could discover does not have the data for one of the blobs.  In this case it will send a `Response` containing `Res::NotFound` instead of `Res::Found`.  After that it will finish the stream and not send further blobs.
 
-# Fix Proposals
-
-We fully admit: this is a bit clunky in places.
-
-## Remove `Res` struct
-
-Currently `Response` just wraps `Res`.  We can rename `Res` to `Response` and remove the former `Response`.  It is an unneeded indirection.
-
-I think originally `Response` included a `request_id` field.  But that is no longer used.
-
-## Remove duplication of `total_blobs_size`
-
-The `total_blobs_size` is sent back twice:
-
-- In the `Collection` struct containing collection metadata.
-- In the `Res::FoundCollection` response.
-
-Removing it from `Res::FoundCollection` may make the most sense, because `Res::Found` also does not mention the size.  The other option is to add it to `Res::Found` but that’s not very useful since the first thing the bao encoding sends is the size.
-
-## Remove `Res` entirely
-
-It does not provide much functionality because if we do not find something, the blob or the collection, we simply end up closing the stream.  So instead we can use `SendStream::reset` with a new `CloseReason::NotFound`.   This would communicate the same but simpler and fewer packets.
-
-(`SendStream` and `CloseReason` are code references, not mentioned in the protocol description here.)
-
-Already `Res::NotFound` does not include any information about which hash was not found.  This you have to deduce from when you receive it.  However, if we instead reset the stream we **do lose information** we had before: resetting the stream means all buffers are dropped on the floor, no more retransmitting etc.  So you won’t be able the know **which** blob the provider doesn’t have.  I don’t think this is a problem at all, you don’t really need to know this.
-
-Possibly you could distinguish between `CloseReason::BlobNotFound` and `CloseReason::CollectionNotFound`.  However I don’t think this really gives you much extra information so I would avoid this.
-
-## Remove `Handshake::version`
-
-We already use the ALPN. This is redundant.
-
-This would mean each request stream starts with a handshake package looking like this:
-
-```rust
-struct Handshake {
-    token: Authtoken,
-}
-```
-
-(`AuthToken` is basically an array - we need to check serde/postcard if we can just use the array inplace there for this doc.)
-
-I think that is fine, it allows the *provider* to use different auth tokens for different collections.
-
-# Problems
-
-## No request by Blake3 hash
-
-Our protocol in it's current state can not really do content addressing. We can not retrieve something by knowing the Blake3 hash because we need to know the hash of the `Collection` which wraps it. But this has an arbitrary `name` field in it as well as arbitrary names for each blob. So even if you know the hash of a blob you can not retrieve it.
 
 # References
 
