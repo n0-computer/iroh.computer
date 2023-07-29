@@ -16,7 +16,7 @@ We call Iroh IPFS because we're trying to iterate on an improved design of IPFS,
 
 If you add something to Iroh, you can't plug the resulting CID into [ipfs.io](https://ipfs.io). It will fail, because [kubo](https://github.com/ipfs/kubo) doesn't currently integrate with Iroh.
 
-The divide between Iroh & Kubo is a huge barrier that we are working hard to address. We're doing our best to balance our believe that we need to keep Iroh as a small tool that does one thing well with real world user concerns, like the need to, you know, get IPFS stuff with an IPFS implementation. Long term, we want to end in a place that is both performant and compatible, it's just going to take time. We need to stablize Iroh, get it specified, and work with the kubo team to chart a path forward for interop.
+The divide between Iroh & Kubo is a huge barrier that we are working hard to address. We're doing our best to balance our belief that we need to keep Iroh as a small tool that does one thing well with real world user concerns, like the need to, you know, get IPFS stuff with an IPFS implementation. Long term, we want to end in a place that is both performant and compatible, it's just going to take time. We need to stablize Iroh, get it specified, and work with the kubo team to chart a path forward for interop.
 
 ## Kubo and Iroh can be bridged today
 
