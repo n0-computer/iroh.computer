@@ -154,7 +154,7 @@ struct Blob {
 Next, the *provider* sends all the blobs in the collection on the stream.  Blobs are sent in the order they appear in the `Collection` structure.  For each blob two items are sent:
 
 - A framed `Response` message with the `Res::Found` item as described here: [https://www.notion.so/number-zero/n0-iroh-1-network-protocol-f4f6d840f82e413f98dfc7bae527f3ec?pvs=4#d184b709cbd74bd1b1f4f04f0e062bac](https://www.notion.so/n0-iroh-1-network-protocol-f4f6d840f82e413f98dfc7bae527f3ec)
-- The blob payload.  **Not* snt as a lenght-prefixed message but directly as the boa Combined Encoding Format.  The client must read to the end of this bao data and can verify it using the hash extracted from the collection metadata.
+- The blob payload.  **Not* snt as a length-prefixed message but directly as the boa Combined Encoding Format.  The client must read to the end of this bao data and can verify it using the hash extracted from the collection metadata.
 
 During sending a *provider* could discover does not have the data for one of the blobs.  In this case it will send a `Response` containing `Res::NotFound` instead of `Res::Found`.  After that it will finish the stream and not send further blobs.
 

@@ -216,7 +216,7 @@ Beetle start kicks off 'daemons' on your local machine: long-running processes t
 
 Use the start, stop, and status commands to monitor beetle on your local machine, and control it's uptime. start runs daemons in the background, so there's no need to keep your terminal open after running start. Once running, stop beetle with `beetle stop`.
 
-Daemons provide 'services'. Services work together to fullfill requests. There are three services:
+Daemons provide 'services'. Services work together to fulfill requests. There are three services:
 
 1. **storage** a database of IPFS content
 2. **p2p** peer-2-peer networking functionality
@@ -224,7 +224,7 @@ Daemons provide 'services'. Services work together to fullfill requests. There a
 
 By default beetle start spins up storage & gateway services. Start the p2p service with `beetle start p2p`.  To learn more about each service, see [services](/docs/services)
 
-Beetle start is by no means the only way to get beetle up & running. Long running local deployments should be scheduled by your operating systems daemon supervisior, and cloud deployments should invoke daemon binaries directly. Regardless of how beetle is started, you can always use `beetle status` to monitor service health.
+Beetle start is by no means the only way to get beetle up & running. Long running local deployments should be scheduled by your operating systems daemon supervisor, and cloud deployments should invoke daemon binaries directly. Regardless of how beetle is started, you can always use `beetle status` to monitor service health.
 
 ## beetle status
 ```

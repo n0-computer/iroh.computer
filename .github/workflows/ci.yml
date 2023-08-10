@@ -15,6 +15,12 @@ jobs:
       uses: actions/checkout@master
       with:
         submodules: recursive
+      
+    - uses: actions/setup-go@v4
+    - run: curl -L https://git.io/misspell | bash
+
+    - name: Check spelling
+      run: ./bin/misspell -error ./content/**
 
     - name: setup
       run: |
