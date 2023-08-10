@@ -1,0 +1,114 @@
+<!doctype html>
+  <html lang="{{lang}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@n0computer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="n0.computer"/>
+    <meta name="twitter:title" content="{{ config.title }}" />
+    <meta property="og:title" content="{{ config.title }}" />
+    <meta name="twitter:description" content="Iroh: IPFS Reimagined" />
+    <meta property="og:description" content="Iroh: IPFS Reimagined" />
+    <meta name="twitter:image" content="{{ get_url(path='img/logos/wordmark-small-salmon.svg') }}" />
+    <meta property="og:image" content="{{ get_url(path='img/logos/wordmark-small-salmon.svg') }}" />
+    <meta name="twitter:image-alt" content="n0" />
+    <meta property="og:url" content="{{ get_url(path='') }}" />
+
+    {% if config.extra.favicon.webmanifest %}
+    <link href="{{ config.extra.favicon.manifest }}"" rel="manifest" />
+    {% endif %}
+    {% if config.extra.favicon.favicon_16x16 %}
+    <link href='{{ config.extra.favicon.favicon_16x16 }}' rel="icon" sizes="16x16" type="image/png" />
+    {% endif %}
+    {% if config.extra.favicon.favicon_32x32 %}
+    <link href='{{ config.extra.favicon.favicon_32x32 }}' rel="icon" sizes="32x32" type="image/png" />
+    {% endif %}
+    {% if config.extra.favicon.android_chrome_512 %}
+    <link href='{{ config.extra.favicon.android_chrome_512 }}' rel="android-chrome" sizes="512x512" />
+    {% endif %}
+    {% if config.extra.favicon.android_chrome_192 %}
+    <link href='{{ config.extra.favicon.android_chrome_192 }}' rel="android-chrome" sizes="192x192" />
+    {% endif %}
+    {% if config.extra.favicon.apple_touch_icon %}
+    <link href='{{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180" />
+    {% endif %}
+    {% if config.extra.favicon.apple_touch_icon %}
+    <link href='{{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180" />
+    {% endif %}
+
+    <link href="/styles/style.css" rel="stylesheet">
+
+    <title>
+      {% block title %}
+      {{ config.title }}
+      {% endblock title %}
+    </title>
+</head>
+<body class="text-irohGray-700 h-screen justify-between font-space">
+  {% block navbar %}
+  <nav id="navbar" class="fixed w-full transition-colors ease-in duration-1000">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div class="relative flex items-center justify-between h-20">
+        <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
+          <!-- Mobile menu button-->
+          <button id="toggle-mobile-menu" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-irohGray-400 hover:text-white hover:bg-irohGray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="flex-1 flex sm:items-stretch sm:justify-start">
+          <a href="/" class="block flex-shrink-0 flex items-center mr-auto">
+            <img class="block h-8 w-auto" src="img/logo/iroh-wordmark-purple.svg" alt="Iroh">
+          </a>
+          
+          <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
+            <div class="flex space-x-5">
+              <a href="/docs" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">docs</a>
+              <a href="/design" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">design</a>
+              <a href="https://github.com/n0-computer/iroh" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div id="mobile-menu" class="hidden bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000" aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="/docs" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">docs</a>
+        <a href="/design" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">design</a>
+        <a href="https://github.com/n0-computer" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">github</a>
+      </div>
+    </div>
+  </nav>
+  {% endblock navbar %}
+
+
+  <main class="mb-auto flex min-h-screen">
+    <div class="h-screen flex-2 pt-20 grid place-items-center">
+      <div class="mx-10 sm:mx-20 sm:w-96">
+        <h2 class="text-2xl font-semibold leading-10 text-gray-900">Oops</h2>
+        <p class="mt-1 text-md leading-6 text-gray-600">something went wrong. mind submitting again?</p>
+      </div>
+    </div>
+
+    <div class="h-screen hidden sm:block flex-1 pt-20 bg-iroh-kv-1 shadow-inner">
+    </div>
+  </main>
+
+  <!--- scripts --->
+  <script defer src="/js/beta-signup.js"></script>
+  <script defer src="/js/site.js"></script>
+  <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>
+  {% block extra_js %}
+  {% endblock extra_js %}
+</body>
+</html>
