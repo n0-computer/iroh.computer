@@ -95,43 +95,8 @@
   <main class="mb-auto flex min-h-screen">
     <div class="h-screen flex-2 pt-20 grid place-items-center">
       <div class="mx-10 sm:mx-20 sm:w-96">
-        <h2 class="text-2xl font-semibold leading-10 text-gray-900">Claim your spot now</h2>
-        <p class="mt-1 text-md leading-6 text-gray-600">Join the beta for early access to hosted infra & tooling.</p>
-  
-        <form method="POST" action="https://iroh.computer/beta-signup" class="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
-          <div class="sm:col-span-6">
-            <label for="name" class="block text-sm font-medium leading-6 text-gray-500 tracking-wide">Name</label>
-            <div class="mt-1">
-              <input type="text" name="name" id="name" autocomplete="name" class="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-          </div>
-  
-          <div class="sm:col-span-3">
-            <label for="email" class="block text-sm font-medium leading-6 text-gray-500 tracking-wide">EMAIL</label>
-            <div class="mt-1">
-              <input type="email" name="email" id="email" autocomplete="email" class="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-          </div>
-  
-          <div class="sm:col-span-3">
-            <label for="company" class="block text-sm font-medium leading-6 text-gray-500 tracking-wide">COMPANY (IF ANY)</label>
-            <div class="mt-1">
-              <input id="company" name="company" type="text" autocomplete="company" class="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            </div>
-          </div>
-
-          <div class="sm:col-span-full">
-            <label for="note" class="block text-sm font-medium leading-6 text-gray-500 tracking-wide">NOTE</label>
-            <div class="mt-1">
-              <textarea id="note" name="note" rows="3" class="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 resize-none"></textarea>
-            </div>
-          </div>
-
-          <div class="sm:col-span-full">
-            <button type="submit" class="bg-indigo-600 px-3 py-2 text-md font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">SUBMIT</button>
-          </div>
-        </form>
-
+        <h2 class="text-2xl font-semibold leading-10 text-gray-900">Thanks!</h2>
+        <p class="mt-1 text-md leading-6 text-gray-600">keep an eye on your inbox.</p>
       </div>
     </div>
 
@@ -140,6 +105,7 @@
   </main>
 
   <!--- scripts --->
+  <script defer src="/js/beta-signup.js"></script>
   <script defer src="/js/site.js"></script>
   <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>
   {% block extra_js %}
