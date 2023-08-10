@@ -373,12 +373,12 @@ img, video {
   margin-top: 1.25rem;
 }
 
-.mt-6 {
-  margin-top: 1.5rem;
-}
-
 .mt-14 {
   margin-top: 3.5rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
 }
 
 .mb-5 {
@@ -635,10 +635,6 @@ img, video {
 
 .items-center {
   align-items: center;
-}
-
-.justify-end {
-  justify-content: flex-end;
 }
 
 .justify-center {
@@ -1282,6 +1278,8 @@ pre table {
 
 .ais-Hits-item > a:hover, .ais-Hits-item > a:hover .ais-Highlight-highlighted {
   font-style: italic;
+}
+
 .placeholder\:text-gray-400::placeholder {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
