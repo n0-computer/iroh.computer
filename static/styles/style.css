@@ -1164,6 +1164,23 @@ pre table {
   border-collapse: collapse;
 }
 
+.ais-Hits.ais-Hits--empty {
+  padding: 1.5rem;
+}
+
+.ais-Hits-item, .ais-InfiniteHits-item {
+  padding: 0 !important;
+}
+
+.ais-Hits-item > a, .ais-InfiniteHits-item > a {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.ais-Hits-item > a:hover, .ais-Hits-item > a:hover .ais-Highlight-highlighted {
+  font-style: italic;
+}
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }

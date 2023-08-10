@@ -138,3 +138,24 @@ pre table {
   width: 100%;
   border-collapse: collapse;
 }
+
+/* Search engine */
+.ais-Hits.ais-Hits--empty {
+  padding: 1.5rem;
+}
+
+.ais-Hits-item,
+.ais-InfiniteHits-item {
+  padding: 0 !important;
+}
+
+.ais-Hits-item>a,
+.ais-InfiniteHits-item>a {
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.ais-Hits-item>a:hover,
+.ais-Hits-item>a:hover .ais-Highlight-highlighted {
+  font-style: italic;
+}
