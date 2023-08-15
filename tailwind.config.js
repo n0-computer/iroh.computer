@@ -7,10 +7,10 @@ module.exports = {
  theme: {
    extend: {
     backgroundImage: {
-      'iroh-kv-1': "url('../../static/img/kv/iroh-kv-1.png')",
-      'iroh-kv-2': "url('../../static/img/kv/iroh-kv-2.png')",
-      'iroh-kv-3': "url('../../static/img/kv/iroh-kv-3.png')",
-      'iroh-kv-4': "url('../../static/img/kv/iroh-kv-4.png')",
+      'iroh-kv-1': "url('/img/kv/iroh-kv-1.png')",
+      'iroh-kv-2': "url('/img/kv/iroh-kv-2.png')",
+      'iroh-kv-3': "url('/img/kv/iroh-kv-3.png')",
+      'iroh-kv-4': "url('/img/kv/iroh-kv-4.png')",
     },
     colors: {
      'n0pink': {

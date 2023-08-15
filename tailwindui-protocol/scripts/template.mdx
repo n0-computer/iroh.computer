@@ -1,0 +1,81 @@
+export const metadata = {
+  title: 'Anchor HTTP API',
+  description:
+    'interact with hosted iroh infrastructure via HTTP',
+}
+
+# HTTP API
+
+Iroh [anchors](/docs/anchors) come with an HTTP API. You can use this API to bridge from the iroh protocol to HTTP, for both end-user use and administrative purposes. {{ className: 'lead' }}
+
+This documentation is also available as an OpenAPI Specification:
+
+<div className="not-prose mb-16 mt-6 flex gap-3">
+  <Button href="/docs/anchor-http-api/openapi.yaml" arrow="right" children="OpenAPI Spec File" />
+</div>
+
+<Note>
+This api is hosted & provided to all [iroh.network](https://iroh.network) accounts.
+[Sign up for the beta](/beta) to get an account.
+</Note>
+
+
+## Authentication
+
+
+<% Object.keys(api.paths).forEach((path) => { %>
+  <% let endpoints = api.paths[path] %>
+  <% Object.keys(endpoints).forEach((verb) => { %>
+    <% let VERB = verb.toUpperCase() %>
+    <% let endpoint = endpoints[verb] %>
+
+---
+
+## <%= endpoint.summary %> {{ tag: '<%= VERB %>', label: '<%= path %>' }}
+
+<Row>
+  <Col>
+    <%= endpoint.description %>
+
+    <% if (endpoint.parameters) { %>
+    ### Parameters
+
+    <Properties>
+      <% endpoint.parameters.forEach((param) => { %>
+      <Property name="<%= param.name %>" type="string">
+        <%= param.description %>
+      </Property>
+      <% }) %>
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    <% } %>
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="<%= VERB %>" label="<%= path %>">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api<%= path %> \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    <% if (endpoint.responses['200']) { %>
+
+    ```json {{ title: 'Response' }}
+    <%- JSON.stringify(endpoint.responses['200'], null, 4)%>
+    ```
+
+    <% } %>
+
+  </Col>
+</Row>
+
+  <% }) %> 
+<% }) %>

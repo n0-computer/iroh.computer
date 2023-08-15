@@ -1,0 +1,514 @@
+export const metadata = {
+  title: 'Anchor HTTP API',
+  description:
+    'interact with hosted iroh infrastructure via HTTP',
+}
+
+# HTTP API
+
+Iroh [anchors](/docs/anchors) come with an HTTP API. You can use this API to bridge from the iroh protocol to HTTP, for both end-user use and administrative purposes. {{ className: 'lead' }}
+
+This documentation is also available as an OpenAPI Specification:
+
+<div className="not-prose mb-16 mt-6 flex gap-3">
+  <Button href="/docs/anchor-http-api/openapi.yaml" arrow="right" children="OpenAPI Spec File" />
+</div>
+
+<Note>
+This api is hosted & provided to all [iroh.network](https://iroh.network) accounts.<br />
+[Sign up for the beta](/beta) to get an account.
+</Note>
+
+
+## Authentication
+
+
+
+
+  
+  
+    
+    
+
+---
+
+## get API health status {{ tag: 'GET', label: '/health' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/health">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/health \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "healthy service"
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## get an API access token (UCAN) {{ tag: 'POST', label: '/token' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/token">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/token \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "API access token",
+    "content": {
+        "appliction/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## describe the current logged-in user {{ tag: 'GET', label: '/me' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/me">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/me \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "session user",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "name": {
+                        "type": "string",
+                        "format": null
+                    },
+                    "user_role": {
+                        "type": "string",
+                        "enum": [
+                            "ADMIN",
+                            "USER"
+                        ]
+                    },
+                    "pub_key": {
+                        "type": "string",
+                        "format": null
+                    },
+                    "profile_photo_url_small": {
+                        "type": "string"
+                    },
+                    "profile_photo_url_large": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list networks available to the current user {{ tag: 'GET', label: '/networks' }}
+
+<Row>
+  <Col>
+    Multiple status values can be provided with comma separated strings
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/networks">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "successful operation",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "network_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        },
+                        "pretty_name": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "anchor_url": {
+                            "type": "string"
+                        },
+                        "config": {
+                            "type": "object",
+                            "properties": {
+                                "network_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                                },
+                                "updated_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "accept_content": {
+                                    "type": "boolean"
+                                },
+                                "provide_content": {
+                                    "type": "string"
+                                },
+                                "connection_policy": null,
+                                "kubo_egress": null,
+                                "kubo_ingress": null
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list network collections {{ tag: 'GET', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    returns a
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "successful operation",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "pub_key": {
+                        "type": "string",
+                        "format": "",
+                        "example": ""
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "cid": {
+                        "type": "string",
+                        "example": "bafkr4ihaehdb5yar357djzt4vzwd565w7rpluruvvwnhap7yknbydbadam"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "item_count": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "uint64"
+                    },
+                    "signature": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## Update network settings {{ tag: 'POST', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## Deletes a network {{ tag: 'DELETE', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "Network deleted",
+    "content": {}
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   

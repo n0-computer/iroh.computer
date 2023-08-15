@@ -1,0 +1,17 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "http-mdx-from-swagger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@readme/openapi-parser": "^2.5.0",
+    "ejs": "^3.1.9",
+    "handlebars": "^4.7.8"
+  }
+}
