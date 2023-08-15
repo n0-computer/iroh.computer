@@ -24,22 +24,22 @@ export async function redirects() {
     // old design section
     {
       source: '/design',
-      destination: '/layers',
+      destination: '/docs/overview',
       permanent: true,
     },
     {
       source: '/design/content-addressing',
-      destination: '/layers/blobs',
+      destination: '/docs/blobs',
       permanent: true,
     },
     {
       source: '/design/data-transfer',
-      destination: '/layers/blobs',
+      destination: '/docs/blobs',
       permanent: true,
     },
     {
       source: '/design/dsht',
-      destination: '/layers/sync',
+      destination: '/docs/sync',
       permanent: true,
     },
 

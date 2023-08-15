@@ -191,22 +191,29 @@ export const navigation = [
     links: [
       { title: 'Introduction', href: '/docs' },
       { title: 'Quickstart', href: '/docs/quickstart' },
-      { title: 'Overview', href: '/docs/overview' },
+      { title: 'Install', href: '/docs/install' },
       { title: 'SDKs', href: '/docs/sdks' },
-      { title: 'Authentication', href: '/docs/authentication' },
-      { title: 'Pagination', href: '/docs/pagination' },
-      { title: 'IPFS', href: '/docs/ipfs' },
+      { title: 'Todo Example', href: '/docs/examples/todos' },
+      { title: 'File System Example', href: '/docs/examples/todos' },
+      { title: 'Airdrop Example', href: '/docs/examples/todos' },
     ],
+  },
+  { title: 'Concepts',
+    links: [
+      { title: 'Overview', href: '/docs/overview' },
+      { title: 'Documents', href: '/docs/documents' },
+      { title: 'Blobs', href: '/docs/blobs' },
+      { title: 'Connections', href: '/docs/connections' },
+      { title: 'Anchors', href: '/docs/anchors' },
+      { title: 'IPFS', href: '/docs/ipfs' },
+    ]
   },
   {
     title: 'Resources',
     links: [
       { title: 'Anchor HTTP API', href: '/docs/anchor-http-api'},
-      { title: 'Contacts', href: '/docs/contacts' },
-      { title: 'Conversations', href: '/docs/conversations' },
-      { title: 'Messages', href: '/docs/messages' },
-      { title: 'Groups', href: '/docs/groups' },
-      { title: 'Attachments', href: '/docs/attachments' },
+      { title: 'CLI', href: '/docs/cli' },
+      { title: 'REPL', href: '/docs/repl' },
     ],
   }
 ]
