@@ -1,17 +1,16 @@
-import Link from "next/link"
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { Guides } from '@/components/Guides'
-import { Resources } from '@/components/Resources'
-import { HeaderSparse } from '@/components/HeaderSparse'
-import { FooterMarketing } from '@/components/FooterMarketing'
+import {Guides} from '@/components/Guides';
+import {Resources} from '@/components/Resources';
+import {HeaderSparse} from '@/components/HeaderSparse';
+import {FooterMarketing} from '@/components/FooterMarketing';
 
 export const metadata = {
   title: 'API Documentation',
   description:
     'Learn everything there is to know about the Protocol API and integrate Protocol into your product.',
-}
-
-export const layoutOverride = true
+};
 
 <HeaderSparse />
 
@@ -34,7 +33,7 @@ export const layoutOverride = true
         <h4 className="font-space-mono text-lg text-irohPurple-500">01</h4>
       </div>
       <div className="w-auto sm:w-6/12 text-lg leading-normal">
-        <h4 className="mb-5 text-2xl">Purpose-built for efficiency.</h4>    
+        <h4 className="mb-5 text-2xl">Purpose-built for efficiency.</h4>
         <p className="mb-5">We have been working on and around IPFS nearly since its inception, and are starting out on a new implementation because we have unfinished business with IPFS.</p>
         <p className="mb-5">We believe the best days of the protocol are ahead, but to get there we need to ship an order-of-magnitude improvement that unlocks new platforms and use cases.</p>
         <p>We're building iroh to see just how far we can take IPFS.</p>
@@ -235,6 +234,5 @@ export const layoutOverride = true
       </div>
     </section>
   </main>
+  <FooterMarketing />
 </div>
-
-<FooterMarketing />

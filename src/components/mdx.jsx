@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
-import clsx from 'clsx'
+import {usePathname} from 'next/navigation';
+import Link from 'next/link';
+import clsx from 'clsx';
 
-import { Heading } from '@/components/Heading'
-import { Prose } from '@/components/Prose'
+import {Heading} from '@/components/Heading';
+import {Prose} from '@/components/Prose';
 
-export const a = Link
-export { Button } from '@/components/Button'
-export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
-import { pathLayout } from './Layout'
+export const a = Link;
+export {Button} from '@/components/Button';
+export {CodeGroup, Code as code, Pre as pre} from '@/components/Code';
+import {pathLayout} from './Layout';
 
-export function wrapper({ children }) {
-  let path = usePathname();
+export function Wrapper({children}) {
+  const path = usePathname();
   switch (pathLayout(path)) {
-    case "docs":
+    case 'docs':
       return (
         <article className="flex h-full flex-col pb-10 pt-16">
           <Prose className="flex-auto">{children}</Prose>
           <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
           </footer>
         </article>
-      )
+      );
     default:
-      return <>{children}</>
+      return <>{children}</>;
   }
 }
 
 export const h2 = function H2(props) {
-  return <Heading level={2} {...props} />
-}
+  return <Heading level={2} {...props} />;
+};
 
 function InfoIcon(props) {
   return (
@@ -45,10 +45,10 @@ function InfoIcon(props) {
       />
       <circle cx="8" cy="4" r=".5" fill="none" />
     </svg>
-  )
+  );
 }
 
-export function Note({ children }) {
+export function Note({children}) {
   return (
     <div className="my-6 flex gap-2.5 rounded-2xl border border-irohPurple-500/20 bg-irohPurple-50/50 p-4 leading-6 text-irohPurple-900 dark:border-irohPurple-500/30 dark:bg-irohPurple-500/5 dark:text-irohPurple-200 dark:[--tw-prose-links-hover:theme(colors.irohPurple.300)] dark:[--tw-prose-links:theme(colors.white)]">
       <InfoIcon className="mt-1 h-4 w-4 flex-none fill-irohPurple-500 stroke-white dark:fill-irohPurple-200/20 dark:stroke-irohPurple-200" />
@@ -56,31 +56,31 @@ export function Note({ children }) {
         {children}
       </div>
     </div>
-  )
+  );
 }
 
-export function Row({ children }) {
+export function Row({children}) {
   return (
     <div className="grid grid-cols-1 items-start gap-x-16 gap-y-10 xl:max-w-none xl:grid-cols-2">
       {children}
     </div>
-  )
+  );
 }
 
-export function Col({ children, sticky = false }) {
+export function Col({children, sticky = false}) {
   return (
     <div
       className={clsx(
-        '[&>:first-child]:mt-0 [&>:last-child]:mb-0',
-        sticky && 'xl:sticky xl:top-24'
+          '[&>:first-child]:mt-0 [&>:last-child]:mb-0',
+          sticky && 'xl:sticky xl:top-24',
       )}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export function Properties({ children }) {
+export function Properties({children}) {
   return (
     <div className="my-6">
       <ul
@@ -90,10 +90,10 @@ export function Properties({ children }) {
         {children}
       </ul>
     </div>
-  )
+  );
 }
 
-export function Property({ name, type, children }) {
+export function Property({name, type, children}) {
   return (
     <li className="m-0 px-0 py-4 first:pt-0 last:pb-0">
       <dl className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -111,11 +111,11 @@ export function Property({ name, type, children }) {
         </dd>
       </dl>
     </li>
-  )
+  );
 }
 
 
-export function Concepts({ children }) {
+export function Concepts({children}) {
   return (
     <div className="my-6">
       <ul
@@ -125,10 +125,10 @@ export function Concepts({ children }) {
         {children}
       </ul>
     </div>
-  )
+  );
 }
 
-export function Concept({ name, description }) {
+export function Concept({name, description}) {
   return (
     <li className="m-0 px-0 py-4 first:pt-0 last:pb-0">
       <dl className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -142,5 +142,5 @@ export function Concept({ name, description }) {
         </dd>
       </dl>
     </li>
-  )
+  );
 }

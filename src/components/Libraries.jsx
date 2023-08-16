@@ -1,13 +1,13 @@
-import Image from 'next/image'
+import Image from 'next/image';
 
-import { Button } from '@/components/Button'
-import { Heading } from '@/components/Heading'
-import logoGo from '@/images/logos/go.svg'
-import logoNode from '@/images/logos/node.svg'
-import logoPython from '@/images/logos/python.svg'
-import logoRuby from '@/images/logos/ruby.svg'
-import logoRust from '@/images/logos/rust.svg'
-import logoSwift from '@/images/logos/swift.svg'
+import {Button} from '@/components/Button';
+import {Heading} from '@/components/Heading';
+import logoGo from '@/images/logos/go.svg';
+import logoNode from '@/images/logos/node.svg';
+import logoPython from '@/images/logos/python.svg';
+import logoRuby from '@/images/logos/ruby.svg';
+import logoRust from '@/images/logos/rust.svg';
+import logoSwift from '@/images/logos/swift.svg';
 
 const libraries = [
   {
@@ -30,8 +30,8 @@ const libraries = [
     description:
       'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
     logo: logoPython,
-  }
-]
+  },
+];
 
 export function Libraries() {
   return (
@@ -65,5 +65,5 @@ export function Libraries() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import clsx from 'clsx'
+import Link from 'next/link';
+import clsx from 'clsx';
 
 function ArrowIcon(props) {
   return (
@@ -11,7 +11,7 @@ function ArrowIcon(props) {
         d="m11.5 6.5 3 3.5m0 0-3 3.5m3-3.5h-9"
       />
     </svg>
-  )
+  );
 }
 
 const variantStyles = {
@@ -24,7 +24,7 @@ const variantStyles = {
   outline:
     'rounded-sm py-1 px-3 text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:ring-white/10 dark:hover:bg-white/5 dark:hover:text-white',
   text: 'text-irohPurple-500 hover:text-irohPurple-600 dark:text-irohPurple-400 dark:hover:text-irohPurple-500',
-}
+};
 
 export function Button({
   variant = 'primary',
@@ -33,24 +33,24 @@ export function Button({
   arrow,
   ...props
 }) {
-  let Component = props.href ? Link : 'button'
+  const Component = props.href ? Link : 'button';
 
   className = clsx(
-    'inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition',
-    variantStyles[variant],
-    className
-  )
+      'inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition',
+      variantStyles[variant],
+      className,
+  );
 
-  let arrowIcon = (
+  const arrowIcon = (
     <ArrowIcon
       className={clsx(
-        'mt-0.5 h-5 w-5',
-        variant === 'text' && 'relative top-px',
-        arrow === 'left' && '-ml-1 rotate-180',
-        arrow === 'right' && '-mr-1'
+          'mt-0.5 h-5 w-5',
+          variant === 'text' && 'relative top-px',
+          arrow === 'left' && '-ml-1 rotate-180',
+          arrow === 'right' && '-mr-1',
       )}
     />
-  )
+  );
 
   return (
     <Component className={className} {...props}>
@@ -58,5 +58,5 @@ export function Button({
       {children}
       {arrow === 'right' && arrowIcon}
     </Component>
-  )
+  );
 }

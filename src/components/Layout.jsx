@@ -1,34 +1,34 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
+import Link from 'next/link';
+import {usePathname} from 'next/navigation';
+import {motion} from 'framer-motion';
 
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
-import { Logo } from '@/components/Logo'
-import { Navigation } from '@/components/Navigation'
-import { SectionProvider } from '@/components/SectionProvider'
+import {Footer} from '@/components/Footer';
+import {Header} from '@/components/Header';
+import {Logo} from '@/components/Logo';
+import {Navigation} from '@/components/Navigation';
+import {SectionProvider} from '@/components/SectionProvider';
 
-export function pathLayout(pathname = "") {
-  if (pathname.startsWith("/docs")) {
-    return "docs"
+export function pathLayout(pathname = '') {
+  if (pathname.startsWith('/docs')) {
+    return 'docs';
   }
-  return "default"
+  return 'default';
 }
 
-export function Layout({ children, allSections = {} }) {
-  let pathname = usePathname()
+export function Layout({children, allSections = {}}) {
+  const pathname = usePathname();
 
   switch (pathLayout(pathname)) {
-    case "docs":
-      return <DocsLayout children={children} sections={allSections[pathname]} />
+    case 'docs':
+      return <DocsLayout sections={allSections[pathname]}>{children}</DocsLayout>;
     default:
-      return <DefaultLayout children={children} sections={allSections[pathname]} />
+      return <DefaultLayout sections={allSections[pathname]}>{children}</DefaultLayout>;
   }
 }
 
-function DocsLayout({ children, sections = [] }) {
+function DocsLayout({children, sections = []}) {
   return (
     <SectionProvider sections={sections}>
       <div className="h-full lg:ml-72 xl:ml-80">
@@ -52,13 +52,13 @@ function DocsLayout({ children, sections = [] }) {
         </div>
       </div>
     </SectionProvider>
-  )
+  );
 }
 
-function DefaultLayout({ children, sections = [] }) {
+function DefaultLayout({children, sections = []}) {
   return (
     <SectionProvider sections={sections}>
       {children}
     </SectionProvider>
-  )
+  );
 }

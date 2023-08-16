@@ -22,21 +22,13 @@ export default async function RootLayout({children}) {
   );
   allSections = Object.fromEntries(allSections);
 
-  let layoutOverrides = await Promise.all(
-      pages.map(async (filename) => [
-        '/' + filename.replace(/(^|\/)page\.mdx$/, ''),
-        (await import(`./${filename}`)).layoutOverride || false,
-      ]),
-  );
-  layoutOverrides = Object.fromEntries(layoutOverrides);
-
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
           <div className="w-full">
             <Layout
-              allSections={allSections} layoutOverrides={layoutOverrides}>
+              allSections={allSections}>
               {children}
             </Layout>
           </div>
