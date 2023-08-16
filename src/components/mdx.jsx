@@ -6,31 +6,26 @@ import clsx from 'clsx'
 
 import { Heading } from '@/components/Heading'
 import { Prose } from '@/components/Prose'
-import { useLayoutOverride } from '@/components/LayoutOverrideProvider'
 
 export const a = Link
 export { Button } from '@/components/Button'
 export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
+import { pathLayout } from './Layout'
 
 export function wrapper({ children }) {
-  let overridden = useLayoutOverride();
   let path = usePathname();
-
-  if (overridden || path === '/') {
-    return (
-      <>
-        {children}
-      </>
-    )
+  switch (pathLayout(path)) {
+    case "docs":
+      return (
+        <article className="flex h-full flex-col pb-10 pt-16">
+          <Prose className="flex-auto">{children}</Prose>
+          <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
+          </footer>
+        </article>
+      )
+    default:
+      return <>{children}</>
   }
-
-  return (
-    <article className="flex h-full flex-col pb-10 pt-16">
-      <Prose className="flex-auto">{children}</Prose>
-      <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
-      </footer>
-    </article>
-  )
 }
 
 export const h2 = function H2(props) {

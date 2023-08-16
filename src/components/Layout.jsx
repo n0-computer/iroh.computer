@@ -9,25 +9,28 @@ import { Header } from '@/components/Header'
 import { Logo } from '@/components/Logo'
 import { Navigation } from '@/components/Navigation'
 import { SectionProvider } from '@/components/SectionProvider'
-import { LayoutOverrideProvider } from './LayoutOverrideProvider'
 
-export function Layout({ children, allSections = {}, layoutOverrides = {} }) {
+export function pathLayout(pathname = "") {
+  if (pathname.startsWith("/docs")) {
+    return "docs"
+  }
+  return "default"
+}
+
+export function Layout({ children, allSections = {} }) {
   let pathname = usePathname()
 
-  console.log("overrides", layoutOverrides, pathname, layoutOverrides[pathname]);
-  if (layoutOverrides[pathname] || pathname === "/") {
-    return (
-      <SectionProvider sections={allSections[pathname] ?? []}>
-        <LayoutOverrideProvider overrides={layoutOverrides} pathname={pathname}>
-          {children}
-        </LayoutOverrideProvider>
-      </SectionProvider>
-    )
+  switch (pathLayout(pathname)) {
+    case "docs":
+      return <DocsLayout children={children} sections={allSections[pathname]} />
+    default:
+      return <DefaultLayout children={children} sections={allSections[pathname]} />
   }
+}
 
+function DocsLayout({ children, sections = [] }) {
   return (
-    <SectionProvider sections={allSections[pathname] ?? []}>
-      <LayoutOverrideProvider overrides={layoutOverrides} pathname={pathname}>
+    <SectionProvider sections={sections}>
       <div className="h-full lg:ml-72 xl:ml-80">
         <motion.header
           layoutScroll
@@ -48,7 +51,14 @@ export function Layout({ children, allSections = {}, layoutOverrides = {} }) {
           <Footer />
         </div>
       </div>
-      </LayoutOverrideProvider>
+    </SectionProvider>
+  )
+}
+
+function DefaultLayout({ children, sections = [] }) {
+  return (
+    <SectionProvider sections={sections}>
+      {children}
     </SectionProvider>
   )
 }

@@ -1,18 +1,6 @@
 'use client'
 
-import { forwardRef } from 'react'
 import Link from 'next/link'
-import clsx from 'clsx'
-import { motion, useScroll, useTransform } from 'framer-motion'
-
-import { Button } from '@/components/Button'
-import { Logo } from '@/components/Logo'
-import {
-  MobileNavigation,
-  useIsInsideMobileNavigation,
-} from '@/components/MobileNavigation'
-import { useMobileNavigationStore } from '@/components/MobileNavigation'
-
 import { navItems } from '@/components/Header'
 
 function TopLevelNavItem({ href, children }) {

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Guides } from '@/components/Guides'
 import { Resources } from '@/components/Resources'
 import { HeaderSparse } from '@/components/HeaderSparse'
+import { FooterMarketing } from '@/components/FooterMarketing'
 
 export const metadata = {
   title: 'API Documentation',
@@ -22,11 +23,12 @@ export const layoutOverride = true
           <h1 className="text-4xl font-space-mono leading-tight">
             A data syncing layer<br />that just works.
           </h1>
-          <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing bytes.<br />It’s open source, peer-2-peer, and works on your phone.</h3>
+          <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing bytes.<br />It\'s open source, peer-2-peer, and works on your phone.</h3>
           <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Join the Beta</a>
         </div>
       </div>
     </section>
+
     <section className="max-w-7xl mx-auto text-irohGray-100 px-4 sm:px-6 lg:px-10 py-40 flex flex-col sm:flex-row">
       <div className="w-auto sm:w-3/12 mb-5">
         <h4 className="font-space-mono text-lg text-irohPurple-500">01</h4>
@@ -34,10 +36,11 @@ export const layoutOverride = true
       <div className="w-auto sm:w-6/12 text-lg leading-normal">
         <h4 className="mb-5 text-2xl">Purpose-built for efficiency.</h4>    
         <p className="mb-5">We have been working on and around IPFS nearly since its inception, and are starting out on a new implementation because we have unfinished business with IPFS.</p>
-        <p className="mb-5">We believe the best days of the protocol are <a className="text-irohPurple-500" href="https://youtu.be/ASf8LQVVVqg?t=681">ahead</a>, but to get there we need to ship an order-of-magnitude improvement that unlocks new platforms and use cases.</p>
+        <p className="mb-5">We believe the best days of the protocol are ahead, but to get there we need to ship an order-of-magnitude improvement that unlocks new platforms and use cases.</p>
         <p>We're building iroh to see just how far we can take IPFS.</p>
       </div>
     </section>
+
     <section className="w-full text-n0gray-900 py-40 px-10 bg-white bg-cover bg-center shadow-inner flex flex-col sm:flex-row">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row">
         <div className="w-0 sm:w-3/12"></div>
@@ -232,23 +235,6 @@ export const layoutOverride = true
       </div>
     </section>
   </main>
-
-  <footer className="bg-irohGray-1000 pt-20 pb-16">
-    <div className="w-full max-w-7xl mx-auto px-4 flex flex-col sm:px-6 sm:flex-row lg:px-10">
-      <div className="w-full sm:w-3/12">
-        <a href="/" className="inline-block align-bottom">
-          <img className="h-6 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh" />
-          {/* <img className="hidden md:block h-8 w-auto" src="/img/logos/wordmark-full-gray.svg" alt="Number Zero"> */}
-        </a>
-        <span className="inline-block mt-2 mx-1">by</span>
-        <a href="https://n0.computer" className="inline-block align-bottom">
-          <img className="h-8 w-10" src="/img/logo/n0-wordmark-gray.svg" alt="Number Zero" />
-        </a>
-      </div>
-      <div className="w-full sm:w-9/12 text-right">
-        <a href="/contact" target="blank" className="mx-4">contact</a>
-        <a href="/legal" target="blank" className="mx-4">legal</a>
-      </div>
-    </div>
-  </footer>
 </div>
+
+<FooterMarketing />
