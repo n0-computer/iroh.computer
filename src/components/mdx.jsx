@@ -12,8 +12,12 @@ export {Button} from '@/components/Button';
 export {CodeGroup, Code as code, Pre as pre} from '@/components/Code';
 import {pathLayout} from './Layout';
 
-export function Wrapper({children}) {
+// for some silly reason this _must_ be exported as lower-case "wrapper"
+// which irritates the linter. Linter is disabled for the moment
+export function wrapper({children}) {
+  /* eslint-disable react-hooks/rules-of-hooks */
   const path = usePathname();
+
   switch (pathLayout(path)) {
     case 'docs':
       return (
