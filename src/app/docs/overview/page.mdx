@@ -41,11 +41,11 @@ Each key in a values in document points to a blob, which iroh creates for you wh
 
 ## Blobs
 
-Every key in a document points to a hash-verified blob of bytes. We say “blobs” because Iroh doesn\'t care about what bytes you need moved, the structure is up to you. Document blobs can be thousands of tiny JSON files, gig-sized movies, or multi-gig machine learning models. Every blob gets a single hash that peers fetch, using the conenctions layer.
+Every key in a document points to a hash-verified blob of bytes. We say “blobs” because Iroh doesn\'t care about what bytes you need moved, the structure is up to you. Document blobs can be thousands of tiny JSON files, gig-sized movies, or multi-gig machine learning models. Every blob gets a single hash that peers fetch, using the connections layer.
 
 The blob layer is the first "trustless" layer of iroh, you don't need to know the user you're getting content from to verify it is the content you asked for, that's what the hash is for 😁
 
 ## Connections
 
-At the core of iroh is the abilitiy to establish a QUIC connection to any peer that is online.
+At the core of iroh is the ability to establish a QUIC connection to any peer that is online.
 

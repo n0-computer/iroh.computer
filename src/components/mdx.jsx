@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import clsx from 'clsx'
 
@@ -13,8 +14,9 @@ export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 
 export function wrapper({ children }) {
   let overridden = useLayoutOverride();
+  let path = usePathname();
 
-  if (overridden) {
+  if (overridden || path === '/') {
     return (
       <>
         {children}
