@@ -14,7 +14,8 @@ import { LayoutOverrideProvider } from './LayoutOverrideProvider'
 export function Layout({ children, allSections = {}, layoutOverrides = {} }) {
   let pathname = usePathname()
 
-  if (layoutOverrides[pathname]) {
+  console.log("overrides", layoutOverrides, pathname, layoutOverrides[pathname]);
+  if (layoutOverrides[pathname] || pathname === "/") {
     return (
       <SectionProvider sections={allSections[pathname] ?? []}>
         <LayoutOverrideProvider overrides={layoutOverrides} pathname={pathname}>

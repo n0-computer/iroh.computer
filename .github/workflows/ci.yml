@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_release:
-    name: build and push release
+    name: check spelling
     runs-on: ubuntu-latest
     steps:
     - name: checkout
