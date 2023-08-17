@@ -132,19 +132,21 @@ export function Concepts({children}) {
   );
 }
 
-export function Concept({name, description}) {
+export function Concept({name, description, href}) {
   return (
     <li className="m-0 px-0 py-4 first:pt-0 last:pb-0">
-      <dl className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <dt className="sr-only">Name</dt>
-        <dd>
-          <p className='m-0 text-white text-lg'>{name}</p>
-        </dd>
-        <dt className="sr-only">Description</dt>
-        <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
-          <p className='m-0 text-md'>{description}</p>
-        </dd>
-      </dl>
+      <Link href={href}>
+        <dl className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <dt className="sr-only">Name</dt>
+          <dd>
+            <p className='m-0 text-white text-lg'>{name}</p>
+          </dd>
+          <dt className="sr-only">Description</dt>
+          <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+            <p className='m-0 text-md'>{description}</p>
+          </dd>
+        </dl>
+      </Link>
     </li>
   );
 }

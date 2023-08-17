@@ -10,12 +10,13 @@ iroh supports a number of configuration details that affect the way iroh behaves
 
 ## Ports
 
-A running iroh instance binds to three ports by default:
+A running iroh instance binds to two ports by default:
 
-| Service | Default Port | Env Var | Description |
-| ------- | ------------ | ------- | ----------- |
-| RPC     | 1337         |  | Local Remote Procedure Calls |
-| Iroh Protocol | 11204  |  | 
+| Service                | Default Port | Description |
+| ---------------------- | ------------ | ----------- |
+| Iroh Listening Address | 11204        | Address Iroh listens on for connections from other nodes. If the port is taken iroh will choose a random port to listen on. | 
+| RPC                    | 1337         | Localhost-only Remote Procedure Calls, used to control an iroh node from another process. If the port is taken iroh will fail to start. |
+
 
 
 ## Data Directory

@@ -1,0 +1,19 @@
+
+# Layers
+
+Iroh is organized into three _layers_. Each higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.{{className: 'lead'}}
+
+<Concepts>
+  <Concept name="Documents" href="/docs/layers/documents" description="Collaborate on shared key-value tables of blobs with peers." />
+  <Concept name="Blobs" href="/docs/layers/blobs" description="Fetch and cache byte sequences by their hash." />
+  <Concept name="Connections" href="/docs/layers/connections" description="Open a connection to any available peer on the network." />
+</Concepts>
+
+Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the connection layer.
+
+<Note>
+We're focused on stabilizing iroh starting with the sync layer, and working our way down.
+The lower you go, the more prepared you should be for API changes.
+</Note>
+
+As an example, you may be building a standalone chat app. The messages and all attachments in a chat can be stored in a document. Iroh could handle syncing & caching all messages & attachments for you at the document layer, and you could extend a "user is typing" protocol directly on the connection layer.

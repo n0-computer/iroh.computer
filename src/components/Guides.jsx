@@ -13,7 +13,7 @@ const guides = [
     description: 'Understand documents, mutable, syncable key-value stores',
   },
   {
-    href: '/docs/blobs',
+    href: '/docs/layers/blobs',
     name: 'Blobs',
     description:
       'Documents point to blobs: opaque bytes identified by their hash',

@@ -4,17 +4,31 @@ export const metadata = {
     'A high-level description of what iroh is',
 };
 
+# Overview
+
+Iroh is a protocol for scaling byte distribution. {{className: 'lead'}}
+
+The solution using cloud technologies alone is to throw more (cloud) computing at the problem.
+
+Numerous bandwidth-intensive applications have hit these scaling limitations
+
+Iroh takes this 
+
+Iroh peers create and join *documents:* mutable key-value stores that multiple users read from, write to, and sync with, subscribing to live updates in real time.
+
+Every key in a document points to a hash-verified blob of bytes. We say “blobs” because Iroh doesn’t care about what bytes you need moved, the structure is up to you. Document blobs can be thousands of tiny JSON files, gig-sized movies, or multi-gig machine learning models. Every blob gets a single CID that peers fetch via relay-backed connections that will automatically resume if broken.
+
 # Layers
 
 Iroh is organized into three _layers_. Each higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.
 
 <Concepts>
-  <Concept name="Documents" href="/docs/documents" description="Collaborate on shared key-value tables of blobs with peers." />
-  <Concept name="Blobs" href="/docs/blobs" description="Fetch and cache byte sequences by their hash." />
-  <Concept name="Connections" href="/docs/connections" description="Open a connection to any available peer on the network." />
+  <Concept name="Documents" href="/docs/layers/documents" description="Collaborate on shared key-value tables of blobs with peers." />
+  <Concept name="Blobs" href="/docs/layers/blobs" description="Fetch and cache byte sequences by their hash." />
+  <Concept name="Connections" href="/docs/layers/connections" description="Open a connection to any available peer on the network." />
 </Concepts>
 
-Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you "remove the batteries", dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the connection layer.
+Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the connection layer.
 
 <Note>
 We're focused on stabilizing iroh starting with the sync layer, and working our way down.

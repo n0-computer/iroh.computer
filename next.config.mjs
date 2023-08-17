@@ -29,17 +29,17 @@ export async function redirects() {
     },
     {
       source: '/design/content-addressing',
-      destination: '/docs/blobs',
+      destination: '/docs/layers/blobs',
       permanent: true,
     },
     {
       source: '/design/data-transfer',
-      destination: '/docs/blobs',
+      destination: '/docs/layers/blobs',
       permanent: true,
     },
     {
       source: '/design/dsht',
-      destination: '/docs/sync',
+      destination: '/docs/layers/documents',
       permanent: true,
     },
 
