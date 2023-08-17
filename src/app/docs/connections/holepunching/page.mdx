@@ -1,0 +1,64 @@
+
+# Hole Punching
+
+Our plan was to take the open source protocols from Tailscale®, but implement them in Rust over QUIC rather than WireGuard. Specifically, taking Tailscale®’s philosophy of having all of the hole punching happen in a “*MagicSocket*” and using the *DERP* (”Designated Encrypted Relay for Packets”) protocol for packet relays, and the *Disco* (”discovery”) protocol for hole punching. 
+
+However, we additionally need the ability to dial using PublicKey, which makes for a tricky dance with the `quinn::Endpoint` and `MagicSock`, since there is no concept of dialing via a public key in QUIC. 
+
+## Main goals
+
+- Send data as soon as possible
+- Get as close to 100% connection rate as possible (even if that means falling back to a relayed connection)
+
+## MagicSock
+
+The API is centered around the “MagicSocket” or `MagicSock`. Iroh creates a `MagicSock` and uses that socket as an `AsycnUdpSocket` in a `quinn::Endpoint`. All the connection/hole punching work happens inside of the `MagicSock`. As far as QUIC is concerned, all of the packets going in and out of the `quinn::Endpoint` are being sent over UDP.
+
+In reality, the `Magicsock` binds an IPv4 and IPv6 UDP socket. It also spins up a DERP Client for each DERP server we are configured to connect with over HTTP/HTTPS. You need to be connected to at least one Derper (DERP + STUN server) in order to do any hole punching.
+
+To dial a peer, you must first add the peer to `MagicSock` explicitly via its public key (and any known addresses) and get a “mapped address” in return, which is an IPv6 Unique Local Address with a fixed Global ID and Subnet ID to easily identify it as such. This mapped address is what you pass to the quinn::Endpoint in order to dial that per. This ensures we are able to dial via a public key.
+
+Each time you send packets to a particular peer, the `MagicSock` will request the `best_addr` from its internal peer address book. This means the address and socket on which we send the latest packet may be different from the one we sent previously.
+
+We are also listening for incoming packets on all of these sockets, and pass up any QUIC packets back up to the `quinn::Endpoint`
+
+## Finding the “best addr”
+
+When we first create a `MagicSock`, our first step to connectivity is to understand our own networking situation. We do an investigation into all of our own network interfaces and capabilities.
+
+Then, we start a  netcheck report, which attempts to figure out all of our public facing details by doing:
+
+- A STUN requests sent to the Derper (IPv4 & IPv6)
+- Hair pinning probe
+- Port mapping probe
+- Captive portal discovery
+
+Once we’ve gathered all the appropriate information, we are ready to connect.
+
+To connect to another peer, we at minimum need to know it’s public key and its “DERP Region”. A DERP Region is a group of DERP Servers that are all meshed together, and can act as packet forwarders for each other. Each iroh node is expected to have a “home” DERP region that it maintains a connection to.
+
+If we have a list of possible addresses for the node to which we want to connect, that’s even better!
+
+We add those addresses, and the peer’s PublicKey, to the `MagicSock` peer address book. When we attempt to send packets to that peer, we assess the options in the address book for the `best_addr` (UDP address) to send the packets on. An address is a viable `best_addr` if we have sent a ping on that address, and received a pong in return. This lets us know that we can actually communicate on that address and the latency when using that address. The `best_addr` has the lowest latency. If there is no `best_addr` (because we have not received a pong, or because the latency has “expired”) we also send all packets to the peer’s DERP region” to ensure that the packets go through.
+
+If we don’t have a `best_addr` , we start the `Disco` process and try to hole punch.
+
+## DERP & Disco
+
+If we have not attempted to hole punch to that peer, it’s been a while since we’ve last attempted, or we only have a DERP address and no direct UDP address, we do the hole punching dance, which in our world is referred to as a `Disco::CallMeMaybe` request.
+
+- Disco messages are encrypted. You must have the PublicKey of the remote peer in order to send a Disco message.
+- A `Disco::CallMeMaybe` request includes a list of your own public addresses, that you want the remote peer to attempt to dial.
+- `Disco::CallMeMaybe` requests are only ever sent over the DERP relay servers
+- At the same time as the `Disco::CallMeMaybe` message is sent, we also send `Disco::Ping` messages to any known UDP addresses of the remote peer
+- If the remote server is able to receive any of the `Disco::Ping` messages, it sends a return `Disco::Pong`, telling the node that that particular address is a viable address to communicate over UDP
+- When the remote server gets a `Disco::CallMeMaybe` request, it can choose to respond to it with its own `Disco::CallMeMaybe` and `Disco::Pings` on all the given addresses. It will not respond if it has never encountered this `PublicKey` before.
+- These `ping`/ `pong`messages are what do the actual hole punching, and the `CallMeMaybe` messages are what coordinates them.
+
+If at any time during our transmission of packets, we receive a `Pong` from the remote peer, our internal record of the addresses and endpoints for that peer is updated with the new latency information. The next time we request the “best address” for that remote peer, we can switch to sending packets on a different address, with the better latency.
+
+We check latency (by sending new `Disco::Ping` messages) about once a minute
+
+If no hole punching ever occurs, we continue to use the fallback of relaying the packets over the DERP servers.
+
+![intg_derper__1_to_1_NAT_both.svg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8b772f04-c2bf-4fa1-807f-6e86d980f3b0/intg_derper__1_to_1_NAT_both.svg)

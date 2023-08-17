@@ -1,42 +1,140 @@
 export const metadata = {
   title: 'Quickstart',
   description:
-    'This guide will get you all set up and ready to use the Protocol API. We’ll cover how to get started an API client and how to make your first API request.',
+    'This guide will take you on a quick tour of iroh from the command line',
 };
 
 # Quickstart
 
-This guide will get you all set up and ready to use the Protocol API. We'll cover how to get started using one of our API clients and how to make your first API request. We'll also look at where to go next to find all the information you need to take full advantage of our powerful REST API. {{className: 'lead'}}
+This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between to terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
 
 <Note>
-  Before you can make requests to the Protocol API, you will need to grab your
-  API key from your dashboard. You find it under [Settings &raquo; API](#).
+  Iroh is currently in alpha release. We're aiming for Sept. 30th for a proper, production quality release of this same API the quickstart covers.
 </Note>
 
-## Choose your client
+## Install Iroh
+
+The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install), then come back here.
+
+<div className='not-prose'>
+  <Button arrow="right" href="/docs/install">Install Iroh CLI</Button>
+</div>
+
+Confirm iroh works & is installed correctly by running `iroh help`. You should see help text that starts like this:
+
+```text
+$ iroh help
+Iroh is a tool for syncing bytes.
+https://iroh.computer/docs
+
+Usage: iroh [OPTIONS] [COMMAND]
+...
+```
+
+## Start iroh
+
+```text
+$ iroh start
+Listening addresses:
+  108.41.41.113:52658
+  108.41.41.113:11204
+  192.168.86.28:11204
+DERP Region: 1
+PeerID: 3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa
+```
+
+- This is a node. It's kinda like a combination database & web server
+- PeerID identifies this node
+- Listening Addresses
+- DERP Region is for holepunching, see [here](/docs/connections/holepunching)
+
+## Start the Console
+
+Now that we hve a server running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console`, connecting to the node we started with `iroh start`.
+
+```text
+$ iroh console
+Welcome to the Iroh console!
+Type `help` for a list of commands.
+
+>
+```
+
+## Create an Author
+
+Before we can work with documents, we need to create an _author_, which is an identity that will represent us while we work.
+
+<CodeGroup tag="CONSOLE">
+```text
+> author create
+727565e2773f0cf6135bc4bb127fe6db3b5918085c06f968f57a50ac56605643
+```
+</CodeGroup>
+
+## Create a Document
+
+Next, let's create a document
+
+<CodeGroup tag="CONSOLE">
+```text
+> docs create
+created fc16d6004586d124e3446a303236ccb7adb9bc671afb33b83c21b602772615e3
+```
+</CodeGroup>
+
+Now let's set the author for this doc
+
+<CodeGroup tag="CONSOLE">
+```text
+> set-author
+727565e2773f0cf6135bc4bb127fe6db3b5918085c06f968f57a50ac56605643
+```
+</CodeGroup>
+
+## Set a value
+
+Next let's set two values in the document:
+
+<CodeGroup tag="CONSOLE">
+```
+doc:7qlnmacf author:oj2wlytx
+> set foo "bar"
+@oj2wlytx…: foo = 6lujp3wx… (3B)
+> set some/data.json 
+```
+</CodeGroup>
+
+## Create a Second node
+
+Now we need a second node to actually sync with. In another terminal, run:
+
+```text
+$ export IROH_DATA_DIR=./ && iroh start --rpc-port 1111
+Listening addresses:
+  108.41.41.113:47896
+  108.41.41.113:62424
+  192.168.86.28:62424
+DERP Region: 1
+PeerID: msiymgtbgosahfrcftazqcbpz7n54z2kol2rd653fin6gh4remmq
+```
+
+Iroh has a default data directory, and a default port ([`1337`](https://en.wikipedia.org/wiki/Leet))
+
+We pass `IROH_DATA_DIR=./` as an environment variable,
+
+<Note>
+  To make this more interesting, try running this step on a separate computer
+  Iroh's networking stack will establish a connection for you.
+</Note>
+
 
 Before making your first API request, you need to pick which API client you will use. In addition to good ol' cURL HTTP requests, Protocol offers clients for JavaScript, Python, and PHP. In the following example, you can see how to install each client.
 
-<CodeGroup>
+<CodeGroup tag="GET" label="/v1/conversations">
 
-```bash {{ title: 'cURL' }}
+```text
 # cURL is most likely already installed on your machine
 curl --version
-```
-
-```bash {{ language: 'js' }}
-# Install the Protocol JavaScript SDK
-npm install @example/protocol-api --save
-```
-
-```bash {{ language: 'python' }}
-# Install the Protocol Python SDK
-pip install protocol_api
-```
-
-```bash {{ language: 'php' }}
-# Install the Protocol PHP SDK
-composer require protocol/sdk
 ```
 
 </CodeGroup>
@@ -56,7 +154,7 @@ After picking your preferred client, you are ready to make your first call to th
 
 <CodeGroup tag="GET" label="/v1/conversations">
 
-```bash {{ title: 'cURL' }}
+```text {{ title: 'cURL' }}
 curl -G https://api.protocol.chat/v1/conversations \
   -H "Authorization: Bearer {token}" \
   -d limit=10

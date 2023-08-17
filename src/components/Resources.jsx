@@ -12,24 +12,10 @@ import {UsersIcon} from '@/components/icons/UsersIcon';
 
 const resources = [
   {
-    href: '/contacts',
-    name: 'Contacts',
+    href: '/docs/sdks',
+    name: 'SDKs',
     description:
-      'Learn about the contact model and how to create, retrieve, update, delete, and list contacts.',
-    icon: UserIcon,
-    pattern: {
-      y: 16,
-      squares: [
-        [0, 1],
-        [1, 3],
-      ],
-    },
-  },
-  {
-    href: '/conversations',
-    name: 'Conversations',
-    description:
-      'Learn about the conversation model and how to create, retrieve, update, delete, and list conversations.',
+      'Iroh ships with SDKs for numerous languages and platforms',
     icon: ChatBubbleIcon,
     pattern: {
       y: -6,
@@ -40,10 +26,24 @@ const resources = [
     },
   },
   {
-    href: '/messages',
-    name: 'Messages',
+    href: '/docs/examples/todos',
+    name: 'Todos Example',
     description:
-      'Learn about the message model and how to create, retrieve, update, delete, and list messages.',
+      'See iroh in the classic TODO app example, with a CLI & desktop GUI',
+    icon: UserIcon,
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: '/docs/spec',
+    name: 'Spec',
+    description:
+      'Read the work-in-progress iroh specification',
     icon: EnvelopeIcon,
     pattern: {
       y: 32,
@@ -54,10 +54,10 @@ const resources = [
     },
   },
   {
-    href: '/groups',
-    name: 'Groups',
+    href: '/docs/ipfs',
+    name: 'iroh & IPFS',
     description:
-      'Learn about the group model and how to create, retrieve, update, delete, and list groups.',
+      'Iroh is an IPFS system. Learn what that means.',
     icon: UsersIcon,
     pattern: {
       y: 22,

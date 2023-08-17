@@ -2,27 +2,27 @@ import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
 
 const guides = [
+  // {
+  //   href: '/docs/Overview',
+  //   name: 'Overview',
+  //   description: 'Read a high-level description of how iroh works.',
+  // },
   {
-    href: '/authentication',
-    name: 'Authentication',
-    description: 'Learn how to authenticate your API requests.',
+    href: '/docs/documents',
+    name: 'Documents',
+    description: 'Understand documents, mutable, syncable key-value stores',
   },
   {
-    href: '/pagination',
-    name: 'Pagination',
-    description: 'Understand how to work with paginated responses.',
-  },
-  {
-    href: '/errors',
-    name: 'Errors',
+    href: '/docs/blobs',
+    name: 'Blobs',
     description:
-      'Read about the different types of errors returned by the API.',
+      'Documents point to blobs: opaque bytes identified by their hash',
   },
   {
-    href: '/webhooks',
-    name: 'Webhooks',
+    href: '/docs/connections',
+    name: 'Connections',
     description:
-      'Learn how to programmatically configure webhooks for your app.',
+      'At the core of iroh is the ability to connect to any online node with only a Peer identifier',
   },
 ];
 
@@ -30,7 +30,7 @@ export function Guides() {
   return (
     <div className="my-16 xl:max-w-none">
       <Heading level={2} id="guides">
-        Guides
+        Layers
       </Heading>
       <div className="not-prose mt-4 grid grid-cols-1 gap-8 border-t border-zinc-900/5 pt-10 dark:border-white/5 sm:grid-cols-2 xl:grid-cols-4">
         {guides.map((guide) => (
