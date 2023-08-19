@@ -1,7 +1,43 @@
 
 # Connections
 
-<Note>
-We're focused on stabilizing iroh starting with the sync layer, and working our way down.
-The connections layer isn't really ready to be directly worked with yet.
-</Note>
+At the core of iroh is a network where any two nodes within the network can establish a connection. {{className: 'lead'}}
+
+In the future Iroh will provide APIs for building custom protocols directly atop the connection layer, opening up a world of possibilities to application developers that want to augment their app with direct connectivity tooling. {{className: 'lead'}}
+
+## Nodes
+
+An iroh network is a collection of _nodes_. A node is a running process that might accept connections from other nodes on a given port. Multiple nodes can be run on the same physical device, but not the same port.
+
+A node has a cryptographic keypair used for signing messages. Nodes are uniquely identified by the public portion of their keypair.
+
+## Connections
+
+Iroh uses [QUIC](https://en.wikipedia.org/wiki/QUIC) as a transport layer networking protocol.
+
+- QUIC
+  - UDP
+  - Avoids multiplexing overhead
+  - 0-RTT handshakes
+
+## MagicSockets
+
+Connections in iroh have a _MagicSocket_ sitting between QUIC and the operating system socket (the "real socket"). The MagicSocket simulates a connection for the quic transport, and dynamically optimizes the connection path between two nodes as connections are negotiated & optimized. The MagicSocket will perform _interactive connectivity establishment_ (ICE), using an advertised set of connection details to audition connections. The magicsocket will perform latency probes for any viable connections, switching to find the fastest ping.
+
+Establishing direct connections between
+
+## Relays
+
+Sometimes it isn't possible to establish a direct connection between two nodess, often because of strict firewall rules or NAT configurations. In these cases the only fallback is to _relay_ traffic through a third node that both nodes can connect to. Instead of sending packets directly from one node to the other, packets in either direction are first sent to the relay node, which forwards packets on to their destination.
+
+MagicSockets 
+
+All QUIC traffic is encrypted, and relayed traffic is no exception. The relaying server _cannot_ inspect the contents of the packets being forwarded, 
+
+## Anchors
+
+Anchors are highly available nodes that are reliably online (that is, they're online most of the time). These are servers in a traditional server-client setup, but in the context of iroh they have no 
+
+## Protocols
+
+ALPN-per-protocol

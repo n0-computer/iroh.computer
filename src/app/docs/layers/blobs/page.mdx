@@ -1,2 +1,35 @@
 
 # Blobs
+
+- blobs are just bytes
+- bytes are "content-addressed": referred to by blake3 hash
+- iroh has a protocol for fetching data
+
+## Content Addressing
+
+- Content addressing is using the hash of bytes as the identifier for bytes
+- immutable: can't change the content without getting a new identifier
+- mutable labels
+- asking for content by it's hash means you can get it from anyone, because you can
+
+## Blake3
+
+- fast.
+- works anywhere
+- 
+
+## Incremental Verification
+
+- Confirming the data you've received is the data you've asked for _as you are getting it_
+- Automatic change / corruption detection
+
+
+## Data Transfer Protocol
+
+- registers a QUIC ALPN specifically for transferring data
+- supports multiple subsequence fetching
+- protocol is request-response
+- data is validated on receive _and_ send
+
+
+## Storage

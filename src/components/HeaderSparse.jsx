@@ -54,9 +54,9 @@ export function HeaderSparse() {
       {/* Mobile menu, show/hide based on menu state. */}
       <div id="mobile-menu" className="hidden bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000" aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <a href="/docs" className="hover:text-white block px-3 py-2 rounded-md text-base font-medium">docs</a>
-          <a href="/design" className="hover:text-white block px-3 py-2 rounded-md text-base font-medium">design</a>
-          <a href="https://github.com/n0-computer" className="hover:text-white block px-3 py-2 rounded-md text-base font-medium">github</a>
+          {navItems.map((item, i ) => {
+            return <Link key={i} href={item.href} className="hover:text-white block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
+          })}
         </div>
       </div>
     </nav>

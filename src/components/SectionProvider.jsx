@@ -53,9 +53,10 @@ function useVisibleSections(sectionStore) {
         sectionIndex < sections.length;
         sectionIndex++
       ) {
+        console.log(sections, sections[sectionIndex]);
         const {id, headingRef, offsetRem} = sections[sectionIndex];
         const offset = remToPx(offsetRem);
-        const top = headingRef.current.getBoundingClientRect().top + scrollY;
+        const top = headingRef?.current.getBoundingClientRect().top + scrollY;
 
         if (sectionIndex === 0 && top - offset > scrollY) {
           newVisibleSections.push('_top');
@@ -63,7 +64,7 @@ function useVisibleSections(sectionStore) {
 
         const nextSection = sections[sectionIndex + 1];
         const bottom =
-          (nextSection?.headingRef.current.getBoundingClientRect().top ??
+          (nextSection?.headingRef?.current.getBoundingClientRect().top ??
             Infinity) +
           scrollY -
           remToPx(nextSection?.offsetRem ?? 0);

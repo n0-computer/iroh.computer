@@ -1,14 +1,40 @@
 
+## **Our approach this go round is to make the absolute smallest thing we can that fits the majority of use cases.**
 
-Iroh and IPFS
+### We Like Big Blocks
 
-Iroh is an IPFS _system_. It is not an implementation.
+BLAKE3 is our secure hashing function, we use BLAKE3 in Verified streaming for incremental verification. In Iroh there will be a single CID for every "file" in the system ("files" are just blobs of bytes). Iroh "chunks" are just blake intermediate hash values stored as outboard metadata.
 
-<Row>
-  <Col>
+### We’re keeping CIDs
 
-  </Col>
-  <Col>
+Iroh version 1 will only use 32 byte BLAKE3 hashes. Decisions around the use of multicodecs are still up in the air.
 
-  </Col>
-</Row>
+### Sets > DAGs
+
+We want to deal in bytes & sets. We'll build at least a primitive prefix-oriented selector syntax over sets. This means no DAGs inside of iroh, until we can find a use case sets can't solve.
+
+The latest evidence of this in the IPFS ecosystem: CAR files. They’re sets. People want to use them, they also want to add metadata.
+
+### **IPLD and UnixFS move to application space**
+
+decisions around pathing & data structuring are both pushed up into application space, where developers should have far more freedom do decide how things like pathing & data serialization work. You should totally be able to build all of IPLD *on top of* Iroh, but we won't bake it into the protocol.
+
+### Iroh Doen't use libp2p
+
+We have come to the conclusion that libp2p puts too many abstractions between application code & the raw networking stack. libp2p forces design choices, configuration costs and abstraction costs that we cannot afford to pay. 
+
+p2p systems are at an inherent disadvantage to purely location based systems that enjoy incumbency today, because p2p systems require managing membership in both physical and overlay networks. This cost can only be minimized, not eliminated, and is why any added per-peer overhead has massive implications for the overall efficiency of the network.
+
+We're going to take a far less flexible, far more hard-coded approach for the Iroh network stack. We may try to isolate these choices along “functionality” lines Instead the more likely outcome are tightly-coupled networking stack choices: one for the DHT, maybe a different one for data transfer. So you might be able to reuse "iroh data transfer code" or "the iroh DHT", but not the network stack its built on. A libp2p-like project will **not** ********emerge from Iroh.
+
+- everything is built on QUIC
+- QUIC ALPN header stands in for protocol negotiation
+- WebTransport for Browsers
+- We’re porting [tailscale magicsock, disco, & derp](https://github.com/n0-computer/iroh/tree/x-hp) as our holepunching solution (when running outside of browsers)
+
+
+### New Data transfer protocol.
+
+We have a starting point that uses BLAKE3 streaming verification from bao. Lots of work to do here, but the initial numbers are a good starting point.
+
+### Outboard Storage by default

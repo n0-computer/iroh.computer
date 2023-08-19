@@ -85,6 +85,15 @@ module.exports = {
           900: "#7C7CFF",
         }
       },
+      animation: {
+        fadeIn: "fadeIn 500ms ease-in forwards"
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: 0, transform: 'translateY(2vh)' },
+          "100%": { opacity: 1, transform: 'translateY(0)' }
+        }
+      }
     },
   },
   plugins: [

@@ -33,6 +33,7 @@ export default async function RootLayout({children}) {
             </Layout>
           </div>
         </Providers>
+        <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>
       </body>
     </html>
   );
