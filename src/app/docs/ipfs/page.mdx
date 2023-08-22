@@ -1,40 +1,103 @@
 
-## **Our approach this go round is to make the absolute smallest thing we can that fits the majority of use cases.**
+export const metadata = {
+  title: 'iroh & IPFS',
+  description: "Iroh is an IPFS system"
+}
 
-### We Like Big Blocks
+# iroh & IPFS
 
-BLAKE3 is our secure hashing function, we use BLAKE3 in Verified streaming for incremental verification. In Iroh there will be a single CID for every "file" in the system ("files" are just blobs of bytes). Iroh "chunks" are just blake intermediate hash values stored as outboard metadata.
+Iroh is an _IPFS system_. It uses content identifiers (CIDs) Content addressing is a powerful primitive that belongs at the foundation of the internet. 
 
-### We’re keeping CIDs
+Iroh is not an IPFS implementation. An implementation of IPFS should be able to interoperate with [kubo](https://github.com/ipfs/kubo) the reference implementation of nearly all [IPFS Specs](https://github.com/ipfs/specs). Iroh can interoperate with kubo by bridging the two technologies, but by default one shouldn't expect to be able to add content to kubo and get it out with iroh, or vice versa.
 
-Iroh version 1 will only use 32 byte BLAKE3 hashes. Decisions around the use of multicodecs are still up in the air.
+## Why not just make iroh an IPFS implementation?
 
-### Sets > DAGs
+At first, we did! We wrote a ground-up implementation of IPFS in rust called [Beetle](https://github.com/n0-computer/beetle). We switched away because Iroh has different design goals than IPFS, and after writing an implementation, we realized couldn't achieve those goals & keep the implementation "badge'. Iroh aims to be the smallest working foundation for building apps with sublinear scaling. The word _small_ is the challenging one here. IPFS is designed to upgrade the _entire web_. To do that it has to accomodate numerous use cases and requirements that we couldn't build into Iroh while keeping the project small.
 
-We want to deal in bytes & sets. We'll build at least a primitive prefix-oriented selector syntax over sets. This means no DAGs inside of iroh, until we can find a use case sets can't solve.
+## Comparison Table
 
-The latest evidence of this in the IPFS ecosystem: CAR files. They’re sets. People want to use them, they also want to add metadata.
+Here's a quick rundown on some of the core technical distinctions between IPFS & iroh:
 
-### **IPLD and UnixFS move to application space**
+| Concept | Iroh | Kubo |
+| ------- | ---- | ---- |
+| **[CID](https://docs.ipfs.tech/concepts/content-addressing/) Usage** | Used for root hashes on the [Blob layer](/docs/layers/blobs) | Used for all blocks |
+| **Hash Function** | BLAKE3 | Various, SHA2 by default |
+| **Maximum Block Size** | none | 256Kb |
+| **Data Layout** | Key-Value | Directed Acyclic Graphs (DAGs) |
+| **Data Model** | "Bring your own" | IPLD |
+| **Syncing** | [Document Layer](/docs/layers/documents) | none |
+| **Networking Stack** | [Connection Layer](/docs/layers/connections) | [libp2p](https://libp2p.io) |
+| **Public Key Cryptography** | ED25519 Keys | Various, ED25519 by default |
+| **Naming system** | none | IPNS |
+| **Content Storage** | User Files + Cache | Internal Repository | 
+| **Verification Checkpoints** | send and receive | receive |
 
-decisions around pathing & data structuring are both pushed up into application space, where developers should have far more freedom do decide how things like pathing & data serialization work. You should totally be able to build all of IPLD *on top of* Iroh, but we won't bake it into the protocol.
+## CID Interop
 
-### Iroh Doen't use libp2p
+If you create a file that is less than 256Kib, kubo can be configured to emit the same content:
 
-We have come to the conclusion that libp2p puts too many abstractions between application code & the raw networking stack. libp2p forces design choices, configuration costs and abstraction costs that we cannot afford to pay. 
+```bash
+# configure IPFS to use the BLAKE3 hash algorithm, and wrap in a directory to match iroh's default behaviour
+$ ipfs add file.txt --hash blake3 --wrap-with-directory
+added bafkr4ig4ljhnxasawambeqcsymycobuw7ftxdjr3iusquxax2maa5artku file.txt
+added bafyb4ig2hp3tqb762mg7bvuixfimok7tyn4a3b3vswlkvcphppj7j2pemi
 
-p2p systems are at an inherent disadvantage to purely location based systems that enjoy incumbency today, because p2p systems require managing membership in both physical and overlay networks. This cost can only be minimized, not eliminated, and is why any added per-peer overhead has massive implications for the overall efficiency of the network.
+$ iroh add file.txt
+Adding file.txt as /Users/b5/file.txt...
+- /Users/b5/file.txt: 12B bafkr4ig4ljhnxasawambeqcsymycobuw7ftxdjr3iusquxax2maa5artku
+Total: 12B
 
-We're going to take a far less flexible, far more hard-coded approach for the Iroh network stack. We may try to isolate these choices along “functionality” lines Instead the more likely outcome are tightly-coupled networking stack choices: one for the DHT, maybe a different one for data transfer. So you might be able to reuse "iroh data transfer code" or "the iroh DHT", but not the network stack its built on. A libp2p-like project will **not** ********emerge from Iroh.
+Collection: bafkr4iatacaewbfgoqe7d4mcxtuhfxbbog57t7xpvppqgvyr2bzswlb4fy
+```
 
-- everything is built on QUIC
-- QUIC ALPN header stands in for protocol negotiation
-- WebTransport for Browsers
-- We’re porting [tailscale magicsock, disco, & derp](https://github.com/n0-computer/iroh/tree/x-hp) as our holepunching solution (when running outside of browsers)
+The CID for `file.txt` in both systems is [`bafkr4ig4ljhnxasawambeqcsymycobuw7ftxdjr3iusquxax2maa5artku`](https://cid.ipfs.tech/#bafkr4ig4ljhnxasawambeqcsymycobuw7ftxdjr3iusquxax2maa5artku). The collection CIDs are different because directories work differently, but this small overlap between iroh & IPFS forms a foundation we can build all sorts of interop from.
+
+If we create a file that's larger than 256Kb, however, things break down:
+
+```bash
+# create a random 1M file
+$ head -c 1000000 </dev/urandom > file
+
+$ ipfs add --hash blake3 --wrap-with-directory file.txt
+added bafyb4idt2x6f35tsvvkic3uxn5377gvjohpu7ejlxjdgno73lb4yzwrca4 file
+added bafyb4ia4lras4leu2lwpc57lg3xk2c4bdacabuzpunbjrl7piwug4lojiq
+
+$ iroh add file
+Adding file as /Users/b5/code/iroh.computer/file...
+- /Users/b5/code/iroh.computer/file.txt: 976.56 KiB bafkr4ihr5vpp33v5ufos2dneywofls3gx67b5jmraxcn77odsu3yqcsohq
+Total: 976.56 KiB
+
+Collection: bafkr4id2xleuzonckwul47dwmaktqw6dgpudvfzmdxkitv6qmg7bwxy7hu
+```
+
+This is because under the hood IPFS is cutting the input file up into _blocks_ of data so that each block can be incrementally verified during transfer. Iroh does not do this, and so the hashes are different. To address this, we need _CID translation_.
+
+### CID Translation
+
+<Note>
+CID Translations have not been implemented in iroh yet.
+</Note>
+
+CID translations are signed documents that state a content equivelancy between hashes in two different systems. Here's what a CID translation would look like for the random 1M file example above, expressed in JSON:
+
+```json
+{
+  "eq": {
+    "iroh": "bafkr4ihr5vpp33v5ufos2dneywofls3gx67b5jmraxcn77odsu3yqcsohq",
+    "kubo": "bafyb4idt2x6f35tsvvkic3uxn5377gvjohpu7ejlxjdgno73lb4yzwrca4"
+  },
+  "author": "3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa",
+  "signature": "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}
+```
+
+In english this would read "author `3pwjma35...` has said this iroh CID and that kubo CID are equal content. They point to the same bytes".
+
+Using translations requires trusting the author of the translation. The "author" field is an iroh public key, which can be used to verify the signature field. The signature is the contents of the "eq" object.
 
 
-### New Data transfer protocol.
+---
 
-We have a starting point that uses BLAKE3 streaming verification from bao. Lots of work to do here, but the initial numbers are a good starting point.
+## Interop
 
-### Outboard Storage by default
+[iroh.network](https://iroh.network) anchors have configuration settings to automatically publish content the anchor has to kubo. As of now publishing to kubo only works on 1Mb files. We plan to implement both large file publishing and fetching in the future.
