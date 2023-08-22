@@ -39,25 +39,26 @@ const resources = [
       ],
     },
   },
-  {
-    href: '/docs/spec',
-    name: 'Spec',
-    description:
-      'Read the work-in-progress iroh specification',
-    icon: EnvelopeIcon,
-    pattern: {
-      y: 32,
-      squares: [
-        [0, 2],
-        [1, 4],
-      ],
-    },
-  },
+  // TODO: finish first draft of spec
+  // {
+  //   href: '/spec',
+  //   name: 'Spec',
+  //   description:
+  //     'Read the work-in-progress iroh specification',
+  //   icon: EnvelopeIcon,
+  //   pattern: {
+  //     y: 32,
+  //     squares: [
+  //       [0, 2],
+  //       [1, 4],
+  //     ],
+  //   },
+  // },
   {
     href: '/docs/ipfs',
     name: 'iroh & IPFS',
     description:
-      'Iroh is an IPFS system. Learn what that means.',
+      'Iroh is an IPFS system.',
     icon: UsersIcon,
     pattern: {
       y: 22,

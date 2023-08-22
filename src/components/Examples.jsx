@@ -11,7 +11,8 @@ import { Tag } from './Tag';
 
 const examples = [
   {
-    href: '/docs/examples/todos',
+    // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
+    href: 'https://github.com/n0-computer/iroh-example-todos',
     name: 'Todos',
     description:
       'See iroh in the classic TODO app example, with a CLI & desktop GUI.',

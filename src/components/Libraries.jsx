@@ -8,6 +8,7 @@ import logoPython from '@/images/logos/python.svg';
 import logoRuby from '@/images/logos/ruby.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
+import { Tag } from '@/components/Tag';
 
 const libraries = [
   {
@@ -25,8 +26,17 @@ const libraries = [
     logo: logoSwift,
   },
   {
+    href: 'https://github.com/n0-computer/iroh-go',
+    name: 'Go',
+    comingSoon: true,
+    description:
+      'Iroh\'s go SDK uses the rust implementation via c-bindings.',
+    logo: logoGo,
+  },
+  {
     href: 'https://github.com/n0-computer/iroh-python',
     name: 'Python',
+    comingSoon: true,
     description:
       'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
     logo: logoPython,
@@ -46,6 +56,9 @@ export function Libraries() {
               <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
                 {library.name}
               </h3>
+              {library.comingSoon && <div>
+                  <Tag variant='medium' color='amber'>Coming Soon</Tag>
+              </div>}
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {library.description}
               </p>

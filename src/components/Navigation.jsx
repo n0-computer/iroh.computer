@@ -190,7 +190,8 @@ export const navigation = [
     title: 'Guides',
     links: [
       {title: 'Introduction', href: '/docs'},
-      {title: 'Quickstart', href: '/docs/quickstart'},
+      // TODO - finish quickstart
+      // {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
       {title: 'SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
@@ -209,9 +210,11 @@ export const navigation = [
     links: [
       {title: 'Anchor HTTP API', href: '/docs/anchor-http-api'},
       {title: 'CLI', href: '/docs/cli'},
-      {title: 'REPL', href: '/docs/repl'},
+      // TODO - land REPL PR, write REPL docs, finish REPL
+      // {title: 'REPL', href: '/docs/repl'},
       {title: 'Config', href: '/docs/config'},
-      {title: 'Spec', href: '/docs/spec'},
+      // TODO: finish first draft of spec
+      // {title: 'Spec', href: '/spec'},
       {title: 'IPFS', href: '/docs/ipfs'},
     ],
   },

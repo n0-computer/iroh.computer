@@ -14,7 +14,8 @@ import {MobileSearch, Search} from '@/components/Search';
 import {ThemeToggle} from '@/components/ThemeToggle';
 
 export const navItems = [
-  {content: 'Overview', href: '/overview'},
+  // TODO - finish overview page
+  // {content: 'Overview', href: '/overview'},
   {content: 'Docs', href: '/docs'},
   {content: 'Github', href: 'https://github.com/n0-computer/iroh'},
   {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
