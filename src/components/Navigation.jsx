@@ -190,8 +190,7 @@ export const navigation = [
     title: 'Guides',
     links: [
       {title: 'Introduction', href: '/docs'},
-      // TODO - finish quickstart
-      // {title: 'Quickstart', href: '/docs/quickstart'},
+      {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
       {title: 'SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
