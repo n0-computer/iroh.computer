@@ -1,45 +1,3 @@
-export const metadata = {
-    title: "Set Command",
-    description: "Set an entry in a document"
-}
-
-# Set
-
-Set an entry in a document {{ className: 'lead' }}
-
-### Arguments
-
-| name | necessity | description |
-| ---- | --------- | ----------- |
-| KEY  | required | Key to the entry (parsed as UTF-8 string) |
-| VALUE | required | Content to store for this entry (parsed as UTF-8 string) |
-| author | required | Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable. |
-
-## Examples
-
-<CodeGroup title="SET">
-
-
-```text {{ title: 'console' }}
-> docs create --use
-> set key value
-@ydzwyyes…: key = azceusiw… (5 B)
-```
-
-```bash {{ title: 'CLI'}}
-# create an author if you haven't already
-$ IROH_AUTHOR=$(iroh author create)
-
-# create a document
-$ iroh docs create
-created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
-
-# set a key
-$ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set "key" "value"
-@ydzwyyes…: key = azceusiw… (5 B)
-```
-
-```rust {{ title: 'rust' }}
 #![cfg(feature = "mem-db")]
 
 use anyhow::{anyhow, Result};
@@ -86,6 +44,3 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-```
-
-</CodeGroup>

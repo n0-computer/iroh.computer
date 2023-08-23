@@ -8,7 +8,7 @@ try {
   // let api = OpenAPIParser.validate('../public/docs/anchor-http-api/openapi.yaml');
   // console.log("API name: %s, Version: %s", api.info.title, api.info.version);
 
-  let templateSource = readFileSync('./template.mdx')
+  let templateSource = readFileSync('./anchor-api.template.mdx')
   let result = ejs.render(templateSource.toString(), { api });
 
   writeFileSync('../src/app/docs/anchor-http-api/page.mdx', result);

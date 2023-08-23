@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
 import logoGo from '@/images/logos/go.svg';
-import logoNode from '@/images/logos/node.svg';
+import logoKotlin from '@/images/logos/kotlin.svg';
 import logoPython from '@/images/logos/python.svg';
 import logoRuby from '@/images/logos/ruby.svg';
 import logoRust from '@/images/logos/rust.svg';
@@ -19,11 +19,27 @@ const libraries = [
     logo: logoRust,
   },
   {
+    href: 'https://github.com/n0-computer/iroh-python',
+    name: 'Python',
+    comingSoon: true,
+    description:
+      'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
+    logo: logoPython,
+  },
+  {
     href: 'https://github.com/n0-computer/iroh-swift',
     name: 'Swift',
     description:
       'Build native iOS apps with iroh\'s swift SDK, tested with SwiftUI, works with uikit.',
     logo: logoSwift,
+  },
+  {
+    href: 'https://github.com/n0-computer/iroh-kotlin',
+    name: 'Kotlin',
+    comingSoon: true,
+    description:
+      'Iroh\'s go SDK uses the rust implementation via c-bindings.',
+    logo: logoKotlin,
   },
   {
     href: 'https://github.com/n0-computer/iroh-go',
@@ -32,14 +48,6 @@ const libraries = [
     description:
       'Iroh\'s go SDK uses the rust implementation via c-bindings.',
     logo: logoGo,
-  },
-  {
-    href: 'https://github.com/n0-computer/iroh-python',
-    name: 'Python',
-    comingSoon: true,
-    description:
-      'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
-    logo: logoPython,
   },
 ];
 
