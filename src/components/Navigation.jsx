@@ -193,10 +193,10 @@ export const navigation = [
       {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
       {title: 'SDKs', href: '/docs/sdks'},
-      {title: 'Examples', href: '/docs/examples'},
+      {title: 'Commands', href: '/docs/commands'}
     ],
   },
-  {title: 'Layers',
+  {title: 'Concepts',
     links: [
       {title: 'Documents', href: '/docs/layers/documents'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
@@ -207,14 +207,12 @@ export const navigation = [
   {
     title: 'Resources',
     links: [
+      {title: 'Examples', href: '/docs/examples'},
+      {title: 'Config', href: '/docs/reference/config'},
       {title: 'Anchor HTTP API', href: '/docs/anchor-http-api'},
-      {title: 'CLI', href: '/docs/cli'},
-      // TODO - land REPL PR, write REPL docs, finish REPL
-      // {title: 'REPL', href: '/docs/repl'},
-      {title: 'Config', href: '/docs/config'},
+      {title: 'IPFS', href: '/docs/ipfs'},
       // TODO: finish first draft of spec
       // {title: 'Spec', href: '/spec'},
-      {title: 'IPFS', href: '/docs/ipfs'},
     ],
   },
 ];

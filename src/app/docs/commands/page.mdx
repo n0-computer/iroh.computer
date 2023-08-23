@@ -1,0 +1,95 @@
+import ConsoleCommands from '@/components/ConsoleCommands'
+
+export const metadata = {
+  title: 'iroh console',
+  description: 'command documentation and code examples'
+}
+
+# The iroh console
+
+The console is the easiest way to interact with a running iroh node. It's a read-evaluate-print loop (REPL) that communicates with an iroh node for realtime updates. {{className: 'lead' }}
+
+This references includes both console command documentation, and examples showing how to replicate a console command in code. For a tour of the console check out the [quickstart](/docs/quickstart). Start the console with the `iroh console` command:
+
+```bash
+$ iroh
+```
+
+---
+
+
+## Document Commands
+
+Commands for managing & manipulating [documents](/docs/layers/documents)
+
+<ConsoleCommands commands={[
+  { 
+    "name": "sync", 
+    "description": "Start to synchronize a document with peers",
+    "href":"/docs/commands/sync"
+  },
+  { 
+    "name": "share", 
+    "description": "Share a document and print a ticket to share with peers",
+    "href":"/docs/commands/share"
+  },
+  { 
+    "name": "set", 
+    "description": "Set a document entry with a key-value pair",
+    "href":"/docs/commands/set"
+  },
+  { 
+    "name": "get",
+    "description": "Get entries by key",
+    "href":"/docs/commands/get"
+  },
+  { 
+    "name": "keys", 
+    "description": "List all entries in the document",
+    "href":"/docs/commands/keys"
+  },
+  { 
+    "name": "cd", 
+    "description": "Open a document",
+    "href":"/docs/commands/cd"
+  },
+  { 
+    "name": "init", 
+    "description": "Create a new document",
+    "href":"/docs/commands/init"
+  },
+  { 
+    "name": "import", 
+    "description": "Import a document from peers",
+    "href":"/docs/commands/import"
+  },
+  { 
+    "name": "docs", 
+    "description": "List documents",
+    "href":"/docs/commands/docs"
+  }
+]} />
+
+---
+
+## Author Commands
+
+Author commands manage document users.
+
+<ConsoleCommands commands={[
+  { 
+    "name": "author switch", 
+    "description": "Set the active author for doc insertion",
+    "href":"/docs/commands/author-switch"
+  },
+  { 
+    "name": "author list", 
+    "description": "List authors",
+    "href":"/docs/commands/author-list"
+  },
+  { 
+    "name": "author create",
+    "description": "Create a new author",
+    "href":"/docs/commands/author-create"
+  }
+]} />
