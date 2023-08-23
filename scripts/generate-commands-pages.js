@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import ejs from 'ejs'
 
-import commands from '../src/data/commands.js';
+import commands from '../command-code-examples/commands.mjs';
 
 (function() {
   try {

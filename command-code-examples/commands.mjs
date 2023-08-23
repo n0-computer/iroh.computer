@@ -43,6 +43,11 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     name: 'doc share', 
     description: 'Share a document with peers',
     slug: 'doc-share',
+    arguments: [
+      { name: "KEY", necessity: 'required', description: "Key to the entry (parsed as UTF-8 string)" },
+      { name: "VALUE", necessity: 'required', description: "Content to store for this entry (parsed as UTF-8 string)" },
+      { name: "author", necessity: 'required', description: "Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable." },
+    ],
     examples: {
       console: `> `,
     }
@@ -119,7 +124,7 @@ const blob = [
   },
   { 
     name: 'blob list',
-    description: 'List availble content on the node',
+    description: 'List available content on the node',
     slug: 'blob-list',
     examples: {
       console: `> `,
