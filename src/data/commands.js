@@ -135,8 +135,10 @@ const blob = [
   }
 ]
 
-export const commands = {
+const commands = {
   doc,
   author,
   blob
-}
+};
+
+export default commands;

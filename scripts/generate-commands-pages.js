@@ -1,13 +1,13 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import ejs from 'ejs'
 
-import {commands} from '../src/app/docs/commands/commands';
+import commands from '../src/data/commands.js';
 
 (function() {
   try {
     let templateSource = readFileSync('./templates/command.template.mdx');
     Object.keys(commands).forEach((key) => {
-      console.log('Generating commands for %s', key);
+      console.log('%s commands:', key);
       generateCommands(commands[key], templateSource);
     });
   }
@@ -37,8 +37,8 @@ function generateCommand(command, templateSource) {
 
   // mkdir -p ../src/app/docs/commands/{slug}
   mkdir(command.slug);
-  const path = `../src/app/docs/commands/${slug}/page.mdx`;
-  console.log('Writing %s with examples %s', path, Object.keys(examples).join(', '));
+  const path = `../src/app/docs/commands/${command.slug}/page.mdx`;``
+  console.log('  writing %s with examples: %s', path, Object.keys(examples).filter(k => !!examples[k]).join(', '));
   writeFileSync(path, result);
 }
 
