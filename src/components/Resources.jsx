@@ -12,6 +12,20 @@ import {UsersIcon} from '@/components/icons/UsersIcon';
 
 const resources = [
   {
+    href: '/commands',
+    name: 'Commands',
+    description:
+      'Learn the Iroh API from the console & in your language',
+    icon: EnvelopeIcon,
+    pattern: {
+      y: 32,
+      squares: [
+        [0, 2],
+        [1, 4],
+      ],
+    },
+  },
+  {
     href: '/docs/sdks',
     name: 'SDKs',
     description:

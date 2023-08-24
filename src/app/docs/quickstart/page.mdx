@@ -31,7 +31,7 @@ Usage: iroh [OPTIONS] [COMMAND]
 ...
 ```
 
-## Start iroh
+## Start the iroh console
 
 ```text
 $ iroh start
@@ -43,14 +43,7 @@ DERP Region: 1
 PeerID: 3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa
 ```
 
-- This is a node. It's kinda like a combination database & web server
-- PeerID identifies this node
-- Listening Addresses
-- DERP Region is for holepunching, see [here](/docs/connections/holepunching)
-
-## Start the Console
-
-Now that we hve a server running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console`, connecting to the node we started with `iroh start`.
+Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console`, connecting to the node we started with `iroh start`.
 
 ```text
 $ iroh console
@@ -66,50 +59,63 @@ Before we can work with documents, we need to create an _author_, which is an id
 
 <CodeGroup tag="CONSOLE">
 ```text
-> author create
-727565e2773f0cf6135bc4bb127fe6db3b5918085c06f968f57a50ac56605643
+> author new --switch
+fhu3uk4wc2hl2e45nepyyic5u2tv37gmnmeoev4ka2bgieqhhz7a
+Active author is now fhu3uk4w…
 ```
 </CodeGroup>
+
+We use the `--switch` flag to make this author the default author for the console. This means we don't have to pass the author ID to every command.
 
 ## Create a Document
 
-Next, let's create a document
+Next, let's create a document. Again we'll use the `--switch` the flag to use this document as the default document for the console session:
 
 <CodeGroup tag="CONSOLE">
 ```text
-> docs create
-created fc16d6004586d124e3446a303236ccb7adb9bc671afb33b83c21b602772615e3
+> doc new --switch
+x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
+Active doc is now x5qffedi…
+
+author:fhu3uk4w… doc:x5qffedi…
+> 
 ```
 </CodeGroup>
 
-Now let's set the author for this doc
-
-<CodeGroup tag="CONSOLE">
-```text
-> set-author
-727565e2773f0cf6135bc4bb127fe6db3b5918085c06f968f57a50ac56605643
-```
-</CodeGroup>
-
-## Set a value
-
-Next let's set two values in the document:
+Next let's set a value in the document, and read it back.
 
 <CodeGroup tag="CONSOLE">
 ```
-doc:7qlnmacf author:oj2wlytx
-> set foo "bar"
-@oj2wlytx…: foo = 6lujp3wx… (3B)
-> set some/data.json 
+author:fhu3uk4w… doc:x5qffedi…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:x5qffedi…
+> doc get foo -c
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
 ```
 </CodeGroup>
 
-## Create a Second node
+The `-c` flag on the `doc get` command tells iroh to fetch the actual contents.
 
-Now we need a second node to actually sync with. In another terminal, run:
+## Sync the document
+
+Now let's actually sync this document with a second node. To disambiguate we'll call the node we've been working with so far "Node A", and the new one we'll create "Node B". We'll start by _sharing_ write access to the document from `Node A`:
+
+<CodeGroup tag="CONSOLE" title="Node A">
+```
+author:fhu3uk4w… doc:x5qffedi…
+> doc share write
+lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+```
+</CodeGroup>
+
+That long `lzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
 
 ```text
-$ export IROH_DATA_DIR=./ && iroh start --rpc-port 1111
+$ export IROH_DATA_DIR=./
+$ iroh start --rpc-port 1111
 Listening addresses:
   108.41.41.113:47896
   108.41.41.113:62424
@@ -118,13 +124,51 @@ DERP Region: 1
 PeerID: msiymgtbgosahfrcftazqcbpz7n54z2kol2rd653fin6gh4remmq
 ```
 
-Iroh has a default data directory, and a default port ([`1337`](https://en.wikipedia.org/wiki/Leet))
+Iroh has a default data directory, and a default port ([`1337`](https://en.wikipedia.org/wiki/Leet)). We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. We also pass `--rpc-port 1111` to override the default RPC port.
 
-We pass `IROH_DATA_DIR=./` as an environment variable,
+And now we'll create a fourth terminal to open a console for `Node B`:
+
+```text
+$ export IROH_DATA_DIR=./
+$ iroh --rpc-port 1111 console
+Welcome to the Iroh console!
+Type `help` for a list of commands.
+
+author:fhu3uk4w
+>
+```
+
+Now we can join the document from `Node B`, pasting in the value of the ticket we created with `doc share write` on `Node A`:
+
+<CodeGroup tag="CONSOLE" title="Node B">
+```text
+> author new --switch
+ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
+Active author is now ksdx5fs4…
+
+> doc join lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae --switch
+x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
+Active doc is now x5qffedi…
+
+author:ksdx5fs4… doc:x5qffedi…
+> doc get bar -c
+@ksdx5fs4…: bar = atqlwopt… (3 B)
+foo
+```
+</CodeGroup>
+
+The two consoles are now syncronized! We can see the value we set from `Node A` on `Node B`. Any edit you make in one console will be reflected in the other in real time.
 
 <Note>
-  To make this more interesting, try running this step on a separate computer
-  Iroh's networking stack will establish a connection for you.
+  To make this more interesting, try running this step on a separate computer.
+  Iroh's networking stack will establish a connection for you. Nothing will change about these instructions.
 </Note>
 
-**TODO(b5) - finish this tutorial**
+
+### Next Steps
+
+Now that you've seen iroh in action, you're ready to start integrating it into your application. The Command Reference is a good place to start. It covers the CLI commands we used here, as well as code examples showing how to use Iroh in your language.
+
+<div className='not-prose'>
+  <Button arrow="right" href="/docs/reference">Command Reference</Button>
+</div>

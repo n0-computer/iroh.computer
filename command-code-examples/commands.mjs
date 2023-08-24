@@ -8,7 +8,7 @@ const doc = [
       { name: 'ID', necessity: 'required', description: 'the [identifier](/docs/layers/documents#document-identifiers) of the document to switch to' },
     ],
     examples: {
-      console: `> doc init
+      console: `> doc new
 ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
 
 > doc switch ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
@@ -18,11 +18,11 @@ doc:ktrygcpx
     }
   },
   {
-    name: 'doc init',  
-    description: 'Create a new document',
-    slug: 'doc-init',
+    name: 'doc new',  
+    description: 'Create a new blank document',
+    slug: 'doc-new',
     examples: {
-      console: `> doc init
+      console: `> doc new
 ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     }
   },
@@ -31,7 +31,7 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     description: 'Join a document from a ticket',
     slug: 'doc-join',
     arguments: [
-      { name: 'TICKET', necessity: 'required', description: 'the ticket to join a document. Create a ticket with \'doc share\'' }
+      { name: 'ticket', necessity: 'required', description: 'the ticket to join a document. Create a ticket with \'doc share\'' }
     ],
     examples: {
       console: `> `,
@@ -50,8 +50,8 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     description: 'Share a document with peers',
     slug: 'doc-share',
     arguments: [
-      { name: 'MODE', necessity: 'required', description: 'one of \'read\' for Read-only access or \'write\' for Write access' },
-      { name: 'DOC_ID', necessity: 'required', description: 'document to share. in the console the current document is used when no DOC_ID is provided' }
+      { name: 'mode', necessity: 'required', description: 'one of \'read\' for Read-only access or \'write\' for Write access' },
+      { name: 'doc_id', necessity: 'required', description: 'document to share. in the console the current document is used when no doc_id is provided' }
     ],
     examples: {
       console: `> `,
@@ -62,7 +62,7 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     description: 'Set an entry in a document',
     slug: 'doc-set',
     arguments: [
-      { name: "KEY", necessity: 'required', description: "Key to the entry (parsed as UTF-8 string)" },
+      { name: "key", necessity: 'required', description: "Key to the entry (parsed as UTF-8 string)" },
       { name: "VALUE", necessity: 'required', description: "Content to store for this entry (parsed as UTF-8 string)" },
       { name: "author", necessity: 'required', description: "Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable." },
     ],
@@ -87,9 +87,9 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
     description: 'Get entries in a document',
     slug: 'doc-get',
     arguments: [
-      { name: 'KEY', necessity: 'required', description: 'Key to the entry to fetch' },
-      { name: 'DOC_ID', necessity: 'required', description: ' Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`.' },
-      { name: 'prefix', necessity: '', description: 'If true, get all entries that start with KEY' },
+      { name: 'key', necessity: 'required', description: 'Key to the entry to fetch' },
+      { name: 'doc_id', necessity: 'required', description: ' Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`.' },
+      { name: 'prefix', necessity: '', description: 'If true, get all entries that start with key' },
       { name: 'author', necessity: '', description: 'If provided, only return entries from this author' },
       { name: 'old', necessity: '', description: 'If true, old entries will be included. By default only the latest value for each key is shown' },
       { name: 'content', necessity: '', description: 'Also print the content for each entry (but only if smaller than 1MB and valid UTf-8)' }
@@ -103,8 +103,8 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
     description: 'List all keys in a document',
     slug: 'doc-keys',
     arguments: [
-      { name: 'DOC_ID', necessity: 'required', description: 'Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`.'  },
-      { name: 'PREFIX', necessity: 'optional', description: 'Only list keys that start with PREFIX' },
+      { name: 'doc_id', necessity: 'required', description: 'Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`.'  },
+      { name: 'prefix', necessity: 'optional', description: 'Only list keys that start with prefix' },
       { name: 'author', necessity: 'optional', description: 'Filter by author' },
       { name: 'old', necessity: 'optional', description: 'If true, old entries will be included. By default only the latest value for each key is shown' }
     ],

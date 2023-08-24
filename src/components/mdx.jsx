@@ -10,7 +10,7 @@ import {Prose} from '@/components/Prose';
 export const a = Link;
 export {Button} from '@/components/Button';
 export {CodeGroup, Code as code, Pre as pre} from '@/components/Code';
-export {TabGroup, Tab} from '@/components/Tabs';
+export {TabGroup} from '@/components/Tabs';
 import {pathLayout} from './Layout';
 
 // for some silly reason this _must_ be exported as lower-case "wrapper"
