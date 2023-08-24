@@ -28,28 +28,46 @@ export const metadata = {
 
 ## Examples
 
-<CodeGroup title="SET">
-
-
+<CodeGroup title="<%= command.name %>">
 ```text {{ title: 'console' }}
 <%- examples.console %>
 ```
 
-<% if (examples.cli) { %>
+<% if (examples.cli) { -%>
 ```bash {{ title: 'CLI' }}
 <%- examples.cli %>
 ```
-<% } %>
 
-<% if (examples.python) { %>
+<% } -%>
+<% if (examples.python) { -%>
 ```python {{ title: 'python' }}
 <%- examples.python %>
 ```
-<% } %>
 
-<% if (examples.rust) { %>
+<% } -%>
+<% if (examples.swift) { -%>
+```swift {{ title: 'swift' }}
+<%- examples.swift %>
+```
+
+<% } -%>
+<% if (examples.kotlin) { -%>
+```kotlin {{ title: 'kotlin' }}
+<%- examples.kotlin %>
+```
+
+<% } -%>
+<% if (examples.go) { -%>
+```swift {{ title: 'go' }}
+<%- examples.go %>
+```
+
+<% } -%>
+<% if (examples.rust) { -%>
 ```rust {{ title: 'rust' }}
 <%- examples.rust %>
 ```
-<% } %>
+
+<% } -%>
+
 </CodeGroup>

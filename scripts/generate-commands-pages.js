@@ -25,10 +25,11 @@ function generateCommands(commands, templateSource) {
 
 function generateCommand(command, templateSource) {
   let examples = {
-    // check for rust example
     rust: readExample('rust', command.slug, 'rs'),
-    // check for python example
     python: readExample('python', command.slug, 'py'),
+    swift: readExample('swift', command.slug, 'swift'),
+    go: readExample('go', command.slug, 'go'),
+    kotlin: readExample('kotlin', command.slug, 'kotlin'),
 
     ...command.examples
   }
@@ -38,7 +39,7 @@ function generateCommand(command, templateSource) {
   // mkdir -p ../src/app/docs/commands/{slug}
   mkdir(command.slug);
   const path = `../src/app/docs/commands/${command.slug}/page.mdx`;``
-  console.log('  writing %s with examples: %s', path, Object.keys(examples).filter(k => !!examples[k]).join(', '));
+  console.log('  %s\texamples: [ %s ]', path, Object.keys(examples).filter(k => !!examples[k]).join(', '));
   writeFileSync(path, result);
 }
 

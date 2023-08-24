@@ -29,7 +29,7 @@ Set an entry in a document {{ className: 'lead' }}
 
 ## Examples
 
-<CodeGroup title="SET">
+<CodeGroup title="doc set">
 
 
 ```text {{ title: 'console' }}
@@ -37,7 +37,6 @@ Set an entry in a document {{ className: 'lead' }}
 > set "key" "value"
 @ydzwyyes…: key = azceusiw… (5 B)
 ```
-
 
 ```bash {{ title: 'CLI' }}
 # create an author if you haven't already
@@ -52,15 +51,11 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
 @ydzwyyes…: key = azceusiw… (5 B)
 ```
 
-
-
 ```python {{ title: 'python' }}
 import iroh from 'iroh'
 
 iroh.set('doc', 'set', 'example', 'value')
 ```
-
-
 
 ```rust {{ title: 'rust' }}
 #![cfg(feature = "mem-db")]
@@ -110,5 +105,6 @@ async fn main() -> Result<()> {
     Ok(())
 }
 ```
+
 
 </CodeGroup>
