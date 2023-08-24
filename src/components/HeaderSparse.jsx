@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
@@ -19,13 +21,19 @@ function TopLevelNavItem({href, children}) {
 }
 
 export function HeaderSparse() {
+  let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  function toggleMobileMenu() {
+    setMobileMenuOpen(!mobileMenuOpen);
+  }
+
   return (
     <nav id="navbar" className="fixed w-full transition-colors ease-in duration-1000">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="relative flex items-center justify-between h-20">
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
             {/* Mobile menu button  */}
-            <button id="toggle-mobile-menu" type="button" className="inline-flex items-center justify-center p-2 rounded-md text-irohGray-400 hover:text-white hover:bg-irohGray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+            <button id="toggle-mobile-menu" type="button" onClick={toggleMobileMenu} className="inline-flex items-center justify-center p-2 rounded-md text-irohGray-400 hover:text-white hover:bg-irohGray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
               <span className="sr-only">Open main menu</span>
               <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -52,10 +60,10 @@ export function HeaderSparse() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div id="mobile-menu" className="hidden bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000" aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
+      <div id="mobile-menu" className={clsx("bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000", mobileMenuOpen ? "hidden" : "block")} aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
         <div className="px-2 pt-2 pb-3 space-y-1">
           {navItems.map((item, i ) => {
-            return <Link key={i} href={item.href} className="hover:text-white block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
+            return <Link key={i} href={item.href} className="text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
           })}
         </div>
       </div>
