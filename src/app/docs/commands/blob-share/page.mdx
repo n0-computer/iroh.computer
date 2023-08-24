@@ -1,12 +1,35 @@
 {/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "blob share",
     description: "Download data to the running provider&#39;s database and provide it"
 }
 
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: 'blob share', href: '/docs/commands/blob-share', current: true },
+    ]} />
+</div>
+
 # blob share
 
 Download data to the running provider&#39;s database and provide it {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| hash  |  | Hash to get, required unless ticket is specified |
+| recursive  |  | treat as collection, required unless ticket is specified [possible values: true, false] |
+| peer  |  | PublicKey of the provider |
+| addr  |  | Addresses of the provider |
+| derp-region  |  | derp region ID of the provider |
+| token  |  | base32-encoded Request token to use for authentication, if any |
+| ticket  |  | base32-encoded ticket to use for fetching |
+| out  |  | Directory in which to save the file(s) |
+| stable  |  | If this is set to true, the data will be moved to the output directory, and iroh will assume that it will not change |
 
 
 

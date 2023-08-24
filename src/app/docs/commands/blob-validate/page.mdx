@@ -1,12 +1,27 @@
 {/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "blob validate",
     description: "Validate hashes on the running node"
 }
 
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: 'blob validate', href: '/docs/commands/blob-validate', current: true },
+    ]} />
+</div>
+
 # blob validate
 
 Validate hashes on the running node {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| repair  |  | Repair the store by removing invalid data |
 
 
 

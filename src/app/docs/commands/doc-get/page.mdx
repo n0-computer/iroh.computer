@@ -1,12 +1,32 @@
 {/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "doc get",
     description: "Get entries in a document"
 }
 
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: 'doc get', href: '/docs/commands/doc-get', current: true },
+    ]} />
+</div>
+
 # doc get
 
 Get entries in a document {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| KEY  | required | Key to the entry to fetch |
+| DOC_ID  | required |  Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
+| prefix  |  | If true, get all entries that start with KEY |
+| author  |  | If provided, only return entries from this author |
+| old  |  | If true, old entries will be included. By default only the latest value for each key is shown |
+| content  |  | Also print the content for each entry (but only if smaller than 1MB and valid UTf-8) |
 
 
 

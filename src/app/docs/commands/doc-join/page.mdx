@@ -1,12 +1,27 @@
 {/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "doc join",
     description: "Join a document from a ticket"
 }
 
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: 'doc join', href: '/docs/commands/doc-join', current: true },
+    ]} />
+</div>
+
 # doc join
 
 Join a document from a ticket {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| TICKET  | required | the ticket to join a document. Create a ticket with &#39;doc share&#39; |
 
 
 

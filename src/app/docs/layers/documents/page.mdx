@@ -45,6 +45,16 @@ Granting read access to a document is as simple as sharing the document public k
 
 In iroh, the thing that links is the thing that syncs. Documents link together files
 
+## Document Identifiers
+
+Documents are reffered to within iroh by their _document identifier_ or _DocID_. They look like this:
+
+```text {{ title: "a document identifier" }}
+ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
+```
+
+Document IDs are base32-lower serialization of the public key of the document. They do _not_ change as the document changes.
+
 ## Permissions
 
 ## Multiple Writers

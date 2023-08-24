@@ -1,12 +1,30 @@
 {/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "doc keys",
     description: "List all keys in a document"
 }
 
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: 'doc keys', href: '/docs/commands/doc-keys', current: true },
+    ]} />
+</div>
+
 # doc keys
 
 List all keys in a document {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| DOC_ID  | required | Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
+| PREFIX  | optional | Only list keys that start with PREFIX |
+| author  | optional | Filter by author |
+| old  | optional | If true, old entries will be included. By default only the latest value for each key is shown |
 
 
 
