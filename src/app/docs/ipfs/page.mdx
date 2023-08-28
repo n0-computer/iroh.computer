@@ -6,13 +6,13 @@ export const metadata = {
 
 # iroh & IPFS
 
-Iroh is an _IPFS system_. It uses content identifiers (CIDs) Content addressing is a powerful primitive that belongs at the foundation of the internet. 
+Iroh is an _IPFS system_. It uses content identifiers (CIDs). Content addressing is a powerful primitive that belongs at the foundation of the internet. 
 
 Iroh is not an IPFS implementation. An implementation of IPFS should be able to interoperate with [kubo](https://github.com/ipfs/kubo) the reference implementation of nearly all [IPFS Specs](https://github.com/ipfs/specs). Iroh can interoperate with kubo by bridging the two technologies, but by default one shouldn't expect to be able to add content to kubo and get it out with iroh, or vice versa.
 
 ## Why not just make iroh an IPFS implementation?
 
-At first, we did! We wrote a ground-up implementation of IPFS in rust called [Beetle](https://github.com/n0-computer/beetle). We switched away because Iroh has different design goals than IPFS, and after writing an implementation, we realized couldn't achieve those goals & keep the implementation "badge'. Iroh aims to be the smallest working foundation for building apps with sublinear scaling. The word _small_ is the challenging one here. IPFS is designed to upgrade the _entire web_. To do that it has to accommodate numerous use cases and requirements that we couldn't build into Iroh while keeping the project small.
+At first, we did! We wrote a ground-up implementation of IPFS in rust called [Beetle](https://github.com/n0-computer/beetle). We switched away because Iroh has different design goals than IPFS, and after writing an implementation, we realized couldn't achieve those goals & keep the implementation 'badge'. Iroh aims to be the smallest working foundation for building apps with sublinear scaling. The word _small_ is the challenging one here. IPFS is designed to upgrade the _entire web_. To do that it has to accommodate numerous use cases and requirements that we couldn't build into iroh while keeping the project small.
 
 ## Comparison Table
 

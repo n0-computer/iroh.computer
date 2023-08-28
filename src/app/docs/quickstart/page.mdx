@@ -9,12 +9,12 @@ export const metadata = {
 This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between to terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
 
 <Note>
-  Iroh is currently in alpha release. We're aiming for Sept. 30th for a proper, production quality release of this same API the quickstart covers.
+  Iroh is currently in alpha release. We're aiming for Sept. 30th for a proper, production quality release of the same API this quickstart covers.
 </Note>
 
 ## Install Iroh
 
-The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install), then come back here.
+The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install) to install iroh.
 
 <div className='not-prose'>
   <Button arrow="right" href="/docs/install">Install Iroh CLI</Button>
@@ -134,7 +134,6 @@ $ iroh --rpc-port 1111 console
 Welcome to the Iroh console!
 Type `help` for a list of commands.
 
-author:fhu3uk4w
 >
 ```
 
@@ -146,14 +145,14 @@ Now we can join the document from `Node B`, pasting in the value of the ticket w
 ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
 Active author is now ksdx5fs4…
 
-> doc join lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae --switch
+> doc join --switch lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
 x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
 Active doc is now x5qffedi…
 
 author:ksdx5fs4… doc:x5qffedi…
-> doc get bar -c
-@ksdx5fs4…: bar = atqlwopt… (3 B)
-foo
+> doc get foo -c
+@ksdx5fs4…: foo = 6lujp3wx… (3 B)
+bar
 ```
 </CodeGroup>
 
