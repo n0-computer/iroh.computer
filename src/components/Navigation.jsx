@@ -209,7 +209,7 @@ export const navigation = [
     links: [
       {title: 'Examples', href: '/docs/examples'},
       {title: 'Config', href: '/docs/reference/config'},
-      {title: 'Anchor HTTP API', href: '/docs/anchor-http-api'},
+      {title: 'Anchor HTTP API', href: '/docs/reference/anchor-http-api'},
       {title: 'IPFS', href: '/docs/ipfs'},
       // TODO: finish first draft of spec
       // {title: 'Spec', href: '/spec'},
