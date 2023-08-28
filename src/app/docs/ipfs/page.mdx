@@ -22,13 +22,13 @@ Here's a quick rundown on some of the core technical distinctions between IPFS &
 | ------- | ---- | ---- |
 | **[CID](https://docs.ipfs.tech/concepts/content-addressing/) Usage** | Used for root hashes on the [Blob layer](/docs/layers/blobs) | Used for all blocks |
 | **Hash Function** | BLAKE3 | Various, SHA2 by default |
-| **Maximum Block Size** | none | 256Kb |
+| **Maximum Block Size** | none | 1MiB |
 | **Data Layout** | Key-Value | Directed Acyclic Graphs (DAGs) |
-| **Data Model** | "Bring your own" | IPLD |
+| **Data Model** | "Bring your own" | [IPLD](https://ipld.io/specs) or "Bring your own" |
 | **Syncing** | [Document Layer](/docs/layers/documents) | none |
 | **Networking Stack** | [Connection Layer](/docs/layers/connections) | [libp2p](https://libp2p.io) |
 | **Public Key Cryptography** | ED25519 Keys | Various, ED25519 by default |
-| **Naming system** | none | IPNS |
+| **Naming system** | none | [IPNS](https://specs.ipfs.tech/ipns/), [DNSLink](https://dnslink.dev/) |
 | **Content Storage** | User Files + Cache | Internal Repository | 
 | **Verification Checkpoints** | send and receive | receive |
 
