@@ -1,0 +1,305 @@
+openapi: 3.0.1
+info:
+  title: Iroh HTTP API
+  description: | 
+    This is the API documentation for the **Iroh HTTP API**: a service for 
+    interacting with Iroh network infrastructure.
+    The Iroh protocol itself is documented elsewhere.
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+externalDocs:
+  description: Find out more about Iroh
+  url: https://iroh.computer
+servers:
+- url: "https://iroh.network/api"
+tags:
+- name: health
+  description: API service health
+- name: user
+  description: Operations about user
+- name: network
+  description: iroh networks
+- name: collection
+  description: iroh collections
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      tags:
+      - health
+      summary: get API health status
+      operationId: healthCheck
+      responses:
+        200:
+          description: healthy service
+  /token:
+    post:
+      tags:
+      - user
+      summary: get an API access token (UCAN)
+      operationId: createToken
+      responses:
+        200:
+          description: API access token
+          content:
+            appliction/json:
+                schema:
+                  type: object
+                  properties:
+                    token: 
+                      type: string
+
+  /me:
+    get:
+      tags:
+      - user
+      summary: describe the current logged-in user
+      operationId: getSessionUser
+      security:
+      - bearerAuth: []
+      responses:
+        200:
+          description: session user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /networks:
+    get:
+      tags:
+      - network
+      summary: list networks available to the current user
+      description: Multiple status values can be provided with comma separated strings
+      operationId: getUserNetworks
+      security:
+      - bearerAuth: []
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IrohNetworkDetails'
+  /networks/{network_name}/collections:
+    get:
+      tags:
+      - network
+      summary: list network collections
+      description: returns a 
+      operationId: getNetworkCollections
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/NetworkNamePathParam"
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+    post:
+      tags:
+      - network
+      summary: Update network settings
+      operationId: putNetwork
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/NetworkNamePathParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IrohNetworkDetails"
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+    delete:
+      tags:
+      - network
+      summary: Deletes a network
+      operationId: deleteNetwork
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/NetworkNamePathParam"
+      responses:
+        200:
+          description: Network deleted
+          content: {}
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: UCAN (JWT)
+  responses: {}
+  examples: {}
+  requestBodies: {}
+  headers: {}
+  parameters:
+    NetworkNamePathParam:
+      name: network_id
+      in: path
+      description: ID of the network to list collections for
+      required: true
+      schema:
+        $ref: "#/components/schemas/Uuid"
+  schemas:
+    Uuid:
+      type: string
+      format: uuid
+      example: "550e8400-e29b-41d4-a716-446655440000"
+    Cid:
+      type: string
+      example: "bafkr4ihaehdb5yar357djzt4vzwd565w7rpluruvvwnhap7yknbydbadam"
+    Collection:
+      type: object
+      properties:
+        pub_key:
+          type: string
+          format: ""
+          example: ""
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          # optional
+          $ref: "#/components/schemas/Uuid"
+        network_id:
+          $ref: "#/components/schemas/Uuid"
+        cid:
+          $ref: "#/components/schemas/Cid"
+        name:
+          type: string
+        item_count:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: uint64
+        signature:
+          type: string
+    IrohNetworkCreate:
+      type: object
+      properties:
+        created_by:
+          $ref: "#/components/schemas/Uuid"
+        pretty_name:
+          type: string
+        name:
+          type: string
+        anchor_url:
+          type: string
+        accept_content:
+          type: boolean
+        provide_content:
+          type: string
+          enum:
+          - Disabled
+          - Public
+          - Private
+        connection_policy:
+          type: string
+          enum:
+          - Public
+          - SharedSecret
+        kubo_egress:
+          type: string
+          enum:
+          - Disabled
+          - BlakeThreeOnlyWithConvertedCollections
+        kubo_ingress:
+          type: string
+          enum:
+          - Disabled
+          - BlakeThreeOnlyWithConvertedCollections
+    IrohNetworkDetails:
+      type: object
+      properties:
+        network_id:
+          $ref: "#/components/schemas/Uuid"
+        pretty_name:
+          type: string
+        name:
+          type: string
+        anchor_url:
+          type: string
+        config:
+          $ref: "#/components/schemas/IrohNetworkConfig"
+    ProviderInfo:
+      type: object
+      properties:
+        peer_id:
+          type: string
+        addr:
+          type: string
+    UserCreated:
+      type: object
+      properties:
+      user_id:
+        type: Uuid
+      user_role:
+        type: Role
+      name:
+        type: string
+    User:
+      type: object
+      properties:
+        user_id:
+          $ref: '#/components/schemas/Uuid'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+          format:
+        user_role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+        pub_key:
+          type: string
+          format:
+        profile_photo_url_small:
+          type: string
+        profile_photo_url_large:
+          type: string
+    IrohNetworkConfig:
+      type: object
+      properties:
+        network_id:
+          $ref: "#/components/schemas/Uuid"
+        updated_at:
+          type: string
+          format: date-time
+        accept_content:
+          type: boolean
+        provide_content:
+          type: string
+          # ContentProvidePolicy
+        connection_policy:
+          # ConnectionPolicy
+        kubo_egress:
+          # KuboContentBridgingPolicy
+        kubo_ingress:
+          # KuboContentBridgingPolicy:

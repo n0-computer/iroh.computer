@@ -1,0 +1,51 @@
+export const metadata = {
+  title: 'Configuration',
+  description:
+    'Reference Documentation for iroh configuration',
+};
+
+# Configuration
+
+iroh supports a number of configuration details that affect the way iroh behaves. While this document descibes configuration for the iroh CLI, many of these same values are accessible within the various iroh SDKs, check SDK documentation for more info. {{className: 'lead'}}
+
+## Ports
+
+A running iroh instance binds to two ports by default:
+
+| Service                | Default Port | Description |
+| ---------------------- | ------------ | ----------- |
+| Iroh Listening Address | 11204        | Address Iroh listens on for connections from other nodes. If the port is taken iroh will choose a random port to listen on. | 
+| RPC                    | 1337         | Localhost-only Remote Procedure Calls, used to control an iroh node from another process. If the port is taken iroh will fail to start. |
+
+
+
+## Data Directory
+
+By default the iroh CLI persists to a data directory that keeps any data that should be kept across restarts. The location of that directory is platform specific:
+
+| Platform | Value                                 | Example                          |
+| -------- | ------------------------------------- | -------------------------------- |
+| Linux    | `$XDG_CONFIG_HOME` or `$HOME`/.config/iroh | /home/alice/.config/iroh              |
+| macOS    | `$HOME`/Library/Application Support/iroh   | /Users/Alice/Library/Application Support/iroh |
+| Windows  | `{FOLDERID_RoamingAppData}`/iroh           | C:\Users\Alice\AppData\Roaming\iroh   |
+
+If the `IROH_DATA_DIR` environment variable is set, all other values will be ignored in favour of `IROH_DATA_DIR`. If the directory path does not exist, iroh will attempt to create all directories in the path string (similar to `mkdir -p` on Unix systems), failing if the final path cannot be written to.
+
+<Note>
+A common pattern for creating "one off" iroh nodes is to run `export IROH_DATA_DIR=./iroh && iroh start --rpc-port 3000`.
+</Note>
+
+---
+
+## Configuration Values
+
+The iroh CLI loads configuration from a `iroh.config.toml` file within the data directory. The file is in [TOML format](https://toml.io/en/), and all values are optional, including the file itself. Iroh does _not_ create `iroh.config.toml` by default.
+
+| Parameter       | Default Value | Description |
+| --------------- | ------------- | ----------- |
+| `derp_regions`  | [1, 2]        | set and priority of ”Designated Encrypted Relay for Packets" (DERP) regions to use. Defaults to [North American, European] region identifiers. [Read more about DERP](/docs/connections/holepunching) |
+
+Yes, the list of what is configurable is pretty short. We're trying to keep iroh as "self-configuring" as possible. A lot of logic goes into dynamically reacting to the context iroh is operating within. With that said, if your use case needs configurability exposed, please don't hesitate to [file an issue](https://github.com/n0-computer/iroh/issues/new)
+
+{/* ## Environment Variables
+The Following is a full list of environment variables the iroh CLI is sensitive to for convenient lookups */}

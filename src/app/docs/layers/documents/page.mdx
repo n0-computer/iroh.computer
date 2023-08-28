@@ -1,0 +1,66 @@
+import {DarkAndLightImage} from '@/components/DarkAndLightImage'
+
+# Documents
+
+Authors create and join documents: mutable key-value stores that multiple users read from, write to, and sync with, subscribing to live updates in real time. {{className: 'lead'}}
+
+<div className='not-prose mb-5'>
+  <DarkAndLightImage
+    lightSrc='/diagrams/documents.svg'
+    darkSrc='/diagrams/documents_dark.svg'
+    alt='a diagram of three author devices with arrows pointing to a document. the document is a table with key and value columns. for each row, the value column has an arrow pointing out to a blob'
+    width={800}
+    height={450}
+  />
+</div>
+
+## Documents
+
+A document is a _namespace_ that is uniquely identified by a keypair.
+
+A key in a document is just a sequence of bytes. In practice keys are almost always [UTF-8 strings](https://en.wikipedia.org/wiki/UTF-8). A value in a document is always a hash that points to a blob. Conceptually, a document looks like this when written in JSON notation:
+
+```json
+{
+  "bar": "bafkr4iebxyldaiwztn5kwt6bap5e5bnzeru5lgc64w6lns644ir6ky5soi",
+  "bananas": "bafkr4ihr5vpp33v5ufos2dneywofls3gx67b5jmraxcn77odsu3yqcsohq",
+  "foo": "bafkr4ic3ywkoq5k2bn7kaiz6lovehgkpfqk4kwstepcbs7pw256dtxutme",
+  "slashes/are/also/ok": "bafkr4ic3ywkoq5k2bn7kaiz6lovehgkpfqk4kwstepcbs7pw256dtxutme",
+  "so.are.dots": "bafkr4ic3ywkoq5k2bn7kaiz6lovehgkpfqk4kwstepcbs7pw256dtxutme",
+  // ...
+}
+```
+
+An _entry_ in the document is a key-value pair. When an author writes an entry they first create a blob, then use the hash of the blob as the value, then pick a label to use as the key. Applications are encouraged
+
+## Authors & Permissions
+
+Authors are users who have write access to a document. Every author has a keypair that represents their identity. The public side of a keypair identifies the user & validates the edits they make to the document, the private side of the keypair is used to sign edits.
+
+The author that created the document is the _document owner_. The owner holds the private side of the document keypair and does not share it. Document have the ability to destroy the document, and invite other authors to write to the document.
+
+Granting read access to a document is as simple as sharing the document public key. Any peer can then
+
+## Syncing
+
+In iroh, the thing that links is the thing that syncs. Documents link together files
+
+## Document Identifiers
+
+Documents are referred to within iroh by their _document identifier_ or _DocID_. They look like this:
+
+```text {{ title: "a document identifier" }}
+ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
+```
+
+Document IDs are base32-lower serialization of the public key of the document. They do _not_ change as the document changes.
+
+## Permissions
+
+## Multiple Writers
+
+## Collaging
+
+## Subscriptions
+
+## Revocations & Key Rotations

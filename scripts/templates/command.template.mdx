@@ -1,0 +1,73 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-commands-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "<%= command.name %>",
+    description: "<%= command.description %>"
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/docs/commands', current: false },
+        { name: '<%= command.name %>', href: '/docs/commands/<%= command.slug %>', current: true },
+    ]} />
+</div>
+
+# <%= command.name %>
+
+<%= command.description %> {{ className: 'lead' }}
+
+<% if (command.arguments) { %>
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+<% command.arguments.forEach((arg) => { -%>
+| <%= arg.name  %>  | <%= arg.necessity%> | <%= arg.description %> |
+<% }) %>
+<% } %>
+
+## Examples
+
+<CodeGroup title="<%= command.name %>">
+```text {{ title: 'console' }}
+<%- examples.console %>
+```
+
+<% if (examples.cli) { -%>
+```bash {{ title: 'CLI' }}
+<%- examples.cli %>
+```
+
+<% } -%>
+<% if (examples.python) { -%>
+```python {{ title: 'python' }}
+<%- examples.python %>
+```
+
+<% } -%>
+<% if (examples.swift) { -%>
+```swift {{ title: 'swift' }}
+<%- examples.swift %>
+```
+
+<% } -%>
+<% if (examples.kotlin) { -%>
+```kotlin {{ title: 'kotlin' }}
+<%- examples.kotlin %>
+```
+
+<% } -%>
+<% if (examples.go) { -%>
+```swift {{ title: 'go' }}
+<%- examples.go %>
+```
+
+<% } -%>
+<% if (examples.rust) { -%>
+```rust {{ title: 'rust' }}
+<%- examples.rust %>
+```
+
+<% } -%>
+
+</CodeGroup>
