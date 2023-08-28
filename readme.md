@@ -3,7 +3,7 @@
 This is the repo that powers the [iroh.computer](https://iroh.computer) web site, which includes marketing & documentation info for [iroh](https://github.com/n0-computer/iroh).
 
 # Running locally
-You'll need [`zola`](https://getzola.org), [`node`](), and [`yarn`]()
+You'll need [`zola`](https://getzola.org), [`node`](https://nodejs.org/), and [`yarn`](https://yarnpkg.com/)
 
 ```
 $ git clone git@github.com:n0-computer/iroh.computer.git
