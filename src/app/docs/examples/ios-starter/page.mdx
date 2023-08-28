@@ -1,0 +1,96 @@
+export const metadata = {
+  title: 'Getting Started with iOS',
+  description: 'build a from-scratch iOS project that includes iroh as a swift module'
+}
+
+# Getting Started with iOS
+
+This guide will walk you through setting up an example iOS project that includes the iroh swift module. We'll use it to join a document created on a computer from the iroh console.
+
+## Create a new Xcode project
+
+Make sure you have [xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12) installed, and have run `xcode-select --install` to install the command line tools.
+
+Next, create a new Xcode project. Select "App" under "iOS" and click "Next".
+
+## Import the iroh swift module
+
+Select `File > Add Packages...`
+
+
+## Create ContentView
+
+```swift
+
+import SwiftUI
+import IrohLib
+
+struct ContentView: View {
+  @State var state: IrohNode
+  @State private var ticketString: String = ""
+  @State private var contentList: String = "No document joined"
+  
+  var body: some View {
+    let peer_id = state.peerId()
+    
+    VStack {
+      Text("Hello \(peer_id)")
+      TextField("Enter Doc Ticket", text: $ticketString)
+      Button("Join Doc") {
+        join()
+      }
+      Text("Current Document: \(contentList)")
+    }
+    .padding()
+  }
+  
+  init() throws {
+    _state = .init(wrappedValue: try IrohNode())
+    let _ = print("Starting..")
+    
+    let peer_id = state.peerId()
+    let _ = print("created iroh node \(state) with peer id \(peer_id)")
+  }
+  
+  func join() {
+    print("joining \(ticketString)")
+    let docTicket = try! DocTicket.fromString(content: ticketString)
+    let doc = try! state.importDoc(ticket: docTicket)
+    for _ in 1...5 {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        let content = try! doc.latest()
+        print("got \(content.count) elements for \(doc.id())")
+        
+        let formattedList = content.map { (entry) -> String in
+          let content: String = {
+            do {
+              let c = try doc.getContentBytes(entry: entry)
+              return String(decoding: c, as: UTF8.self)
+            } catch {
+              return "N/A"
+            }
+          }()
+          let key = String(decoding: entry.key(), as: UTF8.self)
+          let author_s = entry.author().toString()
+          return "Author: \(author_s) wrote '\(key)' -> '\(content)'"
+        }.joined(separator: "\n")
+        contentList = "\(doc.id()) (\(content.count))\n\n\(formattedList)"
+      }
+    }
+  }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+      try! ContentView()
+    }
+}
+
+extension StringProtocol {
+    var data: Data { .init(utf8) }
+    var bytes: [UInt8] { .init(utf8) }
+}
+```
+
+## Create a document from the console
+
