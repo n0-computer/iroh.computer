@@ -21,18 +21,16 @@ List all keys in a document {{ className: 'lead' }}
 
 | name | necessity | description |
 | ---- | --------- | ----------- |
-| DOC_ID  | required | Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
-| PREFIX  | optional | Only list keys that start with PREFIX. |
-| author  | optional | Filter by author. |
-| old  | optional | If true, old entries will be included. By default only the latest value for each key is shown. |
+| doc_id  | required | Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
+| prefix  | optional | Only list keys that start with prefix |
+| author  | optional | Filter by author |
+| old  | optional | If true, old entries will be included. By default only the latest value for each key is shown |
 
 
 
 ## Examples
 
 <CodeGroup title="doc keys">
-
-
 ```text {{ title: 'console' }}
 > 
 ```

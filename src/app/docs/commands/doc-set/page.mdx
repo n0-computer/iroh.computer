@@ -21,8 +21,8 @@ Set an entry in a document {{ className: 'lead' }}
 
 | name | necessity | description |
 | ---- | --------- | ----------- |
-| KEY  | required | Key to the entry (parsed as UTF-8 string). |
-| VALUE  | required | Content to store for this entry (parsed as UTF-8 string). |
+| key  | required | Key to the entry (parsed as UTF-8 string) |
+| VALUE  | required | Content to store for this entry (parsed as UTF-8 string) |
 | author  | required | Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable. |
 
 
@@ -30,10 +30,10 @@ Set an entry in a document {{ className: 'lead' }}
 ## Examples
 
 <CodeGroup title="doc set">
-
-
 ```text {{ title: 'console' }}
-> doc create --use
+> doc new --switch
+created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
+
 > set "key" "value"
 @ydzwyyes…: key = azceusiw… (5 B)
 ```
@@ -43,7 +43,7 @@ Set an entry in a document {{ className: 'lead' }}
 $ IROH_AUTHOR=$(iroh author create)
 
 # create a document
-$ iroh docs create
+$ iroh doc new
 created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
 
 # set a key
@@ -52,9 +52,27 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
 ```
 
 ```python {{ title: 'python' }}
-import iroh from 'iroh'
+import iroh
 
-iroh.set('doc', 'set', 'example', 'value')
+node = iroh.node()
+author = node.create_author()
+doc = node.create_doc()
+
+doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+
+doc.get_bytes(bytes("foo", "utf8"))
+```
+
+```swift {{ title: 'swift' }}
+import IrohLib
+
+let node = try! IroneNode()
+let author = try! node.createAuthor()
+let doc = try! Iroh.createDoc()
+
+let hash = try! doc.setBytes(author: author, key: "foo".data(using: .utf8)!, value: "bar".data(using: .utf8)!)
+let value = try! doc.getContentBytes(hash: hash)
+
 ```
 
 ```rust {{ title: 'rust' }}

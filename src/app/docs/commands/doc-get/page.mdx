@@ -21,24 +21,57 @@ Get entries in a document {{ className: 'lead' }}
 
 | name | necessity | description |
 | ---- | --------- | ----------- |
-| KEY  | required | Key to the entry to fetch |
-| DOC_ID  | required |  Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
-| prefix  |  | If true, get all entries that start with KEY. |
-| author  |  | If provided, only return entries from this author. |
-| old  |  | If true, old entries will be included. By default only the latest
-value for each key is shown. |
-| content  |  | Also print the content for each entry (but only if smaller than
-1MB and valid UTf-8). |
+| key  | required | Key to the entry to fetch |
+| doc_id  | required |  Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`. |
+| prefix  |  | If true, get all entries that start with key |
+| author  |  | If provided, only return entries from this author |
+| old  |  | If true, old entries will be included. By default only the latest value for each key is shown |
+| content  |  | Also print the content for each entry (but only if smaller than 1MB and valid UTf-8) |
 
 
 
 ## Examples
 
 <CodeGroup title="doc get">
-
-
 ```text {{ title: 'console' }}
-> 
+> doc new --switch
+dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
+Active doc is now dyyelvqq…
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc get foo -c
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
+
+
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+node = iroh.node()
+author = node.create_author()
+doc = node.create_doc()
+
+doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+
+doc.get_bytes(bytes("foo", "utf8"))
+```
+
+```swift {{ title: 'swift' }}
+import IrohLib
+
+let node = try! IroneNode()
+let author = try! node.createAuthor()
+let doc = try! Iroh.createDoc()
+
+let hash = try! doc.setBytes(author: author, key: "foo".data(using: .utf8)!, value: "bar".data(using: .utf8)!)
+let value = try! doc.getContentBytes(hash: hash)
+
 ```
 
 ```rust {{ title: 'rust' }}
