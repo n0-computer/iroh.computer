@@ -18,6 +18,17 @@ npm run dev
 
 Finally, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.
 
+## Editing docs content
+Our docs are generated. Use the following steps to make adjustments to the content and update the website to match:
+
+- make your edits to the documentation in the `command-code-examples/commands.mjs` file
+- cd into the `scripts` folder
+- run `npm install` if you have not run it in this folder previously
+- run `node generate-commands-pages.js` to generate the doc files for the website
+
+### Style guide
+Follow the style that has already been layed out. But as a general rule of thumb, follow normal English punctuation, but favor brevity over proper grammar. In other words, use capital letters at the start of sentences, and end them with a period, but sentences can be fragments if that gets the point across quicker.
+
 ## Learn more
 
 To learn more about the technologies used in this site template, see the following resources:
