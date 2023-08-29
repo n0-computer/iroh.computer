@@ -67,14 +67,16 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
       { name: "author", necessity: 'required', description: "Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable." },
     ],
     examples: {
-      console: `> docs create --use
+      console: `> doc new --switch
+created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
+
 > set "key" "value"
 @ydzwyyes…: key = azceusiw… (5 B)`,
       cli: `# create an author if you haven't already
 $ IROH_AUTHOR=$(iroh author create)
 
 # create a document
-$ iroh docs create
+$ iroh doc new
 created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
 
 # set a key
@@ -95,7 +97,20 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
       { name: 'content', necessity: '', description: 'Also print the content for each entry (but only if smaller than 1MB and valid UTf-8)' }
     ],
     examples: {
-      console: `> `,
+      console: `> doc new --switch
+dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
+Active doc is now dyyelvqq…
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc get foo -c
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
+
+`,
     }
   },
   {
