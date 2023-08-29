@@ -9,7 +9,7 @@ Iroh works with _blobs_ of opaque data, which are often the bytes of a file. {{ 
 
 All blobs within iroh are referred to by the BLAKE3 [1] hash of its content. BLAKE3 is a _tree hashing_ algorithm, that splits its input into uniform chunks and arranges them as the leaves of a binary tree, producing intermediate _chunk hashes_ that accumulate up to a _root hash._ Iroh uses the 32 byte root hash (or just “hash”) as an immutable blob identifier. 
 
-<img class="figure" src="/design/content-addressing/fig_1_blob.svg" />
+<img class="figure" src="/diagrams/content-addressing/fig_1_blob.svg" />
 
 We leverage the tree hash structure of BLAKE3 as a basis for incremental verification when data is sent over the network, as described by Section 6.4 “Verified Streaming” in [1] and implemented in [2]. Iroh caches all chunk hashes as external metadata, leaving the unaltered input blob as the canonical source of bytes. Verified streaming also facilitates _range requests:_ fetching a verifiable contiguous subsequence of a blob by streaming only the portions of the BLAKE3 binary tree required to verify the designated subsequence.
 
@@ -25,7 +25,7 @@ A link is a tuple of `name, CID`. *Name* is an opaque, arbitrary sequence of byt
 
 Collections have an optional _header_ section that stores the number of items in the collection and offsets to items within the list, forming a skip list index.
 
-<img class="figure" src="/design/content-addressing/fig_2_collection.svg" />
+<img class="figure" src="/diagrams/content-addressing/fig_2_collection.svg" />
 
 Collections are content addressed in the exact same manner as blobs, but use differing CID multicodec identifier to distinguish them from opaque blobs. Like blobs, collections can be seeked into using byte offsets.
 
