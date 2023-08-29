@@ -11,6 +11,20 @@ import { Tag } from './Tag';
 
 const examples = [
   {
+    href: '/docs/examples/ios-starter',
+    name: 'iOS Starter',
+    description:
+      'Get up and running with iroh on iOS with this starter project.',
+    tags: ["iOS", "Swift"],
+    pattern: {
+      y: 16,
+      squares: [
+        [3, 0],
+        [0, 1],
+      ],
+    },
+  },
+  {
     // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
     href: 'https://github.com/n0-computer/iroh-example-todos',
     name: 'Todos',
