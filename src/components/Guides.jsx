@@ -8,7 +8,7 @@ const guides = [
   //   description: 'Read a high-level description of how iroh works.',
   // },
   {
-    href: '/docs/documents',
+    href: '/docs/layers/documents',
     name: 'Documents',
     description: 'Understand documents, mutable, syncable key-value stores',
   },
@@ -19,7 +19,7 @@ const guides = [
       'Documents point to blobs: opaque bytes identified by their hash',
   },
   {
-    href: '/docs/connections',
+    href: '/docs/layers/connections',
     name: 'Connections',
     description:
       'At the core of iroh is the ability to connect to any online node with only a Peer identifier',
