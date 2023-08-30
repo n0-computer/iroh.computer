@@ -1,0 +1,289 @@
+<!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@n0computer" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="n0.computer"/>
+    <meta name="twitter:title" content="" />
+    <meta property="og:title" content="" />
+    <meta name="twitter:description" content="Reducing net work for networks" />
+    <meta property="og:description" content="Reducing net work for networks" />
+    <meta name="twitter:image" content="https://iroh.computer/img/logos/wordmark-small-salmon.svg" />
+    <meta property="og:image" content="https://iroh.computer/img/logos/wordmark-small-salmon.svg" />
+    <meta name="twitter:image-alt" content="n0" />
+    <meta property="og:url" content="https://iroh.computer" />
+
+    
+    
+    
+    
+    
+    
+    
+
+    <link href="/styles/style.css" rel="stylesheet">
+
+    <!-- Include only the reset -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/reset-min.css" integrity="sha256-QlHlZdbSVxaYkUHxhMFhAj/L3pJiW1LuomSCONXBWms=" crossorigin="anonymous">
+    <!-- or include the full Satellite theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css" integrity="sha256-TehzF/2QvNKhGQrrNpoOb2Ck4iGZ1J/DI4pkd2oUsBc=" crossorigin="anonymous">
+
+
+    <title>
+      
+      
+      
+    </title>
+</head>
+<body class="text-irohGray-600 justify-between font-space">
+  
+  <nav id="docs_navbar" class="fixed w-full transition-colors ease-in duration-1000 bg-irohGray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div class="relative flex items-center justify-between h-20">
+        <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
+          <!-- Mobile menu button-->
+          <button id="toggle-mobile-menu" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-irohGray-400 hover:text-white hover:bg-irohGray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="block h-5 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg class="hidden h-5 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex-1 flex sm:items-stretch sm:justify-start">
+          <a href="/" class="block flex-shrink-0 flex items-center ml-2 mr-auto">
+            <img class="block h-8 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh">
+          </a>
+          
+          <div class="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
+            <div class="flex space-x-5">
+              <div class="lg:hidden">
+                <button onclick="openQuickSearch('quick_search')">
+                  <img class="w-4 h-4 ml-1 my-2" src="/img/icon/icon_search.svg" />
+                </button>
+              </div>
+              <a href="/docs" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">docs</a>
+              <a href="https://github.com/n0-compute/iroh" class="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white">github</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div id="mobile-menu" class="hidden bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000" aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="/docs" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">docs</a>
+        <a href="https://github.com/n0-computer/iroh" class="hover:text-white block px-3 py-2 rounded-md text-base font-medium">github</a>
+      </div>
+    </div>
+  </nav>
+  
+
+  
+    
+    
+    <div class="fixed block mt-20 bg-irohGray-100 lg:hidden w-full py-2 px-10 align-middle flex">
+      <button onclick="openSidebar()" class="mr-5">
+          <img class="w-6 h-6" src="/img/icon/icon_menu.svg" />
+      </button>
+      <div>
+        
+        <span class="mr-5 text-sm">cloud</span> 
+        
+        <span class="text-sm">p2p configuration</span>
+      </div>
+    </div>
+  
+
+  <div class="m-auto w-full max-w-7xl min-h-screen px-4 sm:px-6 lg:px-10">
+    
+    <nav id="sidebar" class="hidden align-top z-50 bg-irohGray-100 w-1/2 max-w-xs h-full min-h-90 overflow-auto lg:bg-transparent lg:inline-block lg:sticky lg:top-20 lg:w-64">
+      <div class="pt-11 px-3 mt-20 lg:mt-0">
+        <div class="border hidden lg:block w-full py-2 mb-4 rounded hover:cursor-pointer" onclick="openQuickSearch('quick_search')">
+          <img class="w-4 h-4 float-left mr-3 ml-2 my-1" src="/img/icon/icon_search.svg" />
+          <h6 class="text-sm text-irohGray-400">Quick Search...</h6>
+        </div>
+        
+          <ul class="text-irohGray-500">
+            
+              <li class="mb-3">
+                  <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">iroh</h3>
+                  
+                      <ul>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs">Overview</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/install">Install</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/services">Services</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/concepts">Concepts</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/iroh-and-kubo">Iroh &amp; Kubo (go-IPFS)</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/use-cases">Use Cases</a>
+                              </li>
+                          
+                      </ul>
+                  
+              </li>
+            
+              <li class="mb-3">
+                  <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">platforms</h3>
+                  
+                      <ul>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/platforms">Overview</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/platforms/cloud">cloud</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/platforms/mobile">mobile</a>
+                              </li>
+                          
+                      </ul>
+                  
+              </li>
+            
+              <li class="mb-3">
+                  <h3 class="text-md bold font-space-mono text-irohGray-700 mb-1">reference</h3>
+                  
+                      <ul>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/data-locations">Data Locations</a>
+                              </li>
+                          
+                              <li class="pl-3 border-l text-sm leading-loose hover:text-irohPurple-500 hover:border-irohPurple-500">
+                                  <a href="/docs/cli">CLI</a>
+                              </li>
+                          
+                      </ul>
+                  
+              </li>
+            
+          </ul>
+        
+      </div>
+    </nav>
+    <div onclick="closeSidebar()" id="sidebar-bg" class="fixed hidden z-40 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal"></div>
+    
+  
+    
+    <div class="w-full inline-block overflow-auto sm:w-[calc(100%-25%-20px)] lg:w-[calc(52.3%)]">
+      <main id="page-content" class="px-10 pb-44 mt-32 sm:px-4">
+        
+        <h5 class="text-irohPurple-500 bold leading-tight -mb-5">cloud</h5>
+        
+        
+        
+        <p>Each iroh cloud service is</p>
+<h2 id="file-location">File Location</h2>
+<p>the p2p service defaults to reading from <code>p2p.config.toml</code> in the <a href="/docs/cloud/data-locations">config directory</a>.</p>
+<h1 id="example-config-file">Example Config File</h1>
+<p>The following config file shows all default values. Keep in mind values defaults don't need to be present in config, so this file is equivenlant to being empty.</p>
+<pre data-lang="filename" style="background-color:#2b303b;color:#c0c5ce;" class="language-filename "><code class="language-filename" data-lang="filename"><span># Local listening address that other services should dial p2p on
+</span><span>listening_multiaddr = &quot;/ip4/0.0.0.0/tcp/4444&quot;
+</span><span># Bootstrap peer list.
+</span><span>bootstrap_peers = [
+</span><span>  &quot;/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN&quot;,
+</span><span>    &quot;/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa&quot;,
+</span><span>    &quot;/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb&quot;,
+</span><span>    &quot;/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt&quot;,
+</span><span>    &quot;/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;, # mars.i.ipfs.io
+</span><span>]
+</span><span># Mdns discovery enabled.
+</span><span>mdns = false
+</span><span># Kademlia discovery enabled.
+</span><span>kademlia = true
+</span><span># Autonat holepunching enabled.
+</span><span>autonat = true
+</span><span># Relay server enabled.
+</span><span>relay_server = true
+</span><span># Relay client enabled.
+</span><span>relay_client = true
+</span><span># Gossipsub enabled.
+</span><span>gossipsub = true
+</span><span># 
+</span><span>max_conns_out = 256
+</span><span>max_conns_in = 256
+</span><span>max_conns_pending_out = 256
+</span><span>max_conns_pending_in = 256
+</span><span>max_conns_per_peer = 8
+</span><span>notify_handler_buffer_size = 256
+</span><span>connection_event_buffer_size = 256
+</span><span>dial_concurrency_factor = 16
+</span></code></pre>
+
+        
+
+        
+      </main>
+    </div>
+
+    <div class="hidden align-top h-screen overflow-auto px-10 pt-28 mt-20 xl:inline-block xl:sticky xl:top-px xl:w-3/12">
+      
+      
+      
+        <ul class="text-irohGray-300 text-sm leading-loose">
+        
+            <li>
+                <a class="text-md bold mb-1 hover:text-irohPurple-500" href="https://iroh.computer/docs/reference/p2p-config/#file-location">File Location</a>
+                
+            </li>
+        
+            <li>
+                <a class="text-md bold mb-1 hover:text-irohPurple-500" href="https://iroh.computer/docs/reference/p2p-config/#example-config-file">Example Config File</a>
+                
+            </li>
+        
+        </ul>
+      
+    </div>
+    
+  </div>
+
+  <div id="quick_search" onclick="closeModal('quick_search')" class="fixed hidden z-50 inset-0 bg-irohGray-300 bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full px-4 modal">
+    <div onclick="((e) => { e.stopPropagation(); })(event)" class="relative top-40 mx-auto w-50 shadow-xl rounded-md bg-white max-w-2xl">
+      <div class="min-h-48">
+        <div id="searchbox"></div>
+        <div class="overflow-y-auto">
+          <div id="hits"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--- scripts --->
+  <script defer src="/js/site.js"></script>
+  <script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js"></script>	
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.14.2/dist/algoliasearch-lite.umd.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.46/dist/instantsearch.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  
+</body>
+</html>
