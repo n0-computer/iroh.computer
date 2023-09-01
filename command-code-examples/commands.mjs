@@ -31,10 +31,12 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     description: 'Join a document from a ticket.',
     slug: 'doc-join',
     arguments: [
-      { name: 'ticket', necessity: 'required', description: 'The ticket to join a document. Create a ticket with \'doc share\'.' }
+      { name: 'ticket', necessity: 'required', description: 'The ticket to join a document. Create a ticket with \'doc share\'.' },
+      { name: 'switch', necessity: '', description: 'Switch to the joined document (only in the iroh console).'}
     ],
     examples: {
-      console: `> `,
+      console: `> doc join --switch 6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcai55pmzg4d3x34mcpuydxoq4t5ec66zp3k3ouxwadxky745i3dwrhqcig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap
+tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua`,
     }
   },
   {
@@ -42,7 +44,10 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     description: 'List documents on this node.',
     slug: 'doc-list',
     examples: {
-      console: `> `,
+      console: `> doc list
+tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq`,
     }
   },
   {
@@ -51,11 +56,22 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
     slug: 'doc-share',
     arguments: [
       { name: 'mode', necessity: 'required', description: 'One of \'read\' for Read-only access or \'write\' for Write access.' },
-      { name: 'doc_id', necessity: 'required', description: 'Document to share. in the console the current document is used when no doc_id is provided.' }
+      { name: 'doc', necessity: 'required', description: 'Document to share. In the console the current document is used when no `--doc` is provided.' }
     ],
     examples: {
-      console: `> `,
-    }
+      console: `# switch to a specific doc
+> doc switch njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
+Active doc is now njszszvg…
+
+doc: njszszvg…
+
+> doc share write
+xvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcaidiaglyldhfvq4xeaa5cqswdistl2hje3c24biacig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66cs
+
+# or use --doc flag to get the ticket for a specific doc
+> doc share write --doc 3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhljfkldiajjkannnnjiejfkldkaskjlxi0jfwoqppiemxclpilkdipljqhixkkwmhziufkhablskhdjjlllqwoooqusiuypwouuuuippmjkk
+` }
   },
   {
     name: 'doc set',   
@@ -118,13 +134,34 @@ bar
     description: 'List all keys in a document.',
     slug: 'doc-keys',
     arguments: [
-      { name: 'doc_id', necessity: 'required', description: 'Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `doc set`.'  },
+      { name: 'doc', necessity: 'required', description: 'Document to operate on. Required unless the document is set through the IROH_DOC environment variable. Within the iroh console, the active document can also set with `doc set`.'  },
       { name: 'prefix', necessity: 'optional', description: 'Only list keys that start with prefix.' },
       { name: 'author', necessity: 'optional', description: 'Filter by author.' },
-      { name: 'old', necessity: 'optional', description: 'If true, old entries will be included. By default only the latest value for each key is shown.' }
     ],
     examples: {
-      console: `> `,
+      console: `author:i3vpd4e7… doc:njszszvg…
+> doc set foo bar
+bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu
+
+author:i3vpd4e7… doc:njszszvg…
+> doc set hello world
+bafkr4igxrffos4lnhdjn7lioyvkcjsrsd3qsiu6vd4ntvxvxpuchl3myrq
+
+author:i3vpd4e7… doc:njszszvg…
+> doc set good morning
+bafkr4idyxc27uxtcrzl5a3t42xu7hm3h2wn4mfaqt3ma5ummofsitynxle
+
+author:i3vpd4e7… doc:njszszvg…
+> doc keys
+@i3vpd4e7…: foo = 6lujp3wx… (3 B)
+@i3vpd4e7…: good = pc4ll6s6… (7 B)
+@i3vpd4e7…: hello = 26euv2lr… (5 B)
+
+# use a prefix to filter the keys
+
+author:i3vpd4e7… doc:njszszvg…
+> doc keys fo
+@i3vpd4e7…: foo = 6lujp3wx… (3 B)`,
     }
   },
 ]
@@ -138,7 +175,13 @@ const author = [
       { name: 'id', necessity: 'required', description: 'Id of the author to switch to.' }
     ],
     examples: {
-      console: `> `,
+      console: `# switch from one active author to another
+author:i3vpd4e7…
+> author switch wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
+Active author is now wkl4cgry…
+
+author:wkl4cgry…
+>`,
     }
   },
   { 
@@ -146,15 +189,25 @@ const author = [
     description: 'List authors.',
     slug: 'author-list',
     examples: {
-      console: `> `,
+      console: `> author list
+i3vpd4e7coeonwv6otni36bdux73opig5du6zjekvnl3c64gn4ua
+wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq`,
     }
   },
   { 
-    name: 'author create',
+    name: 'author new',
     description: 'Create a new author.',
-    slug: 'author-create',
+    slug: 'author-new',
+    arguments: [
+      { name: 'switch', necessity: '', description: 'Switch to the created author (only in the iroh console).' }
+    ],
     examples: {
-      console: `> `,
+      console: `> author new --switch
+2rkuvpk4prtjbqh7rnksaet3a3hdvrrz5mqinjcjbutklotort5a
+Active author is now 2rkuvpk4…
+
+author:2rkuvpk4…
+>`,
     }
   }
 ]
@@ -169,7 +222,12 @@ const blob = [
       { name: 'in-place', necessity: '', description: 'Add in place. Set this to true only if you are sure that the data in its current location will not change.' }
     ],
     examples: {
-      console: `> `,
+      console: `> blob add ~/my_txt.txt
+Adding my_txt.txt as /Users/me/my_txt.txt...
+- /Users/me/my_txt.txt: 328 B bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4
+Total: 328 B
+
+Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`,
     }
   },
   { 
@@ -196,7 +254,14 @@ const blob = [
     description: 'List the available blobs on the running provider.',
     slug: 'blob-list-blobs',
     examples: {
-      console: `> `,
+      console: `> blob list blobs
+ bafkr4idcy33utsake6atvbagnojkn7odp7mdo6n7tvspd4ndnewphj67xu (116.96 KiB)
+ bafkr4idyxc27uxtcrzl5a3t42xu7hm3h2wn4mfaqt3ma5ummofsitynxle (7 B)
+ bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke (46 B)
+ bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4 (328 B)
+ bafkr4igxrffos4lnhdjn7lioyvkcjsrsd3qsiu6vd4ntvxvxpuchl3myrq (5 B)
+ bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu (3 B)
+ bafkr4ih5e75yrvu63folnkhvppj3pnx3he2oudmr35x2xc2puodrr2kryy (47 B)`,
     }
   },
   { 
