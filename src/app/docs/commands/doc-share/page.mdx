@@ -22,7 +22,7 @@ Share a document with peers. {{ className: 'lead' }}
 | name | necessity | description |
 | ---- | --------- | ----------- |
 | mode  | required | One of &#39;read&#39; for Read-only access or &#39;write&#39; for Write access. |
-| doc_id  | required | Document to share. in the console the current document is used when no doc_id is provided. |
+| doc  | required | Document to share. In the console the current document is used when no `--doc` is provided. |
 
 
 
@@ -30,7 +30,19 @@ Share a document with peers. {{ className: 'lead' }}
 
 <CodeGroup title="doc share">
 ```text {{ title: 'console' }}
-> 
+# switch to a specific doc
+> doc switch njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
+Active doc is now njszszvg…
+
+doc: njszszvg…
+
+> doc share write
+xvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcaidiaglyldhfvq4xeaa5cqswdistl2hje3c24biacig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66cs
+
+# or use --doc flag to get the ticket for a specific doc
+> doc share write --doc 3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhljfkldiajjkannnnjiejfkldkaskjlxi0jfwoqppiemxclpilkdipljqhixkkwmhziufkhablskhdjjlllqwoooqusiuypwouuuuippmjkk
+
 ```
 
 

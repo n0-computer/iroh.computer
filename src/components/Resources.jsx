@@ -12,7 +12,7 @@ import {UsersIcon} from '@/components/icons/UsersIcon';
 
 const resources = [
   {
-    href: '/commands',
+    href: '/docs/commands',
     name: 'Commands',
     description:
       'Learn the Iroh API from the console & in your language',
