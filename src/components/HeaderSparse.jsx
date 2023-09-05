@@ -28,7 +28,7 @@ export function HeaderSparse() {
   }
 
   return (
-    <nav id="navbar" className="fixed w-full transition-colors ease-in duration-1000">
+    <nav id="navbar" className={clsx("fixed w-full transition-colors ease-in duration-1000 animate-all", mobileMenuOpen && 'backdrop-blur-md')}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="relative flex items-center justify-between h-20">
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
@@ -60,7 +60,7 @@ export function HeaderSparse() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div id="mobile-menu" className={clsx("bg-irohGray-100 sm:hidden transition-colors ease-in duration-1000", mobileMenuOpen ? "hidden" : "block")} aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
+      <div id="mobile-menu" className={clsx("backdrop-blur-md drop-shadow-md sm:hidden transition-colors ease-in duration-1000", mobileMenuOpen ? "block" : "hidden")} aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
         <div className="px-2 pt-2 pb-3 space-y-1">
           {navItems.map((item, i ) => {
             return <Link key={i} href={item.href} className="text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
