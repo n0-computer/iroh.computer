@@ -2,7 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "doc new",
-    description: "Create a new blank document."
+    description: "Create a new blank document."
 }
 
 <div className='not-prose mb-5'>
@@ -14,7 +14,7 @@ export const metadata = {
 
 # doc new
 
-Create a new blank document. {{ className: 'lead' }}
+Create a new blank document. {{ className: 'lead' }}
 
 
 
@@ -24,6 +24,31 @@ Create a new blank document. {{ className: 'lead' }}
 ```text {{ title: 'console' }}
 > doc new
 ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		// real programs handle errors!
+		panic(err)
+	}
+
+	doc, err := node.DocNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created document %s\n", doc.Id())
+}
+
 ```
 
 

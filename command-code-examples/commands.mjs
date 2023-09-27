@@ -1,77 +1,24 @@
 
 const doc = [
   {
-    name: 'doc switch',
-    description: 'Set the active document (only works within the Iroh console).',
-    slug: 'doc-switch',
-    arguments: [
-      { name: 'id', necessity: 'required', description: 'The [identifier](/docs/layers/documents#document-identifiers) of the document to switch to.' },
-    ],
-    examples: {
-      console: `> doc new
-ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
-
-> doc switch ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
-
-doc:ktrygcpx
->`,
-    }
-  },
-  {
-    name: 'doc new',  
-    description: 'Create a new blank document.',
-    slug: 'doc-new',
-    examples: {
-      console: `> doc new
-ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
-    }
-  },
-  {
-    name: 'doc join',  
-    description: 'Join a document from a ticket.',
-    slug: 'doc-join',
-    arguments: [
-      { name: 'ticket', necessity: 'required', description: 'The ticket to join a document. Create a ticket with \'doc share\'.' },
-      { name: 'switch', necessity: '', description: 'Switch to the joined document (only in the iroh console).'}
-    ],
-    examples: {
-      console: `> doc join --switch 6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcai55pmzg4d3x34mcpuydxoq4t5ec66zp3k3ouxwadxky745i3dwrhqcig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap
-tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua`,
-    }
-  },
-  {
     name: 'doc list',  
     description: 'List documents on this node.',
     slug: 'doc-list',
     examples: {
       console: `> doc list
-tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
-3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
-njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq`,
+      tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+      3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+      njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq`,
     }
   },
   {
-    name: 'doc share', 
-    description: 'Share a document with peers.',
-    slug: 'doc-share',
-    arguments: [
-      { name: 'mode', necessity: 'required', description: 'One of \'read\' for Read-only access or \'write\' for Write access.' },
-      { name: 'doc', necessity: 'required', description: 'Document to share. In the console the current document is used when no `--doc` is provided.' }
-    ],
+    name: 'doc new',  
+    description: 'Create a new blank document.',
+    slug: 'doc-new',
     examples: {
-      console: `# switch to a specific doc
-> doc switch njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
-Active doc is now njszszvg…
-
-doc: njszszvg…
-
-> doc share write
-xvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcaidiaglyldhfvq4xeaa5cqswdistl2hje3c24biacig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66cs
-
-# or use --doc flag to get the ticket for a specific doc
-> doc share write --doc 3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
-gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhljfkldiajjkannnnjiejfkldkaskjlxi0jfwoqppiemxclpilkdipljqhixkkwmhziufkhablskhdjjlllqwoooqusiuypwouuuuippmjkk
-` }
+      console: `> doc new
+ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea`,
+    }
   },
   {
     name: 'doc set',   
@@ -164,6 +111,59 @@ author:i3vpd4e7… doc:njszszvg…
 @i3vpd4e7…: foo = 6lujp3wx… (3 B)`,
     }
   },
+  {
+    name: 'doc share', 
+    description: 'Share a document with peers.',
+    slug: 'doc-share',
+    arguments: [
+      { name: 'mode', necessity: 'required', description: 'One of \'read\' for Read-only access or \'write\' for Write access.' },
+      { name: 'doc', necessity: 'required', description: 'Document to share. In the console the current document is used when no `--doc` is provided.' }
+    ],
+    examples: {
+      console: `# switch to a specific doc
+> doc switch njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
+Active doc is now njszszvg…
+
+doc: njszszvg…
+
+> doc share write
+xvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcaidiaglyldhfvq4xeaa5cqswdistl2hje3c24biacig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66cs
+
+# or use --doc flag to get the ticket for a specific doc
+> doc share write --doc 3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhljfkldiajjkannnnjiejfkldkaskjlxi0jfwoqppiemxclpilkdipljqhixkkwmhziufkhablskhdjjlllqwoooqusiuypwouuuuippmjkk
+  ` }
+  },
+  {
+    name: 'doc join',  
+    description: 'Join a document from a ticket.',
+    slug: 'doc-join',
+    arguments: [
+      { name: 'ticket', necessity: 'required', description: 'The ticket to join a document. Create a ticket with \'doc share\'.' },
+      { name: 'switch', necessity: '', description: 'Switch to the joined document (only in the iroh console).'}
+    ],
+    examples: {
+      console: `> doc join --switch 6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcai55pmzg4d3x34mcpuydxoq4t5ec66zp3k3ouxwadxky745i3dwrhqcig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap
+tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua`,
+    }
+  },
+  {
+    name: 'doc switch',
+    description: 'Set the active document (only works within the Iroh console).',
+    slug: 'doc-switch',
+    arguments: [
+      { name: 'id', necessity: 'required', description: 'The [identifier](/docs/layers/documents#document-identifiers) of the document to switch to.' },
+    ],
+    examples: {
+      console: `> doc new
+ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
+
+> doc switch ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
+
+doc:ktrygcpx
+>`,
+    }
+  },
 ]
 
 const author = [
@@ -185,7 +185,7 @@ author:wkl4cgry…
     }
   },
   { 
-    name: 'author list', 
+    name: 'author list',
     description: 'List authors.',
     slug: 'author-list',
     examples: {

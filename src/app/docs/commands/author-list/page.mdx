@@ -27,5 +27,36 @@ i3vpd4e7coeonwv6otni36bdux73opig5du6zjekvnl3c64gn4ua
 wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
 ```
 
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		panic(err)
+	}
+
+	if _, err := node.AuthorNew(); err != nil {
+		panic(err)
+	}
+
+	authors, err := node.AuthorList()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, author := range authors {
+		fmt.Println(author.ToString())
+	}
+}
+
+```
+
 
 </CodeGroup>
