@@ -44,7 +44,6 @@ const libraries = [
   {
     href: 'https://github.com/n0-computer/iroh-go',
     name: 'Go',
-    comingSoon: true,
     description:
       'Iroh\'s go SDK uses the rust implementation via c-bindings.',
     logo: logoGo,
