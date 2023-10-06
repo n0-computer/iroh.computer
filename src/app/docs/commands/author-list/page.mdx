@@ -27,6 +27,23 @@ i3vpd4e7coeonwv6otni36bdux73opig5du6zjekvnl3c64gn4ua
 wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
 ```
 
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+author = node.author_new()
+print("Created author: {}".format(author.to_string()))
+
+authors = node.author_list()
+for auth in authors:
+    print("Author: {}".format(auth.to_string()))
+
+```
+
 ```swift {{ title: 'go' }}
 package main
 

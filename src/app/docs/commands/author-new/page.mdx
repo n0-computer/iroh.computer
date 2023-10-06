@@ -37,6 +37,19 @@ author:2rkuvpk4…
 >
 ```
 
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+author = node.author_new()
+print("Created author: {}".format(author.to_string()))
+
+```
+
 ```swift {{ title: 'go' }}
 package main
 
