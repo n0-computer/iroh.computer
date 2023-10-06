@@ -53,13 +53,23 @@ bar
 ```python {{ title: 'python' }}
 import iroh
 
-node = iroh.node()
-author = node.create_author()
-doc = node.create_doc()
+IROH_DATA_DIR = "./iroh-data"
 
-doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
 
-doc.get_bytes(bytes("foo", "utf8"))
+author = node.author_new()
+print("Created author: {}".format(author.to_string()))
+
+doc = node.doc_new()
+print("Created doc: {}".format(doc.id()))
+
+hash = doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+print("Inserted: {}".format(hash.to_string()))
+
+# FIXME: this doesn't work yet
+# content = doc.get_content_bytes(hash)
+# print("Got content: {}".format(content.decode("utf8")))
 ```
 
 ```swift {{ title: 'swift' }}
