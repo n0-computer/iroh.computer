@@ -21,6 +21,31 @@ const nextConfig = {
 
 export async function redirects() {
   return [
+    // api section used to be called "commands" 
+    {
+      source: '/docs/commands',
+      destination: '/docs/api',
+      permanent: true,
+    },
+
+    { source: '/docs/commands/author-list', destination: '/docs/api/author-list', permanent: true },
+    { source: '/docs/commands/author-new', destination: '/docs/api/author-new', permanent: true },
+    { source: '/docs/commands/author-switch', destination: '/docs/api/author-switch', permanent: true },
+    { source: '/docs/commands/blob-add', destination: '/docs/api/blob-add', permanent: true },
+    { source: '/docs/commands/blob-list-blobs', destination: '/docs/api/blob-list-blobs', permanent: true },
+    { source: '/docs/commands/blob-list-collections', destination: '/docs/api/blob-list-collections', permanent: true },
+    { source: '/docs/commands/blob-list-incomplete-blobs', destination: '/docs/api/blob-list-incomplete-blobs', permanent: true },
+    { source: '/docs/commands/blob-share', destination: '/docs/api/blob-share', permanent: true },
+    { source: '/docs/commands/blob-validate', destination: '/docs/api/blob-validate', permanent: true },
+    { source: '/docs/commands/doc-get', destination: '/docs/api/doc-get', permanent: true },
+    { source: '/docs/commands/doc-join', destination: '/docs/api/doc-join', permanent: true },
+    { source: '/docs/commands/doc-keys', destination: '/docs/api/doc-keys', permanent: true },
+    { source: '/docs/commands/doc-list', destination: '/docs/api/doc-list', permanent: true },
+    { source: '/docs/commands/doc-new', destination: '/docs/api/doc-new', permanent: true },
+    { source: '/docs/commands/doc-set', destination: '/docs/api/doc-set', permanent: true },
+    { source: '/docs/commands/doc-share', destination: '/docs/api/doc-share', permanent: true },
+    { source: '/docs/commands/doc-switch', destination: '/docs/api/doc-switch', permanent: true },
+
     // old design section
     {
       source: '/design',

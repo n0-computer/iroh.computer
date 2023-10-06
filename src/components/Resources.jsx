@@ -5,18 +5,18 @@ import {motion, useMotionTemplate, useMotionValue} from 'framer-motion';
 
 import {GridPattern} from '@/components/GridPattern';
 import {Heading} from '@/components/Heading';
-import {ChatBubbleIcon} from '@/components/icons/ChatBubbleIcon';
-import {EnvelopeIcon} from '@/components/icons/EnvelopeIcon';
+import {ArchiveBoxIcon} from '@heroicons/react/20/solid';
 import {UserIcon} from '@/components/icons/UserIcon';
 import {UsersIcon} from '@/components/icons/UsersIcon';
+import { CodeBracketIcon } from '@heroicons/react/20/solid';
 
 const resources = [
   {
-    href: '/docs/commands',
-    name: 'Commands',
+    href: '/docs/api',
+    name: 'API',
     description:
-      'Learn the Iroh API from the console & in your language',
-    icon: EnvelopeIcon,
+      'Learn the Iroh API from the console, and in your language',
+    icon: CodeBracketIcon,
     pattern: {
       y: 32,
       squares: [
@@ -30,7 +30,7 @@ const resources = [
     name: 'SDKs',
     description:
       'Iroh ships with SDKs for numerous languages and platforms',
-    icon: ChatBubbleIcon,
+    icon: ArchiveBoxIcon,
     pattern: {
       y: -6,
       squares: [

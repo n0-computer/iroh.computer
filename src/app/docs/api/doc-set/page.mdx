@@ -1,0 +1,181 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "doc set",
+    description: "Set an entry in a document"
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/api', current: false },
+        { name: 'doc set', href: '/api/doc-set', current: true },
+    ]} />
+</div>
+
+# doc set
+
+Set an entry in a document {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| key  | required | Key to the entry (parsed as UTF-8 string). |
+| value  | required | Content to store for this entry (parsed as UTF-8 string). |
+| author  | required | Author of this entry. Required unless the author is set through the console or the IROH_AUTHOR environment variable. |
+
+
+
+## Examples
+
+<CodeGroup title="doc set">
+```text {{ title: 'console' }}
+> doc new --switch
+created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
+
+> set "key" "value"
+@ydzwyyes…: key = azceusiw… (5 B)
+```
+
+```bash {{ title: 'CLI' }}
+# create an author if you haven't already
+$ IROH_AUTHOR=$(iroh author create)
+
+# create a document
+$ iroh doc new
+created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
+
+# set a key
+$ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set "key" "value"
+@ydzwyyes…: key = azceusiw… (5 B)
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+author = node.author_new()
+print("Created author: {}".format(author.to_string()))
+
+doc = node.doc_new()
+print("Created doc: {}".format(doc.id()))
+
+hash = doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+print("Inserted: {}".format(hash.to_string()))
+
+# FIXME: this doesn't work yet
+# content = doc.get_content_bytes(hash)
+# print("Got content: {}".format(content.decode("utf8")))
+```
+
+```swift {{ title: 'swift' }}
+import IrohLib
+
+let node = try! IroneNode()
+let author = try! node.createAuthor()
+let doc = try! Iroh.createDoc()
+
+let hash = try! doc.setBytes(author: author, key: "foo".data(using: .utf8)!, value: "bar".data(using: .utf8)!)
+let value = try! doc.getContentBytes(hash: hash)
+
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		// real programs handle errors!
+		panic(err)
+	}
+
+	author, err := node.AuthorNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created author %s\n", author.ToString())
+
+	doc, err := node.DocNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created document %s\n", doc.Id())
+
+	hash, err := doc.SetBytes(author, []byte("go"), []byte("says hello"))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Inserted %s\n", hash.ToString())
+
+	content, err := doc.GetContentBytes(hash)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Got content %q\n", string(content))
+}
+
+```
+
+```rust {{ title: 'rust' }}
+#![cfg(feature = "mem-db")]
+
+use anyhow::{anyhow, Result};
+use futures::StreamExt;
+
+use iroh::{
+    collection::IrohCollectionParser,
+    node::Node,
+    bytes::util::runtime,
+};
+use iroh_sync::store::GetFilter;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // build the node
+    let rt = runtime::Handle::from_currrent(1).unwrap();
+    let db = iroh::baomap::mem::Store::new(rt.clone());
+    let store = iroh_sync::store::memory::Store::default();
+    let node = Node::builder(db, store)
+        .collection_parser(IrohCollectionParser)
+        .runtime(&rt)
+        .bind_addr("127.0.0.1:0".parse()?);
+    
+    // start the node & create a client
+    let node = node.spawn().await?;
+    let client = node.client();
+
+    // create a document & author
+    let author = client.create_author().await?;
+    let doc = client.create_doc().await?;
+
+    // set the key "key" to "value"
+    let key = b"key";
+    let value = b"value";
+    doc.set_bytes(author, key.to_vec(), value.to_vec()).await?;
+    println!("key is set!");
+
+    // read the value back
+    let filter = GetFilter::latest().with_key(key);
+    let entry = doc.get(filter).await?.next().await.ok_or_else(|| anyhow!("entry not found"))??;
+    let content = doc.get_content_bytes(&entry).await?;
+    
+    println!("value bytes: {:?}", content);
+
+    Ok(())
+}
+```
+
+
+</CodeGroup>

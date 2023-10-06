@@ -1,0 +1,32 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "doc list",
+    description: "List documents on this node."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/api', current: false },
+        { name: 'doc list', href: '/api/doc-list', current: true },
+    ]} />
+</div>
+
+# doc list
+
+List documents on this node. {{ className: 'lead' }}
+
+
+
+## Examples
+
+<CodeGroup title="doc list">
+```text {{ title: 'console' }}
+> doc list
+      tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+      3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+      njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
+```
+
+
+</CodeGroup>

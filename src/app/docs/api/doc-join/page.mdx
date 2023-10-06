@@ -1,0 +1,89 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "doc join",
+    description: "Join a document from a ticket."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/api', current: false },
+        { name: 'doc join', href: '/api/doc-join', current: true },
+    ]} />
+</div>
+
+# doc join
+
+Join a document from a ticket. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| ticket  | required | The ticket to join a document. Create a ticket with &#39;doc share&#39;. |
+| switch  |  | Switch to the joined document (only in the iroh console). |
+
+
+
+## Examples
+
+<CodeGroup title="doc join">
+```text {{ title: 'console' }}
+> doc join --switch 6tcadaassjgjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mxvqmruwqvq5l5vc4kvybeybxaaehhlf5mmh72ojerj4e2tcvoajganyabbz2zplnqhpyekxzhlfzyvlqcai55pmzg4d3x34mcpuydxoq4t5ec66zp3k3ouxwadxky745i3dwrhqcig3rqqdifkjjb3drfbo2krc7l3anoqly5wanom756kxmrqnap
+tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+# you'll need to get a ticket from somewhere, see the `doc share` command documentation
+# for details. This ticket will fail to join, but is a valid ticket.
+TICKET_STRING = "sdx7wazju2rysqydgfpmhqkrluc5lbcuainravjipwmbl7r3k3uqcigncyopdcnooufnteu5vuatpzhoqrml35ifgyuozr6kwhjiz4jxyaaqcbiajbmsainmsmbqcjqaibavg5hiaaaaaaaaaaabad47sebqbqfiiqzkzeydadakqrckvsjqgajgabaecu3u5aaaaaaaaaaaaeagt6iqg"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+doc_ticket = iroh.DocTicket.from_string(TICKET_STRING)
+doc = node.doc_join(doc_ticket)
+print("Joined doc: {}".format(doc.id()))
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+// you'll need to get a ticket from somewhere, see the `doc share` command documentation
+// for details. This ticket will fail to join, but is a valid ticket.
+const ticketString = "sdx7wazju2rysqydgfpmhqkrluc5lbcuainravjipwmbl7r3k3uqcigncyopdcnooufnteu5vuatpzhoqrml35ifgyuozr6kwhjiz4jxyaaqcbiajbmsainmsmbqcjqaibavg5hiaaaaaaaaaaabad47sebqbqfiiqzkzeydadakqrckvsjqgajgabaecu3u5aaaaaaaaaaaaeagt6iqg"
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		panic(err)
+	}
+
+	ticket, err := iroh.DocTicketFromString(ticketString)
+	if err != nil {
+		panic(err)
+	}
+
+	doc, err := node.DocJoin(ticket)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Joined doc: %s", doc.Id())
+}
+
+```
+
+
+</CodeGroup>
