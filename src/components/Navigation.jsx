@@ -193,7 +193,7 @@ export const navigation = [
       {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
       {title: 'SDKs', href: '/docs/sdks'},
-      {title: 'Commands', href: '/docs/commands'}
+      {title: 'API', href: '/docs/api'},
     ],
   },
   {title: 'Concepts',

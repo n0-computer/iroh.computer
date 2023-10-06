@@ -1,0 +1,78 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "author new",
+    description: "Create a new author."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'Commands', href: '/api', current: false },
+        { name: 'author new', href: '/api/author-new', current: true },
+    ]} />
+</div>
+
+# author new
+
+Create a new author. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| switch  |  | Switch to the created author (only in the iroh console). |
+
+
+
+## Examples
+
+<CodeGroup title="author new">
+```text {{ title: 'console' }}
+> author new --switch
+2rkuvpk4prtjbqh7rnksaet3a3hdvrrz5mqinjcjbutklotort5a
+Active author is now 2rkuvpk4…
+
+author:2rkuvpk4…
+>
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+author = node.author_new()
+print("Created author: {}".format(author.to_string()))
+
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		panic(err)
+	}
+
+	author, err := node.AuthorNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created author %s\n", author.ToString())
+}
+
+```
+
+
+</CodeGroup>
