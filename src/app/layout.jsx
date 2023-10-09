@@ -13,14 +13,14 @@ export const metadata = {
 };
 
 export default async function RootLayout({children}) {
-  const pages = await glob('**/*.mdx', {cwd: 'src/app'});
-  let allSections = await Promise.all(
+  let pages = await glob('**/*.mdx', {cwd: 'src/app'});
+  let allSectionEntries = await Promise.all(
       pages.map(async (filename) => [
         '/' + filename.replace(/(^|\/)page\.mdx$/, ''),
         (await import(`./${filename}`)).sections,
       ]),
   );
-  allSections = Object.fromEntries(allSections);
+  let allSections = Object.fromEntries(allSectionEntries);
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>

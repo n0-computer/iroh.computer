@@ -5,7 +5,6 @@ import {Heading} from '@/components/Heading';
 import logoGo from '@/images/logos/go.svg';
 import logoKotlin from '@/images/logos/kotlin.svg';
 import logoPython from '@/images/logos/python.svg';
-import logoRuby from '@/images/logos/ruby.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
 import { Tag } from '@/components/Tag';
@@ -21,7 +20,6 @@ const libraries = [
   {
     href: 'https://github.com/n0-computer/iroh-python',
     name: 'Python',
-    comingSoon: true,
     description:
       'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
     logo: logoPython,
