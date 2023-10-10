@@ -1,11 +1,7 @@
-'use client';
-
-import {usePathname} from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
 
 import {Heading} from '@/components/Heading';
-import {Prose} from '@/components/Prose';
 
 export const a = Link;
 export {Button} from '@/components/Button';
@@ -14,31 +10,8 @@ export {TabGroup} from '@/components/Tabs';
 import {pathLayout} from './Layout';
 
 // for some silly reason this _must_ be exported as lower-case "wrapper"
-// which irritates the linter. Linter is disabled for the moment
 export function wrapper({children}) {
-  /* eslint-disable react-hooks/rules-of-hooks */
-  const path = usePathname();
-
-  switch (pathLayout(path)) {
-    case 'docs':
-      return (
-        <article className="flex h-full flex-col pb-10 pt-16">
-          <Prose className="flex-auto">{children}</Prose>
-          <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
-          </footer>
-        </article>
-      );
-    case 'spec':
-      return (
-        <article className="flex h-full flex-col pb-10 pt-16">
-          <Prose className="flex-auto">{children}</Prose>
-          <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
-          </footer>
-        </article>
-      );
-    default:
-      return <>{children}</>;
-  }
+  return <>{children}</>
 }
 
 export const h2 = function H2(props) {
