@@ -1,0 +1,69 @@
+import Image from 'next/image';
+
+import { Resources, Resource } from '@/components/Resources';
+import logoSwift from '@/images/logos/swift.svg';
+import Breadcrumbs from '@/components/Breadcrumbs';
+
+export const metadata = {
+  title: 'Iroh Swift SDK',
+  description:
+    'Iroh in Swift',
+};
+
+<div className='not-prose mb-5'>
+  <Breadcrumbs pages={[
+      { name: 'SDKs', href: '/docs/sdks', current: false },
+      { name: 'Swift', href: '/docs/sdks/swift', current: true },
+  ]} />
+</div>
+
+<div className='not-prose mb-5'>
+  <Image
+    src={logoSwift}
+    alt=""
+    className="h-20 w-20 -ml-4"
+    unoptimized
+  />
+</div>
+
+# Iroh Swift SDK
+
+Iroh in your iOS or MacOS app! {{ className: 'lead' }}
+
+Iroh is purpose-built for mobile.
+
+## Getting Started
+
+Install [`the iroh swift package`](https://pypi.org/project/iroh) with [pip](https://pip.pypa.io/en/stable/):
+
+```bash
+$ pip install iroh
+```
+
+## Learning the API
+
+<Note>
+  The Swift SDK is missing package documentation, the best reference to use for now is the [API documentation](/docs/api)
+</Note>
+
+The [API documentation](/docs/api) is the best place to learn about the API. Each command includes a swift example to help build your understanding of how Iroh works, which you can compose together to meet your needs.
+
+<Resources>
+  <Resource
+    href='https://github.com/n0-computer/iroh-ffi'
+    name='Github Repo'
+    description='source for the iroh swift package, which is generated from the iroh-ffi crate'
+    icon='CodeBracketIcon'
+    pattern={{ y: 24, squares: [[-1, 2], [1, 3]] }}
+    />
+</Resources>
+
+<Resources title='Examples'>
+  <Resource
+    href='/docs/examples/ios-starter'
+    name='iOS Starter'
+    description='get started with iroh in your iOS app'
+    icon='ArchiveBoxIcon'
+    pattern={{ y: 24, squares: [[-1, 2], [1, 3]] }}
+    />
+</Resources>

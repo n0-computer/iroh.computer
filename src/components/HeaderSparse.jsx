@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import React, {useState} from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
 
-function TopLevelNavItem({href, children}) {
+function TopLevelNavItem({key, href, children}) {
   return (
-    <li>
+    <li key={key}>
       <Link
         href={href}
         // className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -21,7 +21,8 @@ function TopLevelNavItem({href, children}) {
 }
 
 export function HeaderSparse() {
-  let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = [false, () => {}];
 
   function toggleMobileMenu() {
     setMobileMenuOpen(!mobileMenuOpen);

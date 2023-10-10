@@ -5,36 +5,33 @@ import {Heading} from '@/components/Heading';
 import logoGo from '@/images/logos/go.svg';
 import logoKotlin from '@/images/logos/kotlin.svg';
 import logoPython from '@/images/logos/python.svg';
-import logoRuby from '@/images/logos/ruby.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
 import { Tag } from '@/components/Tag';
 
 const libraries = [
   {
-    href: 'https://github.com/n0-computer/iroh',
+    href: '/docs/sdks/rust',
     name: 'Rust',
     description:
       'The core of iroh is written in rust, and can be used by directly importing iroh crates.',
     logo: logoRust,
   },
   {
-    href: 'https://github.com/n0-computer/iroh-python',
+    href: '/docs/sdks/python',
     name: 'Python',
-    comingSoon: true,
     description:
       'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
     logo: logoPython,
   },
   {
-    href: 'https://github.com/n0-computer/iroh-swift',
+    href: '/docs/sdks/swift',
     name: 'Swift',
     description:
       'Build native iOS apps with iroh\'s swift SDK, tested with SwiftUI, works with uikit.',
     logo: logoSwift,
   },
   {
-    href: 'https://github.com/n0-computer/iroh-kotlin',
     name: 'Kotlin',
     comingSoon: true,
     description:
@@ -42,7 +39,7 @@ const libraries = [
     logo: logoKotlin,
   },
   {
-    href: 'https://github.com/n0-computer/iroh-go',
+    href: '/docs/sdks/go',
     name: 'Go',
     description:
       'Iroh\'s go SDK uses the rust implementation via c-bindings.',
@@ -69,11 +66,11 @@ export function Libraries() {
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {library.description}
               </p>
-              <p className="mt-4">
+              {library.href && <p className="mt-4">
                 <Button href={library.href} variant="text" arrow="right">
-                  More on GitHub
+                  Read more
                 </Button>
-              </p>
+              </p>}
             </div>
             <Image
               src={library.logo}

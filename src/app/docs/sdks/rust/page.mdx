@@ -1,0 +1,85 @@
+import Image from 'next/image';
+
+import Breadcrumbs from '@/components/Breadcrumbs';
+import { Resources, Resource } from '@/components/Resources';
+import logoRust from '@/images/logos/rust.svg';
+
+export const metadata = {
+  title: 'Iroh Rust',
+  description:
+    'Iroh in Rust',
+};
+
+<div className='not-prose mb-5'>
+  <Breadcrumbs pages={[
+      { name: 'SDKs', href: '/docs/sdks', current: false },
+      { name: 'Rust', href: '/docs/sdks/rust', current: true },
+  ]} />
+</div>
+
+<div className='not-prose mb-5'>
+  <Image
+    src={logoRust}
+    alt=""
+    className="h-20 w-20 -ml-4"
+    unoptimized
+  />
+</div>
+
+# Iroh in Rust
+
+The reference implementation iroh is written in rust. {{ className: 'lead' }}
+
+The iroh crate defines both the iroh library and iroh console. To work with iroh, add the following dependencies in your `Cargo.toml` file:
+
+```toml {{ title: 'Cargo.toml' }}
+[dependencies]
+iroh = "0.6.0"
+```
+
+Iroh is built with the `tokio` runtime, and includes numerous feature flags that customize it's behaviour. See the [rust API documentation](https://docs.rs/iroh/) for more information.
+
+## Learning the API
+
+The [API documentation](https://docs.rs/iroh/) is the best place to learn about the API. Each command includes a rust example to help build your understanding of how Iroh works, which you can compose together to meet your needs.
+
+<Resources>
+  <Resource
+    href='https://crates.io/crates/iroh'
+    name='Iroh Crate (crates.io)'
+    description='The iroh crate defines both the iroh library and iroh command-line interface (CLI).'
+    icon='ArchiveBoxIcon'
+    pattern={{ y: -6, squares: [[-1, 2], [1, 3]] }}
+  />
+  <Resource
+    href='https://docs.rs/iroh/'
+    name='Rust Documentation (docs.rs)'
+    description='The docs.rs documentation built from rust source code'
+    icon='ArchiveBoxIcon'
+    pattern={{ y: 10, squares: [[0, 2], [1, 3]] }}
+  />
+  <Resource
+    href='https://github.com/n0-computer/iroh'
+    name='Github Repo'
+    description='Iroh source code'
+    icon='CodeBracketIcon'
+    pattern={{ y: 24, squares: [[-1, 2], [1, 3]] }}
+    />
+</Resources>
+
+<Resources title='Examples'>
+  <Resource
+    href='https://github.com/n0-computer/iroh/tree/main/iroh/examples'
+    name='Rust Examples'
+    description='Additional examples are in the iroh crate'
+    icon='ArchiveBoxIcon'
+    pattern={{ y: 24, squares: [[-1, 2], [1, 3]] }}
+    />
+  <Resource
+    href='/docs/examples/todos'
+    name='todos app example'
+    description='A sample app built with iroh in rust & Tauri'
+    icon='CodeBracketIcon'
+    pattern={{ y: 32, squares: [[0, 2], [1, 4]]}}
+    />
+</Resources>
