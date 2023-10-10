@@ -2,86 +2,23 @@
 
 import Link from 'next/link';
 import {motion, useMotionTemplate, useMotionValue} from 'framer-motion';
+import {ArchiveBoxIcon} from '@heroicons/react/20/solid';
+import { CodeBracketIcon } from '@heroicons/react/20/solid';
 
 import {GridPattern} from '@/components/GridPattern';
 import {Heading} from '@/components/Heading';
-import {ArchiveBoxIcon} from '@heroicons/react/20/solid';
 import {UserIcon} from '@/components/icons/UserIcon';
 import {UsersIcon} from '@/components/icons/UsersIcon';
-import { CodeBracketIcon } from '@heroicons/react/20/solid';
 
-const resources = [
-  {
-    href: '/docs/api',
-    name: 'API',
-    description:
-      'Learn the Iroh API from the console, and in your language',
-    icon: CodeBracketIcon,
-    pattern: {
-      y: 32,
-      squares: [
-        [0, 2],
-        [1, 4],
-      ],
-    },
-  },
-  {
-    href: '/docs/sdks',
-    name: 'SDKs',
-    description:
-      'Iroh ships with SDKs for numerous languages and platforms',
-    icon: ArchiveBoxIcon,
-    pattern: {
-      y: -6,
-      squares: [
-        [-1, 2],
-        [1, 3],
-      ],
-    },
-  },
-  {
-    href: '/docs/examples/todos',
-    name: 'Todos Example',
-    description:
-      'See iroh in the classic TODO app example, with a CLI & desktop GUI',
-    icon: UserIcon,
-    pattern: {
-      y: 16,
-      squares: [
-        [0, 1],
-        [1, 3],
-      ],
-    },
-  },
-  // TODO: finish first draft of spec
-  // {
-  //   href: '/spec',
-  //   name: 'Spec',
-  //   description:
-  //     'Read the work-in-progress iroh specification',
-  //   icon: EnvelopeIcon,
-  //   pattern: {
-  //     y: 32,
-  //     squares: [
-  //       [0, 2],
-  //       [1, 4],
-  //     ],
-  //   },
-  // },
-  {
-    href: '/docs/ipfs',
-    name: 'iroh & IPFS',
-    description:
-      'Iroh is an IPFS system.',
-    icon: UsersIcon,
-    pattern: {
-      y: 22,
-      squares: [[0, 1]],
-    },
-  },
-];
+export const icons = {
+  'CodeBracketIcon': CodeBracketIcon,
+  'ArchiveBoxIcon': ArchiveBoxIcon,
+  'UserIcon': UserIcon,
+  'UsersIcon': UsersIcon,
+};
 
-function ResourceIcon({icon: Icon}) {
+function ResourceIcon({ icon }) {
+  const Icon = icons[icon];
   return (
     <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-irohPurple-300/10 dark:group-hover:ring-irohPurple-400">
       <Icon className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-irohPurple-300/10 dark:group-hover:stroke-irohPurple-400" />
@@ -124,9 +61,16 @@ function ResourcePattern({mouseX, mouseY, ...gridProps}) {
   );
 }
 
-function Resource({resource}) {
+export function Resource({ href, pattern, icon, name, description }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  pattern = pattern || {
+    y: 16,
+    squares: [
+      [0, 1],
+      [1, 3],
+    ],
+  };
 
   function onMouseMove({currentTarget, clientX, clientY}) {
     const {left, top} = currentTarget.getBoundingClientRect();
@@ -136,38 +80,36 @@ function Resource({resource}) {
 
   return (
     <div
-      key={resource.href}
+      key={href}
       onMouseMove={onMouseMove}
       className="group relative flex rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5"
     >
-      <ResourcePattern {...resource.pattern} mouseX={mouseX} mouseY={mouseY} />
+      <ResourcePattern {...pattern} mouseX={mouseX} mouseY={mouseY} />
       <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
       <div className="relative rounded-2xl px-4 pb-4 pt-16">
-        <ResourceIcon icon={resource.icon} />
+        <ResourceIcon icon={icon} />
         <h3 className="mt-4 text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
-          <Link href={resource.href}>
+          <Link href={href}>
             <span className="absolute inset-0 rounded-2xl" />
-            {resource.name}
+            {name}
           </Link>
         </h3>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          {resource.description}
+          {description}
         </p>
       </div>
     </div>
   );
 }
 
-export function Resources() {
+export function Resources({ title, children }) {
   return (
     <div className="my-16 xl:max-w-none">
       <Heading level={2} id="resources">
-        Resources
+        {title || 'Resources'}
       </Heading>
       <div className="not-prose mt-4 grid grid-cols-1 gap-8 border-t border-zinc-900/5 pt-10 dark:border-white/5 sm:grid-cols-2 xl:grid-cols-4">
-        {resources.map((resource) => (
-          <Resource key={resource.href} resource={resource} />
-        ))}
+        {children}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import {Guides} from '@/components/Guides'
-import {Resources} from '@/components/Resources'
+import {Resources, Resource} from '@/components/Resources'
 import {HeroPattern} from '@/components/HeroPattern'
 
 export const metadata = {
@@ -19,9 +19,11 @@ export const sections = [
 
 Iroh is a protocol for syncing bytes. Bytes of any size, across any number of devices. Use iroh to create apps that scale different. {{className: 'lead'}}
 
-<div className="not-prose mb-16 mt-6 flex gap-3">
-  <Button href="/docs/quickstart" arrow="right" children="Quickstart" />
-  <Button href="/docs/install" variant="outline" children="Install" />
+<div className="not-prose">
+  <div className="mb-16 mt-6 flex gap-3">
+    <Button href="/docs/quickstart" arrow="right" children="Quickstart" />
+    <Button href="/docs/install" variant="outline" children="Install" />
+  </div>
 </div>
 
 {/* ## Getting started {{anchor: false}}
@@ -39,4 +41,40 @@ The best place to start is by reading the overview, a high level look at the pro
 
 <Guides />
 
-<Resources />
+<Resources>
+  <Resource
+    href='/docs/api'
+    name='API'
+    description='Learn the Iroh API from the console, and in your language'
+    icon='CodeBracketIcon'
+    pattern={{ y: 32, squares: [[0, 2], [1, 4]] }}
+  />
+  <Resource
+    href='/docs/sdks'
+    name='SDKs'
+    description='Iroh ships with SDKs for numerous languages and platforms'
+    icon='ArchiveBoxIcon'
+    pattern={{ y: -6, squares: [[-1, 2], [1, 3]] }}
+  />
+  <Resource
+    href='/docs/examples/todos'
+    name='Todos Example'
+    description='See iroh in the classic TODO app example, with a CLI & desktop GUI'
+    icon='UserIcon'
+    pattern={{ y: 16, squares:[[0, 1],[1, 3]] }}
+  />
+  {/* <Resource
+    href='/docs/spec'
+    name='Spec'
+    description='Read the work-in-progress iroh specification'
+    icon='EnvelopeIcon'
+    pattern={{ y: 32, squares: [[0, 2],[1, 4]] }}
+  /> */}
+  <Resource
+    href='/docs/ipfs'
+    name='iroh & IPFS'
+    description='Iroh is an IPFS system.'
+    icon='UsersIcon'
+    pattern={{ y: 22, squares: [[0, 1]] }}
+  />
+</Resources>
