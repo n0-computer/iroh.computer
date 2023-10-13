@@ -9,6 +9,10 @@ const doc = [
       tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
       3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
       njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq`,
+      cli: `$ iroh doc list
+      tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+      3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+      njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq`
     }
   },
   {
@@ -228,25 +232,6 @@ Adding my_txt.txt as /Users/me/my_txt.txt...
 Total: 328 B
 
 Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`,
-    }
-  },
-  { 
-    name: 'blob share',
-    description: 'Download data to the running provider\'s database and provide it.',
-    slug: 'blob-share',
-    arguments: [
-      { name: 'hash', required: '', description: 'Hash to get, required unless ticket is specified.' },
-      { name: 'recursive', required: '', description: 'Treat as collection, required unless ticket is specified [possible values: true, false].'},
-      { name: 'peer', required: '', description: 'PublicKey of the provider.' },
-      { name: 'addr', required: '', description: 'Addresses of the provider.' },
-      { name: 'derp-region', required: '', description: 'DERP region ID of the provider.' },
-      { name: 'token', required: '', description: 'Base32-encoded request token to use for authentication, if any.' },
-      { name: 'ticket', required: '', description: 'Base32-encoded ticket to use for fetching.' },
-      { name: 'out', required: '', description: 'Directory in which to save the file(s).' },
-      { name: 'stable', required: '', description: 'If this is set to true, the data will be moved to the output directory, and iroh will assume that it will not change.'}
-    ],
-    examples: {
-      console: `> `,
     }
   },
   { 
