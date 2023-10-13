@@ -201,7 +201,7 @@ export const navigation = [
       {title: 'Documents', href: '/docs/layers/documents'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
       {title: 'Connections', href: '/docs/layers/connections'},
-      // {title: 'Anchors', href: '/docs/anchors'},
+      {title: 'Anchors', href: '/docs/concepts/anchors'},
     ],
   },
   {
