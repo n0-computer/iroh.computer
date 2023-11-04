@@ -28,5 +28,131 @@ List documents on this node. {{ className: 'lead' }}
       njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
 ```
 
+```bash {{ title: 'CLI' }}
+$ iroh doc list
+      tiqpal5qnrb3idy7g4n7hnh5esex7zu6jtqyuwt6hr4iq2nnlpua
+      3ogcanavjfehmoeuf3jkel5pmbv2bpdwybvzt7xzk5sgbub72mia
+      njszszvgpziwnxqnsi32nmc7j2czs2rnj3m7czavudurqxld3nbq
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+# create a document
+doc = node.doc_new()
+print("Created doc: {}".format(doc.id()))
+
+# create a second document
+doc = node.doc_new()
+print("Created doc: {}".format(doc.id()))
+
+# list all your documents
+docs = node.doc_list();
+print("List all {} docs:".format(len(docs)))
+for doc in docs:
+    print("\t{}".format(doc.to_string()))
+
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode()
+	if err != nil {
+		// real programs handle errors!
+		panic(err)
+	}
+
+	// create one document
+	doc, err := node.DocNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created document %s\n", doc.Id())
+
+	// create a second document
+	doc, err := node.DocNew()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Created document %s\n", doc.Id())
+
+	// list all your documents
+	docs, err := node.DocList()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Listing all %d documents:\n", len(docs))
+	for _, doc_id := range docs {
+		fmt.Printf("\t%s\n", doc_id.ToString())
+	}
+}
+
+```
+
+```rust {{ title: 'rust' }}
+#![cfg(feature = "mem-db")]
+
+use anyhow::{anyhow, Result};
+use futures::StreamExt;
+
+use iroh::{bytes::util::runtime, collection::IrohCollectionParser, node::Node};
+use iroh_sync::store::GetFilter;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // build the node
+    let rt = runtime::Handle::from_currrent(1).unwrap();
+    let db = iroh::baomap::mem::Store::new(rt.clone());
+    let store = iroh_sync::store::memory::Store::default();
+    let node = Node::builder(db, store)
+        .collection_parser(IrohCollectionParser)
+        .runtime(&rt)
+        .bind_addr("127.0.0.1:0".parse()?);
+
+    // start the node & create a client
+    let node = node.spawn().await?;
+    let client = node.client();
+
+    // create a document & author
+    let author = client.create_author().await?;
+    let doc = client.create_doc().await?;
+
+    // set the key "key" to "value"
+    let key = b"key";
+    let value = b"value";
+    doc.set_bytes(author, key.to_vec(), value.to_vec()).await?;
+    println!("key is set!");
+
+    // read the value back
+    let filter = GetFilter::latest().with_key(key);
+    let entry = doc
+        .get(filter)
+        .await?
+        .next()
+        .await
+        .ok_or_else(|| anyhow!("entry not found"))??;
+    let content = doc.get_content_bytes(&entry).await?;
+
+    println!("value bytes: {:?}", content);
+
+    Ok(())
+}
+
+```
+
 
 </CodeGroup>
