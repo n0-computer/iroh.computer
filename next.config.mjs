@@ -13,14 +13,15 @@ const withMDX = nextMDX({
   },
 })
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
-}
-
-
-export async function redirects() {
+const redirects = async () => {
   return [
+    {
+      source: '/discord',
+      destination: 'https://discord.gg/jDg6mWXt',
+      basePath: false,
+      permanent: false,
+    },
+
     // api section used to be called "commands" 
     {
       source: '/docs/commands',
@@ -75,6 +76,13 @@ export async function redirects() {
       permanent: true,
     },
   ]
+}
+
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
+  redirects,
 }
 
 export default withSearch(withMDX(nextConfig))
