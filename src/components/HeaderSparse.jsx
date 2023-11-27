@@ -6,9 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
 
-function TopLevelNavItem({key, href, children}) {
+function TopLevelNavItem({ href, children}) {
   return (
-    <li key={key}>
+    <li>
       <Link
         href={href}
         // className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -21,8 +21,7 @@ function TopLevelNavItem({key, href, children}) {
 }
 
 export function HeaderSparse() {
-  // let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = [false, () => {}];
+  let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function toggleMobileMenu() {
     setMobileMenuOpen(!mobileMenuOpen);

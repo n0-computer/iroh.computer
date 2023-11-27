@@ -1,32 +1,312 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import {Guides} from '@/components/Guides';
-import {Resources} from '@/components/Resources';
 import {HeaderSparse} from '@/components/HeaderSparse';
 import {FooterMarketing} from '@/components/FooterMarketing';
+
+import logoGo from '@/images/logos/go.svg';
+import logoKotlin from '@/images/logos/kotlin.svg';
+import logoPython from '@/images/logos/python.svg';
+import logoRust from '@/images/logos/rust.svg';
+import logoSwift from '@/images/logos/swift.svg';
+
+import iconCarat from '@/images/icons/icon_carat.svg';
+import iconFaster from '@/images/icons/icon_faster.svg';
+import iconOpen from '@/images/icons/icon_open.svg';
+import iconPlatforms from '@/images/icons/icon_platforms.svg';
 
 export const metadata = {
   title: 'Iroh',
   description:
-    'Scale Different',
+    'Sync Anywhere',
 };
 
 <HeaderSparse />
 
-<div className="bg-irohGray-900 text-irohGray-700 h-screen justify-between font-space">
-  <main className="mb-auto flex flex-col min-h-screen">
-    <section className="min-h-screen bg-iroh-kv-1 pt-40 bg-cover">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 lg:mt-100">
-        <div className="mt-14 min-h-[70vh] sm:w-2/3 lg:w-6/12">
+<div className="bg-irohGray-900 text-irohGray-700 h-92 justify-between font-space">
+  <main className="mb-auto flex flex-col min-h-92">
+
+    {/* header */}
+    <section className="min-h-92 bg-iroh-kv-1 pt-40 bg-cover">
+      <div className="max-w-6xl mx-auto px-4 lg:mt-100">
+        <div className="mt-14 min-h-[70vh] sm:w-2/3 lg:w-1/2">
           <h1 className="text-4xl font-space-mono leading-tight">
-            A data syncing layer<br />that just works.
+            Sync Anywhere
           </h1>
-          <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing bytes.<br />It\'s open source, peer-2-peer, and works on your phone.</h3>
-          <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Join the Beta</a>
+          <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing data. It's Open source, connects devices directly, and works nearly anywhere.</h3>
+          <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Join+Beta+Click">Join the Beta</a>
         </div>
       </div>
     </section>
+
+    {/* features */}
+    <section className='text-irohGray-100 py-20'>
+      <div className='max-w-6xl mx-auto px-4 md:flex md:gap-x-20'>
+        <div className='mb-10 md:w-1/3'>
+          <Image
+            src={iconOpen}
+            alt=""
+            className="h-12 w-12 float-left md:float-none"
+            unoptimized
+            />
+          <div className='pl-20 md:pl-0'>
+            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Live collaborate on anything</h2>
+            <p>Invite multiple users to a shared key-value store from any device. Iroh syncs for you, with hooks to read & write changes.</p>
+          </div>
+        </div>
+        <div className='mb-10 md:w-1/3'>
+          <Image
+            src={iconPlatforms}
+            alt=""
+            className="h-12 w-12 float-left md:float-none"
+            unoptimized
+            />
+          <div className='pl-20 md:pl-0'>
+            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>No central server required</h2>
+            <p>Iroh establishes direct connections between devices for you, traversing across network address translation (NATs) with best-in-class connection rates.</p>
+          </div>
+        </div>
+        <div className='mb-10 md:w-1/3'>
+          <Image
+            src={iconFaster}
+            alt=""
+            className="h-12 w-12 float-left md:float-none"
+            unoptimized
+            />
+          <div className='pl-20 md:pl-0'>
+            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Auto-resuming transfer</h2>
+            <p>Work with data of any size, including sizes that don't fit on a fit on a single device.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* use cases */}
+    <section className='bg-white py-20'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='md:w-2/3 mb-10'>
+          <Image
+            src={iconCarat}
+            alt=""
+            className="h-8 w-8 mb-5 md:h-14 md:w-14 md:float-left"
+            unoptimized
+            />
+          <div className='md:pl-20'>
+            <h1 className='text-3xl mb-5'>Your own shared, programmable drive</h1>
+            <p>Expose data as a shared folder on your computer or phone free-to-use direct connections. Write code that reacts to changes &amp; write back to the drive on the fly.</p>
+            <a href="/files/download" className='inline-block my-4 p-3 px-4 border border-irohPurple-500 text-irohPurple-500 uppercase plausible-event-name=Home+Download+Zero+Drive+Click'>download zero drive</a>
+            {/* <a href="/files">learn more</a> */}
+          </div>
+        </div>
+        <div className='mt-20 md:flex md:gap-x-20 border-t pt-10'>
+          <div className='mb-10 md:w-1/3'>
+            <h2 className='text-xl mb-2'>Move data for free</h2>
+            <p>Direct connections don't come with a bill. With iroh it's possible to build & use zero-cost tooling.</p>
+          </div>
+          <div className='mb-10 md:w-1/3'>
+            <h2 className='text-xl mb-2'>Build self-sustaining networks</h2>
+            <p>users can start a movie on their computer, then transfer to their phone, bringing data with them.</p>
+          </div>
+          <div className='mb-10 md:w-1/3'>
+            <h2 className='text-xl mb-2'>Sync between services</h2>
+            <h2>write integrations into services</h2>
+            <a>See Integration Examples</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* iroh.network */}
+    <section className='text-irohGray-800 bg-iroh-kv-4 bg-cover pt-20 pb-40'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='max-w-md'>
+          <h2 className='text-xl text-irohPurple-500'>iroh.network</h2>
+          <h1 className='text-3xl mt-2 mb-4'>Seamless cloud backing</h1>
+          <p>Connect to a global network of iroh nodes that keep your data available at all times</p>
+          <a className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
+        </div>
+      </div>
+    </section>
+
+    {/* principled software & call-to-action */}
+    <section className='text-irohGray-100 py-20'>
+      <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10'>
+        <div className='lg:w-1/2 mb-10'>
+          <div className='flex space-x-6 mb-6'>
+            <div className=''>
+              <Image
+                src={logoPython}
+                alt=""
+                className="h-12 w-12"
+                unoptimized
+                />
+            </div>
+            <div className=''>
+              <Image
+                src={logoGo}
+                alt=""
+                className="h-16 w-16"
+                unoptimized
+                />
+            </div>
+            <div className=''>
+              <Image
+                src={logoRust}
+                alt=""
+                className="h-12 w-12"
+                unoptimized
+                />
+            </div>
+            <div className=''>
+              <Image
+                src={logoSwift}
+                alt=""
+                className="h-12 w-12"
+                unoptimized
+                />
+            </div>
+          </div>
+          <h1 className='text-2xl mb-2 lg:text-3xl lg:mb-4'>Build in your language</h1>
+          <p>Iroh supports a growing set of languages, embedding nodes directly in your project without any need to call out to an external API</p>
+          <Link href='/examples' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Start+Building+Click'>start building</Link>
+        </div>
+        <div className='lg:w-1/2 lg:mt-28'>
+        <CodeGroup title="doc get">
+```text {{ title: 'console' }}
+> doc new --switch
+dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
+Active doc is now dyyelvqq…
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:dyyelvqq…
+> doc get foo
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
+```
+
+```python {{ title: 'python' }}
+import iroh
+
+IROH_DATA_DIR = "./iroh-data"
+
+node = iroh.IrohNode(IROH_DATA_DIR)
+print("Started Iroh node: {}".format(node.node_id()))
+
+author = node.author()
+
+doc = node.doc.new()
+print("Created doc: {}".format(doc.id()))
+
+hash = doc.set_bytes(author, bytes("foo", "utf8"), bytes("bar", "utf8"))
+print("Inserted: {}".format(hash.to_string()))
+```
+
+```swift {{ title: 'swift' }}
+import IrohLib
+
+let node = try! IroneNode()
+let author = try! node.createAuthor()
+let doc = try! Iroh.createDoc()
+
+let hash = try! doc.setBytes(author: author, key: "foo".data(using: .utf8)!, value: "bar".data(using: .utf8)!)
+let value = try! doc.getContentBytes(hash: hash)
+
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh"
+)
+
+func main() {
+	node, _ := iroh.NewIrohNode()
+
+	doc, _ := node.DocNew()
+	fmt.Printf("Created document %s\n", doc.Id())
+
+	hash, _ := doc.SetBytes(node.defaultAuthor(), []byte("go"), []byte("says hello"))
+	fmt.Printf("Inserted %s\n", hash.ToString())
+
+	content, _ := doc.GetContentBytes(hash)
+	fmt.Printf("Got content %q\n", string(content))
+}
+
+```
+
+```rust {{ title: 'rust' }}
+use anyhow::{anyhow, Result};
+use futures::StreamExt;
+
+use iroh::{
+  bytes::util::runtime, 
+  collection::IrohCollectionParser,
+  node::Node,
+};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // build the node
+    let rt = runtime::Handle::from_currrent(1).unwrap();
+    let db = iroh::baomap::mem::Store::new(rt.clone());
+    let store = iroh_sync::store::memory::Store::default();
+    let node = Node::builder(db, store)
+        .collection_parser(IrohCollectionParser)
+        .runtime(&rt)
+        .bind_addr("127.0.0.1:0".parse()?);
+
+    // start the node & create a client
+    let node = node.spawn().await?;
+    let client = node.client();
+
+    // create a document
+    let doc_0 = client.create_doc().await?;
+    let doc_1 = client.create_doc().await?;
+
+    println!("List all docs:");
+    let doc_ids = client.doc_list().await?;
+    for doc_id in doc_ids.into_iter() {
+        println!("\t{doc_id}");
+    }
+
+    Ok(())
+}
+
+```
+
+
+</CodeGroup>
+
+        </div>
+      </div>
+    </section>
+
+    {/* call to action */}
+    <section className='bg-white py-20'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <Image
+          src={iconOpen}
+          alt=""
+          className="h-12 w-12 float-left md:float-none"
+          unoptimized
+          />
+        <div className=''>
+          <h1 className='text-3xl mt-6'>Install the CLI</h1>
+          <p>Install iroh now & jump into the <Link className='text-irohPurple-500 plausible-event-name=Home+Quickstart+Click' href="/docs/quickstart">quickstart.</Link></p>
+```bash
+$ curl -fsSL https://sh.iroh.computer/install.sh | bash
+$ iroh console --start
+```
+        </div>
+      </div>
+    </section>
+
   </main>
   <FooterMarketing />
 </div>
