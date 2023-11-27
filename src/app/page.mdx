@@ -34,7 +34,7 @@ export const metadata = {
             Sync Anywhere
           </h1>
           <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing data. It's Open source, connects devices directly, and works nearly anywhere.</h3>
-          <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase">Join the Beta</a>
+          <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Join+Beta+Click">Join the Beta</a>
         </div>
       </div>
     </section>
@@ -94,7 +94,7 @@ export const metadata = {
           <div className='md:pl-20'>
             <h1 className='text-3xl mb-5'>Your own shared, programmable drive</h1>
             <p>Expose data as a shared folder on your computer or phone free-to-use direct connections. Write code that reacts to changes &amp; write back to the drive on the fly.</p>
-            <a href="/files/download" className='inline-block my-4 p-3 px-4 border border-irohPurple-500 text-irohPurple-500 uppercase'>download zero drive</a>
+            <a href="/files/download" className='inline-block my-4 p-3 px-4 border border-irohPurple-500 text-irohPurple-500 uppercase plausible-event-name=Home+Download+Zero+Drive+Click'>download zero drive</a>
             {/* <a href="/files">learn more</a> */}
           </div>
         </div>
@@ -123,7 +123,7 @@ export const metadata = {
           <h2 className='text-xl text-irohPurple-500'>iroh.network</h2>
           <h1 className='text-3xl mt-2 mb-4'>Seamless cloud backing</h1>
           <p>Connect to a global network of iroh nodes that keep your data available at all times</p>
-          <a className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase'>Sign up for a free account</a>
+          <a className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
         </div>
       </div>
     </section>
@@ -168,7 +168,7 @@ export const metadata = {
           </div>
           <h1 className='text-2xl mb-2 lg:text-3xl lg:mb-4'>Build in your language</h1>
           <p>Iroh supports a growing set of languages, embedding nodes directly in your project without any need to call out to an external API</p>
-          <Link href='/examples' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase'>start building</Link>
+          <Link href='/examples' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Start+Building+Click'>start building</Link>
         </div>
         <div className='lg:w-1/2 lg:mt-28'>
         <CodeGroup title="doc get">
@@ -298,7 +298,7 @@ async fn main() -> Result<()> {
           />
         <div className=''>
           <h1 className='text-3xl mt-6'>Install the CLI</h1>
-          <p>Install iroh now & jump into the <Link className='text-irohPurple-500' href="/docs/quickstart">quickstart.</Link></p>
+          <p>Install iroh now & jump into the <Link className='text-irohPurple-500 plausible-event-name=Home+Quickstart+Click' href="/docs/quickstart">quickstart.</Link></p>
 ```bash
 $ curl -fsSL https://sh.iroh.computer/install.sh | bash
 $ iroh console --start
