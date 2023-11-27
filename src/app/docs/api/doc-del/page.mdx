@@ -1,0 +1,48 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "doc delete",
+    description: "Delete all document entries below a key prefix."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'doc delete', href: '/docs/api/doc-del', current: true },
+    ]} />
+</div>
+
+# doc delete
+
+Delete all document entries below a key prefix. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| prefix  | required | Prefix to delete. All entries whose key starts with or is equal to the prefix will be deleted |
+
+
+
+## Examples
+
+<CodeGroup title="doc delete">
+```text {{ title: 'console' }}
+> doc new --switch
+2aoukeibc2vdy5n2jlihnyv3e26cmketqbropptqfef3v7poe5eq
+Active doc is now 2aoukeibc2vdy5n2
+      
+author:luo73rdznvupzrjb doc:2aoukeibc2vdy5n2 
+> doc set key value
+bafkr4iagirfesfxon7wneztow6ila3w5mm53jnmcq4sek6nnnxxv7wk6bm
+
+author:luo73rdznvupzrjb doc:2aoukeibc2vdy5n2 
+> doc del key
+Deleting all entries whose key starts with key. Continue? yes
+Deleted 1 entries.
+Inserted an empty entry for author luo73rdznvupzrjb with key key
+```
+
+
+</CodeGroup>
