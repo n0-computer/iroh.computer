@@ -21,8 +21,7 @@ function TopLevelNavItem({ href, children}) {
 }
 
 export function HeaderSparse() {
-  // let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = [false, () => {}];
+  let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function toggleMobileMenu() {
     setMobileMenuOpen(!mobileMenuOpen);
