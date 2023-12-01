@@ -3,29 +3,29 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		// real programs handle errors!
 		panic(err)
 	}
 
 	// create one document
-	doc, err := node.DocNew()
+	doc, err := node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
 	// create a second document
-	doc, err := node.DocNew()
+	doc, err = node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
 	// list all your documents
 	docs, err := node.DocList()
@@ -34,7 +34,8 @@ func main() {
 	}
 
 	fmt.Printf("Listing all %d documents:\n", len(docs))
-	for _, doc_id := range docs {
-		fmt.Printf("\t%s\n", doc_id.ToString())
+	// doc ids are also called "NamespaceIds"
+	for _, namespaceAndCapability := range docs {
+		fmt.Printf("\t%s\n", namespaceAndCapability.Namespace.ToString())
 	}
 }

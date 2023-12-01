@@ -1,0 +1,3 @@
+[submodule "api-code-examples/go/extern/iroh-ffi"]
+	path = api-code-examples/go/extern/iroh-ffi
+	url = https://github.com/n0-computer/iroh-ffi.git

@@ -3,25 +3,25 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		panic(err)
 	}
 
-	author, err := node.AuthorNew()
+	author, err := node.AuthorCreate()
 	if err != nil {
 		panic(err)
 	}
 
-	doc, err := node.DocNew()
+	doc, err := node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
 	for i, key := range []string{"a", "b", "c"} {
 		if _, err := doc.SetBytes(author, []byte(key), []byte(fmt.Sprintf("%d", i))); err != nil {
@@ -29,18 +29,22 @@ func main() {
 		}
 	}
 
-	keys, err := doc.Keys()
+	// get all the entries with default filtering and sorting
+	query := iroh.QueryAll(nil)
+	entries, err := doc.GetMany(query)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Keys:")
-	for _, key := range keys {
-		content, err := doc.GetContentBytes(key)
+	for _, entry := range entries {
+		key := entry.Key()
+		hash := entry.ContentHash()
+		content, err := doc.ReadToBytes(entry)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("%q : %q (hash: %s)\n", string(key.Key()), string(content), key.Hash().ToString())
+		fmt.Printf("%q : %q (hash: %s)\n", string(key), string(content), hash.ToString())
 	}
 	// Output:
 	// Created document 7hgonoxdjzlwtuicfyou24l5nhv3bmvzhyeq6v2er66ekrpvhotq
