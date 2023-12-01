@@ -17,7 +17,7 @@ const redirects = async () => {
   return [
     {
       source: '/discord',
-      destination: 'https://discord.gg/jDg6mWXt',
+      destination: 'https://discord.gg/DpmJgtU7cW',
       basePath: false,
       permanent: false,
     },
