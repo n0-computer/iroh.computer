@@ -1,0 +1,1514 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/http-mdx-from-swagger.js for more */}
+export const metadata = {
+  title: 'Anchor HTTP API',
+  description:
+    'interact with hosted iroh infrastructure via HTTP',
+}
+
+# HTTP API
+
+Iroh [anchors](/docs/anchors) come with an HTTP API. You can use this API to bridge from the iroh protocol to HTTP, for both end-user use and administrative purposes. {{ className: 'lead' }}
+
+This documentation is also available as an OpenAPI Specification:
+
+<div className="not-prose mb-16 mt-6 flex gap-3">
+  <Button href="/docs/anchor-http-api/openapi.yaml" arrow="right" children="OpenAPI Spec File" />
+</div>
+
+<Note>
+This api is hosted & provided to all [iroh.network](https://iroh.network) accounts.
+[Sign up for the beta](/beta) to get an account.
+</Note>
+
+
+## Authentication
+
+
+
+  
+  
+    
+    
+
+---
+
+## get an API access token (UCAN) {{ tag: 'POST', label: '/token' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/token">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/token \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "API access token",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## describe the current logged-in user {{ tag: 'GET', label: '/user/me' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/user/me">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/user/me \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "session user",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "user_role": {
+                        "type": "string",
+                        "enum": [
+                            "ADMIN",
+                            "USER"
+                        ]
+                    },
+                    "pub_key": {
+                        "type": "string"
+                    },
+                    "profile_photo_url_small": {
+                        "type": "string"
+                    },
+                    "profile_photo_url_large": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## iroh node identifier &amp; details {{ tag: 'GET', label: '/node/status' }}
+
+<Row>
+  <Col>
+    
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/node/status">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/node/status \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "node details",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "node_id": {
+                        "type": "string"
+                    },
+                    "addr": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list user docs {{ tag: 'GET', label: '/docs/:username' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/docs/:username">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "user's docs",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "doc_id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "author_id": {
+                                        "type": "string"
+                                    },
+                                    "hash": {
+                                        "type": "string"
+                                    },
+                                    "content_length": {
+                                        "type": "integer"
+                                    },
+                                    "timestamp": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## create a new document {{ tag: 'POST', label: '/docs/:username' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/docs/:username">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "created document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "author_id": {
+                                    "type": "string"
+                                },
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "content_length": {
+                                    "type": "integer"
+                                },
+                                "timestamp": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## get a document {{ tag: 'GET', label: '/docs/:username/:doc_id' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="doc_id" type="string">
+        a document identifier
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/docs/:username/:doc_id">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "doc_id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "author_id": {
+                                        "type": "string"
+                                    },
+                                    "hash": {
+                                        "type": "string"
+                                    },
+                                    "content_length": {
+                                        "type": "integer"
+                                    },
+                                    "timestamp": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## set a key in a document {{ tag: 'POST', label: '/docs/:username/:doc_id/set' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="doc_id" type="string">
+        a document identifier
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/docs/:username/:doc_id/set">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id/set \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "updated document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "author_id": {
+                                    "type": "string"
+                                },
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "content_length": {
+                                    "type": "integer"
+                                },
+                                "timestamp": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## delete a prefix in a document {{ tag: 'DELETE', label: '/docs/:username/:doc_id/del' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="doc_id" type="string">
+        a document identifier
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/docs/:username/:doc_id/del">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id/del \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "updated document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "author_id": {
+                                    "type": "string"
+                                },
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "content_length": {
+                                    "type": "integer"
+                                },
+                                "timestamp": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## delete an entire document {{ tag: 'DELETE', label: '/docs/:username/:doc_id/drop' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="doc_id" type="string">
+        a document identifier
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/docs/:username/:doc_id/drop">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id/drop \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "document deleted",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "deleted": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## get a document name {{ tag: 'GET', label: '/docs/:username/:doc_id/name' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="doc_id" type="string">
+        a document identifier
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/docs/:username/:doc_id/name">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id/name \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "user's docs",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "doc_id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "author_id": {
+                                        "type": "string"
+                                    },
+                                    "hash": {
+                                        "type": "string"
+                                    },
+                                    "content_length": {
+                                        "type": "integer"
+                                    },
+                                    "timestamp": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## create a new document {{ tag: 'POST', label: '/docs/:username/:doc_id/name' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/docs/:username/:doc_id/name">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/:doc_id/name \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "created document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "author_id": {
+                                    "type": "string"
+                                },
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "content_length": {
+                                    "type": "integer"
+                                },
+                                "timestamp": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## share access to a document {{ tag: 'POST', label: '/docs/:username/share' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/docs/:username/share">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/share \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "document ticket",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string",
+                        "length": 52
+                    },
+                    "ticket": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## join a document from a share ticket {{ tag: 'POST', label: '/docs/:username/join' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/docs/:username/join">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/docs/:username/join \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "joined document",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "author_id": {
+                                    "type": "string"
+                                },
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "content_length": {
+                                    "type": "integer"
+                                },
+                                "timestamp": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list a user&#39;s blobs {{ tag: 'GET', label: '/blobs/:username' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="username" type="string">
+        the username or team name to scope the request to
+      </Property>
+      
+      <Property name="offset" type="string">
+        
+      </Property>
+      
+      <Property name="limit" type="string">
+        
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/blobs/:username">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/blobs/:username \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "blob list",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "path": {
+                            "type": "string"
+                        },
+                        "hash": {
+                            "type": "string"
+                        },
+                        "size": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list networks available to the current user {{ tag: 'GET', label: '/networks' }}
+
+<Row>
+  <Col>
+    Multiple status values can be provided with comma separated strings
+
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/networks">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "successful operation",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "network_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                        },
+                        "pretty_name": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "anchor_url": {
+                            "type": "string"
+                        },
+                        "config": {
+                            "type": "object",
+                            "properties": {
+                                "network_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                                },
+                                "updated_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "accept_content": {
+                                    "type": "boolean"
+                                },
+                                "provide_content": {
+                                    "type": "string"
+                                },
+                                "connection_policy": null,
+                                "kubo_egress": null,
+                                "kubo_ingress": null
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   
+
+  
+  
+    
+    
+
+---
+
+## list network collections {{ tag: 'GET', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    returns a
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="GET" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "successful operation",
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "pub_key": {
+                        "type": "string",
+                        "format": "",
+                        "example": ""
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "network_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "cid": {
+                        "type": "string",
+                        "example": "bafkr4ihaehdb5yar357djzt4vzwd565w7rpluruvvwnhap7yknbydbadam"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "item_count": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "uint64"
+                    },
+                    "signature": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## Update network settings {{ tag: 'POST', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="POST" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+  </Col>
+</Row>
+
+  
+    
+    
+
+---
+
+## Deletes a network {{ tag: 'DELETE', label: '/networks/{network_name}/collections' }}
+
+<Row>
+  <Col>
+    
+
+    
+    ### Parameters
+
+    <Properties>
+      
+      <Property name="network_id" type="string">
+        ID of the network to list collections for
+      </Property>
+      
+      <Property name="limit" type="integer">
+        Limit the number of attachments returned.
+      </Property>
+    </Properties>
+    
+
+  </Col>
+  <Col sticky>
+
+    <CodeGroup title="Request" tag="DELETE" label="/networks/{network_name}/collections">
+
+    ```bash {{ title: 'cURL' }}
+    curl -G https://iroh.network/api/networks/{network_name}/collections \
+      -H "Authorization: Bearer {token}" \
+      -d conversation_id="xgQQXg3hrtjh7AvZ" \
+      -d limit=10
+    ```
+
+    </CodeGroup>
+
+    
+
+    ```json {{ title: 'Response' }}
+    {
+    "description": "Network deleted",
+    "content": {}
+}
+    ```
+
+    
+
+  </Col>
+</Row>
+
+   

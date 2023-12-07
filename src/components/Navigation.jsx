@@ -201,7 +201,6 @@ export const navigation = [
       {title: 'Documents', href: '/docs/layers/documents'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
       {title: 'Connections', href: '/docs/layers/connections'},
-      {title: 'Anchors', href: '/docs/concepts/anchors'},
     ],
   },
   {
@@ -209,7 +208,7 @@ export const navigation = [
     links: [
       {title: 'Examples', href: '/docs/examples'},
       {title: 'Config', href: '/docs/reference/config'},
-      {title: 'Anchor HTTP API', href: '/docs/reference/anchor-http-api'},
+      {title: 'HTTP API', href: '/docs/reference/http-api'},
       {title: 'IPFS', href: '/docs/ipfs'},
       // TODO: finish first draft of spec
       // {title: 'Spec', href: '/spec'},
