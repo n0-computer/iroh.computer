@@ -14,7 +14,7 @@ externalDocs:
   description: Find out more about Iroh
   url: https://iroh.computer
 servers:
-- url: "https://iroh.network/api"
+- url: "https://api.iroh.network"
 tags:
 - name: health
   description: API service health
@@ -22,22 +22,15 @@ tags:
   description: Operations about user
 - name: network
   description: iroh networks
-- name: collection
-  description: iroh collections
+- name: blobs
+  description: "opaque binary objects referenced by hash"
+- name: docs
+  description: "replicated, prefix-value stores"
 
 security:
   - bearerAuth: []
 
 paths:
-  /health:
-    get:
-      tags:
-      - health
-      summary: get API health status
-      operationId: healthCheck
-      responses:
-        200:
-          description: healthy service
   /token:
     post:
       tags:
@@ -48,19 +41,18 @@ paths:
         200:
           description: API access token
           content:
-            appliction/json:
+            application/json:
                 schema:
                   type: object
                   properties:
                     token: 
                       type: string
-
-  /me:
+  /user/me:
     get:
       tags:
       - user
       summary: describe the current logged-in user
-      operationId: getSessionUser
+      operationId: sessionUser
       security:
       - bearerAuth: []
       responses:
@@ -70,6 +62,273 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+
+  /node/status:
+    get:
+      tags:
+      - node
+      summary: iroh node identifier & details
+      operationId: nodeStatus
+      security:
+      - bearerAuth: []
+      responses:
+        200:
+          description: node details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderInfo"
+
+  /docs/:username:
+    get:
+      tags:
+      - docs
+      summary: list user docs
+      operationId: get_docs
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      responses:
+        200:
+          description: user's docs
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocDetails"
+    post:
+      tags:
+        - docs
+      summary: create a new document
+      operationId: create_doc
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocRequest"
+      responses:
+        200:
+          description: created document
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocDetails"
+  /docs/:username/:doc_id:
+    get:
+      tags:
+      - docs
+      summary: get a document
+      operationId: get_doc
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - $ref: "#/components/parameters/DocIdParam"
+      responses:
+        200:
+          description: document
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocDetails"
+
+  /docs/:username/:doc_id/set:
+    post:
+      tags:
+        - docs
+      summary: set a key in a document
+      operationId: doc_set
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - $ref: "#/components/parameters/DocIdParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocRequest"
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: updated document
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocDetails"
+  /docs/:username/:doc_id/del:
+    delete:
+      tags:
+        - docs
+      summary: delete a prefix in a document
+      operationId: doc_del
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - $ref: "#/components/parameters/DocIdParam"
+      responses:
+        200:
+          description: updated document
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocDetails"
+  /docs/:username/:doc_id/drop:
+    delete:
+      tags:
+        - docs
+      summary: delete an entire document
+      operationId: doc_drop
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - $ref: "#/components/parameters/DocIdParam"
+      responses:
+        200:
+          description: document deleted
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deleted"
+  /docs/:username/:doc_id/name:
+    get:
+      tags:
+      - docs
+      summary: get a document name
+      operationId: get_doc_name
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - $ref: "#/components/parameters/DocIdParam"
+      responses:
+        200:
+          description: user's docs
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocDetails"
+    post:
+      tags:
+        - docs
+      summary: create a new document
+      operationId: set_doc_name
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocRequest"
+      responses:
+        200:
+          description: created document
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocDetails"
+  # TODO - not implemented yet, need to think through a query API
+  # /docs/:username/:doc_id/get/:key:
+  /docs/:username/share:
+    post:
+      tags:
+        - docs
+      summary: share access to a document
+      operationId: doc_share
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketRequest"
+      responses:
+        200:
+          description: document ticket
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketResponse"
+  /docs/:username/join:
+    post:
+      tags:
+        - docs
+      summary: join a document from a share ticket
+      operationId: doc_join
+      security:
+        - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticket:
+                  type: string
+      responses:
+        200:
+          description: joined document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocDetails"
+
+
+  /blobs/:username:
+    get:
+      tags:
+        - blobs
+      summary: list a user's blobs
+      operationId: blob_get
+      security:
+        - bearerAuth: []
+      parameters:
+      - $ref: "#/components/parameters/UsernameOrTeamnameParam"
+      - in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: blob list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlobReference"
+              
+
   /networks:
     get:
       tags:
@@ -150,6 +409,20 @@ components:
   requestBodies: {}
   headers: {}
   parameters:
+    UsernameOrTeamnameParam:
+      name: username
+      in: path
+      description: the username or team name to scope the request to
+      required: true
+      schema:
+        type: string
+    DocIdParam:
+      name: doc_id
+      in: path
+      description: a document identifier
+      required: true
+      schema:
+        type: string
     NetworkNamePathParam:
       name: network_id
       in: path
@@ -158,10 +431,15 @@ components:
       schema:
         $ref: "#/components/schemas/Uuid"
   schemas:
-    Uuid:
-      type: string
-      format: uuid
-      example: "550e8400-e29b-41d4-a716-446655440000"
+    BlobReference:
+      type: object
+      properties:
+        path:
+          type: string
+        hash:
+          type: string
+        size:
+          type: integer
     Cid:
       type: string
       example: "bafkr4ihaehdb5yar357djzt4vzwd565w7rpluruvvwnhap7yknbydbadam"
@@ -195,6 +473,41 @@ components:
           format: uint64
         signature:
           type: string
+    CreateDocRequest:
+      type: object
+      properties:
+        name:
+          type: string
+    Deleted:
+      type: object
+      properties:
+        deleted:
+          type: boolean
+    DocDetails:
+      type: object
+      properties:
+        doc_id:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocEntry"
+    DocEntry:
+      type: object
+      properties:
+        author_id:
+          type: string
+        hash:
+          type: string
+        content_length:
+          type: integer
+        timestamp:
+          type: integer
+    DocId:
+      type: string
+      length: 52
     IrohNetworkCreate:
       type: object
       properties:
@@ -229,61 +542,6 @@ components:
           enum:
           - Disabled
           - BlakeThreeOnlyWithConvertedCollections
-    IrohNetworkDetails:
-      type: object
-      properties:
-        network_id:
-          $ref: "#/components/schemas/Uuid"
-        pretty_name:
-          type: string
-        name:
-          type: string
-        anchor_url:
-          type: string
-        config:
-          $ref: "#/components/schemas/IrohNetworkConfig"
-    ProviderInfo:
-      type: object
-      properties:
-        peer_id:
-          type: string
-        addr:
-          type: string
-    UserCreated:
-      type: object
-      properties:
-      user_id:
-        type: Uuid
-      user_role:
-        type: Role
-      name:
-        type: string
-    User:
-      type: object
-      properties:
-        user_id:
-          $ref: '#/components/schemas/Uuid'
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        name:
-          type: string
-          format:
-        user_role:
-          type: string
-          enum:
-            - ADMIN
-            - USER
-        pub_key:
-          type: string
-          format:
-        profile_photo_url_small:
-          type: string
-        profile_photo_url_large:
-          type: string
     IrohNetworkConfig:
       type: object
       properties:
@@ -303,3 +561,79 @@ components:
           # KuboContentBridgingPolicy
         kubo_ingress:
           # KuboContentBridgingPolicy:
+    IrohNetworkDetails:
+      type: object
+      properties:
+        network_id:
+          $ref: "#/components/schemas/Uuid"
+        pretty_name:
+          type: string
+        name:
+          type: string
+        anchor_url:
+          type: string
+        config:
+          $ref: "#/components/schemas/IrohNetworkConfig"
+    ProviderInfo:
+      type: object
+      properties:
+        node_id:
+          type: string
+        addr:
+          type: string
+    TicketRequest:
+      type: object
+      properties:
+        doc_id:
+          $ref: "#/components/schemas/DocId"
+        mode:
+          enum:
+          - read
+          - write
+    TicketResponse:
+      type: object
+      properties:
+        doc_id:
+          $ref: "#/components/schemas/DocId"
+        ticket:
+          type: string
+    UserCreated:
+      type: object
+      properties:
+        user_id:
+          $ref: "#/components/schemas/Uuid"
+        user_role:
+          type: string
+          enum:
+          - ADMIN
+          - USER
+        name:
+          type: string
+    User:
+      type: object
+      properties:
+        user_id:
+          $ref: '#/components/schemas/Uuid'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+        user_role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+        pub_key:
+          type: string
+        profile_photo_url_small:
+          type: string
+        profile_photo_url_large:
+          type: string
+    Uuid:
+      type: string
+      format: uuid
+      example: "550e8400-e29b-41d4-a716-446655440000"
