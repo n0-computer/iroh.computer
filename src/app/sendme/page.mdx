@@ -1,0 +1,126 @@
+import React from 'react'
+import Image from 'next/image'
+import {
+  ChatBubbleLeftIcon
+} from '@heroicons/react/24/outline'
+
+export const metadata = {
+  title: 'Sendme',
+  description:
+    'send files over the internet',
+}
+
+export const sections = [
+  {title: 'Guides', id: 'guides'},
+  {title: 'Resources', id: 'resources'},
+]
+
+<div className='w-full h-full bg-white text-zinc-700'>
+  <div className="pt-10 mx-auto lg:max-w-5xl">
+    <div className='max-w-5xl mx-auto text-center mt-20'>
+      <h1 className='text-5xl lg:text-6xl font-bold'>Send files</h1>
+      <p className='text-lg'>For free. No account required.</p>
+    </div>
+    <Image src="/img/sendme/sendme_hero_1.svg" width='1600' height='900' className='md:-mt-20' />
+
+    <div className='md:-mt-20 mx-5 md:mx-0 h-10 border-l border-r shadow-sm' />
+    <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+      <div className='md:flex'>
+        <div className='p-5 border-b md:border-r'>
+          <h2 className='text-2xl font-bold text-zinc-600'>File transfer<br />doesn't need to be complicated</h2>
+          <p>It's like <span className='font-space-mono'>scp</span> without needing to know the IP address.</p>
+        </div>
+
+        <div className='p-5 border-b flex-1'>
+          <h3 className='text-lg font-bold'>Install</h3>
+          <pre className='text-xs md:text rounded bg-zinc-100 p-2 mt-2'>$ curl -fsSL https://iroh.computer/sendme.sh | sh</pre>
+        </div>
+      </div>
+    </div>
+
+    <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-sm' />
+    <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+      <div className='px-5 pt-5'>
+        <h3 className='font-bold text-zinc-500'>USING SENDME:</h3>
+      </div>
+      <div className='md:flex sm:gap-5 border-b'>
+        <div className='md:w-1/3 p-5'>
+          <div className='relative rounded border border-zinc-300 bg-zinc-100 p-2 py-8 h-40 mb-5'>
+            <div className='absolute top-0 left-0 p-2 flex gap-1'>
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+            </div>
+            <p className='font-mono font-bold text-sm'>> $ sendme provide ~/great_photos</p>
+            <p className='font-mono text-zinc-400 text-sm'>content added</p>
+            <p className='font-mono text-zinc-400 text-sm'>run iroh get blobQmFoo...</p>
+          </div>
+          <h3 className='font-bold text-2xl'>1. Setup send</h3>
+          <p>pass a file or folder you want to share to sendme. It'll spit out a ticket.</p>
+        </div>
+        <div className='md:w-1/3 p-5'>
+          <div className='relative p-2 flex h-40 mb-5'>
+            <ChatBubbleLeftIcon className='w-6 h-6 mr-2' />
+            <div className='rounded-tr-lg rounded-br-lg rounded-bl-lg border bg-zinc-50 p-2 pb-10 mb-2 h-20'>
+              hey here have some great photos:
+              blobQmFoo...
+            </div>
+          </div>
+          <h3 className='font-bold text-2xl'>2. Paste the ticket</h3>
+          <p>copy-paste the ticket to your friend.</p>
+        </div>
+        <div className='md:w-1/3 p-5'>
+          <div className='relative rounded border border-zinc-300 bg-zinc-100 p-2 py-8 h-40 mb-5'>
+            <div className='absolute top-0 left-0 p-2 flex gap-1'>
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+              <div className='border border-zinc-400 w-3 h-3 rounded-full' />
+            </div>
+            <p className='font-mono font-bold text-sm'>> $ sendme get blobQmFoo...</p>
+            <p className='font-mono text-zinc-400 text-sm'>fetched to my_photos</p>
+          </div>
+          <h3 className='font-bold text-2xl'>3. Download</h3>
+          <p>run get to fetch data directly from your friend.</p>
+        </div>
+      </div>
+    </div>
+
+      <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-sm' />
+      <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+        <div>
+          <div className='p-5'>
+            <h3 className='text-2xl md:text-3xl font-bold'>Free, for files & folders of any size</h3>
+            <p>sendme works by connecting sender and receiver directly, so there's no need to upload to a server, which means no cost!</p>
+          </div>
+          <div className='md:flex border-t border-b'>
+            <div className='p-5 md:border-r'>
+              <h3 className='font-bold text-2xl'>Fast.</h3>
+              <p>Sendme can saturate a 4Gbps connection.</p>
+            </div>
+            <div className='p-5 md:border-r'>
+              <h3 className='font-bold text-2xl'>Resumable fetching</h3>
+              <p>Interrupted downloads pick up where they left off.</p>
+            </div>
+            <div className='p-5'>
+              <h3 className='font-bold text-2xl'>Integrity checks</h3>
+              <p>Data is automatically verified for correctness on both send and receive.</p>
+            </div>
+          </div>
+        </div>
+
+      <div>
+        <div className='p-5'>
+          <h3 className='text-sm text-zinc-400'>Coming Soon</h3>
+          <h3 className='text-2xl font-bold'>Sendme Mobile</h3>
+          <p>Send files to your iOS device!</p>
+        </div>
+      </div>
+
+      <div className='border-t mt-5 border-b bg-iroh-kv-1 p-5 py-20'>
+        <h2 className='text-2xl font-bold'>Sendme is built on <span className='text-irohPurple-500'>iroh</span> blobs & connections</h2>
+        <p className='md:max-w-lg mt-5'>Just like <a href="https://dumbpipe.dev">Dumb pipe</a>, sendme is built on iroh. Sendme uses iroh <a href="/docs/layers/blobs">blobs</a> to send and verfiy your files, and <a href='/docs/layers/connections'>connections</a> to establish direct links between devices for data transfer</p>
+      </div>
+    </div>
+    <div className='mx-5 mb-20 md:mx-0 h-5 border-l border-r' />
+  </div>
+</div>

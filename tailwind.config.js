@@ -21,6 +21,12 @@ module.exports = {
     },
     typography: require('./typography'),
     extend: {
+      dropShadow: {
+        glow: [
+          // "0 0px 20px rgba(255,255, 255, 0.2)",
+          "0 0px 15px rgba(255, 255,255, 0.25)"
+        ]
+      },
       fontFamily: {
         'space': ['Space Grotesk', 'sans-serif'], 
         'spaceMono': ['Space Mono', 'sans-serif'] 
