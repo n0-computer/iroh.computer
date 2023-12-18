@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import {motion, useScroll, useTransform} from 'framer-motion';
 
 import {Button} from '@/components/Button';
-import {Logo} from '@/components/Logo';
+import {Logotype} from '@/components/Logotype';
 import {
   MobileNavigation,
   useIsInsideMobileNavigation,
@@ -70,7 +70,7 @@ export const Header = forwardRef(function Header({className}, ref) {
       <div className="flex items-center gap-5 lg:hidden">
         <MobileNavigation />
         <Link href="/" aria-label="Home">
-          <Logo className="h-6" />
+          <Logotype className="h-6" />
         </Link>
       </div>
       <div className="flex items-center gap-5">
