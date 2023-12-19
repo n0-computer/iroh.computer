@@ -5,13 +5,14 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
+import { GithubIcon } from './icons/Github';
+import GithubStars from './GithubStars';
 
 function TopLevelNavItem({ href, children}) {
   return (
     <li>
       <Link
         href={href}
-        // className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
         className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white"
       >
         {children}
@@ -45,7 +46,7 @@ export function HeaderSparse() {
           </div>
           <div className="flex-1 flex sm:items-stretch sm:justify-start">
             <Link href="/" className="block flex-shrink-0 flex items-center mr-auto">
-              <img className="block h-8 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh" width={200} />
+              <img className="block h-7 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh" width={200} />
             </Link>
 
             <div className="hidden inset-y-0 sm:block sm:pr-0 sm:inset-auto">
@@ -53,6 +54,9 @@ export function HeaderSparse() {
                 {navItems.map((item, i ) => {
                   return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
                 })}
+                <li className='mt-0.5'>
+                  <GithubStars />
+                </li>
               </ul>
             </div>
           </div>
