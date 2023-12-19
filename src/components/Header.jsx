@@ -12,12 +12,12 @@ import {
 import {useMobileNavigationStore} from '@/components/MobileNavigation';
 import {MobileSearch, Search} from '@/components/Search';
 import {ThemeToggle} from '@/components/ThemeToggle';
+import GithubStars from './GithubStars';
 
 export const navItems = [
   // TODO - finish overview page
   // {content: 'Overview', href: '/overview'},
   {content: 'Docs', href: '/docs'},
-  {content: 'Github', href: 'https://github.com/n0-computer/iroh'},
   {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
 ];
 
@@ -79,6 +79,9 @@ export const Header = forwardRef(function Header({className}, ref) {
             {navItems.map((item, i ) => {
               return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
             })}
+            <li className='mt-2.5'>
+              <GithubStars />
+            </li>
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
