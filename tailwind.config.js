@@ -29,7 +29,8 @@ module.exports = {
       },
       fontFamily: {
         'space': ['Space Grotesk', 'sans-serif'], 
-        'spaceMono': ['Space Mono', 'sans-serif'] 
+        'spaceMono': ['Space Mono', 'sans-serif'],
+        'koulen': 'var(--font-koulen-regular)'
       },
       boxShadow: {
         glow: '0 0 4px rgb(0 0 0 / 0.1)',
