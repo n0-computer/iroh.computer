@@ -12,6 +12,8 @@ const navigation = {
   learn: [
     { name: 'Blog', href: '/blog' },
     { name: 'Examples', href: '/docs/examples' },
+    { name: "dumbpipe", href: 'https://dumbpipe.dev'},
+    { name: "sendme", href: '/sendme'},
   ],
   connect: [
     { name: 'Discord', href: 'https://iroh.computer/discord' },
