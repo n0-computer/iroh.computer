@@ -34,8 +34,9 @@ export default function SendmePage() {
     <div className={clsx('w-full h-full bg-white text-zinc-700', koulen.variable)}>
       <div className="pt-10 mx-auto lg:max-w-5xl">
         <div className='max-w-5xl mx-auto text-center mt-20'>
-          <h1 className='text-5xl lg:text-7xl font-koulen'>Send files</h1>
-          <p className='text-lg text-zinc-500'>For free. No account required.</p>
+          <p className='text-lg text-zinc-500 font-koulen'>New to send files? Try</p>
+          <h1 className='text-5xl lg:text-7xl font-koulen'>Sendme</h1>
+          <p className='text-lg text-zinc-500'>Unlimited file size. Free. No account required.</p>
         </div>
         <Image src="/img/sendme/sendme_hero_1.svg" alt='one computer sending files to another computer through a pipe' width='1600' height='900' className='md:-mt-20' />
 
@@ -78,7 +79,7 @@ export default function SendmePage() {
                 </div>
                 <p className='font-mono font-bold text-sm'>{'>'} $ sendme provide ~/great_photos</p>
                 <p className='font-mono text-zinc-400 text-sm'>content added</p>
-                <p className='font-mono text-zinc-400 text-sm'>run iroh get blobQmFoo...</p>
+                <p className='font-mono text-zinc-400 text-sm'>run sendme get blobQmFoo...</p>
               </div>
               <h3 className='font-koulen text-3xl'>1. Setup</h3>
               <p className='mt-1 text-sm/6 text-gray-500'>pass a file or folder you want to share to sendme. It&apos;ll spit out a ticket.</p>
@@ -102,7 +103,7 @@ export default function SendmePage() {
                   <div className='border border-zinc-400 w-3 h-3 rounded-full' />
                 </div>
                 <p className='font-mono font-bold text-sm'>{'>'} $ sendme get blobQmFoo...</p>
-                <p className='font-mono text-zinc-400 text-sm'>fetched to my_photos</p>
+                <p className='font-mono text-zinc-400 text-sm'>fetched to great_photos</p>
               </div>
               <h3 className='font-koulen text-3xl'>3. Download</h3>
               <p className='mt-1 text-sm/6 text-gray-500'>run get to fetch data directly from your friend.</p>
@@ -135,7 +136,7 @@ export default function SendmePage() {
 
           <div className='border-t border-b bg-iroh-kv-1 p-5 py-20'>
             <h2 className='text-2xl font-bold font-spaceMono'>Sendme is built on <span className='text-irohPurple-500'>iroh</span></h2>
-            <p className='md:max-w-lg mt-5'>Just like <a href="https://dumbpipe.dev">Dumb pipe</a>, sendme is built on iroh. Sendme uses iroh <a className='text-irohPurple-700' href="/docs/layers/blobs">blobs</a> to send and verfiy your files, and <a className='text-irohPurple-700' href='/docs/layers/connections'>connections</a> to establish direct links between devices for data transfer</p>
+            <p className='md:max-w-lg mt-5'>Just like <a className='text-irohPurple-500' href="https://dumbpipe.dev">dumbpipe</a>, sendme is built on iroh. Sendme uses iroh <a className='text-irohPurple-700' href="/docs/layers/blobs">blobs</a> to send and verfiy your files, and <a className='text-irohPurple-700' href='/docs/layers/connections'>connections</a> to establish direct links between devices for data transfer</p>
             <Button href='/' variant='filled' className='mt-5 plausible-event-name=Sendme+Iroh+CTA+Click'>BUILD ON IROH</Button>
           </div>
         </div>
