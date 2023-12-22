@@ -45,7 +45,7 @@ export default function SendmePage() {
           <div className='md:flex'>
             <div className='px-5 py-10 border-b md:border-r md:w-5/12'>
               <h2 className='text-4xl text-zinc-700 font-koulen'>File transfer<br />doesn&apos;t need to be complicated</h2>
-              <p className='mt-1 text-sm/6 text-gray-500'>It&apos;s like <span className='font-space-mono'>scp</span> without needing to know the IP address. Add some files to sendme, and it will give you a pastable ticket that you can give to anyone who needs your files. Sendme will connect your devices directly & transfer the data without any accounts or configuration.</p>
+              <p className='mt-1 text-sm/6 text-gray-500'>It&apos;s like <span className='font-space-mono bg-zinc-100 px-1 py-0.5 rounded'>scp</span> without needing to know the IP address. Add some files to sendme, and it will give you a pastable ticket that you can give to anyone who needs your files. Sendme will connect your devices directly & transfer the data without any accounts or configuration.</p>
             </div>
 
             <div className='px-5 py-10 border-b flex-1 md:w-7/12'>
@@ -77,9 +77,9 @@ export default function SendmePage() {
                   <div className='border border-zinc-400 w-3 h-3 rounded-full' />
                   <div className='border border-zinc-400 w-3 h-3 rounded-full' />
                 </div>
-                <p className='font-mono font-bold text-sm'>{'>'} $ sendme provide ~/great_photos</p>
+                <p className='font-mono font-bold text-sm'>{'>'} $ sendme send ~/great_photos</p>
                 <p className='font-mono text-zinc-400 text-sm'>content added</p>
-                <p className='font-mono text-zinc-400 text-sm'>run sendme get blobQmFoo...</p>
+                <p className='font-mono text-zinc-400 text-sm'>run sendme receive blobQmFoo...</p>
               </div>
               <h3 className='font-koulen text-3xl'>1. Setup</h3>
               <p className='mt-1 text-sm/6 text-gray-500'>pass a file or folder you want to share to sendme. It&apos;ll spit out a ticket.</p>
@@ -102,7 +102,7 @@ export default function SendmePage() {
                   <div className='border border-zinc-400 w-3 h-3 rounded-full' />
                   <div className='border border-zinc-400 w-3 h-3 rounded-full' />
                 </div>
-                <p className='font-mono font-bold text-sm'>{'>'} $ sendme get blobQmFoo...</p>
+                <p className='font-mono font-bold text-sm'>{'>'} $ sendme receive blobQmFoo...</p>
                 <p className='font-mono text-zinc-400 text-sm'>fetched to great_photos</p>
               </div>
               <h3 className='font-koulen text-3xl'>3. Download</h3>
