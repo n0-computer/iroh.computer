@@ -12,16 +12,19 @@ func main() {
 		panic(err)
 	}
 
-	if _, err := node.AuthorCreate(); err != nil {
+	author, err := node.AuthorCreate()
+	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Created author:", author.ToString())
 
 	authors, err := node.AuthorList()
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println("Authors:")
 	for _, author := range authors {
-		fmt.Println(author.ToString())
+		fmt.Println("\t", author.ToString())
 	}
 }

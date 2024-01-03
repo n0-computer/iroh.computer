@@ -3,7 +3,7 @@ const doc = [
   {
     name: 'doc delete',
     description: 'Delete all document entries below a key prefix.',
-    slug: 'doc-del',
+    slug: 'doc-delete',
     arguments: [
       { name: "prefix", necessity: 'required', description: "Prefix to delete. All entries whose key starts with or is equal to the prefix will be deleted" }
     ],
@@ -373,17 +373,6 @@ Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`,
       console: `> `,
     }
   },
-  { 
-    name: 'blob validate',
-    description: 'Validate hashes on the running node.',
-    slug: 'blob-validate',
-    arguments: [
-      { name: 'repair', necessity: '', description: 'Repair the store by removing invalid data.' }
-    ],
-    examples: {
-      console: `> `,
-    }
-  }
 ]
 
 const api = {

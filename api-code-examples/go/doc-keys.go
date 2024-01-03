@@ -40,7 +40,7 @@ func main() {
 	for _, entry := range entries {
 		key := entry.Key()
 		hash := entry.ContentHash()
-		content, err := doc.ReadToBytes(entry)
+		content, err := entry.ContentBytes(doc)
 		if err != nil {
 			panic(err)
 		}

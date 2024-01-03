@@ -40,7 +40,7 @@ func main() {
 
 	// dereference the pointer to the entry once you know doc.GetExact did not
 	// return an error
-	content, err := doc.ReadToBytes(*entry)
+	content, err := (*entry).ContentBytes(doc)
 	if err != nil {
 		panic(err)
 	}
