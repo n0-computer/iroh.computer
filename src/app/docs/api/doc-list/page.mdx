@@ -31,24 +31,34 @@ List documents on this node. {{ className: 'lead' }}
 ```python {{ title: 'python' }}
 import iroh
 
-IROH_DATA_DIR = "./iroh-data"
+IROH_DATA_DIR = "./iroh_data_dir"
 
 node = iroh.IrohNode(IROH_DATA_DIR)
 print("Started Iroh node: {}".format(node.node_id()))
 
 # create a document
-doc = node.doc_new()
-print("Created doc: {}".format(doc.id()))
+doc = node.doc_create()
+print("Created doc: {}".format(doc.id().to_string()))
 
 # create a second document
-doc = node.doc_new()
-print("Created doc: {}".format(doc.id()))
+doc = node.doc_create()
+print("Created doc: {}".format(doc.id().to_string()))
 
 # list all your documents
 docs = node.doc_list();
 print("List all {} docs:".format(len(docs)))
-for doc in docs:
-    print("\t{}".format(doc.to_string()))
+# doc ids are also called "namespace ids"
+for namespace_and_capability in docs:
+    print("\t{}".format(namespace_and_capability.namespace.to_string()))
+
+# Output:
+# Started Iroh node: jplmb4cgk2pxw3dwjehk7oes7ddphftlh3vdiib4e5bwhq2nnokq
+# Created doc: mr42ra4f6n63kkd6kmqghgonsanqqtpv5cvkgcu7bpg2zaauimrq
+# Created doc: n4w6eip5cgxlv33dl3nln544km76t4gt2etpml6kc6qpo6sqmdua
+# List all 2 docs:
+# 	mr42ra4f6n63kkd6kmqghgonsanqqtpv5cvkgcu7bpg2zaauimrq
+# 	n4w6eip5cgxlv33dl3nln544km76t4gt2etpml6kc6qpo6sqmdua
+
 
 ```
 
@@ -58,29 +68,29 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		// real programs handle errors!
 		panic(err)
 	}
 
 	// create one document
-	doc, err := node.DocNew()
+	doc, err := node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
 	// create a second document
-	doc, err := node.DocNew()
+	doc, err = node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
 	// list all your documents
 	docs, err := node.DocList()
@@ -89,8 +99,9 @@ func main() {
 	}
 
 	fmt.Printf("Listing all %d documents:\n", len(docs))
-	for _, doc_id := range docs {
-		fmt.Printf("\t%s\n", doc_id.ToString())
+	// doc ids are also called "NamespaceIds"
+	for _, namespaceAndCapability := range docs {
+		fmt.Printf("\t%s\n", namespaceAndCapability.Namespace.ToString())
 	}
 }
 
