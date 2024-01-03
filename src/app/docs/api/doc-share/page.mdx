@@ -48,19 +48,30 @@ gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmru
 ```python {{ title: 'python' }}
 import iroh
 
-IROH_DATA_DIR = "./iroh-data"
+IROH_DATA_DIR = "./iroh_data_dir"
 
 node = iroh.IrohNode(IROH_DATA_DIR)
 print("Started Iroh node: {}".format(node.node_id()))
 
-author = node.author_new()
+author = node.author_create()
 print("Created author: {}".format(author.to_string()))
 
-doc = node.doc_new()
-print("Created doc: {}".format(doc.id()))
+doc = node.doc_create()
+print("Created doc: {}".format(doc.id().to_string()))
 
-ticket = doc.share_write()
+ticket = doc.share(iroh.ShareMode.READ)
+print("Read-Access Ticket: {}".format(ticket.to_string()))
+
+ticket = doc.share(iroh.ShareMode.WRITE)
 print("Write-Access Ticket: {}".format(ticket.to_string()))
+
+# Output:
+# Started Iroh node: rwgutd2wazt756h5awh6x576jejizai6w2l6ae5gxsv7tpswmopq
+# Created author: ivn4qsyq3utro5px6k5k5hnbpp6eqh6l5u667hpkgbsglpadfowq
+# Created doc: ijgvnoxfgkkgze3cyb7rwjywfqvfzy2pzilo2tn5wf64fgm7nxkq
+# Read-Access Ticket: docafbe2vv24uzji3etmlah6gzhcywcuxhdj7fbn3knxwyx3quzt5w5kajarwgutd2wazt756h5awh6x576jejizai6w2l6ae5gxsv7tpswmopqcaifabfesmskyrlqbqfiahf4ivybeybxaaehhlf5maaaaaaaaaa2fhcvoajganyabbz2zplazdjnblb2x3kfyvlqcjqdoaaioowl2zctm6q34dlgzp6fk4
+# Write-Access Ticket: docaaqo2dtt7udula5vvevfwjenux3tk3l3lfpefugeu6r6v55pwusvc5qbecgy2smpkydgp7xy7ucy727x7zerfdebd23jpyatu26kx6n6kzrz6aibauaeusjsjlcfoagavaa4xrcxaetag4aaq45mxvqaaaaaaaaadiu4kvybeybxaaehhlf5mdenfufmhk7nixcvoajganyabbz2zpleknt2dpqnm3f7yvlq
+
 ```
 
 ```swift {{ title: 'go' }}
@@ -69,36 +80,36 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		panic(err)
 	}
 
-	doc, err := node.DocNew()
+	doc, err := node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
-	// TODO - sharing read-only tickets is not yet implemented. Coming soon!
-	// readTicket, err := doc.ShareRead()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(readTicket.ToString())
-
-	writeTicket, err := doc.ShareWrite()
+	readTicket, err := doc.Share(iroh.ShareModeRead)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Write-Access Ticket: %s", writeTicket.ToString())
+	fmt.Println("Read-Access Ticket:", readTicket.ToString())
+
+	writeTicket, err := doc.Share(iroh.ShareModeWrite)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Write-Access Ticket:", writeTicket.ToString())
 	// Output:
 	// Created document 7hgonoxdjzlwtuicfyou24l5nhv3bmvzhyeq6v2er66ekrpvhotq
-	// Write-Access Ticket: sdx7wazju2rysqydgfpmhqkrluc5lbcuainravjipwmbl7r3k3uqcigncyopdcnooufnteu5vuatpzhoqrml35ifgyuozr6kwhjiz4jxyaaqcbiajbmsainmsmbqcjqaibavg5hiaaaaaaaaaaabad47sebqbqfiiqzkzeydadakqrckvsjqgajgabaecu3u5aaaaaaaaaaaaeagt6iqg
+	// Read-Access Ticket: docahabhyiz37wlugkwb6cj424qparg6tz5ujmxpr6ac3rkbkvgjys3qajabdmaailylilvvj5ejqcaaa5gkz6pehua4vbu26bbjit2h7axb3lacaidaafakaacyrlqbooyzfgmivyaycuacioek4
+	// Write-Access Ticket: docaaqbt3lfrlih4yncth3rdwta4doendvv7e3fqtt27l6lf5tsfs6mqsibeaenqabbpbnbowvhurgaiaaduzlhz4q6qdsugtlyeffcpi74c4hnmaibamaaubiaalcfoafz3deuzrcxadakqajbyrlq
 }
 
 ```

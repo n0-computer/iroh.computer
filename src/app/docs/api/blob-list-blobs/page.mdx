@@ -32,5 +32,79 @@ List the available blobs on the running provider. {{ className: 'lead' }}
  bafkr4ih5e75yrvu63folnkhvppj3pnx3he2oudmr35x2xc2puodrr2kryy (47 B)
 ```
 
+```python {{ title: 'python' }}
+from iroh import IrohNode, SetTagOption
+# Create an Iroh node
+node = IrohNode("iroh_data_dir")
+
+# Define content and tag
+content = b"hello world!"
+tag = SetTagOption.auto()
+
+# Add blob
+outcome = node.blobs_add_bytes(content, tag)
+print(f"Added blob {outcome.hash.to_string()} ({outcome.size} bytes)")
+
+print("blobs list:")
+
+# List blobs
+blobs = node.blobs_list()
+for hash in blobs:
+    print("\t", hash.to_string())
+
+# Output:
+# Added blob bafkr4ib2uyoebh6xof6j3hddsibk6l5oi4ga55tjxz52fsxkk544wu2otu (12 bytes)
+# blobs list:
+# 	 bafkr4ib2uyoebh6xof6j3hddsibk6l5oi4ga55tjxz52fsxkk544wu2otu
+
+```
+
+```swift {{ title: 'go' }}
+package main
+
+import (
+	"fmt"
+
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
+)
+
+func main() {
+	node, err := iroh.NewIrohNode("iroh_data_dir")
+	if err != nil {
+		panic(err)
+	}
+
+	b := []byte("hello world!")
+	tag := iroh.SetTagOptionAuto()
+
+	// add blob
+	outcome, err := node.BlobsAddBytes(b, tag)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Added blob %s (%d bytes)\n", outcome.Hash.ToString(), outcome.Size)
+
+	fmt.Println("blobs list:")
+
+	blobs, err := node.BlobsList()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, hash := range blobs {
+		fmt.Println("\t", hash.ToString())
+	}
+
+	// Output:
+	// Added blob bafkr4ib2uyoebh6xof6j3hddsibk6l5oi4ga55tjxz52fsxkk544wu2otu (12 bytes)
+	// blobs list:
+	//  bafkr4ib2uyoebh6xof6j3hddsibk6l5oi4ga55tjxz52fsxkk544wu2otu
+	//
+	//  (may contain additional hashes if you have previously added content to your node)
+}
+
+```
+
 
 </CodeGroup>

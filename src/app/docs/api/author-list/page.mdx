@@ -30,17 +30,24 @@ wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
 ```python {{ title: 'python' }}
 import iroh
 
-IROH_DATA_DIR = "./iroh-data"
+IROH_DATA_DIR = "./iroh_data_dir"
 
 node = iroh.IrohNode(IROH_DATA_DIR)
 print("Started Iroh node: {}".format(node.node_id()))
 
-author = node.author_new()
+author = node.author_create()
 print("Created author: {}".format(author.to_string()))
 
 authors = node.author_list()
+print("Authors:")
 for auth in authors:
-    print("Author: {}".format(auth.to_string()))
+    print("\t{}".format(auth.to_string()))
+
+# Output:
+# Started Iroh node: wbwpkauwmitrwwhmw534w3u6sxyhvbivuepcdze5jd3zeqpgxyfa
+# Created author: z2h3f3tozgz67g3ewvu7yxj5vtoddwoohzi2jgyrtgfl7tzocpda
+# Authors:
+#   z2h3f3tozgz67g3ewvu7yxj5vtoddwoohzi2jgyrtgfl7tzocpd
 
 ```
 
@@ -50,26 +57,29 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		panic(err)
 	}
 
-	if _, err := node.AuthorNew(); err != nil {
+	author, err := node.AuthorCreate()
+	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Created author:", author.ToString())
 
 	authors, err := node.AuthorList()
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println("Authors:")
 	for _, author := range authors {
-		fmt.Println(author.ToString())
+		fmt.Println("\t", author.ToString())
 	}
 }
 

@@ -3,35 +3,44 @@ package main
 import (
 	"fmt"
 
-	"github.com/n0-computer/iroh-ffi/iroh"
+	"github.com/n0-computer/iroh-ffi/iroh-go/iroh"
 )
 
 func main() {
-	node, err := iroh.NewIrohNode()
+	node, err := iroh.NewIrohNode("iroh_data_dir")
 	if err != nil {
 		// real programs handle errors!
 		panic(err)
 	}
 
-	author, err := node.AuthorNew()
+	author, err := node.AuthorCreate()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Created author %s\n", author.ToString())
 
-	doc, err := node.DocNew()
+	doc, err := node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id())
+	fmt.Printf("Created document %s\n", doc.Id().ToString())
 
-	hash, err := doc.SetBytes(author, []byte("go"), []byte("says hello"))
+	key := []byte("go")
+	hash, err := doc.SetBytes(author, key, []byte("says hello"))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Inserted %s\n", hash.ToString())
 
-	content, err := doc.GetContentBytes(hash)
+	// returns a pointer to an entry
+	entry, err := doc.GetExact(author, key, false)
+	if err != nil {
+		panic(err)
+	}
+
+	// dereference the pointer to the entry once you know doc.GetExact did not
+	// return an error
+	content, err := (*entry).ContentBytes(doc)
 	if err != nil {
 		panic(err)
 	}
