@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { BookOpenIcon } from '@heroicons/react/24/outline'
 
 import {HeaderSparse} from '@/components/HeaderSparse';
 import {FooterMarketing} from '@/components/FooterMarketing';
@@ -15,6 +16,8 @@ import iconFaster from '@/images/icons/icon_faster.svg';
 import iconOpen from '@/images/icons/icon_open.svg';
 import iconPlatforms from '@/images/icons/icon_platforms.svg';
 
+import { APP_PATHS_MANIFEST } from 'next/dist/shared/lib/constants';
+import { CloudArrowDownIcon } from '@heroicons/react/20/solid';
 export const metadata = {
   title: 'Iroh',
   description:
@@ -30,11 +33,17 @@ export const metadata = {
     <section className="min-h-92 bg-iroh-kv-1 pt-40 bg-cover">
       <div className="max-w-6xl mx-auto px-4 lg:mt-100">
         <div className="mt-14 min-h-[70vh] sm:w-2/3 lg:w-1/2">
-          <h1 className="text-4xl font-space-mono leading-tight">
-            Sync Anywhere
+          <h1 className="text-5xl font-bold font-space-mono leading-tight">
+            Go beyond the cloud with confidence
           </h1>
-          <h3 className="text-md font-space-mono mt-6 text-n0gray-400 leading-normal">Iroh is a protocol for syncing data. It's Open source, connects devices directly, and works nearly anywhere.</h3>
-          <a href="/beta" className="inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Join+Beta+Click">Join the Beta</a>
+          <h3 className="text-md font-space-mono mt-3 text-gray-700 leading-normal">Meet iroh, a direct-connection revolution in app development with unparalleled simplicity and speed. Open source and universally compatible, it&apos;s the quickest route from concept to connected devices.</h3>
+          <div className='flex mt-3'>
+            <a href="/beta" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Join+Beta+Click">Join the Beta</a>
+            <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
+              <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
+              Documentation
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -51,7 +60,7 @@ export const metadata = {
             />
           <div className='pl-20 md:pl-0'>
             <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Live collaborate on anything</h2>
-            <p>Invite multiple users to a shared key-value store from any device. Iroh syncs for you, with hooks to read & write changes.</p>
+            <p>Effortlessly invite users to a dynamic shared environment. iroh offers intuitive syncing across devices, with seamless hooks for instant read & write operations, simplifying the developer experience.</p>
           </div>
         </div>
         <div className='mb-10 md:w-1/3'>
@@ -74,8 +83,8 @@ export const metadata = {
             unoptimized
             />
           <div className='pl-20 md:pl-0'>
-            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Auto-resuming transfer</h2>
-            <p>Work with data of any size, including sizes that don't fit on a fit on a single device.</p>
+            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Scale without limits</h2>
+            <p>Iroh handles data of any magnitude, ensuring peak performance even when individual device capacities are exceeded.</p>
           </div>
         </div>
       </div>
@@ -122,7 +131,7 @@ export const metadata = {
           <h2 className='text-xl text-irohPurple-500'>iroh.network</h2>
           <h1 className='text-3xl mt-2 mb-4'>Seamless cloud backing</h1>
           <p>Connect to a global network of iroh nodes that keep your data available at all times</p>
-          <a className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
+          <a href="https://iroh.network" className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
         </div>
       </div>
     </section>
