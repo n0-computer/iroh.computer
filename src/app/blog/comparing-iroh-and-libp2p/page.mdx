@@ -1,8 +1,8 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 import Image from 'next/image'
-// import designSystem from './planetaria-design-system.png'
 
 export const post = {
+  draft: true,
   author: 'b5',
   date: '2024-01-05',
   title: 'Comparing Iroh & Libp2p: Simplifying P2P Connectivity',
@@ -15,7 +15,22 @@ export const metadata = {
   description: post.description,
 }
 
-export default (props) => <BlogPostLayout article={post} {...props} />
+export const references = [
+  {
+    name: 'Libp2p',
+    url: 'https://libp2p.io/',
+  },
+  {
+    name: 'NAT Hole Punching Measurement Campaign',
+    url: 'https://pl-strflt.notion.site/Final-Report-NAT-Hole-Punching-Measurement-Campaign-draft-94366124f4e34b29bf55fb860a3d8c72',
+  },
+  {
+    name: 'Tailscale',
+    url: 'https://tailscale.com/',
+  },
+]
+
+export default (props) => <BlogPostLayout article={post} references={references} {...props} />
 
 Peer-to-peer (P2P) technology has revolutionized the way we think about data transmission, offering decentralized solutions that enhance efficiency and scalability. In the world of P2P networking, two notable players are Iroh and Libp2p. While Libp2p is known for its extensive features, including a Distributed Hash Table (DHT), Iroh offers a unique approach focusing on simplicity and robust hole punching capabilities.
 

@@ -1,3 +1,5 @@
+'use client'
+
 import {forwardRef} from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -15,13 +17,11 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
-  // TODO - finish overview page
-  // {content: 'Overview', href: '/overview'},
   {content: 'Docs', href: '/docs'},
   {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
 ];
 
-function TopLevelNavItem({href, children}) {
+export function TopLevelNavItem({href, children}) {
   return (
     <li>
       <Link
