@@ -1,0 +1,20 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+// import designSystem from './planetaria-design-system.png'
+
+export const post = {
+  draft: true,
+  author: 'b5',
+  date: '2024-01-05',
+  title: 'Comparing Iroh & Libp2p: Simplifying P2P Connectivity',
+  description:
+    'Iroh streamlines P2P networking with superior NAT traversal and user-friendly simplicity, contrasting with Libp2p\'s extensive but complex features.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+

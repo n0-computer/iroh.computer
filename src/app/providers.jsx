@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect} from 'react';
+import {createContext, useEffect} from 'react';
 import {ThemeProvider, useTheme} from 'next-themes';
 
 function ThemeWatcher() {
@@ -26,6 +26,8 @@ function ThemeWatcher() {
 
   return null;
 }
+
+export const AppContext = createContext({})
 
 export function Providers({ children }) {
   return (
