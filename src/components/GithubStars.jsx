@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
-import { GithubIcon } from './icons/Github';
-import { BookIcon } from './icons/BookIcon';
+import { GithubIcon } from '@/components/icons/GithubIcon';
 
 export default function GithubStars(props) {
   return (
