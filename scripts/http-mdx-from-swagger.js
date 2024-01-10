@@ -11,7 +11,7 @@ try {
   let templateSource = readFileSync('./templates/anchor-api.template.mdx')
   let result = ejs.render(templateSource.toString(), { api });
 
-  writeFileSync('../src/app/docs/reference/anchor-http-api/page.mdx', result);
+  writeFileSync('../src/app/docs/reference/http-api/page.mdx', result);
 }
 catch(err) {
   console.error("Error: %s", err);
