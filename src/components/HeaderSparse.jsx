@@ -2,10 +2,8 @@
 
 import React, {useState} from 'react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
-import { GithubIcon } from './icons/Github';
 import GithubStars from './GithubStars';
 
 function TopLevelNavItem({ href, children}) {
