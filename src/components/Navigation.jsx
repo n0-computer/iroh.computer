@@ -6,7 +6,6 @@ import {usePathname} from 'next/navigation';
 import clsx from 'clsx';
 import {AnimatePresence, motion, useIsPresent} from 'framer-motion';
 
-import {Button} from '@/components/Button';
 import {useIsInsideMobileNavigation} from '@/components/MobileNavigation';
 import {useSectionStore} from '@/components/SectionProvider';
 import {Tag} from '@/components/Tag';
@@ -208,12 +207,17 @@ export const navigation = [
     links: [
       {title: 'Examples', href: '/docs/examples'},
       {title: 'Config', href: '/docs/reference/config'},
-      {title: 'HTTP API', href: '/docs/reference/http-api'},
-      {title: 'IPFS', href: '/docs/ipfs'},
-      // TODO: finish first draft of spec
-      // {title: 'Spec', href: '/spec'},
+      {title: 'IPFS', href: '/docs/ipfs'}
     ],
   },
+  {
+    title: 'iroh.network',
+    links: [
+      {title: 'Introduction', href: '/docs/idn'},
+      {title: 'Quickstart', href: '/docs/idn/quickstart'},
+      {title: 'HTTP API', href: '/docs/idn/http-api'},
+    ]
+  }
 ];
 
 export function Navigation(props) {

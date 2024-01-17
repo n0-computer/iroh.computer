@@ -1,0 +1,169 @@
+export const metadata = {
+  title: 'iroh.network Quickstart',
+  description:
+    'This guide will take you on a quick tour of iroh.network',
+};
+
+# Quickstart
+
+This guide will give you a quick tour of iroh & iroh.network. We'll create a document locally and sync it to iroh.network. {{className: 'lead'}}
+
+## Install Iroh
+
+The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install) to install iroh.
+
+<div className='not-prose'>
+  <Button arrow="right" href="/docs/install">Install Iroh CLI</Button>
+</div>
+
+Confirm iroh works & is installed correctly by running `iroh help`. You should see help text that starts like this:
+
+```text
+$ iroh help
+Iroh is a tool for syncing bytes.
+https://iroh.computer/docs
+
+Usage: iroh [OPTIONS] [COMMAND]
+...
+```
+
+## Start the iroh console
+
+```text
+$ iroh start
+Listening addresses:
+  108.41.41.113:52658
+  108.41.41.113:11204
+  192.168.86.28:11204
+DERP Region: 1
+PeerID: 3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa
+```
+
+Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console`, connecting to the node we started with `iroh start`.
+
+```text
+$ iroh console
+Welcome to the Iroh console!
+Type `help` for a list of commands.
+
+>
+```
+
+## Create an Author
+
+Before we can work with documents, we need to create an _author_, which is an identity that will represent us while we work.
+
+<CodeGroup tag="CONSOLE">
+```text
+> author new --switch
+fhu3uk4wc2hl2e45nepyyic5u2tv37gmnmeoev4ka2bgieqhhz7a
+Active author is now fhu3uk4w…
+```
+</CodeGroup>
+
+We use the `--switch` flag to make this author the default author for the console. This means we don't have to pass the author ID to every command.
+
+## Create a Document
+
+Next, let's create a document. Again we'll use the `--switch` the flag to use this document as the default document for the console session:
+
+<CodeGroup tag="CONSOLE">
+```text
+> doc new --switch
+x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
+Active doc is now x5qffedi…
+
+author:fhu3uk4w… doc:x5qffedi…
+> 
+```
+</CodeGroup>
+
+Next let's set a value in the document, and read it back.
+
+<CodeGroup tag="CONSOLE">
+```
+author:fhu3uk4w… doc:x5qffedi…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:x5qffedi…
+> doc get foo -c
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
+```
+</CodeGroup>
+
+The `-c` flag on the `doc get` command tells iroh to fetch the actual contents.
+
+## Sync the document
+
+Now let's actually sync this document with a second node. To disambiguate we'll call the node we've been working with so far "Node A", and the new one we'll create "Node B". We'll start by _sharing_ write access to the document from `Node A`:
+
+<CodeGroup tag="CONSOLE" title="Node A">
+```
+author:fhu3uk4w… doc:x5qffedi…
+> doc share write
+lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+```
+</CodeGroup>
+
+That long `lzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
+
+```text
+$ export IROH_DATA_DIR=./
+$ iroh start --rpc-port 1111
+Listening addresses:
+  108.41.41.113:47896
+  108.41.41.113:62424
+  192.168.86.28:62424
+DERP Region: 1
+PeerID: msiymgtbgosahfrcftazqcbpz7n54z2kol2rd653fin6gh4remmq
+```
+
+Iroh has a default data directory, and a default port ([`1337`](https://en.wikipedia.org/wiki/Leet)). We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. We also pass `--rpc-port 1111` to override the default RPC port.
+
+And now we'll create a fourth terminal to open a console for `Node B`:
+
+```text
+$ export IROH_DATA_DIR=./
+$ iroh --rpc-port 1111 console
+Welcome to the Iroh console!
+Type `help` for a list of commands.
+
+>
+```
+
+Now we can join the document from `Node B`, pasting in the value of the ticket we created with `doc share write` on `Node A`:
+
+<CodeGroup tag="CONSOLE" title="Node B">
+```text
+> author new --switch
+ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
+Active author is now ksdx5fs4…
+
+> doc join --switch lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
+Active doc is now x5qffedi…
+
+author:ksdx5fs4… doc:x5qffedi…
+> doc get foo -c
+@ksdx5fs4…: foo = 6lujp3wx… (3 B)
+bar
+```
+</CodeGroup>
+
+The two consoles are now syncronized! We can see the value we set from `Node A` on `Node B`. Any edit you make in one console will be reflected in the other in real time.
+
+<Note>
+  To make this more interesting, try running this step on a separate computer.
+  Iroh's networking stack will establish a connection for you. Nothing will change about these instructions.
+</Note>
+
+
+### Next Steps
+
+Now that you've seen iroh in action, you're ready to start integrating it into your application. The Command Reference is a good place to start. It covers the CLI commands we used here, as well as code examples showing how to use Iroh in your language.
+
+<div className='not-prose'>
+  <Button arrow="right" href="/docs/commands">Command Reference</Button>
+</div>
