@@ -35,7 +35,7 @@ Then, we start a  netcheck report, which attempts to figure out all of our publi
 
 Once we’ve gathered all the appropriate information, we are ready to connect.
 
-To connect to another peer, we at minimum need to know it’s public key and its DERP node. A DERP node is a server that relays packets over HTTPS. Each iroh node is expected to be connected to at least one DERP node, if it wants to attempt any holepunching.
+To connect to another peer, we at minimum need to know it’s public key and its DERP node. A DERP node is a server that helps establish connections and relays packets over HTTPS as a fallback. Each iroh node is expected to be connected to at least one DERP node, if it wants to attempt any holepunching.
 
 If we have a list of possible addresses for the node to which we want to connect, that’s even better!
 
