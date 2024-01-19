@@ -52,18 +52,18 @@ Collection link counts can range from 0-billions. Collections are true lists, an
 
 ### Collection Metadata
 
-Formally, the serialized list of hashes stored as a bolb is a _hash sequence_, which has no metadata. Iroh defines a collection as a hash sequence who's first element points to a `CollectionV0` metadata blob. The metadata blob is always starts with the `CollectionV0` UTF-8 string, followed by a list of strings that are the names of the links in the collection. For example, a collection with the links `foo`, `bar`, and `baz` would look like this:
+Formally, the serialized list of hashes stored as a blob is a _hash sequence_, which has no metadata. Iroh defines a collection as a hash sequence who's first element points to a `CollectionV0` metadata blob. The metadata blob is always starts with the `CollectionV0` UTF-8 string, followed by a list of strings that are the names of the links in the collection. For example, a collection with the links `foo`, `bar`, and `baz` would look like this:
 
 ```
 "CollectionV0"
 ["foo", "bar", "baz", ...]
 ```
 
-The length of the list must match the length of elements in the hash sequence (minus the meatadata element). The metadata blob is always the first element of the hash sequence. Iroh can issue sparse requests to determine the byte lengths of each blob in the collection, which combines to give a baseline metadata of "file names" and sizes. This provides a few nice advantages:
+The length of the list must match the length of elements in the hash sequence (minus the metadata element). The metadata blob is always the first element of the hash sequence. Iroh can issue sparse requests to determine the byte lengths of each blob in the collection, which combines to give a baseline metadata of "file names" and sizes. This provides a few nice advantages:
 
 1. There is nothing left to remove from the definition of a hash sequence. We consider this specification finished.
 2. The "metadata as first element" is a convention. It's completely acceptable to build a custom collection definition that includes different metadata. Iroh will still understand how to transfer & seek into the hash sequence. This opens the door to building efficient, specialized, & immutable compound data structures on iroh.
-3. BLAKE3 chunks along 1Kib Boundaries, which means there will always bee exactly 32 hashes in a BLAKE3 incremental verification block.
+3. BLAKE3 chunks along 1Kib Boundaries, which means there will always be exactly 32 hashes in a BLAKE3 incremental verification block.
 
 ### When to use a collection
 

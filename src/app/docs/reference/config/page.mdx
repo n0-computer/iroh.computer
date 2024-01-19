@@ -6,7 +6,7 @@ export const metadata = {
 
 # Configuration
 
-iroh supports a number of configuration details that affect the way iroh behaves. While this document descibes configuration for the iroh CLI, many of these same values are accessible within the various iroh SDKs, check SDK documentation for more info. {{className: 'lead'}}
+Iroh supports a number of configuration details that affect the way iroh behaves. While this document descibes configuration for the iroh CLI, many of these same values are accessible within the various iroh SDKs, check SDK documentation for more info. {{className: 'lead'}}
 
 ## Ports
 
@@ -14,7 +14,7 @@ A running iroh instance binds to two ports by default:
 
 | Service                | Default Port | Description |
 | ---------------------- | ------------ | ----------- |
-| Iroh Listening Address | 11204        | Address Iroh listens on for connections from other nodes. If the port is taken iroh will choose a random port to listen on. | 
+| Iroh Listening Address | 11204        | Address iroh listens on for connections from other nodes. If the port is taken iroh will choose a random port to listen on. | 
 | RPC                    | 1337         | Localhost-only Remote Procedure Calls, used to control an iroh node from another process. If the port is taken iroh will fail to start. |
 
 
@@ -41,9 +41,23 @@ A common pattern for creating "one off" iroh nodes is to run `export IROH_DATA_D
 
 The iroh CLI loads configuration from a `iroh.config.toml` file within the data directory. The file is in [TOML format](https://toml.io/en/), and all values are optional, including the file itself. Iroh does _not_ create `iroh.config.toml` by default.
 
-| Parameter       | Default Value | Description |
-| --------------- | ------------- | ----------- |
-| `derp_regions`  | [1, 2]        | set and priority of ”Designated Encrypted Relay for Packets" (DERP) regions to use. Defaults to [North American, European] region identifiers. [Read more about DERP](/docs/connections/holepunching) |
+### DERP nodes
+DERP ("Designated Encrypted Relay for Packets") nodes are used to assist in holepunching and are identified by their url. We currently run two DERP nodes, one in North America and one in Europe. [Read more about DERP and holepunching.](/docs/layers/connections/holepunching) 
+
+This is what the default configuration for the DERP nodes looks like:
+```toml
+[[derp_nodes]]
+url = "https//use1-1.derp.iroh.network."
+stun_only = false
+stun_port = 3478
+
+[[derp_nodes]]
+url = "https//euw1-1.derp.iroh.network."
+stun_only = false
+stun_port = 3478
+```
+
+### Exposing other configuration
 
 Yes, the list of what is configurable is pretty short. We're trying to keep iroh as "self-configuring" as possible. A lot of logic goes into dynamically reacting to the context iroh is operating within. With that said, if your use case needs configurability exposed, please don't hesitate to [file an issue](https://github.com/n0-computer/iroh/issues/new)
 

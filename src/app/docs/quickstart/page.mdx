@@ -6,7 +6,7 @@ export const metadata = {
 
 # Quickstart
 
-This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between to terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
+This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between two terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
 
 ## Install Iroh
 
@@ -39,7 +39,7 @@ DERP Region: 1
 PeerID: 3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa
 ```
 
-Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console`, connecting to the node we started with `iroh start`.
+Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console` and connect to the node we started using the `iroh start` command.
 
 ```text
 $ iroh console
@@ -93,7 +93,7 @@ bar
 ```
 </CodeGroup>
 
-The `-c` flag on the `doc get` command tells iroh to fetch the actual contents.
+The `-c` flag on the `doc get` command tells iroh to fetch the actual content.
 
 ## Sync the document
 

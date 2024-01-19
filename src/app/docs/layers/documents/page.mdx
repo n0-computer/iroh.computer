@@ -37,13 +37,7 @@ An _entry_ in the document is a key-value pair. When an author writes an entry t
 
 Authors are users who have write access to a document. Every author has a keypair that represents their identity. The public side of a keypair identifies the user & validates the edits they make to the document, the private side of the keypair is used to sign edits.
 
-The author that created the document is the _document owner_. The owner holds the private side of the document keypair and does not share it. Document owners have the ability to destroy the document and invite other authors to write to the document.
-
-Granting read access to a document is as simple as sharing the document public key. 
-
-## Syncing
-
-In iroh, the thing that links is the thing that syncs. Documents link together files
+Read access to a document is granted by sharing the document public key. Write access to a document is granted by sharing the document private key.
 
 ## Document Identifiers
 
@@ -55,6 +49,7 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
 
 Document IDs are base32-lower serialization of the public key of the document. They do _not_ change as the document changes.
 
+{/*
 ## Permissions
 
 ## Multiple Writers
@@ -64,3 +59,4 @@ Document IDs are base32-lower serialization of the public key of the document. T
 ## Subscriptions
 
 ## Revocations & Key Rotations
+*/}

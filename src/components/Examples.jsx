@@ -38,6 +38,21 @@ const examples = [
         [1, 3],
       ],
     },
+  },
+  {
+    // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
+    href: 'https://github.com/n0-computer/iroh-examples',
+    name: 'Examples written in rust and go',
+    description:
+      'See how iroh can be used to write a gateway, a content tracker, and more.',
+    tags: ["ipfs", "go", "gateway", "rust"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
   }
 ];
 
