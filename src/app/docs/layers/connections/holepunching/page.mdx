@@ -35,11 +35,11 @@ Then, we start a  netcheck report, which attempts to figure out all of our publi
 
 Once we’ve gathered all the appropriate information, we are ready to connect.
 
-To connect to another peer, we at minimum need to know it’s public key and its “DERP Region”. A DERP Region is a group of DERP Servers that are all meshed together, and can act as packet forwarders for each other. Each iroh node is expected to have a “home” DERP region that it maintains a connection to.
+To connect to another peer, we at minimum need to know it’s public key and its DERP node. A DERP node is a server that relays packets over HTTPS. Each iroh node is expected to be connected to at least one DERP node, if it wants to attempt any holepunching.
 
 If we have a list of possible addresses for the node to which we want to connect, that’s even better!
 
-We add those addresses, and the peer’s PublicKey, to the `MagicSock` peer address book. When we attempt to send packets to that peer, we assess the options in the address book for the `best_addr` (UDP address) to send the packets on. An address is a viable `best_addr` if we have sent a ping on that address, and received a pong in return. This lets us know that we can actually communicate on that address and the latency when using that address. The `best_addr` has the lowest latency. If there is no `best_addr` (because we have not received a pong, or because the latency has “expired”) we also send all packets to the peer’s DERP region” to ensure that the packets go through.
+We add those addresses, and the peer’s PublicKey, to the `MagicSock` peer address book. When we attempt to send packets to that peer, we assess the options in the address book for the `best_addr` (UDP address) to send the packets on. An address is a viable `best_addr` if we have sent a ping on that address, and received a pong in return. This lets us know that we can actually communicate on that address and the latency when using that address. The `best_addr` has the lowest latency. If there is no `best_addr` (because we have not received a pong, or because the latency has “expired”) we also send all packets to the peer’s home DERP node to ensure that the packets go through.
 
 If we don’t have a `best_addr` , we start the `Disco` process and try to hole punch.
 
@@ -53,12 +53,10 @@ If we have not attempted to hole punch to that peer, it’s been a while since w
 - At the same time as the `Disco::CallMeMaybe` message is sent, we also send `Disco::Ping` messages to any known UDP addresses of the remote peer
 - If the remote server is able to receive any of the `Disco::Ping` messages, it sends a return `Disco::Pong`, telling the node that that particular address is a viable address to communicate over UDP
 - When the remote server gets a `Disco::CallMeMaybe` request, it can choose to respond to it with its own `Disco::CallMeMaybe` and `Disco::Pings` on all the given addresses. It will not respond if it has never encountered this `PublicKey` before.
-- These `ping`/ `pong`messages are what do the actual hole punching, and the `CallMeMaybe` messages are what coordinates them.
+- These `ping` / `pong`messages are what do the actual hole punching, and the `CallMeMaybe` messages are what coordinates them.
 
 If at any time during our transmission of packets, we receive a `Pong` from the remote peer, our internal record of the addresses and endpoints for that peer is updated with the new latency information. The next time we request the “best address” for that remote peer, we can switch to sending packets on a different address, with the better latency.
 
-We check latency (by sending new `Disco::Ping` messages) about once a minute
+We check latency (by sending new `Disco::Ping` messages) about once a minute.
 
 If no hole punching ever occurs, we continue to use the fallback of relaying the packets over the DERP servers.
-
-![intg_derper__1_to_1_NAT_both.svg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8b772f04-c2bf-4fa1-807f-6e86d980f3b0/intg_derper__1_to_1_NAT_both.svg)
