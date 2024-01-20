@@ -31,12 +31,8 @@ Usage: iroh [OPTIONS] [COMMAND]
 
 ```text
 $ iroh start
-Listening addresses:
-  108.41.41.113:52658
-  108.41.41.113:11204
-  192.168.86.28:11204
-DERP Region: 1
-PeerID: 3pwjma35aeu7mmmjolslefpnlsdztyp4zwf4zwx32nnvlmzko4aa
+Iroh is running
+Node ID: l5kkl6u6fqcnjxvdkoihq3nbsqczxeulfsqvatb2qh3bwheoyaha
 ```
 
 Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console` and connect to the node we started using the `iroh start` command.
@@ -57,7 +53,7 @@ Before we can work with documents, we need to create an _author_, which is an id
 ```text
 > author new --switch
 fhu3uk4wc2hl2e45nepyyic5u2tv37gmnmeoev4ka2bgieqhhz7a
-Active author is now fhu3uk4w…
+Active author is now fhu3uk4wc2hl2e45
 ```
 </CodeGroup>
 
@@ -71,9 +67,9 @@ Next, let's create a document. Again we'll use the `--switch` the flag to use th
 ```text
 > doc new --switch
 x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedi…
+Active doc is now x5qffedimrovdpsr
 
-author:fhu3uk4w… doc:x5qffedi…
+author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
 > 
 ```
 </CodeGroup>
@@ -82,18 +78,17 @@ Next let's set a value in the document, and read it back.
 
 <CodeGroup tag="CONSOLE">
 ```
-author:fhu3uk4w… doc:x5qffedi…
+author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
 > doc set foo bar
-@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+6lujp3wx2idm3bk5iqkzr6ssdk6hlkuwsu7jpqbqzfqsymgbfe6q
 
-author:fhu3uk4w… doc:x5qffedi…
-> doc get foo -c
-@fhu3uk4w…: foo = 6lujp3wx… (3 B)
-bar
+author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
+> doc get foo
+@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
 ```
 </CodeGroup>
 
-The `-c` flag on the `doc get` command tells iroh to fetch the actual content.
+If the content can be displayed as utf-8, the console will display the beginning of the text, otherwise the `doc get` command will display the content's hash. You can use the `--mode` flag to force the content to be printed in different ways. For example, using the option `--mode hash`, will always show the hash of the content, and `--mode content` will write the entire contents to the terminal, regardless of format.
 
 ## Sync the document
 
@@ -101,36 +96,41 @@ Now let's actually sync this document with a second node. To disambiguate we'll 
 
 <CodeGroup tag="CONSOLE" title="Node A">
 ```
-author:fhu3uk4w… doc:x5qffedi…
+author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
 > doc share write
-lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
 ```
 </CodeGroup>
 
-That long `lzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
+That long `doclzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
 
 ```text
 $ export IROH_DATA_DIR=./
-$ iroh start --rpc-port 1111
-Listening addresses:
-  108.41.41.113:47896
-  108.41.41.113:62424
-  192.168.86.28:62424
-DERP Region: 1
-PeerID: msiymgtbgosahfrcftazqcbpz7n54z2kol2rd653fin6gh4remmq
-```
+$ iroh console --start
+Iroh is running
+Node ID: 66lfqj4wjtza777baet27crxvqu4bkmts6uciawwer2qo64awheq
 
-Iroh has a default data directory, and a default port ([`1337`](https://en.wikipedia.org/wiki/Leet)). We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. We also pass `--rpc-port 1111` to override the default RPC port.
-
-And now we'll create a fourth terminal to open a console for `Node B`:
-
-```text
-$ export IROH_DATA_DIR=./
-$ iroh --rpc-port 1111 console
 Welcome to the Iroh console!
 Type `help` for a list of commands.
 
 >
+```
+
+Iroh has a default data directory , and a default rpc port ([`1337`](https://en.wikipedia.org/wiki/Leet)), for internal communication between the different iroh processes. We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. Iroh will also detect that another process is using the default rpc port, and will assign a different one for internal communcation, using the `IROH_DATA_DIR` as the place to coordinate which rpc port that iroh process is listening on.
+
+Notice that here we have combined the previous steps to get the console running from two commands (each in a separate terminal), to just one command. The `--start` flag tells the iroh node that we want to both start an iroh node and also connect the console to that node.
+
+To run these as separate commands, you would need to set the `IROH_DATA_DIR` flag to point to the same directory for each terminal window:
+```text
+# in one terminal:
+$ export IROH_DATA_DIR=./
+$ iroh start
+```
+
+```text
+# and in another terminal:
+$ export IROH_DATA_DIR=./
+$ iroh console
 ```
 
 Now we can join the document from `Node B`, pasting in the value of the ticket we created with `doc share write` on `Node A`:
@@ -139,16 +139,17 @@ Now we can join the document from `Node B`, pasting in the value of the ticket w
 ```text
 > author new --switch
 ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
-Active author is now ksdx5fs4…
+Active author is now ksdx5fs4kwjmoaca
 
-> doc join --switch lzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+> doc join --switch doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
 x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedi…
+Active doc is now x5qffedimrovdpsr
 
-author:ksdx5fs4… doc:x5qffedi…
+author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
 > doc get foo -c
-@ksdx5fs4…: foo = 6lujp3wx… (3 B)
-bar
+@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
+
+author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
 ```
 </CodeGroup>
 
