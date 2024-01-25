@@ -13,7 +13,7 @@ export const metadata = {
 
 function Article({ post }) {
   return (
-    <article className="md:grid md:grid-cols-4 md:items-baseline">
+    <article className="px-5 sm:px-0 md:grid md:grid-cols-4 md:items-baseline">
       <Card className="md:col-span-3">
         <Card.Title href={`/blog/${post.slug}`}>
           {post.title}
@@ -48,7 +48,7 @@ export default async function ArticlesIndex() {
     <div>
       <BlogHeader />
       <div className='mt-20 mx-auto max-w-2xl min-h-screen lg:mt-32'>
-        <header className="max-w-2xl">
+        <header className="max-w-2xl px-4 sm:px-0">
           <h1 className="text-4xl font-space font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl">Blog</h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">all things iroh &amp; development</p>
         </header>
