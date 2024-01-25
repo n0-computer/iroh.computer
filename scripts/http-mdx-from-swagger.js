@@ -6,7 +6,6 @@ try {
   let openApi = readFileSync('../public/docs/anchor-http-api/openapi.yaml');
   let api = await OpenAPIParser.dereference('../public/docs/anchor-http-api/openapi.yaml');
   // let api = OpenAPIParser.validate('../public/docs/anchor-http-api/openapi.yaml');
-  // console.log("API name: %s, Version: %s", api.info.title, api.info.version);
 
   let templateSource = readFileSync('./templates/anchor-api.template.mdx')
   let result = ejs.render(templateSource.toString(), { api });

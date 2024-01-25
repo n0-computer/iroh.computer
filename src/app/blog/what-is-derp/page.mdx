@@ -1,0 +1,60 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+// import designSystem from './planetaria-design-system.png'
+
+export const post = {
+  draft: true,
+  author: 'b5',
+  date: '2024-01-05',
+  title: 'Iroh connections: What is DERP?',
+  description:
+    'Designated Encrypted Relay for Packets (DERP) is a protocol for sending encrypted packets between two parties without revealing the IP address of either party to the other. DERP is designed to be used in conjunction with DERP servers, which are trusted third parties that relay DERP packets between clients.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export const references = [
+    {
+        name: 'DERP',
+        url: 'https://tailscale.com/blog/what-is-derp/',
+    },
+    {
+        name: 'DERP Protocol',
+        url: 'https://tailscale.com/blog/derp-protocol/',
+    },
+    {
+        name: 'DERP Server Map',
+        url: 'https://derpmap.tailscale.com/',
+    }
+]
+
+export default (props) => <BlogPostLayout article={post} references={references} {...props} />
+
+
+## Introduction
+
+    Briefly introduce the concept of P2P networking and the role of NAT traversal.
+    Introduce Iroh and its mission to simplify P2P connectivity.
+
+## The DERP Protocol in Iroh
+
+    Explain the original DERP protocol by Tailscale, focusing on its functionality and limitations.
+    Discuss how Iroh has adapted and enhanced the DERP protocol, emphasizing the use of DERP URLs instead of regions.
+
+## Advancements in Connection Establishment
+
+    Elaborate on Iroh's modifications to connect users discovered in the wild.
+    Explain the significance of using DERP URLs and how it improves connection flexibility and reliability.
+
+## NodeIDs and ED25519 Key
+
+    Describe the concept of a NodeID in Iroh's system.
+    Explain how NodeIDs are derived from ED25519 keys and their role in secure and efficient connection establishment.
+
+## Conclusion
+
+    Summarize the benefits of Iroh's approach to the DERP protocol, highlighting ease of use, enhanced connectivity, and security.
+    Encourage readers to explore Iroh for a streamlined P2P experience.
