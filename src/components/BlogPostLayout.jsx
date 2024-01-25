@@ -31,7 +31,7 @@ export function BlogPostLayout({ article, references = [], children }) {
   return (
     <div>
       <BlogHeader />
-      <div className="mt-16 lg:mt-32">
+      <div className="px-5 sm:px-0 mt-16 lg:mt-32">
         <div className="xl:relative">
           <div className="mx-auto mt-32 mb-64 max-w-2xl">
             <a
