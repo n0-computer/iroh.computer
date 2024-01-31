@@ -49,7 +49,7 @@ export function BlogPostLayout({ article, references = [], children }) {
                 </h1>
                 <time
                   dateTime={article.date}
-                  className="mt-5 flex items-center text-base text-zinc-400 dark:text-zinc-500"
+                  className="mt-2 flex items-center text-base text-zinc-400 dark:text-zinc-500"
                 >
                   {formatDate(article.date)}
                 </time>
