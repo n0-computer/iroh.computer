@@ -1,0 +1,54 @@
+# Tickets
+
+**Tl;DR:** Tickets are a way to share dialing information between iroh nodes. They're a single token that contains everything needed to connect to another node, or to fetch a blob or document. {{className: 'lead'}}
+
+<Note>
+Have a ticket? Try pasting it into the [iroh ticket explorer](https://ticket.iroh.computer) to break it down!
+</Note>
+
+Tickets are a single serialized token containing everything needed to kick off an interaction with another node running iroh. Here's an example of one:
+
+```text
+nodeadxnbzqaxmitapxpjveh4frw3pkntovtk6s2zu7jeb3x327basjzgajcnb2hi4dthixs65ltmuys2mjomrsxe4bonfzg62bonzsxi53pojvs4lydabefsibbzofqgagavbcevs4lamasmacaifjxj2aaaaaaaaaaaaia7telam
+```
+
+Yes, they're long. 
+
+They're also very powerful. Tickets combine a piece of info with _dialing information for the node to fetch from_. We've seen numerous content-addressed systems force users to copy and paste long hashes around, and we figure if you're going to have to copy and paste something, it might as well contain both the hash and a hint about where to find the data. Tickets also work very well in QR codes!
+
+In practice this is a _massive_ speed pickup for iroh. When you're given a ticket, you don't need an external service to look up dialing information, that info is already in the ticket. This means that iroh has multiple addresses it can try in parallel immediately, without needing to rely on an external lookup service.
+
+## Kinds of Tickets
+
+Currently, there are three kinds of tickets:
+
+| Type | Description | Contents |
+| --- | --- | --- | 
+| `node` | A token for connecting to an iroh node | `Node Address` |
+| `blob` | A token for fetching a [blob](/docs/layers/blobs) or [collection](/docs/layers/blobs#collections) | `Hash`, `HashOrCollection`, `Node Address`  |
+| `ticket` | A read/write access token to a [document](/docs/layers/document), plus a node address | `DocID`, `Read/Write Capability`, `[Node Address]` |
+
+Tickets always start with an ascii string that describes the type of ticket (eg: `blob`), followed by a base32-lowercase-encoded payload. The payload is [postcard-encoded data](https://postcard.jamesmunns.com/wire-format.html) that contains the information needed to use the ticket. We chose postcard because it's extremely succinct.
+
+## Tickets are sensitive
+
+When you create a ticket, it embeds the IP addresses of the machines you're using to create the ticket. This means that if you share a ticket with someone, they can use it to connect to your machine. This is a feature, not a bug. It's a way to bootstrap connections between peers without needing a central server. It also means you should be careful about sharing tickets with people you don't want to have your IP address.
+
+It's worth point out this setup is considerably better than full peer-2-peer systems, which _broadcast_ your IP to peers. Instead in iroh, we use tickets to form a "cozy network" between peers you explicitly want to connect with. It's possible to go "full p2p" & configure your app to broadcast dialing details, but we think tickets represent a better middle-ground default.
+
+## Document Tickets are _secrets_
+
+When you create a document ticket, you're creating a secret that allows someone to read or write to a document. This means that you should be careful about sharing document tickets with people you don't trust. What's more, someone who has a document ticket can use it to create new tickets for the same document. This means that if you share a document ticket with someone, they can use it to create new tickets for the same document, and share those tickets with others.
+
+## Creating Tickets
+
+| Type | Command |
+| --- | --- |
+| `node` | [`dumbpipe listen`](https://dumbpipe.dev) |
+| `blob` | `iroh blob share` |
+| `doc` | [`iroh blob share`](/docs/api/doc-share) |
+
+
+## Using tickets in your app
+
+The best user experience doesn't show users tickets _at all_, and instead uses a "signaling protocol" within your application to move tickets. This can be as simple as using QR codes, or could be storing tickets in a database and sharing them via API calls within your app.
