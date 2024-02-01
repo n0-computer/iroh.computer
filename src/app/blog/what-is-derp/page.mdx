@@ -3,7 +3,7 @@ import Image from 'next/image'
 // import designSystem from './planetaria-design-system.png'
 
 export const post = {
-  draft: true,
+  draft: false,
   author: 'b5',
   date: '2024-01-05',
   title: 'Iroh connections: What is DERP?',
@@ -26,35 +26,67 @@ export const references = [
         url: 'https://tailscale.com/blog/derp-protocol/',
     },
     {
-        name: 'DERP Server Map',
-        url: 'https://derpmap.tailscale.com/',
+        name: 'How NAT traversal works',
+        url: 'https://tailscale.com/blog/how-nat-traversal-works',
     }
 ]
 
 export default (props) => <BlogPostLayout article={post} references={references} {...props} />
 
+As a dev using the iroh to write an app, iroh's lower level protocols are not something you need to interact with. They're designed to give you reliable properties without any configuration. There is, however, one protocol that you will see referenced often: the DERP protocol. To understand why DERP exists, we need to talk about the thorny topic of NAT traversal.
 
-## Introduction
+## NATs and NAT Traversal
 
-    Briefly introduce the concept of P2P networking and the role of NAT traversal.
-    Introduce Iroh and its mission to simplify P2P connectivity.
+NAT, or Network Address Translation, refers to the process of modifying the network address of an IP header, usually done by a router. Your router will replace your local IP address in your messages, with the public IP address of your router, before sending it off to the internet at large. The router understands how to do this translation and how to make sure that any return messages get routed correctly back to you. But for many routers, this translation only works if your device _initiates_ the connection to the remote device. Some routers will not route messages from remote devices back to you if you have not already sent a message to that remote device. In some cases, the remote device would not even know what IP address to talk to you on anyway!
 
-## The DERP Protocol in Iroh
+This is not a problem in traditional server / client connection relationships, because typically the server has a public IP address that is not behind a NAT device. It is open and free to accept whatever incoming messages it receives. And since the client side of the server / client connection typically initiates communication anyway, the router will allow the server side to respond, no problem.
 
-    Explain the original DERP protocol by Tailscale, focusing on its functionality and limitations.
-    Discuss how Iroh has adapted and enhanced the DERP protocol, emphasizing the use of DERP URLs instead of regions.
+If we want a direct connection between two devices, however, both devices may be behind NATs. So we often find ourselves in a situation where neither side of the connection can initiate a successful connection, because the other device's router will not let any messages through. NAT traversal is the set of techiques for overcoming this problem. 
 
-## Advancements in Connection Establishment
+Establishing a direct connection across a NAT is called [_hole punching_](https://en.wikipedia.org/wiki/Hole_punching_(networking)). There is no singular "direct connection please" protocol, which makes traversing NATs more of an "oral history as code" that's passed across projects & develpers over time.
 
-    Elaborate on Iroh's modifications to connect users discovered in the wild.
-    Explain the significance of using DERP URLs and how it improves connection flexibility and reliability.
+Iroh was built to help ease the issues of NAT traversal for developers, so you can write applications that establish direct connections without having to worry about NATs. We do this by adapting some protocols and using some techniques written by Tailscale, and one of those protocols is DERP.
+    
+## The DERP Protocol
 
-## NodeIDs and ED25519 Key
+The DERP protocol, or Designated Encrypted Relay for Packets, is a protocol designed by Tailscale and is intended to serve a few functions in the hole punching process. 
 
-    Describe the concept of a NodeID in Iroh's system.
-    Explain how NodeIDs are derived from ED25519 keys and their role in secure and efficient connection establishment.
+DERP servers are servers that run the DERP protocol and are not behind a NAT (so they have public IP addresses that can be dialed by anyone).
 
-## Conclusion
+The DERP protocol is responsible for a few steps in the NAT traversal process:
 
-    Summarize the benefits of Iroh's approach to the DERP protocol, highlighting ease of use, enhanced connectivity, and security.
-    Encourage readers to explore Iroh for a streamlined P2P experience.
+First, it acts as a [_STUN server_](https://en.wikipedia.org/wiki/STUN), which tells your device all of the IP address information about itself. This is a vital step in the hole punching / NAT traversal process, since you must be able to tell remote devices about your own IP address in order for them to try to contact you.
+
+Second, it acts as a coordinator between two nodes that are trying talk to each other directly, but cannot due to NATs. The DERP server is connected to both nodes and can send dialing information to both parties, so that each node knows the IP addresses of the other, and can attempt to talk to each other directly using these IP addresses.
+
+Third, if hole punching fails, the two nodes can use the DERP servers to securely relay their messages to each other. There are some situations where hole punching will not work, and the DERP servers can act as a fallback to ensure that the two nodes can still communicate.
+
+<Note>
+When a DERP server is relaying packetes between two nodes, it is not able to read the contents of the communication. Messages exchanged through the relay are encrypted using the same transport-layer security applied to all packets sent through the internet, and the derp server does _not_ have the decryption key.
+</Note> 
+
+## DERP URLs
+
+The original DERP protocol DERP _regions_: geographically close clusters of DERP servers that can act as packet forwarders for one another. You only need to be connected to one DERP node in that region to be effectively connected to all of them. These regions are identified by an ID number and the list of expected DERP regions is maintained and run by Tailscale.
+
+All dialing of DERP servers uses this region ID, and refers to the list of DERP regions to get the IP address of this region. There are some massive benefits to this for Tailscale and its users. For one, Tailscale can better regulate the use of the DERP servers, ensuring that it's paying customers are using only trusted servers for relaying data. Also, using a single `u8` to be able to identify a region helps reduce message size, compared to a much longer IP address, or-even spicier-a URL that could potentially have an unbounded size.
+
+When we first implemented the DERP protocol, we used DERP regions in the same way. It quickly became apparent, however, that the regulation and centralization of DERP regions did not make sense for our use case. First, it placed undue burden on our users to understand the topography of our network of DERP servers, understand the difference between DERP regions and DERP servers, and obscure the actual IP addresses of where their data was being proxied. It also made it very difficult for an advanced user to run their own DERP server, or to even set up a convenient local DERP server while developing.
+
+So, in version 0.12.0 of iroh, we replaced the notion of DERP regions and their ids with DERP urls, normal URLs that indicate where the DERP server is located.
+
+<Note>
+In iroh's APIs, you will notice certain builders and dialers take an optional DERP URL parameter. You can also see `--derp-url` flags in our iroh CLI options. You can use these parameters and flags to specify a URL that you want to act as your DERP server. 
+</Note>
+
+## Default Derp Servers
+
+Iroh comes with a default set of derp servers, hosted & maintained by [number 0](https://n0.computer), the same team that's developing iroh. The default derp servers all use a common `derp.iroh.network` URL suffix. We have servers set up around the world and are adding more as demand increases.
+
+## Deploying your own DERP server
+
+It's absolutely possible to set up your own DERP mesh. Right now, it's more than a little complex ([this](https://github.com/n0-computer/iroh/blob/main/iroh-net/src/bin/derper.rs) is really all you have to go on at the moment), but we do know of advanced users who are running their own derp meshes in the wild. If you're interested in doing this, please reach out to us on [Discord](https://iroh.computer/discord) and we'll help you get set up.
+
+## Wrapping up
+
+Congrats! You know all about DERP now. You can use this knowledge to help you understand how iroh works, and to help you debug any issues you may have with your iroh applications. If you have any questions, please reach out to us on [Discord](https://iroh.computer/discord) or [Twitter](https://twitter.com/iroh_n0). We're happy to help!
