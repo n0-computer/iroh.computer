@@ -1,0 +1,133 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+  draft: true,
+  author: 'number 0 team',
+  date: '2024-02-01',
+  title: 'Iroh global node discovery',
+  description:
+    'How to discover iroh nodes by node id, using the bittorrent DHT',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## Problem
+
+In [iroh](https://github.com/n0-computer/iroh) or iroh based tools like [sendme](https://iroh.computer/sendme) and [dumbpipe](https://www.dumbpipe.dev/), you establish connections between nodes using tickets.
+
+Tickets contain both the iroh node id (an [ed25519](https://en.wikipedia.org/wiki/EdDSA) public key), direct addresses of the node, and the url of the DERP relay server that is closest to the node in terms of latency. This allows iroh to connect to the node no matter if it is publicly reachable or behind a firewall.
+
+But what if a ticket is outdated, or you don’t have a ticket at all?
+
+<aside>
+💡 The information in tickets is usually pretty long lived - while the direct addresses frequently change, the derp url will only change if the node changes its geographic region or when it is intentionally reconfigured. Nevertheless it can happen that the derp url changes. E.g. your colleague gave you a ticket at conference in Europe and now is back in the US. Or you have just switched VPN exit nodes.
+
+</aside>
+
+Maybe you have a system where you do not want to store the ticket at all. Globally identifying nodes with just a node id can be very useful when you have to keep and transmit information about many nodes, such as global content discovery.
+
+In such cases you need some kind of global address book where each node that wants to participate publishes a mapping from its node id to its current direct and derp addresses.
+
+## Possible solutions
+
+One possible implementation of such a global address book is a centralised service. While there is nothing wrong with that in principle, running such a centralised service is not free.
+
+My [first implementation](https://github.com/n0-computer/iroh-discovery-cloudflare-worker) of global node discovery was actually using [cloudflare workers](https://developers.cloudflare.com/workers/) and the cloudflare [KV database](https://developers.cloudflare.com/kv/). But while each request to a cloudflare worker is very cheap, in a system of millions of nodes frequently looking other nodes up, these queries could quickly become expensive.
+
+Another possible implementation would be using the DNS system. You could store information such as the current addresses and derp url in a DNS TXT record for a domain. But while that would give you the ability to give nodes human readable names, it has some problems. Publishing DNS records is relatively slow, and each iroh user would have to have access to a DNS registrar such as [AWS route53](https://aws.amazon.com/route53/). And while DNS lookup is free, publishing new records comes with cost.
+
+But using DNS is pretty close to what we want. We want to assign some information (the derp url and direct addresses) to a name. Only that the name is a 32 byte ed25519 key and therefore not scarce, and we would like some kind of permissionless global system that can be updated relatively quickly.
+
+## Pkarr
+
+A typical solution for such a permissionless global registry is a [distributed hash table](https://en.wikipedia.org/wiki/Distributed_hash_table) or DHT. So we would need a DHT. IPFS and hypercore use a DHT for similar problems. 
+
+The largest existing DHT is the bittorrent [mainline DHT](https://en.wikipedia.org/wiki/Mainline_DHT). While it is old, it is a very minimalist and robust design. It is also one of the few DHTs out there that has survived despite being frequently attacked by powerful adversaries.
+
+The mainline DHT, originally just used for retrieving the location of content identified by SHA1 infohashes, has been extended many times. One such extension, [bep0044](https://www.bittorrent.org/beps/bep_0044.html), allows publishing mutable, signed data given an ed25519 keypair. This sounds pretty close to what we want.
+
+But in what format should we publish the data? Well, we want something like DNS, and maybe even something that is interoperable with the omnipresent DNS system. So why not publish DNS records? That’s the idea behind [pkarr](https://pkarr.org), or Public-Key Addressable Resource Records.
+
+It’s a very simple system for publishing and resolving DNS resource records that are signed by an ed keypair, with one of many possible storage mechanisms being the bittorrent mainline DHT.
+
+## Implementation
+
+The [mainline](https://crates.io/crates/mainline) crate makes interacting with the bittorrent DHT in rust very simple. The [pkarr](https://crates.io/search?q=pkarr) crate, built on top of the mainline crate, adds the concept of publishing signed records.
+
+Iroh provides a trait to plug in node discovery mechanisms. So all we have to do is to implement the [Discovery trait](https://docs.rs/iroh-net/0.12.0/iroh_net/magicsock/trait.Discovery.html) and implement the two methods publish and resolve.
+
+Resolving is pretty straightforward - you just ask the DHT for signed resource records, then sift through the answers to find valid ones. Due to the signing, the only entity that can publish a valid record is the owner of the private key corresponding to the public key that serves as a name. So the worst thing that can happen is that you get a slightly outdated record.
+
+Publishing is a bit more involved. At first you create a DNS resource record and sign it. But since DHT nodes are constantly coming and going, and DHT nodes will not retain information forever, you have to constantly republish the record for it to remain reachable.
+
+The constructor for pkarr node discovery needs the private key of the node in order to be able to sign the DNS records.
+
+Publishing is optional - there might be cases such as short lived nodes or nodes that do not want to be publicly reachable where publishing is not wanted.
+
+## Trying it out
+
+[iroh-pkarr-node-discovery](https://crates.io/crates/iroh-pkarr-node-discovery) is a tiny library crate that implements the iroh Discovery trait using pkarr. It comes with an [example](https://github.com/n0-computer/iroh-examples/blob/ced16b02ff3bc1aa445a41c15b8812c0b1a0d7c7/iroh-pkarr-node-discovery/examples/chat.rs) that creates a minimal chat program, just send from standard input and receive to standard output.
+
+### Publishing
+
+When starting the example without parameters, it creates a magicsocket using a random private key. It then publishes the address information for this node id on the mainline DHT in DNS resource record format.
+
+```bash
+❯ cargo run --example chat
+    Finished dev [unoptimized + debuginfo] target(s) in 0.68s
+     Running `target/debug/examples/chat`
+Listening on hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+pkarr z32: 8sxbksnfnwbzrhfsw7w7rqbt1bsafseqkk7oy83y5rdiswoofbcy
+see https://app.pkarr.org/?pk=8sxbksnfnwbzrhfsw7w7rqbt1bsafseqkk7oy83y5rdiswoofbcy
+```
+
+Both iroh and pkarr use 32 byte ed25519 public keys as names, but while iroh is using normal base32 encoding, pkarr is using [zbase32](https://philzimmermann.com/docs/human-oriented-base-32-encoding.txt) encoding. Normally as an iroh user you don’t have to care about this, but printing the zbase32 encoded id is helpful for looking up the created record on the pkarr webapp.
+
+### Verifying the published DNS record
+
+Pkarrr comes with a web app that allows inspecting DNS records on the mainline DHT. We can inspect the published record using this tool.
+
+![Untitled](Iroh%20global%20node%20discovery%20f885816e52cb4126b97ca4595670994b/Untitled.png)
+
+This is just a DNS record. As you can see, the current direct addresses of the node are published as TXT records under the `@` key, and the derp URL is published under the key `_derp_url.iroh`.
+
+I live in Romania, but when I tried this out I had a VPN connection to the US open to use some tools that are not available in the EU. So iroh-net has determined that the closest derper is use1-1.derp.iroh.network. In addition to the region, the record reveals some details about my networking setup. E.g. that `192.168.1.129` is the IP address of my laptop within my home network.
+
+This shows one reason pkarr record publishing is optional and should only be used if you want global discovery. You might not want to blast information about your rough location and private networking config all over the internet, even if it is harmless. When using tools like sendme that don’t have global node discovery enabled, only the recipients of the ticket get this information.
+
+### Resolving
+
+When starting the example with an iroh node id as a parameter, it will try to look up the node information on the DHT, and then try to connect using the chat ALPN. No matter if the other side is in the same local network or on the other side of the world, iroh will create a connection.
+
+Since this side does not want to be connected to, the discovery mechanism is not configured to publish but just to resolve records.
+
+The chat example is very minimal, without good error handling and UX. You just run it with a node id, and it will connect to the other side and allow you to chat.
+
+```bash
+❯ cargo run --example chat hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+    Finished dev [unoptimized + debuginfo] target(s) in 0.16s
+     Running `target/debug/examples/chat hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma`
+We are qzjliknxohvy3sfdfrl62oydl6qc2qougrxrtel4uygjzhlvotlq and connecting to hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+hi
+hello back
+```
+
+# Why is this not built in
+
+Other systems such as IPFS have the publishing of the node id on some DHT permanently enabled.
+
+But as we have seen there are many use cases where a node either does not want to be publicly reachable at all, or only wants to be able to resolve other nodes.
+
+Also, there are various different possible node resolution approaches, all with different benefits and downsides. E.g. for many apps using a centralised service such as the mentioned cloudflare worker might be the best solution. It has some cost, but will be more private, performant and reliable than a DHT.
+
+Last but not least, having this permanently enabled would add additional dependencies to the iroh networking library that would needlessly increase compile times and binary size. The pkarr and mainline crates are very frugal in terms of dependencies, but still you don’t want anything you don’t use.
+
+# Real world use
+
+Many iroh based tools do not make use of this mechanism, for the reasons we have described. In a later blog post I will describe a system that makes use of this mechanism to allow global content publishing. Examples where using this mechanism would make sense include any service that should be globally reachable under a stable identifier.
