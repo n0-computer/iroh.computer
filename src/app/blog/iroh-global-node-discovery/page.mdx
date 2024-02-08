@@ -2,12 +2,12 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 import Image from 'next/image'
 
 export const post = {
-  draft: true,
-  author: 'number 0 team',
-  date: '2024-02-01',
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-02-08',
   title: 'Iroh global node discovery',
   description:
-    'How to discover iroh nodes by node id, using the bittorrent DHT',
+    'How to discover iroh nodes by node id, using the Mainline Distributed Hash Table (DHT)',
 }
 
 export const metadata = {
@@ -19,16 +19,15 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## Problem
 
-In [iroh](https://github.com/n0-computer/iroh) or iroh based tools like [sendme](https://iroh.computer/sendme) and [dumbpipe](https://www.dumbpipe.dev/), you establish connections between nodes using tickets.
+In [iroh](https://github.com/n0-computer/iroh) or iroh based tools like [sendme](https://iroh.computer/sendme) and [dumbpipe](https://www.dumbpipe.dev/), you establish connections between nodes using [tickets](/docs/concepts/tickets).
 
 Tickets contain both the iroh node id (an [ed25519](https://en.wikipedia.org/wiki/EdDSA) public key), direct addresses of the node, and the url of the DERP relay server that is closest to the node in terms of latency. This allows iroh to connect to the node no matter if it is publicly reachable or behind a firewall.
 
 But what if a ticket is outdated, or you don’t have a ticket at all?
 
-<aside>
-💡 The information in tickets is usually pretty long lived - while the direct addresses frequently change, the derp url will only change if the node changes its geographic region or when it is intentionally reconfigured. Nevertheless it can happen that the derp url changes. E.g. your colleague gave you a ticket at conference in Europe and now is back in the US. Or you have just switched VPN exit nodes.
-
-</aside>
+<Note>
+The information in tickets is usually pretty long lived - while the direct addresses frequently change, the derp url will only change if the node changes its geographic region or when it is intentionally reconfigured. Nevertheless it can happen that the derp url changes. E.g. your colleague gave you a ticket at conference in Europe and now is back in the US. Or you have just switched VPN exit nodes.
+</Note>
 
 Maybe you have a system where you do not want to store the ticket at all. Globally identifying nodes with just a node id can be very useful when you have to keep and transmit information about many nodes, such as global content discovery.
 
@@ -93,7 +92,9 @@ Both iroh and pkarr use 32 byte ed25519 public keys as names, but while iroh is 
 
 Pkarrr comes with a web app that allows inspecting DNS records on the mainline DHT. We can inspect the published record using this tool.
 
-![Pkarr app](pkarr.png)
+<div className="not-prose">
+  <Image src="/blog/iroh-global-node-discovery/pkarr.png" width={1222} height={1090} alt="pkarr app" />
+</div>
 
 This is just a DNS record. As you can see, the current direct addresses of the node are published as TXT records under the `@` key, and the derp URL is published under the key `_derp_url.iroh`.
 
