@@ -53,6 +53,7 @@ export function BlogPostLayout({ article, references = [], children }) {
                 >
                   {formatDate(article.date)}
                 </time>
+                <span className='text-zinc-500'>by {article.author}</span>
               </header>
               <Prose className="mt-8" data-mdx-content>
                 {children}
