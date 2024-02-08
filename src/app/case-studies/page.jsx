@@ -1,13 +1,15 @@
+'use client';
+
 import BlogHeader from '@/components/BlogHeader'
 import Example from '@/components/Example'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import Image from 'next/image'
 
-export const metadata = {
-  title: 'Use Cases',
-  description:
-    'Some of the ways teams are using iroh',
-}
+// export const metadata = {
+//   title: 'Use Cases',
+//   description:
+//     'Some of the ways teams are using iroh',
+// }
 
 export default async function ArticlesIndex() {
   return (
