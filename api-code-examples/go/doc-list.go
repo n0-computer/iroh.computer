@@ -18,14 +18,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	// create a second document
 	doc, err = node.DocCreate()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	// list all your documents
 	docs, err := node.DocList()
@@ -36,6 +36,6 @@ func main() {
 	fmt.Printf("Listing all %d documents:\n", len(docs))
 	// doc ids are also called "NamespaceIds"
 	for _, namespaceAndCapability := range docs {
-		fmt.Printf("\t%s\n", namespaceAndCapability.Namespace.ToString())
+		fmt.Printf("\t%s\n", namespaceAndCapability.Namespace)
 	}
 }

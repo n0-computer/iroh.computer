@@ -63,7 +63,7 @@ func main() {
 	inPlace := false
 	// iroh blobs can be "tagged" with human readable names, this creates a tag
 	// automatically
-	tag := iroh.SetTagOptionNamed(iroh.TagFromString("my_collection"))
+	tag := iroh.SetTagOptionNamed([]byte("my_collection"))
 	// when adding a single file, if you use `iroh.WrapOptionWrap`, you will turn
 	// the single file into a collection with one entry
 	wrap := iroh.WrapOptionNoWrap()
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	for _, res := range collRes {
-		fmt.Printf("\thash: %s tag: %s\n", res.Hash.ToString(), res.Tag.ToString())
+		fmt.Printf("\thash: %s tag: %s\n", res.Hash.ToString(), res.Tag)
 	}
 
 	// Output:

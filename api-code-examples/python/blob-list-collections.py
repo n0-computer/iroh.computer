@@ -30,7 +30,7 @@ try:
 
     # Options
     in_place = False
-    tag = SetTagOption.named(Tag.from_string("my_collection"))
+    tag = SetTagOption.named(b'my_collection')
     wrap = WrapOption.no_wrap()
 
     # Callback setup
@@ -50,7 +50,7 @@ try:
 
     coll_res = node.blobs_list_collections()
     for res in coll_res:
-        print(f"\thash: {res.hash.to_string()} tag: {res.tag.to_string()}")
+        print(f"\thash: {res.hash.to_string()} tag: {res.tag}")
 
 except Exception as e:
     print("error: ", e)

@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	prefix := "import-example"
 

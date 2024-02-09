@@ -56,7 +56,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	var wg sync.WaitGroup
 	wg.Add(1)

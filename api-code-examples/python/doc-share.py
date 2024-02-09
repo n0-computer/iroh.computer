@@ -9,13 +9,13 @@ author = node.author_create()
 print("Created author: {}".format(author.to_string()))
 
 doc = node.doc_create()
-print("Created doc: {}".format(doc.id().to_string()))
+print("Created doc: {}".format(doc.id()))
 
 ticket = doc.share(iroh.ShareMode.READ)
-print("Read-Access Ticket: {}".format(ticket.to_string()))
+print("Read-Access Ticket: {}".format(ticket))
 
 ticket = doc.share(iroh.ShareMode.WRITE)
-print("Write-Access Ticket: {}".format(ticket.to_string()))
+print("Write-Access Ticket: {}".format(ticket))
 
 # Output:
 # Started Iroh node: rwgutd2wazt756h5awh6x576jejizai6w2l6ae5gxsv7tpswmopq

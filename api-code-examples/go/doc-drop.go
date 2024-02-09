@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	fmt.Println("List of docs and their capabilities (0-Read, 1-Write):")
 
@@ -28,14 +28,14 @@ func main() {
 		panic(err)
 	}
 	for i := 0; i < len(ns); i++ {
-		fmt.Printf("\t%s\t%v\n", ns[i].Namespace.ToString(), ns[i].Capability)
+		fmt.Printf("\t%s\t%v\n", ns[i].Namespace, ns[i].Capability)
 	}
 
 	err = node.DocDrop(doc.Id())
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Dropped document %s\n", doc.Id().ToString())
+	fmt.Printf("Dropped document %s\n", doc.Id())
 
 	fmt.Println("List of docs and their capabilities (0-Read, 1-Write):")
 	ns, err = node.DocList()
@@ -44,7 +44,7 @@ func main() {
 	}
 	// list no longer contains the dropped doc
 	for i := 0; i < len(ns); i++ {
-		fmt.Printf("\t%s\t%v\n", ns[i].Namespace.ToString(), ns[i].Capability)
+		fmt.Printf("\t%s\t%v\n", ns[i].Namespace, ns[i].Capability)
 	}
 
 	// Output

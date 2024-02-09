@@ -9,7 +9,7 @@ author = node.author_create()
 print("Created author: {}".format(author.to_string()))
 
 doc = node.doc_create()
-print("Created doc: {}".format(doc.id().to_string()))
+print("Created doc: {}".format(doc.id()))
 
 for i, key in enumerate(['a', 'b', 'c']):
     doc.set_bytes(author, bytes(key, "utf8"), bytes(str(i), "utf8"))
