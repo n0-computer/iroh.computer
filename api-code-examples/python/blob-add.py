@@ -24,7 +24,7 @@ class AddCallback:
         elif t == AddProgressType.ALL_DONE:
             print("AddProgress - AllDone:")
             all_done = event.as_all_done()
-            print(f"\thash: {all_done.hash.to_string()}, format: {all_done.format}, tag: {all_done.tag.to_string()}")
+            print(f"\thash: {all_done.hash.to_string()}, format: {all_done.format}, tag: {all_done.tag}")
         elif t == AddProgressType.ABORT:
             print("AddProgress - Abort:")
             abort = event.as_abort()

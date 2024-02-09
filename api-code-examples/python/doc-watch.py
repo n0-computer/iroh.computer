@@ -38,7 +38,7 @@ author = node.author_create()
 print(f"Created author {author.to_string()}")
 
 doc = node.doc_create()
-print(f"Created document {doc.id().to_string()}")
+print(f"Created document {doc.id()}")
 
 # Create a queue for synchronization
 event_queue = queue.Queue()

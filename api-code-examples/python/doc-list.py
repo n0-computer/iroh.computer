@@ -7,18 +7,18 @@ print("Started Iroh node: {}".format(node.node_id()))
 
 # create a document
 doc = node.doc_create()
-print("Created doc: {}".format(doc.id().to_string()))
+print("Created doc: {}".format(doc.id()))
 
 # create a second document
 doc = node.doc_create()
-print("Created doc: {}".format(doc.id().to_string()))
+print("Created doc: {}".format(doc.id()))
 
 # list all your documents
 docs = node.doc_list();
 print("List all {} docs:".format(len(docs)))
 # doc ids are also called "namespace ids"
 for namespace_and_capability in docs:
-    print("\t{}".format(namespace_and_capability.namespace.to_string()))
+    print("\t{}".format(namespace_and_capability.namespace))
 
 # Output:
 # Started Iroh node: jplmb4cgk2pxw3dwjehk7oes7ddphftlh3vdiib4e5bwhq2nnokq

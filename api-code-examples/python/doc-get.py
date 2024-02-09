@@ -10,7 +10,7 @@ print(f"Created author {author.to_string()}")
 
 # Create a document
 doc = node.doc_create()
-print(f"Created document {doc.id().to_string()}")
+print(f"Created document {doc.id()}")
 
 # Set content in the document
 key = b"python"
