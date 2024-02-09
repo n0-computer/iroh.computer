@@ -16,19 +16,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	readTicket, err := doc.Share(iroh.ShareModeRead)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Read-Access Ticket:", readTicket.ToString())
+	fmt.Println("Read-Access Ticket:", readTicket)
 
 	writeTicket, err := doc.Share(iroh.ShareModeWrite)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Write-Access Ticket:", writeTicket.ToString())
+	fmt.Println("Write-Access Ticket:", writeTicket)
 	// Output:
 	// Created document 7hgonoxdjzlwtuicfyou24l5nhv3bmvzhyeq6v2er66ekrpvhotq
 	// Read-Access Ticket: docahabhyiz37wlugkwb6cj424qparg6tz5ujmxpr6ac3rkbkvgjys3qajabdmaailylilvvj5ejqcaaa5gkz6pehua4vbu26bbjit2h7axb3lacaidaafakaacyrlqbooyzfgmivyaycuacioek4

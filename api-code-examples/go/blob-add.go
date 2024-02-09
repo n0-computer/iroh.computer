@@ -28,7 +28,7 @@ func (a addCallback) Progress(event *iroh.AddProgress) *iroh.IrohError {
 	case iroh.AddProgressTypeAllDone:
 		fmt.Println("AddProgress - AllDone:")
 		allDone := event.AsAllDone()
-		fmt.Printf("\thash: %s, format: %v, tag: %s\n", allDone.Hash.ToString(), allDone.Format, allDone.Tag.ToString())
+		fmt.Printf("\thash: %s, format: %v, tag: %s\n", allDone.Hash.ToString(), allDone.Format, allDone.Tag)
 	case iroh.AddProgressTypeAbort:
 		fmt.Println("AddProgress - Abort:")
 		abort := event.AsAbort()

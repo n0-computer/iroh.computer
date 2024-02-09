@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created document %s\n", doc.Id().ToString())
+	fmt.Printf("Created document %s\n", doc.Id())
 
 	for i, key := range []string{"a", "b", "c"} {
 		if _, err := doc.SetBytes(author, []byte(key), []byte(fmt.Sprintf("%d", i))); err != nil {
