@@ -14,7 +14,7 @@ Authors create and join documents: mutable key-value stores that multiple users 
   />
 </div>
 
-## Documents
+## Document Namespaces
 
 A document is a _namespace_ that is uniquely identified by a keypair.
 
@@ -49,14 +49,24 @@ ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
 
 Document IDs are base32-lower serialization of the public key of the document. They do _not_ change as the document changes.
 
-{/*
-## Permissions
+## Syncronizing Documents
 
-## Multiple Writers
+When an author wants to sync with a document, they first find the document's current state, then they perform a [range-based set reconciliation](https://arxiv.org/abs/2212.13567) to fill in any changes in the keyspace.
 
-## Collaging
+When two nodes want to sync, they perform a range-based set reconciliation to fill in any changes in the keyspace. Any node with the read key (document ID) can read & sync the latest state of the document. Having the read key denotes read access. All entries in the document are double-signed, once with an authorID (keypair) and the write key of the document.
 
-## Subscriptions
+<Note>
+Check out our [youtube video](https://www.youtube.com/watch?v=_D_tbAMqADM) on how range-based set reconciliation works!
+</Note>
 
-## Revocations & Key Rotations
-*/}
+After this synchronization step, we know the hashes of all the content the document references. By default iroh documents will fetch all content associated with the document.
+
+## Document PubSub
+
+Every document is it's own pubsub swarm, keyed by the public key of the document. Iroh pubsub swarms implement techniques described in [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf?ref=bartoszsypytkowski.com) & PlumTree to keep a bounded number of active nodes any one node in the swarm needs to push to.
+
+<Note>
+Bartosz Sypytkowski has a great [blog post](https://www.bartoszsypytkowski.com/hyparview/) on HyParView & Plumtree, well worth reading.
+</Note>
+
+As authors write to a document, they publish these changes as pubsub messages that other peers pick up on & apply to their local state.
