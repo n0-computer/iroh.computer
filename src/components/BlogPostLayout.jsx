@@ -47,13 +47,12 @@ export function BlogPostLayout({ article, references = [], children }) {
                 <h1 className="text-4xl font-space tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl">
                   {article.title}
                 </h1>
-                <time
-                  dateTime={article.date}
-                  className="mt-5 flex items-center text-base text-zinc-400 dark:text-zinc-500"
-                >
-                  {formatDate(article.date)}
-                </time>
-                <span className='text-zinc-500'>by {article.author}</span>
+                <span className='mt-1 text-base text-zinc-400 dark:text-zinc-500'>
+                  <time dateTime={article.date}>
+                    {formatDate(article.date)}
+                  </time>
+                  <span>{' '}by {article.author}</span>
+                </span>
               </header>
               <Prose className="mt-8" data-mdx-content>
                 {children}
