@@ -56,12 +56,13 @@ module.exports = ({ theme }) => ({
 
       // Text
       p: {
+        fontSize: theme('fontSize.base')[0],
         marginTop: theme('spacing.6'),
         marginBottom: theme('spacing.6'),
       },
       '[class~="lead"]': {
-        fontSize: theme('fontSize.base')[0],
-        ...theme('fontSize.base')[1],
+        fontSize: theme('fontSize.lg')[0],
+        ...theme('fontSize.lg')[1],
       },
 
       // Lists

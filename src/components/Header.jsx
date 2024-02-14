@@ -17,6 +17,7 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
+  {content: 'Blog', href: '/blog'},
   {content: 'Docs', href: '/docs'},
   {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
 ];
@@ -26,7 +27,7 @@ export function TopLevelNavItem({href, children}) {
     <li>
       <Link
         href={href}
-        className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-600 dark:hover:text-white"
       >
         {children}
       </Link>
