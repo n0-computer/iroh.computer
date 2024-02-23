@@ -34,7 +34,7 @@ export default (props) => <BlogPostLayout article={post} references={references}
 
 Peer-to-peer (P2P) technology has revolutionized the way we think about data transmission, offering decentralized solutions that enhance efficiency and scalability. In the world of P2P networking, two notable players are Iroh and Libp2p. While Libp2p is known for its extensive features, including a Distributed Hash Table (DHT), Iroh offers a unique approach focusing on simplicity and robust hole punching capabilities.
 
-Libp2p is built to keep it's reliance on central points of failure at an absolute minimum, which comes at the cost of effectiveness. Iroh is built to maximize effectiveness, which comes at the cost of a little centralization. This small divergence in design goals has a large impact on what you can build with each system.
+Libp2p is built to keep its reliance on central points of failure at an absolute minimum, which comes at the cost of effectiveness. Iroh is built to maximize effectiveness, which comes at the cost of a little centralization. This small divergence in design goals has a large impact on what you can build with each system.
 
 With iroh you will almost always get a connection to the specific peer you're trying to dial, even if iroh has to take your UDP packets, bundle them up, and send them over as HTTP traffic. With libp2p, your ability to connect to a specific given peer is much more dependent on the network conditions between you and that peer. This can be very frustrating if you're building an app that expects to, say, send a message from one friend to another.
 
