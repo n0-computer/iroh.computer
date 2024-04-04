@@ -171,31 +171,27 @@ export const metadata = {
         <CodeGroup title="doc get">
 
 ```rust {{ title: 'rust' }}
-#[tokio::main]
-async fn main() -> Result<(), String> {
-    // build the node
-    let node = iroh::node::Node::persistent()
-      .await?
-      .spawn()
-      .await?;
+use anyhow::Result;
+use futures::stream::TryStreamExt;
 
-    // create a client
-    let client = node.client();
+#[tokio::main]
+async fn main() -> Result<()> {
+    // build the node
+    let node = iroh::node::Node::memory().spawn().await?;
 
     // create 2 documents
-    let doc_0 = client.create_doc().await?;
-    let doc_1 = client.create_doc().await?;
+    let _doc_0 = node.docs.create().await?;
+    let _doc_1 = node.docs.create().await?;
 
     // list newly created docs
     println!("List all docs:");
-    let doc_ids = client.doc_list().await?;
-    for doc_id in doc_ids.into_iter() {
-        println!("\t{doc_id}");
+    let mut docs = node.docs.list().await?;
+    while let Some((doc_id, _capability)) = docs.try_next().await? {
+        println!("{doc_id}");
     }
 
     Ok(())
 }
-
 ```
 
 ```python {{ title: 'python' }}
