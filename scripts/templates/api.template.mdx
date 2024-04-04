@@ -33,6 +33,13 @@ export const metadata = {
 <%- examples.console %>
 ```
 
+<% if (examples.rust) { -%>
+```rust {{ title: 'rust' }}
+<%- examples.rust %>
+```
+
+<% } -%>
+
 <% if (examples.cli) { -%>
 ```bash {{ title: 'CLI' }}
 <%- examples.cli %>
@@ -54,12 +61,6 @@ export const metadata = {
 <% if (examples.kotlin) { -%>
 ```kotlin {{ title: 'kotlin' }}
 <%- examples.kotlin %>
-```
-
-<% } -%>
-<% if (examples.rust) { -%>
-```rust {{ title: 'rust' }}
-<%- examples.rust %>
 ```
 
 <% } -%>

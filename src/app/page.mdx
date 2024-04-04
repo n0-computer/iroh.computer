@@ -140,7 +140,7 @@ export const metadata = {
           <div className='flex space-x-6 mb-6'>
             <div className=''>
               <Image
-                src={logoPython}
+                src={logoRust}
                 alt=""
                 className="h-12 w-12"
                 unoptimized
@@ -148,15 +148,7 @@ export const metadata = {
             </div>
             <div className=''>
               <Image
-                src={logoGo}
-                alt=""
-                className="h-16 w-16"
-                unoptimized
-                />
-            </div>
-            <div className=''>
-              <Image
-                src={logoRust}
+                src={logoPython}
                 alt=""
                 className="h-12 w-12"
                 unoptimized
@@ -177,19 +169,29 @@ export const metadata = {
         </div>
         <div className='lg:w-1/2 lg:mt-28'>
         <CodeGroup title="doc get">
-```text {{ title: 'console' }}
-> doc new --switch
-dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
-Active doc is now dyyelvqq…
 
-author:fhu3uk4w… doc:dyyelvqq…
-> doc set foo bar
-@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+```rust {{ title: 'rust' }}
+use anyhow::Result;
+use futures::stream::TryStreamExt;
 
-author:fhu3uk4w… doc:dyyelvqq…
-> doc get foo
-@fhu3uk4w…: foo = 6lujp3wx… (3 B)
-bar
+#[tokio::main]
+async fn main() -> Result<()> {
+    // build the node
+    let node = iroh::node::Node::memory().spawn().await?;
+
+    // create 2 documents
+    let _doc_0 = node.docs.create().await?;
+    let _doc_1 = node.docs.create().await?;
+
+    // list newly created docs
+    println!("List all docs:");
+    let mut docs = node.docs.list().await?;
+    while let Some((doc_id, _capability)) = docs.try_next().await? {
+        println!("{doc_id}");
+    }
+
+    Ok(())
+}
 ```
 
 ```python {{ title: 'python' }}
@@ -221,68 +223,19 @@ let value = try! doc.getContentBytes(hash: hash)
 
 ```
 
-```swift {{ title: 'go' }}
-package main
+```text {{ title: 'console' }}
+> doc new --switch
+dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
+Active doc is now dyyelvqq…
 
-import (
-	"fmt"
+author:fhu3uk4w… doc:dyyelvqq…
+> doc set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
 
-	"github.com/n0-computer/iroh-ffi/iroh"
-)
-
-func main() {
-	node, _ := iroh.NewIrohNode()
-
-	doc, _ := node.DocNew()
-	fmt.Printf("Created document %s\n", doc.Id())
-
-	hash, _ := doc.SetBytes(node.defaultAuthor(), []byte("go"), []byte("says hello"))
-	fmt.Printf("Inserted %s\n", hash.ToString())
-
-	content, _ := doc.GetContentBytes(hash)
-	fmt.Printf("Got content %q\n", string(content))
-}
-
-```
-
-```rust {{ title: 'rust' }}
-use anyhow::{anyhow, Result};
-use futures::StreamExt;
-
-use iroh::{
-  bytes::util::runtime, 
-  collection::IrohCollectionParser,
-  node::Node,
-};
-
-#[tokio::main]
-async fn main() -> Result<()> {
-    // build the node
-    let rt = runtime::Handle::from_currrent(1).unwrap();
-    let db = iroh::baomap::mem::Store::new(rt.clone());
-    let store = iroh_sync::store::memory::Store::default();
-    let node = Node::builder(db, store)
-        .collection_parser(IrohCollectionParser)
-        .runtime(&rt)
-        .bind_addr("127.0.0.1:0".parse()?);
-
-    // start the node & create a client
-    let node = node.spawn().await?;
-    let client = node.client();
-
-    // create a document
-    let doc_0 = client.create_doc().await?;
-    let doc_1 = client.create_doc().await?;
-
-    println!("List all docs:");
-    let doc_ids = client.doc_list().await?;
-    for doc_id in doc_ids.into_iter() {
-        println!("\t{doc_id}");
-    }
-
-    Ok(())
-}
-
+author:fhu3uk4w… doc:dyyelvqq…
+> doc get foo
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
 ```
 
 
