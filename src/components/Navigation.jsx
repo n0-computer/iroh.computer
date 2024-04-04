@@ -198,6 +198,7 @@ export const navigation = [
   },
   {title: 'Concepts',
     links: [
+      {title: 'Layers', href: '/docs/layers'},
       {title: 'Documents', href: '/docs/layers/documents'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
       {title: 'Connections', href: '/docs/layers/connections'},

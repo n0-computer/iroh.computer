@@ -37,14 +37,7 @@ const libraries = [
     description:
       'Iroh\'s go SDK uses the rust implementation via c-bindings.',
     logo: logoKotlin,
-  },
-  {
-    href: '/docs/sdks/go',
-    name: 'Go',
-    description:
-      'Iroh\'s go SDK uses the rust implementation via c-bindings.',
-    logo: logoGo,
-  },
+  }
 ];
 
 export function Libraries() {
