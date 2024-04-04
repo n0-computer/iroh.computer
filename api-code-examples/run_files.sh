@@ -31,7 +31,6 @@ files=(
 # Clean up on exit
 cleanup() {
   echo "Cleaning up..."
-  rm -rf "$SCRIPT_DIR/go/$IROH_DATA_DIR"
   rm -rf "$SCRIPT_DIR/python/$IROH_DATA_DIR"
 }
 
@@ -40,17 +39,6 @@ trap cleanup EXIT
 
 # Iterate over each file
 for file in "${files[@]}"; do
-    # Change directory to "go" and run the Go file
-    echo "Running $file.go..."
-    (cd "$SCRIPT_DIR/go" && go run "$file.go")
-    status=$?
-
-    if [ $status -ne 0 ]; then
-        echo "Error running $file.go. Exiting..."
-        exit $status
-    fi
-
-    echo "-----------------------"
 
     # Change directory to "python" and run the Python file
     echo "Running $file.py..."
@@ -66,6 +54,5 @@ for file in "${files[@]}"; do
 done
 
 rm -r "$SCRIPT_DIR/python/iroh_data_dir"
-rm -r "$SCRIPT_DIR/go/iroh_data_dir"
 
-echo "All Go and Python files executed successfully!"
+echo "All Python files executed successfully!"
