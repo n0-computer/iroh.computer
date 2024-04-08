@@ -11,20 +11,6 @@ import { Tag } from './Tag';
 
 const examples = [
   {
-    href: '/docs/examples/ios-starter',
-    name: 'iOS Starter',
-    description:
-      'Get up and running with iroh on iOS with this starter project.',
-    tags: ["iOS", "Swift"],
-    pattern: {
-      y: 16,
-      squares: [
-        [3, 0],
-        [0, 1],
-      ],
-    },
-  },
-  {
     // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
     href: 'https://github.com/n0-computer/iroh-example-todos',
     name: 'Todos',
@@ -40,17 +26,86 @@ const examples = [
     },
   },
   {
-    // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
-    href: 'https://github.com/n0-computer/iroh-examples',
-    name: 'Examples written in rust and go',
+    href: 'https://github.com/n0-computer/sendme',
+    name: 'Sendme',
     description:
-      'See how iroh can be used to write a gateway, a content tracker, and more.',
-    tags: ["ipfs", "go", "gateway", "rust"],
+      'A file sharing app with a CLI, desktop and iOS apps, built with iroh, fully open source!',
+    tags: ["file sharing", "desktop", "iOS", "blobs", "connections"],
     pattern: {
       y: 16,
       squares: [
         [0, 1],
         [1, 3],
+      ],
+    },
+  },
+  {
+    href: 'https://github.com/n0-computer/dumbpipe',
+    name: 'Dumbpipe',
+    description:
+      'Need to connect two computers? Try a dumb pipe.',
+    tags: ["CLI", "unix pipes", "connections"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: 'https://github.com/n0-computer/iroh-examples/tree/main/extism',
+    name: 'Extism',
+    description:
+      'Provide Iroh APIs to all kinds of languages with iroh existism host functions',
+    tags: ["plugins", "multi-language", "WASM"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: 'https://github.com/n0-computer/iroh-examples/tree/main/iroh-automerge',
+    name: 'Automerge',
+    description:
+      'Example of backing automerge with iroh-net connections',
+    tags: ["connections", "CRDTs"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: 'https://github.com/n0-computer/swarmie',
+    name: 'Swarmie',
+    description:
+      'A proof of concept tool to use iroh global content discovery using the bittorrent mainline DHT.',
+    tags: ["DHTs", "content discovery"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: '/docs/examples/ios-starter',
+    name: 'iOS Starter',
+    description:
+      'Get up and running with iroh on iOS with this starter project.',
+    tags: ["iOS", "Swift"],
+    pattern: {
+      y: 16,
+      squares: [
+        [3, 0],
+        [0, 1],
       ],
     },
   }
