@@ -1,0 +1,85 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2024-02-08',
+  title: 'Iroh 0.14.0 - Dial the world',
+  description:
+    'Iroh 0.14.0 Release',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the first iroh release that **allows you to dial by just a Node ID**:
+
+Thanks to great work from @frando @rklaehn and @arnazeh we now have an `iroh-dns-server` that allows for looking up node information via DNS, based on the pkarr format.
+
+```bash
+iroh blob get \ # download a blob
+  --start     \ # start an iroh node while running this command
+  --node p4augy7yocvwytsp4ygiayhqfygw7zpzudrg5otzk5ry5hl5ydya \ # the node id
+  z5p3t7v2s3w5uifsyndr5wolx4fufdlktzoae76uqzwheqkfqdvairoh      # the hash of the blob
+```
+
+By default, iroh will connect to the DNS server run by number 0, but (as with our relays) you can configure iroh to use your own instance of `iroh-dns-server`.
+
+For more details checkout the PR: Node discovery via DNS ([#2045](https://github.com/n0-computer/iroh/issues/2045))
+
+## 🏎️ Faster relay handshakes
+
+To speed up connections to our relay servers, we have refactored the connection handshake. This drops a **full** roundtrip, on every new connection. This reduces the time to connect to the relays, in general, but dramatically speeds up connections to farther-away relays.
+
+Unfortunately, this means the new relays can not talk to `0.13.0` nodes. To smooth out the upgrade path, we will keep the old relays running for at least another 4 weeks.
+
+The new relays are available under these DNS entries. Please ensure any custom iroh config files you use are updated appropriately.
+
+- US: `use1-1.relay.iroh.network`
+- EU: `euw1-1.relay.iroh.network`
+
+For more details checkout the PR: Simplify relay handshake ([#2164](https://github.com/n0-computer/iroh/issues/2164))
+
+## ✍️ Basic Author API
+
+Authors are an important part of how documents are managed in iroh. We have finally provided an API to manage them!
+
+```rust
+// Setup an in-memory iroh node.
+let node = Node::memory().spawn().await?;
+
+// Create a new author.
+let author_id = node.authors.create().await?;
+
+let authors_stream = node.authors.list().await?;
+// List of current authors, which is currently just the one we created above.
+let authors: Vec<_> = authors_stream.try_collect().await?;
+
+// Export the author for external usage.
+let author = node.authors.export(author_id).await?.unwrap();
+
+// I didn't like the author, let's delete it.
+node.authors.delete(author_id).await?;
+
+// Ah wait I still need it, import it again.
+node.authors.import(author).await?;
+```
+
+For more details checkout:  Implement basic author api ([#2132](https://github.com/n0-computer/iroh/issues/2132))
+
+## Upgrade redb to v2.0
+
+Iroh relies on redb, both for storing data in `iroh-bytes` and storing document structure in `iroh-sync`. With the release of [redb@2.0](https://github.com/cberner/redb/releases/tag/v2.0.0) we gained a nice performance boost, and smaller features under the hood, allowing us to simplify the code in our storage implementations.
+
+For more details checkout: Update redb to v2 ([#2120](https://github.com/n0-computer/iroh/issues/2120))
+
+## But wait there’s more!
+
+Many bugs were squashed and smaller features added. For all those details you can checkout the full changelog: https://github.com/n0-computer/iroh/releases/tag/v0.14.0.
+
+If you want to know what is coming up, checkout the `[0.15.0` milestone](https://github.com/n0-computer/iroh/milestone/21), and if you have any wishes let us know in the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)!
