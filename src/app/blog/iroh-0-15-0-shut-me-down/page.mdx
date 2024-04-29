@@ -27,7 +27,7 @@ Shutting down should be easy: just kill everything. Right? Well, it turns out th
 
 We tried to handle shutdown cleanly, as well as we could, from very early on in Iroh’s development, but we did not always succeed. One of the symptoms was often visible when using the CLI, the dreaded `quinn::endpoint` error:
 
-```rust
+```text
 ERROR quinn::endpoint: I/O error: connection closed
 ```
 
