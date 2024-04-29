@@ -1,0 +1,170 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+draft: false,
+author: 'dignifiedquire',
+date: '2024-04-29',
+title: 'Iroh 0.15.0 - Shut me down',
+description:
+'Iroh 0.15.0 Release',
+}
+
+export const metadata = {
+title: post.title,
+description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+What, another iroh release, you say? Yes, we have decided to move to a regular release cadence of every two weeks. And so, here we are, two weeks after 0.14!
+
+And a lot has happened in the last two weeks, from better shutdown to more dialing options to an integrated downloader, there should be something in this release for everyone.
+
+## 🚪 Graceful Shutdown
+
+Shutting down should be easy: just kill everything. Right? Well, it turns out that’s not always what you want. Sometimes you may want to wait for clients to finish and other times you may want to restart things without exiting the process.
+
+We tried to handle shutdown cleanly, as well as we could, from very early on in Iroh’s development, but we did not always succeed. One of the symptoms was often visible when using the CLI, the dreaded `quinn::endpoint` error:
+
+```text
+ERROR quinn::endpoint: I/O error: connection closed
+```
+
+We finally found a way to avoid this error, and now more gracefully handle exiting the `MagicEndpoint` when terminating QUIC and the underlying connections.
+
+For more details check out: Improve magicsock's shutdown story ([#2227](https://github.com/n0-computer/iroh/issues/2227))
+
+## ⤵️ Integrated Downloader
+
+When downloading content, you can now use the `Queued` downloader mode. This allows you to hook into the general downloader queue shared between documents and blobs in Iroh. This allows for better resource management and more unified reporting on download progress.
+
+If you want the old behaviour, you can still get it using `Direct` mode.
+
+```rust
+let req = BlobDownloadRequest {
+    hash,
+    format: BlobFormat::Raw,
+    // New feature: you can now specify multiple sources
+    // which will be tried in order
+    nodes: vec![NodeAddr::new(node_id)],
+    tag: SetTagOption::Auto,
+    mode: DownloadMode::Queued,
+};
+let progress = node.blobs.download(req).await?;
+let outcome = progress.await?;
+```
+
+For more details check out: Refactor downloader queue and add progress reporting ([#2085](https://github.com/n0-computer/iroh/issues/2085))
+
+## ☎️ Expanded Support for dialing by only NodeID
+
+In the last release, we introduced `iroh-dns`, which allows us to dial by Node ID. In this release, we have expanded our APIs to enable easy dialing by Node ID and generating tickets with just a Node ID.
+
+By default, tickets generated on the CLI will now only include the Node ID, and are much shorter now. Compare the new default [before](https://ticket.iroh.computer?ticket=docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6ajdnb2hi4dthixs6zlvo4ys2mjoojswyylzfzuxe33ifzxgk5dxn5zgwlrpaiac4bl3upcfoagavaaznrcx) and [after](https://ticket.iroh.computer?ticket=docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6aaa):
+
+```bash
+# 0.14
+> doc share write
+  docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezho\
+  jvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6ajdnb2hi4dthixs6zlvo4ys2mjooj\
+  swyylzfzuxe33ifzxgk5dxn5zgwlrpaiac4bl3upcfoagavaaznrcx
+
+# 0.15
+> doc share write
+  docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezho\
+  jvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6aaa
+```
+
+If you still want to add relay and direct addresses to the ticket, you can pass `--addr-options RelayAndAddresses` to the ticket generation commands.
+
+For more details check out: Implement improved address sharing options ([#2230](https://github.com/n0-computer/iroh/issues/2230))
+
+## 🗄️ More binaries
+
+You asked and we delivered! We are finally attaching prebuilt binaries to our releases. And yes, the new linux binaries are using `musl`, so no more outdated `glibc` errors 😃
+
+The binaries that are now available are:
+
+- `iroh` - The main CLI
+- `iroh-dns-server` - The DNS server powering `iroh-dns`
+- `iroh-relay` - The relay server powering our relay network
+
+## ⚠️ Breaking Changes
+
+Iroh is evolving fast. At this phase breaking changes are a necessary fact of ~~life~~ development, but we recognize updating a dependency through breaking API changes can be a painful.
+
+There are two major types of breaking changes: protocol changes, and API changes. Protocol changes affect the actual data and communication patterns between iroh nodes. A protocol-breaking change requires _all_ nodes that want to communicate with each other either upgrade or implement backwards-compatibility.
+
+The second form are API changes, which requires updating any code that imports `iroh` to integrate the changes. But they don’t affect the communication between nodes.
+
+Moving forward, we’re tracking breaking changes more closely. Breaking changes to public APIs are monitored as part of CI, and will be documented in the pull request introducing them.
+
+Protocol breaking changes are not tracked in CI, but are also expected to be documented in the PRs introducing them.
+
+### Protocol Changes
+
+No protocol-breaking changes this time around 🎉.
+
+### API Changes
+
+#### `iroh`
+
+- Renamed:
+  - `iroh::client::blobs::ShareTicketOptions` -> `iroh_base::node_addr::AddrInfoOptions`
+- Changed:
+  - Default for `AddrInfoOptions` is now `Id`, before it was `RelayandAddresses`
+- Added
+  - `addr_options` to `iroh::client::docs::Docs.share`
+  - `Id` varint to `AddrInfoOptions`
+  - The `BlobDownloadRequest` has a new field `mode` to select between direct and queued downloads, and now contains a list of nodes in place of a single node before
+
+#### `iroh-bytes`
+
+- Removed:
+  - `Role` enum
+- `Downloader::queue` now takes a `DownloadRequest` with more options than before
+- `DownloadProgress` has a new variant `InitialState` which is emitted when attaching to an already-running download
+- `ConcurrencyLimits` gained a new field
+
+#### `iroh-net`
+
+- `MagicEndpoint::close` now consumes the endpoint.
+- Added
+  - `RelayUrlInfo` combines the `relay_url` and additional information about the state of our connection
+- Renamed:
+  - `MagicSock::tracked_endpoints` -> `MagicSock::connection_infos`
+  - `MagicSock::tracked_endpoint` -> `MagicSock::connection_info`
+  - `magicsock::EndpointInfo` -> `magicsock::ConnectionInfo`
+  - `iroh_net::magicsock::ConnectionType` -> `iroh_net::magic_endpoint::ConnectionType`
+  - `iroh_net::magicsock::ControlMsg` -> `iroh_net::magic_endpoint::ControlMsg`
+  - `iroh_net::magicsock::ConnectionInfo` -> `iroh_net::magic_endpoint::ConnectionInfo`
+  - `iroh_net::magicsock::ConnectionTypeStream` -> `iroh_net::magic_endpoint::ConnectionTypeStream`
+  - `iroh_net::magicsock::DirectAddrInfo` -> `iroh_net::magic_endpoint::DirectAddrInfo`
+  - `iroh_net::magicsock::LocalEndpointsStream` -> `iroh_net::magic_endpoint::LocalEndpointsStream`
+- Now private:
+  - module `magicsock`
+  - `iroh_net::magicsock::MagicSock` Use `MagicEndpoint` instead.
+  - `iroh_net::magicsock::Options`
+  - `iroh_net::magicsock::PacketSplitIter`
+  - `iroh_net::magicsock::Timer`
+  - `iroh_net::magicsock::UdpSocket`
+
+#### `iroh-dns-server`
+
+- `iroh_dns_server::config::Config` struct has a new field `mainline`.
+
+#### `iroh-cli`
+
+- Renamed:
+  - `doc share --ticket-options` -> `doc share --addr-options`
+
+#### Other
+
+- Moved: `SetTagOption` from `iroh` to `iroh-bytes`
+
+## But wait there’s more!
+
+Many bugs were squashed and smaller features were added. For all those details you can check out the full changelog: https://github.com/n0-computer/iroh/releases/tag/v0.15.0.
+
+If you want to know what is coming up, check out the [0.16.0 milestone](https://github.com/n0-computer/iroh/milestone/22), and if you have any wishes let us know in the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)!
