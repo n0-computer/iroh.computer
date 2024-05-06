@@ -1,15 +1,11 @@
 export const metadata = {
-  title: 'connections',
-  description: 'the connection layer is the foundation of iroh. any peer can connect to any other peer using the connection layer.'
+  title: 'networking',
+  description: 'the networking layer is the foundation of iroh. any peer can connect to any other peer using the networking layer.'
 }
 
-# Connections
+# Networking
 
-At the core of iroh is a network where any two nodes within the network can establish a connection. {{className: 'lead'}}
-
-<Note>
-In the future Iroh will provide APIs for building custom protocols directly atop the connection layer, opening up a world of possibilities to application developers that want to augment their app with direct connectivity tooling.
-</Note>
+At the core of iroh is the ability to connect _any_ two devices, no matter where they are. {{className: 'lead'}}
 
 ## Nodes
 
@@ -28,11 +24,3 @@ Connections in iroh have a _MagicSocket_ sitting between QUIC and the operating 
 ## Relays
 
 Sometimes it isn't possible to establish a direct connection between two nodes, often because of strict firewall rules or NAT configurations. In these cases the only fallback is to _relay_ traffic through a third node that both nodes can connect to. Instead of sending packets directly from one node to the other, packets in either direction are first sent to the relay node, which forwards packets on to their destination. All QUIC traffic is encrypted, and relayed traffic is no exception. The relaying server _cannot_ inspect the contents of the packets being forwarded. 
-
-{/* ## Anchors
-
-Anchors are highly available nodes that are reliably online (that is, they're online most of the time). These are servers in a traditional server-client setup, but in the context of iroh they have no 
-
-## Protocols
-
-ALPN-per-protocol */}

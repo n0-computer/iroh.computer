@@ -201,7 +201,7 @@ export const navigation = [
       {title: 'Layers', href: '/docs/layers'},
       {title: 'Documents', href: '/docs/layers/documents'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
-      {title: 'Connections', href: '/docs/layers/connections'},
+      {title: 'Networking', href: '/docs/layers/networking'},
       {title: 'Tickets', href: '/docs/concepts/tickets'},
     ],
   },
