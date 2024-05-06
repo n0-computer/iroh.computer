@@ -75,6 +75,13 @@ const redirects = async () => {
       destination: '/docs/ipfs',
       permanent: true,
     },
+
+    // we renamed connections -> networking
+    {
+      source: '/docs/connections',
+      destination: '/docs/networking',
+      permanent: true,
+    }
   ]
 }
 
