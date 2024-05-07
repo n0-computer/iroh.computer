@@ -90,20 +90,45 @@ export const metadata = {
     {/* use cases */}
     <section className='bg-white py-20'>
       <div className='max-w-6xl mx-auto px-4'>
-        <div className='md:w-2/3 mb-10'>
-          <Image
-            src={iconCarat}
-            alt=""
-            className="h-8 w-8 mb-5 md:h-14 md:w-14 md:float-left"
-            unoptimized
-            />
-          <div className='md:pl-20'>
-            <p className='text-gray-500'>Coming Soon</p>
-            <h1 className='text-3xl mb-5'>Your own shared, programmable drive</h1>
-            <p>Expose data as a shared folder on your computer or phone free-to-use direct connections. Write code that reacts to changes &amp; write back to the drive on the fly.</p>
+        <p className='text-gray-500'>built with iroh:</p>
+        <div className='md:flex'>
+          <div className='md:w-1/2 mb-10'>
+            <Image
+              src='/svg/dumbpipe_icon.svg'
+              width={600}
+              height={475}
+              className="max-w-sm"
+              unoptimized
+              />
+            <div className='mt-4'>
+              <a href="https://dumbpipe.dev" className='text-3xl mb-5 font-bold'>dumb pipe</a>
+              <p className='mt-3 max-w-sm'>Connect Any two devices, directly. Dumb pipe is an open project built on iroh connections</p>
+              <div>
+                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://dumbpipe.dev">website</a>
+                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://github.com/n0-computer/dumbpipe">source code</a>
+              </div>
+            </div>
+          </div>
+          <div className='md:w-1/2 mb-10'>
+            <Image
+              src='/svg/sendme_icon.svg'
+              alt=""
+              width={600}
+              height={475}
+              className="max-w-sm"
+              unoptimized
+              />
+            <div className='mt-4'>
+              <a href="https://iroh.computer/sendme" className='text-3xl mb-5 font-bold'>sendme</a>
+              <p className='max-w-sm'>Send files anywhere for free, without an account. Sendme is built on iroh blobs and connections.</p>
+              <div>
+                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://iroh.computer/sendme">website</a>
+                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://github.com/n0-computer/sendme">source code</a>
+              </div>
+            </div>
           </div>
         </div>
-        <div className='mt-20 md:flex md:gap-x-20 border-t pt-10'>
+        <div className='md:flex md:gap-x-20 border-t pt-10'>
           <div className='mb-10 md:w-1/3'>
             <h2 className='text-xl mb-2'>Move data for free</h2>
             <p>Direct connections don't come with a bill. With iroh it's possible to build & use zero-cost tooling.</p>
@@ -127,7 +152,7 @@ export const metadata = {
         <div className='max-w-md'>
           <h2 className='text-xl text-irohPurple-500'>iroh.network</h2>
           <h1 className='text-3xl mt-2 mb-4'>Seamless cloud backing</h1>
-          <p>Connect to a global network of iroh nodes that keep your data available at all times</p>
+          <p>Connect to a global network of iroh nodes that keep your data available at all times. iroh.network is an optional service for working with iroh.</p>
           <a href="https://iroh.network" className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
         </div>
       </div>
