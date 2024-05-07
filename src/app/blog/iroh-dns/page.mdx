@@ -20,7 +20,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## The motivation
 
-We want iroh to establish connections with as little friction as possible. We’ve been chipping away at this goal since our inception. Our first big push toward this goal was to add holepunching into iroh, removing the need for devs to worry about opening up ports on their servers or resigning themselves to only making peer-to-peer connections to computers inside their local NAT.
+We want iroh to establish connections with as little friction as possible. Our first big push toward chipping away at this goal was adding holepunching into iroh. Now, devs no longer need to worry about opening up ports on their servers / firewalls or be resigned to only creating peer-to-peer connections to computers inside their local NAT.
 
 But even with holepunching, you need to know *where* to dial. Dialing a node in iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable. 
 
