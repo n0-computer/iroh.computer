@@ -1,0 +1,104 @@
+import Image from 'next/image'
+
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox, frando',
+  date: '2024-05-06',
+  title: 'Dial by NodeID, no address required!',
+  description: 'iroh-dns uses domain name servers to resolve dialing details, so you can dial any device by it\'s node identifier',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## The motivation
+
+We want iroh to establish connections with as little friction as possible. Our first big push toward chipping away at this goal was adding holepunching into iroh. Now, devs no longer need to worry about opening up ports on their servers / firewalls or be resigned to only creating peer-to-peer connections to computers inside their local NAT.
+
+But even with holepunching, you need to know *where* to dial. Dialing a node in iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable. 
+
+But what if you didn’t need to know the relay URL or socket address in order to dial a node? Could we enable iroh users to dial peers using _the least amount of information possible_, ie can we enable dialing _only by Node ID_, and no other address data?
+
+## The solution
+
+We had two “guiding lights” while doing research on global node discovery:
+
+First, we needed to see a path forward that would allow for a fully distributed topology, even if our first solution had a federated structure. If we (or some contributor) wanted to create or opt into a fully p2p version of global node discovery in the future, that needed to work in tandem with whatever federated solution we came up with. 
+
+Second, it was very important for us as an organization that we do not invent protocols and specs unnecessarily. Can we instead leverage standards that have stood the test of time (and scrutiny) in novel ways to solve our problem? It turns out, we can! And we can do it using one of the oldest and most dependable technologies we have on the internet: DNS. Using the DNS standard along side Pkarr (public-key addressable resource records), **we now have global node discovery in iroh**!
+
+## The approach
+
+We are using two standards: the domain name system [(DNS)](https://datatracker.ietf.org/doc/html/rfc1035) and [Pkarr](https://app.pkarr.org/). DNS is typically used for resolving domain names into their associated IP addresses. But DNS actually relates _domain names_ to [_resource records_](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2), of which IP addresses are one type. Pkarr allows us to publish DNS records that resolve **elliptic curve keys** (not domain names) to resource records instead. Our **Node IDs** in iroh are elliptic curve public keys. This means we can publish an association between iroh Node IDs and some resource records. Importantly, these records are signed, so that you can verify that the record was actually published by the node with the given Node ID.
+
+As long as iroh has a Node ID and it’s associated relay URL (the address of the relay server that node uses to hole-punch and proxy relay packets), we can dial that node. So the Pkarr packet currently only needs to contain the Node ID and the relay URL of it’s preferred relay server (which we call its “home relay”). When Pkarr publishing is enabled on your iroh node, your node will create a Pkarr packet with its Node ID and relay URL, sign it, and defaults to publishing on an  `iroh-dns` server that is run by number0.
+
+From there, others can discover your dialing information by resolving your Node ID using regular DNS. It’s worth noting that others must still learn your node ID for this to work,
+
+The following sections describe the format of the Pkarr publishing records and Node discovery via DNS queries in greater detail.
+
+## Node announces via `pkarr`
+
+<div className='not-prose mb-5'>
+  <MotionCanvas src='/motion-canvas/Publishing.project.js' />
+</div>
+
+Nodes announce their address information in [Pkarr](https://github.com/Nuhvi/pkarr/) signed packets. The TXT records, as described below, are added to the `answers` section of a DNS server. Their name must be `_iroh.<node-id>.` The encoded node ID must be the root name, no other origin but `.` (the single dot) is permitted.
+
+Those packets are published to a Pkarr relay server, which is a HTTP service handling PUT requests with the signed packets. iroh’s Pkarr server is [`iroh-dns-server`](https://crates.io/crates/iroh-dns-server), which serves the received records over DNS. Pkarr packets can also be published onto the bittorrent mainline DHT, as specified by Pkarr (this is not yet supported in iroh natively, see below for our plans).
+
+DNS servers that support this spec will receive these Pkarr signed packets, check their signature and format validity, and then serve each contained record, with the DNS server's configured *origin domain* appended to all record names.
+
+## Node discovery via DNS
+
+<div className='not-prose mb-5'>
+  <MotionCanvas src='/motion-canvas/Discovery.project.js' />
+</div>
+
+When connecting to an unknown `NodeId`, the DNS discovery mechanism in iroh will perform a DNS query to discover relays or addresses for the node. The DNS discovery is configured with a *origin domain* (which defaults to *dns.iroh.link*, a server run by n0). iroh will then perform a DNS query through the configured DNS resolver (which defaults to using the host system's nameservers):
+
+`_iroh.<z32-node-id>.<origin-domain> TXT`
+
+- `_iroh` is the record name defined in this spec
+- `<z32-node-id>` is the [z32](https://crates.io/crates/z32) encoding of the 32-byte long `NodeId` (which is a string of 52 characters)
+- `<origin-domain>` is the configured origin domain
+- `TXT` is the queried record type
+
+The returned TXT records must contain a string value of the form `key=value`, as defined in [RFC1464](https://www.rfc-editor.org/rfc/rfc1464).
+
+This spec defines the following attributes:
+
+- `relay=<url>`: The home relay for this node, e.g. `https://euw1-1.derp.iroh.network`.
+- `addr=<addr> <addr> ..` A space-separated list of socket addresses for this iroh node. Each address is an IPv4 or IPv6 address with a port (e.g. `1.2.3.4:7367` or `[::1]:3521`
+
+## Future Work: make it fully p2p
+
+The current approach in iroh is semi-centralized, and—purist beware!!—not fully p2p. However, we have a plan that would allow us to support a decentralized version.
+
+We have an [open issue in iroh](https://github.com/n0-computer/iroh/issues/1425) that explores letting the DNS server resolve records from bittorrent mainline DHT, which is the original motivation behind Pkarr.
+
+We also have an [existing example](https://github.com/n0-computer/iroh-examples/tree/main/iroh-pkarr-naming-system) in `iroh-examples` that publishes the Pkarr packets directly to mainline DHT.
+
+Landing these features would result in a fully peer-to-peer node discovery system. It would be fast, because of caching in DNS servers, but maintain peer-to-peer support backed by the mainline DHT.
+
+## Future work: local discovery
+
+DNS (usually) only works if you have internet. What about situations where you have an airgapped or some other local network?
+
+The solution would be mDNS. This would allow resolving Node IDs in a local network. We have an [open issue for this on iroh](https://github.com/n0-computer/iroh/issues/990).
+
+## Future work: content discovery
+
+Now that we can discover nodes, can we take it one step further and use a similar system to discover where you can find a specific document or blob?
+
+We have an [existing prototype]([https://github.com/n0-computer/iroh-examples/blob/main/content-discovery](https://github.com/n0-computer/iroh-examples/blob/main/content-discovery/README.md)) in `iroh-examples` that demonstrates how we might solve content discovery. We can likely leverage the `iroh-dns` infrastructure for resolving content, as well as node addresses.
+
+You can expect future blog posts on this topic as we get closer to making content discovery a reality in iroh.
+

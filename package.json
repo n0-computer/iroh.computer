@@ -19,6 +19,8 @@
     "@lottiefiles/react-lottie-player": "^3.5.3",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@motion-canvas/core": "^3.15.2",
+    "@motion-canvas/player": "^3.15.2",
     "@next/mdx": "13.4.16",
     "@sindresorhus/slugify": "^2.2.1",
     "@tailwindcss/typography": "0.5.8",
