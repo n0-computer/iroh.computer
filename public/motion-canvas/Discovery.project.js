@@ -1,4 +1,4 @@
-import { M as MetaFile, P as PolynomialSegment, a as Polynomial2D, V as Vector2, q as quadraticCurveTo, l as lazy, g as getDefaultExportFromCjs, L as LineSegment, C as CubicBezierSegment, A as ArcSegment, c as clamp, b as Curve, d as createSignal, B as BBox, i as isReactive, e as createCurveProfileLerp, t as tween, f as drawPivot, h as drawLine, s as signal, j as computed, k as threadable, m as initial, R as Rect, n as jsx, o as Label, p as Layout, r as palette, u as makeScene2D, v as all, w as waitFor, x as createRef, N as Node, S as Server, H as Heading, y as Line, z as MobilePhone, D as categoricalPalette, E as ValueDispatcher, F as makeProject, G as bootstrap, I as plugin0, J as settings } from "./_virtual_settings-140a9a08.js";
+import { M as MetaFile, P as PolynomialSegment, a as Polynomial2D, V as Vector2, q as quadraticCurveTo, l as lazy, g as getDefaultExportFromCjs, L as LineSegment, C as CubicBezierSegment, A as ArcSegment, c as clamp, b as Curve, d as createSignal, B as BBox, i as isReactive, e as createCurveProfileLerp, t as tween, f as drawPivot, h as drawLine, s as signal, j as computed, k as threadable, m as initial, R as Rect, n as jsx, o as Label, p as Layout, r as palette, u as colorSignal, v as Line, w as createRef, H as Heading, x as waitFor, y as all, z as makeScene2D, N as Node, S as Server, D as MobilePhone, E as categoricalPalette, F as ValueDispatcher, G as makeProject, I as bootstrap, J as plugin0, K as settings } from "./_virtual_settings-6986020f.js";
 let meta$1;
 meta$1 ?? (meta$1 = new MetaFile("Discovery.project", false));
 meta$1.loadData({
@@ -313,15 +313,15 @@ meta.loadData({
   "seed": 4032315185
 });
 const metaFile = meta;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __decorateClass = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+var __defProp$1 = Object.defineProperty;
+var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
+var __decorateClass$1 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
   if (kind && result)
-    __defProp(target, key, result);
+    __defProp$1(target, key, result);
   return result;
 };
 class Laptop extends Rect {
@@ -346,14 +346,117 @@ class Laptop extends Rect {
     );
   }
 }
-__decorateClass([
+__decorateClass$1([
   initial(1),
   signal()
 ], Laptop.prototype, "dim", 2);
-__decorateClass([
+__decorateClass$1([
   initial(""),
   signal()
 ], Laptop.prototype, "label", 2);
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __decorateClass = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result)
+    __defProp(target, key, result);
+  return result;
+};
+class ReqResPair extends Line {
+  constructor(props) {
+    super({
+      stroke: props.accent,
+      lineWidth: 4,
+      endArrow: true,
+      arrowSize: 10,
+      end: 0,
+      ...props
+    });
+    this.labelContainer = createRef();
+    this.label = createRef();
+    this.add(
+      /* @__PURE__ */ jsx(
+        Rect,
+        {
+          ref: this.labelContainer,
+          layout: true,
+          fill: palette.dark,
+          position: this.labelPosition(),
+          opacity: 0,
+          padding: 5,
+          children: /* @__PURE__ */ jsx(
+            Heading,
+            {
+              ref: this.label,
+              level: 6,
+              text: () => this.reqLabel(),
+              fill: () => this.accent()
+            }
+          )
+        }
+      )
+    );
+  }
+  *request(start, pause, complete) {
+    yield* this.requestStart(start);
+    yield* waitFor(pause);
+    yield* this.requestComplete(complete);
+  }
+  *response(start, pause, complete) {
+    yield* this.responseStart(start);
+    yield* waitFor(pause);
+    yield* this.responseComplete(complete);
+  }
+  *requestStart(duration) {
+    yield* all(
+      this.end(1, duration * 0.5),
+      this.labelContainer().opacity(1, duration * 0.7)
+    );
+  }
+  *requestComplete(duration) {
+    yield* all(
+      this.start(1, duration * 0.5),
+      this.labelContainer().opacity(0, duration * 0.5)
+    );
+    this.endArrow(false);
+    this.startArrow(true);
+    this.label().text(this.resLabel());
+  }
+  *responseStart(duration) {
+    yield* all(
+      this.start(0, duration * 0.5),
+      this.labelContainer().opacity(1, duration * 0.5)
+    );
+  }
+  *responseComplete(duration) {
+    yield* all(
+      this.end(0, duration * 0.5),
+      this.labelContainer().opacity(0, duration * 0.5)
+    );
+    this.endArrow(true);
+    this.startArrow(false);
+    this.label().text(this.reqLabel());
+  }
+}
+__decorateClass([
+  initial(""),
+  signal()
+], ReqResPair.prototype, "reqLabel", 2);
+__decorateClass([
+  initial(""),
+  signal()
+], ReqResPair.prototype, "resLabel", 2);
+__decorateClass([
+  initial(palette.light),
+  colorSignal()
+], ReqResPair.prototype, "accent", 2);
+__decorateClass([
+  initial(void 0),
+  signal()
+], ReqResPair.prototype, "labelPosition", 2);
 const timeBase = 1;
 const aliceNodeId = "2ovpybgj3snjmchns44pfn6dbwmdiu4ogfd66xyu72ghexllv6hq";
 const aliceNodeIdTrunc = aliceNodeId.slice(0, 8);
@@ -367,14 +470,12 @@ const description = makeScene2D(function* (view) {
     relayServer: createRef(),
     dnsServer: createRef(),
     alice: createRef(),
-    relayServerConn: createRef(),
     bob: createRef(),
     connectRequest: createRef(),
     connectRequestText: createRef(),
-    bobDnsRequestLine: createRef(),
-    bobDnsRequestText: createRef(),
-    bobRelayRequestLine: createRef(),
-    bobRelayRequestText: createRef(),
+    bobDnsRequest: createRef(),
+    bobToRelay: createRef(),
+    relayToAlice: createRef(),
     bobAliceConn: createRef()
   };
   const layout = {
@@ -388,26 +489,11 @@ const description = makeScene2D(function* (view) {
         /* @__PURE__ */ jsx(Label, { text: "Relay Server" }),
         /* @__PURE__ */ jsx(Heading, { level: 6, text: relayUrl })
       ] }),
-      /* @__PURE__ */ jsx(Rect, { layout: true, direction: "column", gap: 10, ref: page.dnsServer, opacity: 0, x: 500, y: layout.row1, children: [
+      /* @__PURE__ */ jsx(Rect, { layout: true, direction: "column", gap: 10, ref: page.dnsServer, opacity: 0, x: 300, y: layout.row1, children: [
         /* @__PURE__ */ jsx(Server, {}),
         /* @__PURE__ */ jsx(Label, { text: "DNS Server" }),
         /* @__PURE__ */ jsx(Heading, { level: 6, text: dnsUrl })
       ] }),
-      /* @__PURE__ */ jsx(
-        Line,
-        {
-          ref: page.relayServerConn,
-          points: () => [
-            page.alice().top(),
-            page.relayServer().bottom()
-          ],
-          stroke: palette.light,
-          lineWidth: 4,
-          endArrow: true,
-          arrowSize: 10,
-          end: 0
-        }
-      ),
       /* @__PURE__ */ jsx(Rect, { layout: true, direction: "column", gap: 20, ref: page.alice, opacity: 0, x: -550, y: layout.row2, children: [
         /* @__PURE__ */ jsx(MobilePhone, {}),
         /* @__PURE__ */ jsx(Label, { text: "Alice" }),
@@ -420,58 +506,55 @@ const description = makeScene2D(function* (view) {
         /* @__PURE__ */ jsx(Heading, { level: 6, text: `NodeID: ${bobNodeIdTrunc}...` })
       ] }),
       /* @__PURE__ */ jsx(
-        Line,
+        ReqResPair,
         {
-          ref: page.bobDnsRequestLine,
+          ref: page.bobDnsRequest,
+          reqLabel: `DNS: _iroh.${aliceNodeIdTrunc}.${dnsUrl} TXT`,
+          resLabel: `relay=${relayUrl}`,
+          accent: categoricalPalette[0],
           points: () => [
-            page.bob().top(),
-            page.dnsServer().bottom()
+            [page.bob().top().x - 200, page.bob().top().y],
+            [page.dnsServer().bottom().x - page.dnsServer().width() / 2, page.dnsServer().bottom().y]
           ],
-          stroke: categoricalPalette[0],
-          lineWidth: 4,
-          endArrow: true,
-          arrowSize: 10,
-          end: 0
+          labelPosition: [200, 0],
+          x: 200,
+          y: 0
         }
       ),
-      /* @__PURE__ */ jsx(Rect, { ref: page.bobDnsRequestText, layout: true, fill: palette.dark, x: 200, y: 0, opacity: 0, padding: 5, children: /* @__PURE__ */ jsx(
-        Heading,
-        {
-          level: 6,
-          text: () => `DNS: _iroh.${aliceNodeIdTrunc}.${dnsUrl} TXT`,
-          fill: categoricalPalette[0]
-        }
-      ) }),
       /* @__PURE__ */ jsx(
-        Line,
+        ReqResPair,
         {
-          ref: page.bobRelayRequestLine,
+          ref: page.bobToRelay,
+          reqLabel: `ADDRs ${relayUrl}`,
+          resLabel: `addrs=[223.456.789.1:1234]`,
+          accent: categoricalPalette[1],
           points: () => [
             page.bob().top(),
             page.relayServer().right()
-          ],
-          stroke: categoricalPalette[1],
-          lineWidth: 4,
-          endArrow: true,
-          arrowSize: 10,
-          end: 0
+          ]
         }
       ),
-      /* @__PURE__ */ jsx(Rect, { ref: page.bobRelayRequestText, layout: true, fill: palette.dark, x: 0, y: 0, opacity: 0, padding: 5, children: /* @__PURE__ */ jsx(
-        Heading,
+      /* @__PURE__ */ jsx(
+        ReqResPair,
         {
-          level: 6,
-          text: () => `ADDRs ${aliceNodeIdTrunc}`,
-          fill: categoricalPalette[1]
+          ref: page.relayToAlice,
+          reqLabel: `ADDRs ${aliceNodeIdTrunc}`,
+          resLabel: `addrs=[223.456.789.1:1234]`,
+          accent: categoricalPalette[1],
+          labelPosition: [-500, 0],
+          points: () => [
+            page.relayServer().bottom(),
+            page.alice().top()
+          ]
         }
-      ) }),
+      ),
       /* @__PURE__ */ jsx(
         Line,
         {
           ref: page.bobAliceConn,
           points: () => [
             page.bob().left(),
-            page.alice().right()
+            [page.alice().right().x - 150, page.alice().right().y]
           ],
           stroke: palette.light,
           lineWidth: 4,
@@ -491,49 +574,12 @@ const description = makeScene2D(function* (view) {
   );
   yield* page.connectRequest().opacity(1, timeBase);
   yield* waitFor(timeBase * 0.5);
-  yield* all(
-    page.bobDnsRequestLine().end(1, timeBase * 0.5),
-    page.bobDnsRequestText().opacity(1, timeBase * 0.7)
-  );
-  yield* waitFor(timeBase * 0.5);
-  yield* all(
-    page.bobDnsRequestLine().start(1, timeBase * 0.5),
-    page.bobDnsRequestText().opacity(0, timeBase * 0.5)
-  );
-  page.bobDnsRequestLine().endArrow(false);
-  page.bobDnsRequestLine().startArrow(true);
-  page.bobDnsRequestText().children()[0].text(`relay=${relayUrl}`);
-  yield* all(
-    page.bobDnsRequestLine().start(0, timeBase * 0.5),
-    page.bobDnsRequestText().opacity(1, timeBase * 0.5)
-  );
-  yield* waitFor(timeBase);
-  yield* all(
-    page.bobDnsRequestLine().end(0, timeBase * 0.5),
-    page.bobDnsRequestText().opacity(0, timeBase * 0.5)
-  );
-  yield* all(
-    page.bobRelayRequestLine().end(1, timeBase * 0.5),
-    page.bobRelayRequestText().opacity(1, timeBase * 0.7)
-  );
-  yield* waitFor(timeBase * 0.5);
-  yield* all(
-    page.bobRelayRequestLine().start(1, timeBase * 0.5),
-    page.bobRelayRequestText().opacity(0, timeBase * 0.5)
-  );
-  page.bobRelayRequestLine().endArrow(false);
-  page.bobRelayRequestLine().startArrow(true);
-  page.bobRelayRequestText().children()[0].text(`addrs=[223.456.789.1:1234]`);
-  yield* all(
-    page.bobRelayRequestLine().start(0, timeBase * 0.5),
-    page.bobRelayRequestText().opacity(1, timeBase * 0.5)
-  );
-  yield* waitFor(timeBase);
-  yield* all(
-    page.bobRelayRequestLine().end(0, timeBase * 0.5),
-    page.bobRelayRequestText().opacity(0, timeBase * 0.5)
-  );
-  yield* waitFor(1);
+  yield* page.bobDnsRequest().request(timeBase * 0.75, timeBase, timeBase * 0.5);
+  yield* page.bobDnsRequest().response(timeBase * 0.75, timeBase, timeBase * 0.5);
+  yield* page.bobToRelay().request(timeBase * 0.75, timeBase * 0.2, timeBase * 0.5);
+  yield* page.relayToAlice().request(timeBase * 0.75, timeBase * 0.2, timeBase * 0.5);
+  yield* page.relayToAlice().response(timeBase * 0.75, timeBase * 0.2, timeBase * 0.5);
+  yield* page.bobToRelay().response(timeBase * 0.75, timeBase * 0.2, timeBase * 0.5);
   yield* page.bobAliceConn().end(1, timeBase);
   yield* page.connectRequestText().text(`connected! ${aliceNodeIdTrunc}`, timeBase * 0.2);
   yield* waitFor(3);

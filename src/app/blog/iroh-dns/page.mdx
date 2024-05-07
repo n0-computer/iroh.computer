@@ -22,7 +22,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 We want iroh to establish connections with as little friction as possible. We’ve been chipping away at this goal since our inception. Our first big push toward this goal was to add holepunching into iroh, removing the need for devs to worry about opening up ports on their servers or resigning themselves to only making peer-to-peer connections to computers inside their local NAT.
 
-But even with holepunching, you need to know *where* to dial. Dialing a node in Iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable. 
+But even with holepunching, you need to know *where* to dial. Dialing a node in iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable. 
 
 But what if you didn’t need to know the relay URL or socket address in order to dial a node? Could we enable iroh users to dial peers using _the least amount of information possible_, ie can we enable dialing _only by Node ID_, and no other address data?
 
@@ -52,7 +52,7 @@ The following sections describe the format of the Pkarr publishing records and N
 
 Nodes announce their address information in [Pkarr](https://github.com/Nuhvi/pkarr/) signed packets. The TXT records, as described below, are added to the `answers` section of a DNS server. Their name must be `_iroh.<node-id>.` The encoded node ID must be the root name, no other origin but `.` (the single dot) is permitted.
 
-Those packets are published to a Pkarr relay server, which is a HTTP service handling PUT requests with the signed packets. Iroh’s Pkarr server is [`iroh-dns-server`](https://crates.io/crates/iroh-dns-server), which serves the received records over DNS. Pkarr packets can also be published onto the bittorrent mainline DHT, as specified by Pkarr (this is not yet supported in Iroh natively, see below for our plans).
+Those packets are published to a Pkarr relay server, which is a HTTP service handling PUT requests with the signed packets. iroh’s Pkarr server is [`iroh-dns-server`](https://crates.io/crates/iroh-dns-server), which serves the received records over DNS. Pkarr packets can also be published onto the bittorrent mainline DHT, as specified by Pkarr (this is not yet supported in iroh natively, see below for our plans).
 
 DNS servers that support this spec will receive these Pkarr signed packets, check their signature and format validity, and then serve each contained record, with the DNS server's configured *origin domain* appended to all record names.
 
@@ -62,7 +62,7 @@ DNS servers that support this spec will receive these Pkarr signed packets, chec
   <MotionCanvas src='/motion-canvas/Discovery.project.js' />
 </div>
 
-When connecting to an unknown `NodeId`, the DNS discovery mechanism in Iroh will perform a DNS query to discover relays or addresses for the node. The DNS discovery is configured with a *origin domain* (which defaults to *dns.iroh.link*, a server run by n0). Iroh will then perform a DNS query through the configured DNS resolver (which defaults to using the host system's nameservers):
+When connecting to an unknown `NodeId`, the DNS discovery mechanism in iroh will perform a DNS query to discover relays or addresses for the node. The DNS discovery is configured with a *origin domain* (which defaults to *dns.iroh.link*, a server run by n0). iroh will then perform a DNS query through the configured DNS resolver (which defaults to using the host system's nameservers):
 
 `_iroh.<z32-node-id>.<origin-domain> TXT`
 
@@ -76,7 +76,7 @@ The returned TXT records must contain a string value of the form `key=value`, a
 This spec defines the following attributes:
 
 - `relay=<url>`: The home relay for this node, e.g. `https://euw1-1.derp.iroh.network`.
-- `addr=<addr> <addr> ..` A space-separated list of socket addresses for this Iroh node. Each address is an IPv4 or IPv6 address with a port (e.g. `1.2.3.4:7367` or `[::1]:3521`
+- `addr=<addr> <addr> ..` A space-separated list of socket addresses for this iroh node. Each address is an IPv4 or IPv6 address with a port (e.g. `1.2.3.4:7367` or `[::1]:3521`
 
 ## Future Work: make it fully p2p
 

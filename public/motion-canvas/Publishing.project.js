@@ -1,4 +1,4 @@
-import { M as MetaFile, m as initial, s as signal, R as Rect, x as createRef, d as createSignal, n as jsx, r as palette, H as Heading, D as categoricalPalette, o as Label, u as makeScene2D, v as all, w as waitFor, N as Node, S as Server, y as Line, z as MobilePhone, E as ValueDispatcher, F as makeProject, G as bootstrap, I as plugin0, J as settings } from "./_virtual_settings-140a9a08.js";
+import { M as MetaFile, m as initial, s as signal, R as Rect, w as createRef, d as createSignal, n as jsx, r as palette, H as Heading, E as categoricalPalette, o as Label, z as makeScene2D, y as all, x as waitFor, N as Node, S as Server, v as Line, D as MobilePhone, F as ValueDispatcher, G as makeProject, I as bootstrap, J as plugin0, K as settings } from "./_virtual_settings-6986020f.js";
 let meta$1;
 meta$1 ?? (meta$1 = new MetaFile("Publishing.project", false));
 meta$1.loadData({
