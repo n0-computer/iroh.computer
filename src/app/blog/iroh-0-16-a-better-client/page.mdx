@@ -50,9 +50,9 @@ For more information, check out PR [#2251](https://github.com/n0-computer/iroh/p
 
 View prometheus-like metrics plotting from the terminal, that displays data from your running iroh node!
 
-`iroh plot` takes a list of metrics, as well flags for the reporting interval  (e.g. report every 500ms) and the timeframe (e.g. show the lastest 60 seconds).
+`iroh doctor plot` takes a list of metrics, as well flags for the reporting interval  (e.g. report every 500ms) and the timeframe (e.g. show the lastest 60 seconds).
 
-Metrics are defined in `[metrics.rs](http://metrics.rs)` files throughout the codebase. To get metrics on `send_data` in the `magicsock::Metrics` struct, you would call:
+Metrics are defined in `[metrics.rs](https://github.com/n0-computer/iroh/blob/main/iroh/src/metrics.rs)` files throughout the codebase. To get metrics on `send_data` in the `magicsock::Metrics` struct, you would call:
 
 ```bash
 $ iroh doctor plot magicsock_send_data
@@ -65,7 +65,7 @@ $ iroh doctor plot magic_sock_send_data, download_bytes_total
 ```
 
 <div className="not-prose">
-  <Image src="/blog/iroh-0-16-a-better-client/iroh-doctor-plot.png" width={1200} height={754} alt="iroh plot doctor" />
+  <Image src="/blog/iroh-0-16-a-better-client/iroh-doctor-plot.png" width={1200} height={754} alt="iroh doctor plot" />
 </div>
 
 To learn more, check out PR [#2206](https://github.com/n0-computer/iroh/pull/2206)
