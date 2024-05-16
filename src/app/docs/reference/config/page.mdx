@@ -41,17 +41,17 @@ A common pattern for creating "one off" iroh nodes is to run `export IROH_DATA_D
 
 The iroh CLI loads configuration from a `iroh.config.toml` file within the data directory. The file is in [TOML format](https://toml.io/en/), and all values are optional, including the file itself. Iroh does _not_ create `iroh.config.toml` by default.
 
-### DERP nodes
-DERP ("Designated Encrypted Relay for Packets") nodes are used to assist in holepunching and are identified by their url. We currently run two DERP nodes, one in North America and one in Europe. [Read more about DERP and holepunching.](/docs/layers/connections/holepunching) 
+### Relay nodes
+Relay nodes are used to assist in holepunching and are identified by their url. We currently run two relay nodes, one in North America and one in Europe. Relay nodes use the DERP ("Designated Encrypted Relay for Packets") protocol. [Read more about DERP and holepunching.](/docs/layers/connections/holepunching) 
 
-This is what the default configuration for the DERP nodes looks like:
+This is what the default configuration for the Relay nodes looks like:
 ```toml
-[[derp_nodes]]
+[[relay_nodes]]
 url = "https//use1-1.derp.iroh.network."
 stun_only = false
 stun_port = 3478
 
-[[derp_nodes]]
+[[relay_nodes]]
 url = "https//euw1-1.derp.iroh.network."
 stun_only = false
 stun_port = 3478
