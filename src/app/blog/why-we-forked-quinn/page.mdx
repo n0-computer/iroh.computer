@@ -1,0 +1,59 @@
+
+import Image from 'next/image'
+
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'flub',
+  date: '2024-05-20',
+  title: 'Why We Forked Quinn',
+  description: 'Why performance issues in iroh led to a fork of Quinn.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# Why We Forked Quinn
+
+We chose QUIC as the transport protocol to underpin iroh on the network because it offers desirable user-facing features, such as multiple-ordered streams that do not block each other. However, we also chose QUIC for no small part because it sends UDP packets over the network. Leveraging UDP is instrumental in allowing us to do reliable hole-punching through firewalls and NAT routers to establish direct connections.
+
+We opted to use [Quinn](https://github.com/quinn-rs/quinn), a solid open-source implementation with all the features we needed for iroh. It allowed us to plug in our custom [MagicSocket](https://iroh.computer/docs/layers/networking#magic-sockets), which selects the best network path among multiple paths between iroh endpoints with the help of a relay server.
+
+We had great success integrating with the Quinn API. However, even with our success, we knew we would likely see some performance issues in iroh because we couldn’t integrate closely *enough* with certain QUIC features.
+
+## Connection Latencies
+
+We recently investigated the latency between iroh nodes. While we would *eventually* get the expected connection latency between nodes (based on how far away in the world the nodes were located), we observed that it took too long to settle down to this expected latency. We had previously suspected that this issue might occur, but with the observable numbers in front of us, it was time to tackle it.
+
+To understand why the latency took so long to settle, we need to understand how the MagicSocket works (at least the idealised version).
+
+When an iroh node starts a connection, it has the other node's `NodeId` and `RelayUrl`. Using the relay server, the iroh node establishes a *relayed* connection with the node. This is the first network path between the two iroh nodes.
+
+As soon as this network path exists, the two iroh nodes will exchange more details to establish a *direct* connection. Once this direct connection is established, the traffic will switch over to this second network path and flow directly between the two iroh nodes, without using the
+relay server.
+
+Unfortunately, one side-effect of using the MagicSocket like this is that **QUIC does not know the underlying network paths used**. Each network path has its own characteristics about how much and how fast it can handle data, which also changes over time as routers along the way get busier or quieter. Network protocols like QUIC or TCP build up an estimate of this behaviour in their *congestion controller* and adjust their sending rates appropriately as data is acknowledged by the peer. However, when the magic socket switches network paths under the hood, the QUIC congestion controller does not know about this, and it takes a long time to settle on the right estimates.
+
+## Resetting the Quinn congestion controller state
+
+After some experiments, we established that improving the congestion controller’s knowledge about the network path significantly influences the latencies observed.
+
+On good connections the impact is limited. On poor connections, we observed improvements from about **20 seconds** down to about **3 seconds** after the initial connection was established. These times also include the time spent on the relay network path and establishing the direct connection.
+
+This, however, involves accessing things deep inside Quinn. These pieces have no business being touched directly by normal API users, so unfortunately, this meant we needed to fork Quinn.
+
+We managed to constrain the needed changes to be rather small. We aim to keep it that way since we want to track upstream Quinn releases. Even though, at the time of writing this, we have not yet migrated to the very recent Quinn 0.11 release, we already have experimental branches exploring this migration.
+
+## Deeper Quinn integrations
+
+As this particular problem highlighted, iroh would benefit from deeper integration with the QUIC protocol. The latency challenge we solved here is not the only issue that exists because the MagicSocket and QUIC layer do not know about each other.
+
+As QUIC evolves, specifically around the notion of [multipath](https://quicwg.org/multipath/draft-ietf-quic-multipath.html), we expect to be able to move much of the MagicSocket's functionality into Quinn itself. Combining multipath with IETF drafts that explore ways to do [address discovery](https://datatracker.ietf.org/doc/draft-seemann-quic-address-discovery/) and [NAT traversal](https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/) from right inside QUIC holds great promise for improving iroh’s performance.
+
+When we start using these drafts, we’ll likely rely on our fork of Quinn even more as we test these implementations. We aim to do this work with an eye on contributing back upstream to Quinn itself once it is stable enough.
