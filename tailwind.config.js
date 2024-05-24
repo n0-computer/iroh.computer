@@ -46,6 +46,7 @@ module.exports = {
         'iroh-kv-2': "url('/img/kv/iroh-kv-2.png')",
         'iroh-kv-3': "url('/img/kv/iroh-kv-3.png')",
         'iroh-kv-4': "url('/img/kv/iroh-kv-4.png')",
+        'iroh-kv-og-1': "url('/img/kv/iroh-kv-og-1.png')",
       },
       opacity: {
         1: '0.01',

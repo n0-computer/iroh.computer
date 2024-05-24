@@ -10,6 +10,18 @@ export const metadata = {
     template: '%s - Iroh',
     default: 'docs, guides, and examples',
   },
+  openGraph: {
+    title: 'iroh',
+    description: 'A distributed systems toolkit',
+    images: [{
+      url: '/api/og?title=iroh&subtitle=A distributed systems toolkit',
+      width: 1200,
+      height: 630,
+      alt: 'iroh. A distributed systems toolkit',
+      type: 'image/png',
+    }],
+    type: 'website'
+  }
 };
 
 export default async function RootLayout({children}) {
