@@ -12,8 +12,20 @@ export const post = {
 }
 
 export const metadata = {
-  title: post.title,
-  description: post.description,
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
@@ -22,7 +34,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 We want iroh to establish connections with as little friction as possible. Our first big push toward chipping away at this goal was adding holepunching into iroh. Now, devs no longer need to worry about opening up ports on their servers / firewalls or be resigned to only creating peer-to-peer connections to computers inside their local NAT.
 
-But even with holepunching, you need to know *where* to dial. Dialing a node in iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable. 
+But even with holepunching, you need to know *where* to dial. Dialing a node in iroh needs either an IP address to talk to, or the URL of a relay to which the remote node is connected. To make things easier, we added [tickets](/docs/concepts/tickets) early-on. Tickets are easily encodable bytestrings that contain a node id, socket addresses and a relay URL. Tickets work well, but they are long - and they expire: People change networks or relays, and then old tickets cannot find you anymore. So while tickets work well in some scenarios, they are not frictionless or universally usable.
 
 But what if you didn’t need to know the relay URL or socket address in order to dial a node? Could we enable iroh users to dial peers using _the least amount of information possible_, ie can we enable dialing _only by Node ID_, and no other address data?
 
@@ -30,7 +42,7 @@ But what if you didn’t need to know the relay URL or socket address in order t
 
 We had two “guiding lights” while doing research on global node discovery:
 
-First, we needed to see a path forward that would allow for a fully distributed topology, even if our first solution had a federated structure. If we (or some contributor) wanted to create or opt into a fully p2p version of global node discovery in the future, that needed to work in tandem with whatever federated solution we came up with. 
+First, we needed to see a path forward that would allow for a fully distributed topology, even if our first solution had a federated structure. If we (or some contributor) wanted to create or opt into a fully p2p version of global node discovery in the future, that needed to work in tandem with whatever federated solution we came up with.
 
 Second, it was very important for us as an organization that we do not invent protocols and specs unnecessarily. Can we instead leverage standards that have stood the test of time (and scrutiny) in novel ways to solve our problem? It turns out, we can! And we can do it using one of the oldest and most dependable technologies we have on the internet: DNS. Using the DNS standard along side Pkarr (public-key addressable resource records), **we now have global node discovery in iroh**!
 
@@ -101,4 +113,3 @@ Now that we can discover nodes, can we take it one step further and use a simila
 We have an [existing prototype]([https://github.com/n0-computer/iroh-examples/blob/main/content-discovery](https://github.com/n0-computer/iroh-examples/blob/main/content-discovery/README.md)) in `iroh-examples` that demonstrates how we might solve content discovery. We can likely leverage the `iroh-dns` infrastructure for resolving content, as well as node addresses.
 
 You can expect future blog posts on this topic as we get closer to making content discovery a reality in iroh.
-

@@ -12,8 +12,20 @@ export const post = {
 }
 
 export const metadata = {
-  title: post.title,
-  description: post.description,
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
