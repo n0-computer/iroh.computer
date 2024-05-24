@@ -149,27 +149,27 @@ None!
         - `LiveEvent::PendingContentReady`
         - `client::Authors::default`
         - `client::Authors::set_default`
-        - `iroh::util::path::IrohPaths::DefaultAuthor`
+        - `util::path::IrohPaths::DefaultAuthor`
     - removed
-        - `iroh::node::Node::subscribe`
-        - `iroh::node::Event`
+        - `node::Node::subscribe`
+        - `node::Event`
+    - renamed
+        - `node::Node::magic_endpoint` -> `node::Node::endpoint`
 - `iroh-net`
     - renamed
         - `magic_endpoint` → `endpoint`
-        - `iroh_net::magic_endpoint::MagicEndpoint` -> `iroh_net::endpoint::Endpoint`
-        - `iroh_net::magic_endpoint::MagicEndpointBuilder` -> `iroh_net::endpoint::Builder`
-        - `iroh::node::Node::magic_endpoint` -> `iroh::node::Node::endpoint`
+        - `magic_endpoint::MagicEndpoint` -> `endpoint::Endpoint`
+        - `magic_endpoint::MagicEndpointBuilder` -> `endpoint::Builder`
     - added
-        - `iroh_net::endpoint::Builder::proxy_url`
-        - `iroh_net::endpoint::Builder::proxy_from_env`
-        - `iroh_net::relay::http::ClientError::Proxy`
-        - `iroh_net::endpoint::Endpoint::watch_home_relay`
+        - `endpoint::Builder::proxy_url`
+        - `endpoint::Builder::proxy_from_env`
+        - `relay::http::ClientError::Proxy`
+        - `endpoint::Endpoint::watch_home_relay`
     - moved
-        - `iroh_net::dns::node_info::lookup_by_domain` → `iroh_net::ResolverExt::lookup_by_domain`
-    -
+        - `dns::node_info::lookup_by_domain` → `ResolverExt::lookup_by_domain`
 
 ### But wait, there's more!
 
 Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.17.0](https://github.com/n0-computer/iroh/releases/tag/v0.17.0).
 
-If you want to know what is coming up, check out the [0.18.0 milestone](https://github.com/n0-computer/iroh/milestone/24), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
+Want to know what is coming up, check out the [0.18.0 milestone](https://github.com/n0-computer/iroh/milestone/24). Do you have any wishes, let us know about it in the [issues](https://github.com/n0-computer/iroh/issues)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
