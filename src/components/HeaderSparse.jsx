@@ -3,6 +3,7 @@
 import React, {useState} from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
+import {Button} from '@/components/Button';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
 
@@ -11,12 +12,24 @@ function TopLevelNavItem({ href, children}) {
     <li>
       <Link
         href={href}
-        className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-white"
+        className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900"
       >
         {children}
       </Link>
     </li>
   );
+}
+
+function DiscordLink(props) {
+  return (
+    <li>
+      <Link
+        href="https://iroh.network/discord"
+        className='px-3 py-2 -mt-2 flex text-sm fill-zinc-400 text-zinc-600 transition hover:text-zinc-900 hover:bg-black/10 rounded'>
+        Join Discord
+      </Link>
+    </li>
+  )
 }
 
 export function HeaderSparse() {
@@ -52,6 +65,7 @@ export function HeaderSparse() {
                 {navItems.map((item, i ) => {
                   return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
                 })}
+                <DiscordLink />
                 <li className='mt-0.5'>
                   <GithubStars />
                 </li>
