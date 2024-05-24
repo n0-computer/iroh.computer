@@ -12,8 +12,20 @@ export const post = {
 }
 
 export const metadata = {
-  title: post.title,
-  description: post.description,
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
@@ -75,9 +87,9 @@ Checkout [PR #2298](https://github.com/n0-computer/iroh/pull/2298) for details.
 
 ## 🍦 More than one flavour of BSD
 
-With iroh being used in different projects, more people want to use it on new platforms, and so we got the request for iroh to work on OpenBSD and FreeBSD. Thanks to the community's help, we are happy to report that with patches to [`iroh-quinn`](https://github.com/n0-computer/quinn) and iroh itself, everything should now work on OpenBSD, FreeBSD, and NetBSD. 
+With iroh being used in different projects, more people want to use it on new platforms, and so we got the request for iroh to work on OpenBSD and FreeBSD. Thanks to the community's help, we are happy to report that with patches to [`iroh-quinn`](https://github.com/n0-computer/quinn) and iroh itself, everything should now work on OpenBSD, FreeBSD, and NetBSD.
 
-This support is quite new, and we might have missed something, if so please be sure to file an issue to let us know. 
+This support is quite new, and we might have missed something, if so please be sure to file an issue to let us know.
 
 Checkout [PR #2311](https://github.com/n0-computer/iroh/pull/2311) for details.
 
@@ -101,7 +113,7 @@ Checkout the [PR #2305](https://github.com/n0-computer/iroh/pull/2305) for detai
 
 ## 🤨 `iroh-perf` - Some Good and Some Bad News
 
-Measuring things is crucial for performance, but sometimes those measurements do not reveal what you want. 
+Measuring things is crucial for performance, but sometimes those measurements do not reveal what you want.
 
 Starting with the bad news, iroh is not as fast as we would like it to be. More specifically, it reduces throughput more than we thought it had, compared to using just `quinn`.
 
@@ -116,7 +128,7 @@ Starting with the bad news, iroh is not as fast as we would like it to be. More 
 | Quinn@0.10 (Linux) | 1030.50 |
 | iroh-net (Linux) | 884.75 |
 
-The good news is that we have a new testing tool, [`iroh-perf`](https://github.com/n0-computer/iroh/tree/main/iroh-net/bench), which makes it much easier to get these numbers. We can now roll up our sleeves and get to work on fixing the performance. 
+The good news is that we have a new testing tool, [`iroh-perf`](https://github.com/n0-computer/iroh/tree/main/iroh-net/bench), which makes it much easier to get these numbers. We can now roll up our sleeves and get to work on fixing the performance.
 
 Checkout the [PR #2186](https://github.com/n0-computer/iroh/pull/2186) for details.
 
@@ -154,7 +166,7 @@ None!
         - `iroh_net::endpoint::Endpoint::watch_home_relay`
     - moved
         - `iroh_net::dns::node_info::lookup_by_domain` → `iroh_net::ResolverExt::lookup_by_domain`
-    - 
+    -
 
 ### But wait, there's more!
 
