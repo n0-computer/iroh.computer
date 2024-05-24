@@ -1,6 +1,6 @@
 import { ImageResponse } from '@vercel/og';
 
-export async function GET(request: Request) {
+export async function GET(request) {
   const { searchParams } = new URL(request.url);
 
   return new ImageResponse(
