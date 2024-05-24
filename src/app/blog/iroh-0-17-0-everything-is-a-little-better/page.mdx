@@ -1,0 +1,163 @@
+import Image from 'next/image'
+
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2024-05-24',
+  title: 'iroh 0.17.0 - Everything Is A Little Better',
+  description: 'Iroh 0.17.0 release',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open source distributed systems toolkit with tools for connecting devices directly, moving data, and syncing state.
+
+This release focused on improving iroh in many aspects of daily use, from wider support of operating systems to HTTP proxy support to simpler APIs for interacting with documents. There is something for everyone to enjoy!
+
+## 🤓 Make Simple Things Simpler
+
+Iroh docs are great, but getting started with them can be daunting. Our API did not always help with this, so we have introduced a few additions to simplify things.
+
+**Default Authors**
+
+When you create an iroh `Node`, it always has an author, so you don't have to worry about creating one.
+
+```rust
+let node = iroh::node::Node::memory().spawn().await?;
+let author = node.authors.default().await?;
+// lets gooo
+```
+
+**Document Import**
+
+Importing a document is one of the most basic things you need to do, but until now, it hasn't been very easy to know when the imported document was synced or when the content was downloaded. This is now super easy
+
+```rust
+let ticket: DocTicket = "<doc ticket from your friend>".parse()?;
+// import the document via ticket, and subscribe to its events
+let (doc, mut events) = node.docs.import_and_subsribe(ticket).await?;
+
+while let Some(event) = events.try_next().await? {
+  match event {
+    LiveEvent::SyncFinished(_) => {
+      // this event is emitted when the initial sync is finished
+      println!("sync finished")
+    }
+    LiveEvent::PendingContentReady => {
+      // this event is emitted when all content of the initial sync is downloaded
+      println!("all content downloaded");
+      break;
+    }
+    _ => {
+      // ignore other events
+    }
+  }
+}
+
+// Use your document, knowing that the initial data is all available
+```
+
+Checkout [PR #2303](https://github.com/n0-computer/iroh/pull/2303), [PR #2302](https://github.com/n0-computer/iroh/pull/2302) and [PR #2299](https://github.com/n0-computer/iroh/pull/2299) for details.
+
+## 🚇 HTTP Proxy Support
+
+Sometimes, you just want to use another tunnel, and sometimes, this tunnel is an HTTP proxy. If so, you are in luck, as we now have support for `HTTP_PROXY` and `HTTPS_PROXY`, including authentication. If you use `iroh`, it will automatically parse these environment variables and do the right thing, and if you use `iroh-net`, you can call `Builder::proxy_from_env` to load the configuration.
+
+Checkout [PR #2298](https://github.com/n0-computer/iroh/pull/2298) for details.
+
+## 🍦 More than one flavour of BSD
+
+With iroh being used in different projects, more people want to use it on new platforms, and so we got the request for iroh to work on OpenBSD and FreeBSD. Thanks to the community's help, we are happy to report that with patches to [`iroh-quinn`](https://github.com/n0-computer/quinn) and iroh itself, everything should now work on OpenBSD, FreeBSD, and NetBSD. 
+
+This support is quite new, and we might have missed something, if so please be sure to file an issue to let us know. 
+
+Checkout [PR #2311](https://github.com/n0-computer/iroh/pull/2311) for details.
+
+## 🔎 Better DNS resolution
+
+DNS is hard, and while things were working, they could always work better. In this release, we improved timeouts and strategies for DNS resolution to ensure swift and correct resolution of DNS records when needed.
+
+Checkout [PR #2313](https://github.com/n0-computer/iroh/pull/2313) and [PR #2301](https://github.com/n0-computer/iroh/pull/2301) for details.
+
+## 🪦 The `MagicEndpoint`  is dead, long live the `Endpoint`
+
+Fun names are great, but sometimes they get in the way, and while we all loved `MagicEndpoint` as a name, it just became too long. So now it is called just `Endpoint`, short and to the point. But don't worry; it is still as magical as ever under the hood, I promise!
+
+Checkout the [PR #2287](https://github.com/n0-computer/iroh/pull/2287) for details.
+
+## 🤯 WASM Phase 0
+
+We want to support browsers and other WASM-compatible targets sooner rather than later, so the first small step was done: ensuring that `iroh-base` compiles for the WASM target.
+
+Checkout the [PR #2305](https://github.com/n0-computer/iroh/pull/2305) for details.
+
+## 🤨 `iroh-perf` - Some Good and Some Bad News
+
+Measuring things is crucial for performance, but sometimes those measurements do not reveal what you want. 
+
+Starting with the bad news, iroh is not as fast as we would like it to be. More specifically, it reduces throughput more than we thought it had, compared to using just `quinn`.
+
+<div className="not-prose">
+  <Image src="/blog/iroh-0-17-0-everything-is-a-little-better/perf-chart.png" width={1200} height={754} alt="iroh and quinn performance chart" />
+</div>
+
+| Transport | Throughput (MiB/s) |
+| --- | --- |
+| Quinn@0.10 (MacOS) | 358.88 |
+| iroh-net (MacOS) | 187.31 |
+| Quinn@0.10 (Linux) | 1030.50 |
+| iroh-net (Linux) | 884.75 |
+
+The good news is that we have a new testing tool, [`iroh-perf`](https://github.com/n0-computer/iroh/tree/main/iroh-net/bench), which makes it much easier to get these numbers. We can now roll up our sleeves and get to work on fixing the performance. 
+
+Checkout the [PR #2186](https://github.com/n0-computer/iroh/pull/2186) for details.
+
+## ⚠️ Breaking Changes
+
+MSRV increased to `1.76`
+
+### Protocol Changes
+
+None!
+
+### API Changes
+
+- `iroh`
+    - added
+        - `client::Docs::import_namespace`
+        - `client::Docs::import_and_subscribe`
+        - `LiveEvent::PendingContentReady`
+        - `client::Authors::default`
+        - `client::Authors::set_default`
+        - `iroh::util::path::IrohPaths::DefaultAuthor`
+    - removed
+        - `iroh::node::Node::subscribe`
+        - `iroh::node::Event`
+- `iroh-net`
+    - renamed
+        - `magic_endpoint` → `endpoint`
+        - `iroh_net::magic_endpoint::MagicEndpoint` -> `iroh_net::endpoint::Endpoint`
+        - `iroh_net::magic_endpoint::MagicEndpointBuilder` -> `iroh_net::endpoint::Builder`
+        - `iroh::node::Node::magic_endpoint` -> `iroh::node::Node::endpoint`
+    - added
+        - `iroh_net::endpoint::Builder::proxy_url`
+        - `iroh_net::endpoint::Builder::proxy_from_env`
+        - `iroh_net::relay::http::ClientError::Proxy`
+        - `iroh_net::endpoint::Endpoint::watch_home_relay`
+    - moved
+        - `iroh_net::dns::node_info::lookup_by_domain` → `iroh_net::ResolverExt::lookup_by_domain`
+    - 
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.17.0](https://github.com/n0-computer/iroh/releases/tag/v0.17.0).
+
+If you want to know what is coming up, check out the [0.18.0 milestone](https://github.com/n0-computer/iroh/milestone/24), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
