@@ -81,6 +81,11 @@ const redirects = async () => {
       source: '/docs/connections',
       destination: '/docs/networking',
       permanent: true,
+    },
+    {
+      source: '/docs/layers/connections',
+      destination: '/docs/layers/networking',
+      permanent: true,
     }
   ]
 }
