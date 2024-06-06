@@ -32,7 +32,7 @@ By default the iroh CLI persists to a data directory that keeps any data that sh
 If the `IROH_DATA_DIR` environment variable is set, all other values will be ignored in favour of `IROH_DATA_DIR`. If the directory path does not exist, iroh will attempt to create all directories in the path string (similar to `mkdir -p` on Unix systems), failing if the final path cannot be written to.
 
 <Note>
-A common pattern for creating "one off" iroh nodes is to run `export IROH_DATA_DIR=./iroh && iroh start --rpc-port 3000`.
+A common pattern for creating "one off" iroh nodes is to run `export IROH_DATA_DIR=./iroh && iroh start`.
 </Note>
 
 ---
