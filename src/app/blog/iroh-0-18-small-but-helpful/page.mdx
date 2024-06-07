@@ -1,0 +1,109 @@
+import Image from 'next/image'
+
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2024-06-07',
+  title: 'iroh 0.18.0 - Small, but helpful',
+  description: 'Iroh 0.18.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for connecting devices directly, moving data, and syncing state.
+
+## 🏑 From fields to methods
+
+After feedback from the community, we have decided to change how you access the subsystems on the `iroh::client::Client` through methods instead of fields. This allows for better discoverability and a more efficient implementation under the hood in the future. 
+
+The old fields are deprecated and will be removed in the next release.
+
+```rust
+// iroh@0.17
+let my_blob = iroh.blobs.read_to_bytes(my_hash).await?;
+
+// iroh@0.18
+let my_blob = iroh.blobs().read_to_bytes(my_hash).await?;
+```
+
+Checkout [PR #2350](https://github.com/n0-computer/iroh/pull/2350) for details.
+
+## 🐘 Gossip larger messages
+
+`iroh-gossip` previously had a maximum message size of `4KiB`. We still used this default when using `iroh-gossip` inside the iroh client, but it can now be overridden when configuring the gossip client directly.
+
+Checkout [PR #2340](https://github.com/n0-computer/iroh/pull/2340) for details.
+
+## 🚀 Netcheck, but faster
+
+Thanks to a new contributor and user of iroh, [**zh522130**](https://github.com/zh522130), the time to run netcheck in `iroh-net` is much shorter now, and it avoids blocking other operations. There’s only good news here: things work faster and more reliably. 
+
+Checkout [PR #2330](https://github.com/n0-computer/iroh/pull/2330) for details.
+
+## ⚠️ Breaking Changes
+
+### Protocol Changes
+
+None!
+
+### API Deprecations
+
+Not breaking yet, but will be breaking in the next release.
+
+- `iroh`
+    - `client::Client.blobs`, use `client::Client::blobs()`
+    - `client::Client.docs`, use `client::Client::docs()`
+    - `client::Client.authors`, use `client::Client::authors()`
+    - `client::Client.tags`, use `client::Client::tags()`
+
+### API Changes
+
+- `iroh-blobs`
+    - removed
+        - `util::LivenessTracker`
+        - `downloader::DownloadRequest`
+            - field `tag`
+            - function `untagged`
+            - function `tag`
+    - added
+        - `util::TagDrop`
+        - `util::TagCounter`
+        - `format::Collection::load`
+        - `format::SimpleStore`
+    - renamed
+        - `format::Collection::load` → `format::Collection::load_db`
+- `iroh-gossip`
+    - added
+        - `Gossip::max_message_size`
+    - changed
+        - `net::util::read_message`, added `max_message_size` param
+        - `net::util::write_message`, added `max_message_size` param
+        - `net::util::read_lp`, added `max_message_size` param
+    - removed
+        - `proto::MAX_MESSAGE_SIZE`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.18.0](https://github.com/n0-computer/iroh/releases/tag/v0.18.0).
+
+If you want to know what is coming up, check out the [0.19.0 milestone](https://github.com/n0-computer/iroh/milestone/25), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
