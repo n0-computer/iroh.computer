@@ -36,7 +36,12 @@ But did you know that iroh can maintain connections even if your network changes
 
 ## Healing Connections when you have a relay
 
-Iroh uses relay servers to coordinate hole-punching efforts and to heal connections when your network configurations change. This process involves a few steps: detecting network interface changes, sending probes, and using discovery messages to communicate those changes to your peer. The process completes when new addresses are added to our peer’s address book.
+Iroh uses relay servers to coordinate hole-punching efforts and to heal connections when your network configuration changes. This process involves a few steps: 
+* detecting network interface changes
+* sending probes,
+* using discovery messages to communicate those changes to your node. 
+
+The process completes when new addresses are added to our node’s address book. 
 
 ### Detecting Network Configuration Changes
 
