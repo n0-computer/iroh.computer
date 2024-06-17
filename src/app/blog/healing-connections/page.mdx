@@ -1,0 +1,99 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-06-17',
+  title: 'Healing Connections After Network Migration',
+  description: 'Describes the process that iroh-net uses to heal a connection after one side has changed networks or IP addresses.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Iroh is an open-source distributed systems toolkit with tools for connecting devices directly, moving data, and syncing state.
+
+Iroh’s networking stack can do a lot of clever things. It can allow you to dial by NodeID, using [certain discovery mechanisms]([https://iroh.computer/blog/iroh-dns](https://iroh.computer/blog/iroh-dns)). It allows you to communicate with another machine, even if your computer and the other computer are each behind a NAT, using hole punching. 
+
+But did you know that iroh can maintain connections even if your network changes? Switch Wi-Fi networks, jump on a mobile hotspot, or turn on your VPN, and your connections stay intact. This works because connections correlate with your Node ID, not your IP address.
+
+This holds true if you have a relay URL to help coordinate or even if you don't (as long as your peer isn't behind a NAT).
+
+## Healing Connections when you have a relay
+
+Iroh uses relay servers to coordinate hole-punching efforts and to heal connections when your network configurations change. This process involves a few steps: detecting network interface changes, sending probes, and using discovery messages to communicate those changes to your peer. The process completes when new addresses are added to our peer’s address book.
+
+### Detecting Network Configuration Changes
+
+When you create an iroh [`Endpoint`](https://docs.rs/iroh/latest/iroh/net/struct.Endpoint.html), you also start a **network monitoring** service that periodically checks the network interfaces and the routing table of your own computer. This is very *finicky* work—each OS has a different way of maintaining its routing table. We've supported Windows, Linux, and macOS ever since launching hole punching in iroh, and recently added support for [FreeBSD, NetBSD, and OpenBSD](https://github.com/n0-computer/iroh/pull/2311).
+
+If your network changes, like turning off mobile data to rely solely on Wi-Fi, these changes will show in the available interfaces. The network monitoring service will alert the iroh **`Endpoint`** to re-launch the next step: **netcheck**.
+
+### Netcheck
+
+Once we know the interfaces, we must determine what the outside world sees as our IP address and router configuration details. We do this by launching our **`netcheck`** probe, which sends STUN and ICMP probes to known relay servers to learn the node's public addresses and latency to the server.
+
+Once the probes finish, we have a list of addresses we can potentially be dialed on.
+
+Even if local endpoints change, we're still connected to any known relay nodes, maintaining a relayed connection. This allows us to send and receive data from the remote peer, albeit with potentially lower throughput and higher latency.
+
+### Sending DISCOvery messages
+
+With new addresses in hand, we use the hole-punching protocol to migrate the connection. We send a `disco` message through the relay server to the remote node, encrypted with your node’s private key and the remote node’s Node ID.
+
+We send a particular type of disco message here: a `CallMeMaybe` message, which contains a list of all the addresses the remote node can use to try and contact your node, including the new ones discovered by netcheck.
+
+### The Remote Node Decodes Your Message
+
+The disco message can only be opened using the remote node’s private key and your Node ID, ensuring a secure correlation of addresses to your Node ID. Once the remote node updates its address book with the new addresses, the connection may be healed, associating data from your new IP addresses with your Node ID.
+
+If the remote node is behind a NAT, healing the connection requires the full hole-punching dance, which is a topic for another blog post. While this hole-punching dance progresses, we are still able to send data back and forth over the relay connection, so data never stops flowing. Once hole punching is completed, the connection has been migrated successfully. 
+
+## Healing connections, when you don’t have a relay
+
+Consider this: if you have a direct connection to a remote node and your network changes, can you still heal the connection without any relay nodes?
+
+The answer is likely yes, depending on key factors. The connection can be healed if you have a direct connection and one or both nodes have a public IP address.
+
+If your node's configuration changes, such as moving behind a router, but the remote node still has a public address, you can dial that node without the help of a relay server for hole punching. However, the connection will close if both nodes end up behind NATs.
+
+Let’s focus on the scenario where your node’s address changes, but the remote node’s address remains public. How can we heal the connection without a relay server?
+
+### Discovering Network Changes
+
+This step is the same: detect changes through the network monitoring service.
+
+### Netcheck
+
+Without a relay server, we cannot send STUN, ICMP, or HTTPS probes and won't have a list of contactable addresses. This step is skipped. 
+
+### Send DISCOvery message?
+
+Without a relay, we don't send **`CallMeMaybe`** messages.
+
+But `CallMeMaybe` messages are not the only kind of disco message we send. We also send `disco::Ping` messages. These ping messages are encoded with your private key and the remote’s Node ID, the same as the `CallMeMaybe` message, with one additional piece of information. Since they can arrive over a direct address, the remote node can associate the IP address that sends the message to the Node ID of the message. 
+
+We regularly send pings, especially to connections that we deem “active” to ensure that the connection won’t close unexpectedly. Every 5 seconds we check if we need to send pings, so if there are any network interface changes, your node will communicate those changes to any active connections within about 5 seconds.
+
+### The Remote Node Decodes Your Message
+
+Once the remote node receives your disco message, it can associate your Node ID with the new IP address, healing the connection.
+
+Iroh’s networking stack effectively maintains connections across network changes, whether or not a relay server is involved. By using mechanisms like hole punching and disco messages, iroh ensures communication remains intact by correlating connections with Node IDs. This adaptability provides a stable and reliable solution for diverse network environments, keeping connections steady even through network transitions and complex NAT configurations.
