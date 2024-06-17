@@ -34,8 +34,6 @@ Iroh’s networking stack can do a lot of clever things. It can allow you to dia
 
 But did you know that iroh can maintain connections even if your network changes? Switch Wi-Fi networks, jump on a mobile hotspot, or turn on your VPN, and your connections stay intact. This works because connections correlate with your Node ID, not your IP address.
 
-This holds true if you have a relay URL to help coordinate or even if you don't (as long as your peer isn't behind a NAT).
-
 ## Healing Connections when you have a relay
 
 Iroh uses relay servers to coordinate hole-punching efforts and to heal connections when your network configurations change. This process involves a few steps: detecting network interface changes, sending probes, and using discovery messages to communicate those changes to your peer. The process completes when new addresses are added to our peer’s address book.
