@@ -1,0 +1,154 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-27-07',
+  title: 'iroh 0.19.0 - Make it your own',
+  description: 'Iroh 0.19.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for connecting devices directly, moving data, and syncing state.
+
+This release is all about making iroh more customizable for your own particular use case!
+
+### Custom Protocols
+
+We’ve made it even easier to use iroh as the networking layer for your protocol! You can now add custom protocols when building an iroh `Node`, using the new `ProtocolBuilder`:
+
+```rust
+use std::sync::Arc;
+use anyhow::Result;
+use futures_lite::future::Boxed as BoxedFuture;
+use iroh::{node::{Node, ProtocolHandler}, net::endpoint::Connecting, client::Iroh};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+
+	const MY_ALPN: &[u8] = b"my-protocol/1";
+
+	#[derive(Debug)]
+	struct MyProtocol {
+	   client: Iroh
+	}
+
+	impl ProtocolHandler for MyProtocol {
+	   fn accept(self: Arc<Self>, conn: Connecting) -> BoxedFuture<Result<()>> {
+	       todo!();
+	   }
+	}
+
+	// Build an in-memory node
+	let unspawned_node = Node::memory()
+	   .build()
+	   .await?;
+
+	// Create a handle to that node in the form of a `Client`, so
+	// that your protocol has access to the underlying store.
+	let client = unspawned_node.client().clone();
+	let handler = MyProtocol { client };
+
+	// Add your custom ALPN and handler code and spawn the iroh `Node`
+	let node = unspawned_node
+	   .accept(MY_ALPN, Arc::new(handler))
+	   .spawn()
+	   .await?;
+	node.shutdown().await?;
+	Ok(())
+}
+
+```
+
+Take a look at the [custom protocol]([https://github.com/n0-computer/iroh/blob/main/iroh/examples/custom-protocol.rs](https://github.com/n0-computer/iroh/blob/main/iroh/examples/custom-protocol.rs)) work for a more fleshed-out example.
+
+Check out [PR #2358](https://github.com/n0-computer/iroh/pull/2358) for details.
+
+### Iroh without Docs
+
+We’ve made the iroh `Node` more versatile! Let’s say you want to use iroh for networking and storage but don’t have a use case for iroh docs. We’ve made it dead simple to disable docs, so you can use the iroh `Node` for your exact purposes without worrying that you are dragging around pieces you don’t need.
+
+Use `Builder::disable_docs()` when building the iroh `Node`; you’ll have just that. When called, the docs engine will not be spawned and the docs protocol will not be registered. Incoming docs connections will be dropped, and all docs-related RPC calls will return an error "docs are disabled".
+
+Check out [PR #2390](https://github.com/n0-computer/iroh/pull/2390) for details.
+
+### Easier RPC connections
+
+If you plan to run iroh in some unusual architecture, this is the release for you.
+
+We’ve added APIs to help launch an iroh `Client` that communicates to an iroh `Node` in a different process. Using `Iroh::connect_addr`, you can build an iroh `Client` that makes RPC calls to a given `SocketAddr`. We’ve also added `Node::my_rpc_port` to allow the iroh `Node` to communicate what RPC port it is running on.
+
+This, most notably, will help with running iroh in docker. Keep your eyes peeled for some news in the coming weeks…
+
+Check out [PR #2398](https://github.com/n0-computer/iroh/pull/2398) for details.
+
+### Relay Server cleanup
+
+The relay server got some much-needed love. Refactoring the code has allowed us to add the ability to run the relay behind a reverse proxy, disable captive portal responses, and run the server without TLS. The new configuration file has other options to allow for more customization, all of which are [explained below](https://www.notion.so/iroh-v0-19-0-4225f199058247bab54deded74074ad5?pvs=21).
+
+Check out [PR #2341](https://github.com/n0-computer/iroh/pull/2341) for details.
+
+## ⚠️ Breaking Changes
+
+### Protocol Changes
+
+None!
+
+### API Changes
+
+- `iroh`
+    - Builder loses the `E` type parameter
+    - ProtocolBuilder loses the `E` type parameter
+    - rpc_endpoint takes a `boxed::ServerEndpoint`
+    - renamed
+        - `client::Iroh::connect` -> `client::Iroh::connect_path`
+    - added
+        - `client::Iroh::connect_addr`
+        - `rpc_port` field to `client::NodeStatus`
+- `iroh-net`
+    - The configuration file format for the `relay` server has changed, deployments will need to updated. For the full format see `struct Config` in `iroh-net/src/bin/iroh-relay.rs`. Here a summary:
+        - The 3 parts of the server now have an independent enable setting: `enable_relay`, `enable_stun` and `enable_metrics`. If omitted they default to `true`.
+        - The way to specify which addresses the server listens on has changed: `http_bind_addr` is for the relay server, `stun_bind_addr` for the STUN server, `metrics_bind_addr` is for the optional metrics server and `tls.https_bind_addr` is for when TLS is enabled. Note these are now all full socket addresses. All have sensible defaults if omitted.
+        - There are new options in `tls.cert_path` and `tls.key_path` which allow more control over where the manual TLS keys are to be read from.
+    - removed
+        - `iroh_net::config` is removed.
+        - `iroh_net::config::NetInfo` -> removed
+        - `iroh_net::config::LinkInfo` -> removed
+        - `Endpoing::my_addr_with_endpoints` has been removed.
+    - renamed
+        - `Endpoint::local_endpoints` -> `Endpoint::direct_addresses`
+        - `endpoint::LocalEndpointStream` -> `endpoint::DirectAddrStream`
+        - `config::Endpoint` -> `magicsock::DirectAddr`
+        - `config::EndpointType` -> `magicsock::DirectAddrType`
+        - `Endpoint::local_addr` -> `Endpoint::bound_sockets`
+        - `Endpoint::my_addr` -> `Endpoint::node_addr`
+        - `Endpoint::my_relay` -> `Endpoint::home_relay`
+        - `defaults::DEFAULT_RELAY_STUN_PORT` → `defaults::DEFAULT_STUN_PORT`
+    - changed
+        - `endpoint::Connecting::alpn` returns `Vec<u8>` instead of `String`
+- `iroh-gossip`
+    - `net::Gossip::update_endpoints` -> `net::Gossip::update_direct_addresses`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.19.0](https://github.com/n0-computer/iroh/releases/tag/v0.19.0).
+
+If you want to know what is coming up, check out the [0.20.0 milestone](https://github.com/n0-computer/iroh/milestone/26), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
