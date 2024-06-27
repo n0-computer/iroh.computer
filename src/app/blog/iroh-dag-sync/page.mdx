@@ -1,0 +1,293 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-07-01',
+  title: 'Iroh and Ipld',
+  description:
+    'A possible extension for iroh to deal with DAGs and IPLD data',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## Problem
+
+By default, iroh has a very minimalist set of primitives for content-addressed
+data.
+
+We offer BLAKE3 hashed blobs of arbitrary size, with a very rich set of
+capabilities including verified range requests, verified streaming and size
+proofs.
+
+In addition, we offer a single container type, a sequence of BLAKE3 hashes.
+
+Using these two primitives, we provide specialized collections of data. A common
+pattern is to use a hash sequence, with the first child being a blob of
+self-describing metadata.
+
+These primitives are sufficiently versatile to handle many use cases, such
+as file system sync in [sendme](https://iroh.computer/sendme).
+
+Focusing on BLAKE3 and the various capabilities that BLAKE3 makes possible is
+the right choice for iroh. But that does not change the fact that sometimes
+you have different needs.
+
+You might want to use different hash functions, for example because you have
+a need for a hash function like [poseidon](https://eprint.iacr.org/2019/458.pdf)
+that is more suitable to use in zero knowledge proofs. Or you have existing
+data that is hashed with the ubiquitous SHA-2 hash.
+
+Also, you might have data that naturally forms a DAG, such as a git commit
+history, unixfs data, event logs, or even blockchains.
+
+Iroh-bytes does not completely solve these use cases, but it provides a very
+useful building block of a possible solution.
+
+## Local storage
+
+Since the default iroh blobs store does not contain information about the 
+dag structure. So we need an additional persistent store for this information:
+
+- a table that maps a generic IPLD hash (hash format and digest) to A
+BLAKE3 hash. (We must only ever populate this table if we have verified
+that the IPLD hash corresponds to the BLAKE3 hash. We must not trust external
+sources for this mapping!)
+
+In addition, since extracting links out of IPLD data blocks can be somewhat
+expensive, we have an additional table to cache this step:
+
+- a table that contains the IPLD links for a (ipld format, blake3 hash) tuple.
+
+Using these two tables, we can cheaply traverse the dag from a given root cid to
+answer questions of liveness. To look up the links for a cid, you first look up
+the corresponding BLAKE3 hash for the hash format and digest, then look up the
+links by IPLD format and BLAKE3 hash.
+
+As we will see, such traversals will also play A key role in the sync protocol.
+
+## Sync protocol
+
+When syncing dags, especially deep dags such as the ones formed by event
+sourcing systems like [actyx], commit histories, or blockchains, it is essential
+to minimize the number of roundtrips. A naive protocol might do the dag
+traversal by just asking for blobs level by level. Such a scheme could use the
+existing iroh-blobs protocol, but it would lead to a very large number of
+roundtrips for deep dags. While for some shallow tree like dags this would not
+be a big deal, for deep dags we would never be able to saturate a link when
+syncing.
+
+So we need a custom protocol that understands dags. Luckily it is very easy to
+define custom protocols in iroh, either by building a custom iroh node using
+iroh-net, or by using the [new (as of 0.19)](BLOG POST LINK) feature of custom
+protocol handlers.
+
+### Requirements
+
+One of the requirements for a sync protocol is that the receiver must be able
+to validate that all data fulfills three criteria. It must
+
+- correspond to the BLAKE3 hash
+  we can check this incrementally very 16 KiB as the data comes in
+- correspond to the IPLD hash
+  we can only check this once we have the complete blob, since the IPLD hash abstraction does not support incremental verification even though some hash functions allow it
+- is actually part of the dag we have asked for
+  every cid we receive must be connected to one of the roots we want to sync
+
+The first two criteria are simple to implement. We can just use the iroh-bytes
+sync protocol (which is basically BLAKE3 verified streaming with a chunk group size of 16KiB)
+to make sure that the data is correct. And we can just hash with the non-BLAKE3
+hash function as soon as we have the complete blob.
+
+But the third criterium means that the information about the cids must only
+come from the roots we have asked for or from data we have locally. Otherwise
+the remote could just send us an arbitrary cid containing a lot of data like
+`rickroll.mp4`, and we would not notice this quickly.
+
+### Request
+
+I have decided to go with a simple request/response protocol. This makes it
+possible to omit any information that we know both sides have, making the
+protocol very minimal and efficient, similar to BLAKE3 verifed streaming.
+
+A request contains a configuration for a *deterministic traversal* of the dag.
+The sender will execute this traversal on his local dag and send information
+about the nodes it encounters to the requester. Information can be either
+just the BLAKE3 hash, or the BLAKE3 hash and the complete data inline in bao4
+format.
+
+We don't include the cid, since as we have seen the information about the cid
+needs to come from the requester.
+
+So how does the receiver know which cid the BLAKE3 hash that
+it receives corresponds to? It has to execute *the same* deterministic traversal
+as the sender locally and zip the sequence of blobs it receives from the sender
+with the locally generated sequence of cids.
+
+### Response
+
+The response is a sequence of items, where each item is either a BLAKE3 hash
+or a BLAKE3 hash and the data for it.
+
+Processing the response means zipping the sequence of response items with the
+locally generated sequence of cids, then validating the content of each blob
+using the IPLD hash in the cid. At this point it is safe to insert an entry into
+the IPLD hash to BLAKE3 hash mapping table. The next step will be to extract
+the links of the block and insert them into the links table.
+
+At this point, the we know that the item is part of the dag we have asked for,
+we have incrementally verified the BLAKE3 has as we received the data, and we
+have verified the IPLD hash after receiving the data for the blob.
+
+Depending on the use case, there might be an additional step that checks
+some application level data inside the just received blob, such as signatures
+or checksums.
+
+## Deterministic traversals
+
+As we have seen, we will need a way to define deterministic traversals. There
+are some trivial deterministic traversals that are generically useful.
+For example just a sequence of unrelated cids with no dag traversal which can
+be used to request a sequence of individual blocks.
+
+But beyond that, there is a very large variety of possible traversals. You might
+want to traverse the dag in different orders, e.g. `depth-first, pre-order, left
+to right`. You might want to limit the traversal to a certain dag depth, or
+filter out leaves (cids with format raw).
+
+But it gets more complex than this. You might want to look into the actual dag
+data itself. E.g. only follow DAG-CBOR links that have a path `/prev`, and not
+ones that have a path `/data` to follow just the stem of a linked list like dag.
+
+Or even more complex, only follow links in blocks where some sort of checksum
+or signature checks out.
+
+You could try to design a generic language to specify (deterministic) dag
+traversals. But especially for some of the more complex use cases mentioned
+above you would end up having to define a turing complete language.
+
+So I have decided to just implement a number of useful traversals of varying
+level of complexity, but allow implementing additonal deterministic traversals
+in rust. Of course this means that sync will have to be tailored to the
+needs of the application, and different applications will have different ALPNs
+for their sync protocols
+
+# Trying it out
+
+The demo in [iroh-experiments] implements a simple unidirectional sync between
+two nodes. You can think of it as [sendme], but for dags.
+
+## Generate some data
+
+We need a car file. You can just import some directory into ipfs and then export
+it as a car file. Make sure to use --raw-leaves to have a more interesting dag.
+
+Let's use the linux kernel sources as an example.
+
+```
+> ipfs add ../linux --raw-leaves
+> ipfs dag export QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV > linux.car
+```
+## Import the data
+
+```
+> cargo run --release import linux.car
+...
+root: QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
+```
+
+This will create two databases in the current directory. dag.db contains
+information about the structure of the dag, blobs.db (a directory) contains
+the raw data.
+
+- Start a node that makes the data available
+
+```
+> cargo run --release node
+I am irgkesdtbih664hq2fjgd6zf7g6mazqkr7deqzplavmwl3vdbboa
+```
+
+## Sync with the default traversal
+
+In a *different directory*, start the sync process:
+
+```
+> mkdir tmp
+> cd tmp
+> cargo run --release sync --from irgkesdtbih664hq2fjgd6zf7g6mazqkr7deqzplavmwl3vdbboa QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
+```
+
+This will traverse the entire DAG in depth-first, pre-order, left-to-right
+traversal order. Which may take a while. But - it is just a single request/
+response pair, so we will saturate the wire.
+
+## Export the synced data (optional)
+
+```
+> cargo run --release export QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV --target output.car
+```
+Export without specifying a target just dumps the cids to stdout.
+
+## Advanced use
+
+The above example sync a large dag using a single request/response interaction.
+It uses the default strategy of traversing the dag in depth first, preorder,
+left to right, which does the job if you want to sync the entire dag.
+
+But what if you want to do a partial sync? You can specify more complex
+configurations for the existing defined traversals.
+
+### Exclude leaf nodes
+
+```
+cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp4huq \
+  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",filter:NoRaw)'
+```
+
+Here we specify the traversal to use as a [ron] expression, specifying a full
+traversal where we filter out cids that have format raw and are guaranteed to be
+leaf nodes of the dag.
+
+In case of unixfs data, the vast majority of the bytes of the dag are in the leaf
+nodes, so requesting only non-leaf nodes gives us the ability to inspect the
+directory structure while saving a lot of bandwidth.
+
+We could also, in a second step, request all leaves from multiple senders.
+
+### Full traversal, but exclude data for leaf nodes.
+
+```
+cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp4huq \
+  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV")' --inline NoRaw
+```
+
+In this case we do a full traversal, but only *inline data* for non-raw blocks that
+can possibly contain links.
+
+## Just leaf nodes
+
+```
+cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp4huq \
+  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",filter:OnlyRaw)'
+```
+
+This traversal will fail unless the requester already has all non-leaf nodes. It
+can be used as a second step to do a complete sync if we already requested the
+branch nodes before.
+
+## Limiting the traversal to unknown data
+
+```
+cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp4huq \
+  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",visited:["bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq"])'
+```
+
+Here we already have `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq`
+and everything below it, and want to sync only the dag between QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
+(inclusive) and `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` (exclusive).
