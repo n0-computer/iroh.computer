@@ -1,9 +1,10 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
 
 export const post = {
   draft: false,
   author: 'ramfox',
-  date: '2024-27-07',
+  date: '2024-06-27',
   title: 'iroh 0.19.0 - Make it your own',
   description: 'Iroh 0.19.0 release',
 }
@@ -78,7 +79,7 @@ async fn main() -> Result<()> {
 
 ```
 
-Take a look at the [custom protocol]([https://github.com/n0-computer/iroh/blob/main/iroh/examples/custom-protocol.rs](https://github.com/n0-computer/iroh/blob/main/iroh/examples/custom-protocol.rs)) work for a more fleshed-out example.
+Take a look at the [custom protocol](https://github.com/n0-computer/iroh/blob/main/iroh/examples/custom-protocol.rs) work for a more fleshed-out example.
 
 Check out [PR #2358](https://github.com/n0-computer/iroh/pull/2358) for details.
 
@@ -102,7 +103,7 @@ Check out [PR #2398](https://github.com/n0-computer/iroh/pull/2398) for details.
 
 ### Relay Server cleanup
 
-The relay server got some much-needed love. Refactoring the code has allowed us to add the ability to run the relay behind a reverse proxy, disable captive portal responses, and run the server without TLS. The new configuration file has other options to allow for more customization, all of which are [explained below](https://www.notion.so/iroh-v0-19-0-4225f199058247bab54deded74074ad5?pvs=21).
+The relay server got some much-needed love. Refactoring the code has allowed us to add the ability to run the relay behind a reverse proxy, disable captive portal responses, and run the server without TLS. The new configuration file has other options to allow for more customization, all of which are explained in the API Changes section below.
 
 Check out [PR #2341](https://github.com/n0-computer/iroh/pull/2341) for details.
 
