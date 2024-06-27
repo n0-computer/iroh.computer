@@ -33,7 +33,7 @@ Welcome to a new release of iroh, the open-source distributed systems toolkit wi
 This release is all about making iroh more customizable for your own particular use case!
 
 ### Better late than never 😂
-Iroh has commited to a two week release cadence, which, if you've been following along closely, we didn't hit this week! On Monday, our normal release day, we found a critical bug. It only showed up rarely, and under high load, but we felt it was important to clean it up immediately.
+Iroh has committed to a two week release cadence, which, if you've been following along closely, we didn't hit this week! On Monday, our normal release day, we found a critical bug. It only showed up rarely, and under high load, but we felt it was important to clean it up immediately.
 
 Turns out, our RPC channels were not cancel-safe. We made the appropriate adjustment to the [quic-rpc](https://crates.io/crates/quic-rpc) crate, which is a crate that we've written allowing many different RPC streaming options used in combination with a few different transports (including using QUIC streams or in memory channels). We then upgraded `quic-rpc` in iroh to fix the issue.
 
