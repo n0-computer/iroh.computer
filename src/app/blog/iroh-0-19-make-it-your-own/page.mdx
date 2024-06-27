@@ -32,6 +32,13 @@ Welcome to a new release of iroh, the open-source distributed systems toolkit wi
 
 This release is all about making iroh more customizable for your own particular use case!
 
+### Better late than never 😂
+Iroh has committed to a two week release cadence, which, if you've been following along closely, we didn't hit this week! On Monday, our normal release day, we found a critical bug. It only showed up rarely, and under high load, but we felt it was important to clean it up immediately.
+
+Turns out, our RPC channels were not cancel-safe. We made the appropriate adjustment to the [quic-rpc](https://crates.io/crates/quic-rpc) crate, which is a crate that we've written allowing many different RPC streaming options used in combination with a few different transports (including using QUIC streams or in memory channels). We then upgraded `quic-rpc` in iroh to fix the issue.
+
+Check out [PR #2416](https://github.com/n0-computer/iroh/pull/2416) on iroh and [PR #87](https://github.com/n0-computer/quic-rpc/pull/87) on quic-rpc for details.
+
 ### Custom Protocols
 
 We’ve made it even easier to use iroh as the networking layer for your protocol! You can now add custom protocols when building an iroh `Node`, using the new `ProtocolBuilder`:
