@@ -4,7 +4,7 @@ import Image from 'next/image'
 export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2024-06-11',
+  date: '2024-06-27',
   title: 'Iroh content discovery',
   description:
     'How to discover iroh nodes by node id, using the Mainline Distributed Hash Table (DHT)',
@@ -17,39 +17,37 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-## Problem
+# Problem
 
 The blobs layer of iroh deals with efficient verified streaming of
-content-addressed data. Basically if you have a blake3 hash of some data,
-whether it is a kilobyte or a terabyte, and you know an iroh node
-that has that data, you can ask that node for the data, and stream it
-in a very efficient way. Every few kilobytes, the data coming from the node
-will be incrementally verified, so you can stream from an
+content-addressed data. If you have a BLAKE3 hash of some data, *and* you know
+an iroh node that has that data, you can ask that node for the data, and stream
+it in a very efficient way. Every few kilobytes, the data coming from the node
+will be incrementally verified, so you can stream even very large blobs from an
 untrusted source.
 
-In many cases this is already quite useful. E.g. in case of the sendme tool,
+In many cases this is already quite useful. E.g. in case of the [sendme](https://github.com/n0-computer/sendme) tool,
 you send data from one node (the sender) to another
 node (the receiver) in a verified way.
 
 In the case of iroh documents, you can make the very reasonable assumption
-that people that have the document are good candidates for downloading the
+that nodes that have the document are good candidates for downloading the
 data that is contained in the document.
 
-And you have a big server like a home NAS behind a firewall,
-there is also no question where the data is coming from.
+And you have a big server like a home NAS behind a firewall, there is also no
+question where the data is coming from.
 
 But there are a number of use cases where you don't have any of this.
 E.g. you want to globally publish some data and have it available
 as long as there is a single node worldwide that still has the data,
 even if the original publisher is long gone.
 
-In that case you need a system that, given a hash for some content,
-gives you a number of nodes that might be good candidates
-to download the data for the node from.
+In that case you need a system that, given a hash for some content, gives you a
+number of nodes that are good candidates to download the data for the node from.
 
 It might come as a surprise that iroh does not have such a system at
 this time. The reason for this is that while the API enabled
-by this functionality is deceptively simple, implementing such a system
+by this functionality is deceptively simple, **implementing** such a system
 on a global scale is an extremely challenging proposition.
 
 We are pretty sure that we could come up with a system that would
@@ -72,6 +70,11 @@ context.
 An example of this is to ask only nodes that have an iroh document for content
 related to that document.
 
+Whenever you have some additional context for your data, you should try to
+constrain the search to that context. So any mechanism for content discovery
+should include a way for the requesters to add context and the resolvers to
+use that context to restrict the search space.
+
 ## DHTs
 
 ### Mainline
@@ -83,29 +86,170 @@ ports.
 
 We are already making use of the bittorrent mainline DHT for fully peer to peer
 discovery of node addresses from ed node ids.
+See [iroh global node discovery](https://iroh.computer/blog/iroh-global-node-discovery).
+
+#### Limitations
+
+The first limitation is that the bittorrent DHT works using 20 byte SHA1 hashes,
+while we want to resolve 32 bytes BLAKE3 hashes. This is not an insurmountable
+limitation. You can just SHA1 hash the BLAKE3 hash, or even just take the first
+20 bytes of the hash.
+
+The second limitation is much more severe. We would like to store the 32 byte
+iroh node id in the DHT, but the mainline DHT does not allow this. It only allows
+storing IPV4 or IPV6 addresses and ports. And the ip addresses are not freely
+selectable, but just the public ip addresses of the node that uploads the announce.
+The only freely chooseable information is th 16 bit port number.
+
+So an iroh node with a *publicly available* and *stable* ip address could
+announce content on the mainline DHT, but a node that frequently switches
+networks or is behind a NAT can not. But we want nodes behind a NAT to
+be able to be content providers, so this won't work for us.
 
 ### Other DHTs
 
 There are a large number of p2p projects that develop their own DHTs. Most notably
-possibly the ipfs DHT, which has been renamed to
-[amino DHT](https://blog.ipfs.tech/2023-09-amino-refactoring/), and the hypercore
-DHT that is now part of the holepunch project.
+possibly the IPFS [amino DHT](https://blog.ipfs.tech/2023-09-amino-refactoring/) DHT,
+and the hypercore DHT that is now part of the holepunch project.
 
 The problems with these DHTs is that they don't operate at sufficient scale to
 be really useful, and that they have some issues with stability and performance.
 
+These DHTs have also never really survived an attack from a well resourced
+adversary like the bittorrent DHT has.
+
 ## Trackers
 
 A very straightforward solution is to have a server that just keeps track of 
-who has content. Everybody who has content announces to this server, and whenever
-you need content you ask a tracker who has it. Such a tracker needs just a very
-simple key value store to store very little information (just a set of node ids
-for each piece of content), so you could plausibly run a tracker for billions or
-trillions of pieces of content on a single current server.
+who has content. Everybody who has content *announces* to this server, and
+whenever you need content you ask a tracker who has it. Such a tracker needs just
+a very simple key-value store to store very little information (just a set of
+signed node ids for each piece of content), so you could plausibly run a tracker
+for billions of pieces of content on a single state of the art server.
 
 However, there are a few problems. First of all, if you have a piece of content
 with no context information attached, which tracker do you ask? Second, a tracker
 is a single point of failure.
 
-## DNS
+### DNS
 
+For node discovery, we are using DNS with TXT records. We could do the same
+for content discovery. DNS is in this case just an efficient protocol for talking
+to a tracker, with the additional advantage that the global DNS system will
+help caching DNS records and take some read load off the trackers.
+
+# Desirable properties of a discovery mechanism
+
+Now that we have described the problem and possible solutions, let's see if we
+can come up with an abstraction (in our case a rust trait) that can work for all
+these possible solutions.
+
+First of all, it is worth noting that content discovery is never over. You might
+look for some content and find no providers, but a few minutes later a node that
+has the content gets online.
+
+You could model such scenarios as the content discovery returning an infinite
+stream of information about the content location. Alternatively you could model
+it as a finite stream that represents the state of knowledge at request time,
+and have the requester deal with retrying. But in both cases the response would
+have to be a stream.
+
+Second, when requesting content the requester should be able to attach context.
+The response should also contain information such as what content discovery
+system the entry is a result of.
+
+# A possible solution
+
+## DHT to find trackers
+
+It is possible to track a lot of content with a single state of the art server.
+However, as we have seen there is a problem in finding a tracker for some content.
+
+Trackers are most likely going to be big servers in the cloud at one of the big
+cloud providers or hosting providers. So they will have a public and relatively
+stable IP address.
+
+So instead of using the mainline DHT directly for content discovery, we can use
+it as the first step of content discovery, discovering which tracker to ask.
+
+This step is entirely optional. If you have an use case where the tracker to use
+is already known, you can just skip it. You might also keep a cache of trackers
+and ask them for content before even asking the mainline DHT.
+
+The just acts as a last resort to find a tracker in case either you don't know
+a tracker or the tracker you have been using goes offline.
+
+## Signed announces
+
+Iroh nodes that share content have an ed keypair as the node id. So when
+announcing content we can sign the announce with this keypair. By doing this we
+prevent malicious actors from publishing fake announces to DDOS innocent nodes
+or to overwhelm the storage of the tracker.
+
+## Rate limiting
+
+The tracker needs to do strict rate limiting based on both ip address and node
+id. Rate limiting by node id is useful, but not sufficient. An adversary could
+just create a large number of node ids. By also limiting by ip address, we make
+sure that only a large botnet could DDOS a tracker.
+
+We can make DDOSing a tracker even harder by validating announces immediately
+after getting them, and then discarding all announces that have not ever been
+validated.
+
+## Validating announces
+
+Compared to other content-addressed systems, iroh has the advantage that BLAKE3
+allows verified requests for slices with the granularity of 1 KiB. So when a
+node claims that they host some content (and only the node, the owner of the ed
+private key, can make that claim), we can *probe* that node by requesting a
+random chunk of content.
+
+If the node does not exist, or if the node does not have that data, the request
+will fail, and we can treat the announce as invalid and discard it.
+
+It might be a good idea to require at least one successful probe before even
+storing the announce. This would be a further way to reduce the work to be done
+by the tracker in case of a fake announce. The worst an attacker could do is
+to force the tracker to do futile connection attempts to non-existing node ids.
+
+## Requesting content
+
+At this time, the content discovery system lives outside the blobs layer of iroh.
+When you want to download some content identified by a hash, you first ask the
+discovery system for a set of candidate nodes. In case of popular content
+you would ask for a random sample of candidate nodes.
+
+You then take this set of candidate nodes and tell iroh to download the data
+from any of these nodes.
+
+In the future we might integrate these two layers to have a pleasant API where
+you can just ask for the data for a hash, and iroh will handle both discovery
+and the actual download in an efficient matter.
+
+## Possible high level API
+
+An ideal API would probably look like this: You have a simple function to
+discover and retrieve content. This function returns a struct that can be either
+used as a stream to get all the nitty gritty details of content discovery and
+download progress, or used as a future that can just be awaited once the data
+is downloaded.
+
+# Current state 
+
+Currently, the above mechanism is implemented in a separate set of crates
+in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/content-discovery).
+
+- iroh-mainline-content-discovery defines the protocol for announcing and querying
+content. It also contains a lightweight client that can be used to talk to trackers
+- iroh-mainline-content-discovery-cli is a cli tool that uses the client to announce
+and probe for content
+- iroh-mainline-tracker is a tracker using [redb](https://github.com/cberner/redb) as
+storage. It implements random probing and allows announcing content via three
+different methods:
+  - iroh connections (dial by ed node id)
+  - quinn connections (dial by IP address)
+  - UDP packets (no dial, just unreliable datagrams)
+
+There is also [swarmie](https://github.com/n0-computer/swarmie), which is a version
+of [sendme](https://iroh.computer/sendme) that allows to globally publish content.
