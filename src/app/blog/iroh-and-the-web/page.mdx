@@ -1,0 +1,112 @@
+import Image from 'next/image'
+
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'matheus23',
+  date: '2024-05-06',
+  title: 'Iroh & the Web',
+  description: 'announcing our plans to bringing iroh to the browser',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Iroh should work in as many environments as possible. This is one of the many reasons it's built in rust!
+Today we have SDKs in rust, python, and swift via [`iroh-ffi`](https://github.com/n0-computer/iroh-ffi/).
+Now we're excited to tackle the next environment: the browser.
+
+## Challenges
+
+Let's be honest: The browser is a harsh environment for all the new network protocols out there.
+Iroh's networking stack - defined in our `iroh-net` crate - depends on QUIC, which will open a raw UDP socket on the lowest level. This is impossible in the browser.
+That said, there's a native QUIC implementation coming to the browser in the form of WebTransport, hurra!
+But wait, it doesn't quite work, because what you're connecting to needs to be served over DNS and have a working TLS certificate, whomp whooomp.
+If you want to talk to another machine from your browser, you're pretty much stuck talking to servers only.
+You can't just do an HTTP request from your laptop to your phone.
+
+Don't get us wrong - we're big fans of encrypting everything!
+That's why iroh connections are mutually authenticated and encrypted. But the TLS restrictions keep web applications from innovating beyond the server-client model.
+However, we believe we can keep encrypting everything while making `iroh-net`, our networking crate - and later iroh itself - work in browsers out of the box!
+
+## Our Opportunity
+
+Some of you keen network enthusiasts out there may be saying: Wait! Direct connections between machines is hard even outside browsers: There's NATs and firewalls getting in your way, too.
+It seems like it's not only the browser that assumes a client-server model!
+That's why we've already had a fallback in place: Relay servers.
+We've written about them before. In a nutshell, relay servers are publicly reachable servers equipped with a stable, public IP address, a DNS name, and TLS certificates.
+They serve two main functions:
+1. They help relay traffic that can't find its way directly from peer to peer.
+2. They assist peers in discovering each other's IP addresses, potentially enabling direct connections.
+Importantly, all of this happens without the relay servers being able to read your traffic - it's all encrypted.
+By the way - if you have an application using iroh, you too can help nodes establish p2p connections by running your own relay (it's all open source)!
+
+Anyway, these relays are a great opportunity for enabling connectivity for browser nodes.
+So far the protocol they used was a custom HTTP upgrade protocol that can't be established from a browser.
+In the coming weeks this is going to change.
+
+## The Roadmap for iroh on the Web
+
+### Phase 0: Relay Connections via Websockets
+
+Our first course of action is supporting relay connections via Websockets.
+These are [widely supported](https://caniuse.com/?search=websockets) today.
+This work has already started and is [almost finished](https://github.com/n0-computer/iroh/pull/2387).
+(It may already be done by the time you read this!)
+
+### Phase 1: Compiling `iroh-net` to WebAssembly
+
+This will be a bigger fish to fry. But it's tasty!
+It mainly means going through the code and disabling code paths that use `UdpSocket` and similar things using `#[cfg(not(target_family = "wasm"))]`, as well as writing alternative code paths that use [web APIs to e.g. open websockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
+After this major milestone, you'll already be able to talk to native nodes from your browser!
+There's many applications that depend only on `iroh-net` so far, and we're excited to see what these projects will use this for.
+Crucially, we want you to be able to use `iroh-net` in the browser just as easily as you would use `iroh-net` natively.
+Just plug it in and `cargo build --target wasm32-unknown-unknown`, perhaps enable another feature, and it should work.
+
+### Phase 2: All of iroh. In the browser.
+
+Even though that `iroh-net` is a key piece to the iroh stack - there's a lot more things in iroh!
+There's iroh gossip, iroh documents, and iroh blobs. (Read [our docs](https://iroh.computer/docs) to find out more!)
+We believe all of these pieces together provide an amazing toolkit for building applications that enhance user agency.
+That's why we're planning to bring them to the browser, too!
+In this phase we'll give crates the same treatment as we gave `iroh-net`:
+Make sure all dependencies compile to WebAssembly and browser nodes can participate in iroh documents just like any native node can.
+
+### Phase 3: Beyond WebSockets
+
+Some of you browser networking nerds out there have been screaming at us: "Lies, all lies! WebRTC exists! Peer to peer on the web is a reality!"
+And yes. You're not wrong.
+It's a somewhat little known fact that video conferencing brought peer to peer connections to browsers.
+Because of low-latency requirements, real time communication is often transmitted peer to peer.
+So when the WebRTC APIs were brought to the browser - they brought p2p with them.
+We can leverage the WebRTC data channel APIs to send packets directly.
+That said, this will mean equipping native iroh clients with WebRTC stacks, and those are *heavy*.
+We'll see what we can do once we get here. Perhaps by then WebTransport will be extended to support direct connections?
+
+## Conclusion
+
+As a rust developer, we'll want you to be able to use `iroh-net` in the browser just like you use it in other environments, as soon as possible.
+No need to import another crate. Just `cargo build --target wasm32-unknown-unknown` and `wasm-bindgen`.
+Full iroh API support in browsers will then follow later this year.
+
+As a javascript developer, watch out for when the whole iroh API lands and you'll be able to use iroh documents and blobs directly in your browser.
+
+In the mean time, make sure to join our discord or follow the number 0 socials to get updates.
