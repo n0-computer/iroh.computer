@@ -77,7 +77,7 @@ This work has already started and is [almost finished](https://github.com/n0-com
 This will be a bigger fish to fry. But it's tasty!
 It mainly means going through the code and disabling code paths that use `UdpSocket` and similar things using `#[cfg(not(target_family = "wasm"))]`, as well as writing alternative code paths that use [web APIs to e.g. open websockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 After this major milestone, you'll already be able to talk to native nodes from your browser!
-There's many applications that depend only on `iroh-net` so far, and we're excited to see what these projects will use this for.
+Many applications currently depend only on `iroh-net`, and we're excited to see what these projects will use their new browser capabilities for.
 Crucially, we want you to be able to use `iroh-net` in the browser just as easily as you would use `iroh-net` natively.
 Just plug it in and `cargo build --target wasm32-unknown-unknown`, perhaps enable another feature, and it should work.
 
