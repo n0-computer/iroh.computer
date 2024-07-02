@@ -52,8 +52,8 @@ useful building block of a possible solution.
 
 ## Local storage
 
-Since the default iroh blobs store does not contain information about the 
-dag structure. So we need an additional persistent store for this information:
+The default `iroh-blobs` store does not contain information about the 
+dag structure. So, we need an additional persistent store for this information:
 
 - a table that maps a generic IPLD hash (hash format and digest) to A
 BLAKE3 hash. (We must only ever populate this table if we have verified
