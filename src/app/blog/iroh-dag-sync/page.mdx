@@ -207,3 +207,13 @@ cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp
 ```
 
 Here we already have `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` and everything below it, and want to sync only the DAG between QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV (inclusive) and `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` (exclusive).
+
+# Next steps
+
+There are several parts missing to make this production ready.
+
+The next step would be to write generators for realistic DAGs and perform benchmarks with them.
+
+In addition, it needs a concept for tagging and garbage collection, very likely similar to the approach described in this [talk](https://www.youtube.com/watch?v=MCt3if9H64I).
+
+And last but not least it would be good to have a concept for multi-party sync. Basically requesting the same data from multiple nodes efficiently, including a stream of cancellations to avoid double downloads while having maximum throughput.
