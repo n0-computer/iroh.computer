@@ -108,7 +108,7 @@ Or even more complex, only follow links in blocks where some sort of checksum or
 
 You could try to design a generic language to specify (deterministic) DAG traversals. A protocol that takes this approach is [graphsync](https://ipld.io/specs/transport/graphsync/). But especially for some of the more complex use cases mentioned above you would end up having to define a turing complete language.
 
-So I have decided to just implement a number of useful traversals of varying level of complexity, but allow implementing additonal deterministic traversals in rust. Of course this means that sync will have to be tailored to the needs of the application, and different applications will have different ALPNs
+So I have decided to just implement a number of useful traversals of varying level of complexity, but allow implementing additional deterministic traversals in rust. Of course this means that sync will have to be tailored to the needs of the application, and different applications will have different ALPNs
 for their sync protocols
 
 # Trying it out
