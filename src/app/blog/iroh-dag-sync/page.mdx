@@ -5,9 +5,9 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2024-07-01',
-  title: 'Iroh and Ipld',
+  title: 'Iroh and DAGs',
   description:
-    'A possible extension for iroh to deal with DAGs and IPLD data',
+    'An experimental iroh extension for syncing directed acyclic graphs (DAGs)',
 }
 
 export const metadata = {
@@ -19,25 +19,11 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## Problem
 
-By default, iroh has a very minimal set of primitives for content-addressed data.
+By default, iroh has a very minimal set of primitives for content-addressed data. We offer BLAKE3 hashed blobs of arbitrary size, with a very rich set of capabilities including verified range requests, verified streaming and size proofs. In addition, we offer a single container type: a sequence of BLAKE3 hashes. Using these two primitives, we provide specialized collections of data. A common pattern is to use a hash sequence, with the first child being a blob of self-describing metadata. These primitives are sufficiently versatile to handle many use cases, such as file system sync in [sendme](https://iroh.computer/sendme).
 
-We offer BLAKE3 hashed blobs of arbitrary size, with a very rich set of capabilities including verified range requests, verified streaming and size proofs.
+Focusing on BLAKE3 and the various capabilities that BLAKE3 makes possible is the right choice for iroh. But that does not change the fact that sometimes you have different needs. You might want to use different hash functions. For example, you may have existing data that is hashed with the ubiquitous SHA-2 hash function, or you might need to use a hash function like [poseidon](https://eprint.iacr.org/2019/458.pdf) that is more suitable to use in zero-knowledge proofs. Also, you might have data that naturally forms a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG), such as a git commit history, [unixfs](https://github.com/ipfs/specs/blob/main/UNIXFS.md) data, event logs, or even blockchains.
 
-In addition, we offer a single container type: a sequence of BLAKE3 hashes.
-
-Using these two primitives, we provide specialized collections of data. A common pattern is to use a hash sequence, with the first child being a blob of self-describing metadata.
-
-These primitives are sufficiently versatile to handle many use cases, such as file system sync in [sendme](https://iroh.computer/sendme).
-
-Focusing on BLAKE3 and the various capabilities that BLAKE3 makes possible is the right choice for iroh. But that does not change the fact that sometimes you have different needs.
-
-You might want to use different hash functions. For example, you could need a hash function like [poseidon](https://eprint.iacr.org/2019/458.pdf) that is more suitable to use in zero-knowledge proofs. Or you may have existing
-data that is hashed with the ubiquitous SHA-2 hash.
-
-Also, you might have data that naturally forms a DAG, such as a git commit
-history, [unixfs](https://github.com/ipfs/specs/blob/main/UNIXFS.md) data, event logs, or even blockchains.
-
-Iroh-bytes does not completely solve these use cases, but it provides a very useful building block of a possible solution.
+Iroh-blobs does not completely solve these use cases, but it provides a very useful building block of a possible solution. Today we will explore how to build a system that can sync DAGs using iroh-blobs as a building bloc. We'll use an [IPLD graph](https://ipld.io/) as an example, but the same principles apply to other DAGs.
 
 ## Local storage
 
@@ -51,36 +37,32 @@ In addition, since extracting links out of IPLD data blocks can be somewhat expe
 
 Using these two tables, we can cheaply traverse the DAG from a given root CID to answer questions of liveness. To look up the links for a CID, you first look up the corresponding BLAKE3 hash for the hash format and digest, then look up the links by IPLD format and BLAKE3 hash.
 
-As we will see, such traversals will also play A key role in the sync protocol.
+As we will see, such traversals will also play a key role in the sync protocol.
 
 ## Sync protocol
 
-When syncing DAGs, especially deep DAGs such as the ones formed by event sourcing systems like [actyx], commit histories, or blockchains, it is essential to minimize the number of roundtrips. A naive protocol might do the DAG
-traversal by just asking for blobs level by level. Such a scheme could use the existing iroh-blobs protocol, but it would lead to a very large number of roundtrips for deep DAGs. While for some shallow tree like DAGs this would not be a big deal, for deep DAGs we would never be able to saturate a link when syncing.
+When syncing DAGs, especially deep DAGs such as the ones formed by event sourcing systems like, [IPFS](https://ipfs.tech), [actyx](https://developer.actyx.com/), commit histories, or blockchains, it is essential to minimize the number of roundtrips. A naive protocol might do the DAG traversal by just asking for blobs level by level. Such a scheme could use the existing iroh-blobs protocol, but it would lead to a very large number of roundtrips for deep DAGs. While for some shallow tree like DAGs this would not be a big deal, for deep DAGs we would never be able to saturate a link when syncing.
 
-So we need a custom protocol that understands DAGs. Luckily it is very easy to define custom protocols in iroh, either by building a custom iroh node using iroh-net, or by using the [new (as of 0.19)](https://iroh.computer/blog/iroh-0-19-make-it-your-own) feature of custom protocol handlers.
+So we need a custom protocol that understands DAGs. Luckily it is very easy to define custom protocols in iroh, either by building a custom iroh node using iroh-net, or by using the [new (as of v0.19)](https://iroh.computer/blog/iroh-0-19-make-it-your-own) feature of custom protocol handlers.
 
 ### Requirements
 
 One of the requirements for a sync protocol is that the receiver must be able to validate that all data fulfills three criteria. It must
 
-- correspond to the BLAKE3 hash
-  we can check this incrementally every 16 KiB as the data comes in
-- correspond to the IPLD hash
-  we can only check this once we have the complete blob, since the IPLD hash abstraction does not support incremental verification even though some hash functions allow it
-- is actually part of the DAG we have asked for
-  every CID we receive must be connected to one of the roots we want to sync
+1. **correspond to the BLAKE3 hash.** we can check this incrementally every 16 KiB as the data comes in
+2. **correspond to the IPLD hash.** we can only check this once we have the complete blob, since the IPLD hash abstraction does not support incremental verification even though some hash functions allow it
+3. **is actually part of the DAG we have asked for.** every content identifier ([CID](https://github.com/multiformats/cid)) we receive must be connected to one of the roots we want to sync
 
-The first two criteria are simple to implement. We can just use the iroh-bytes sync protocol (which is basically BLAKE3 verified streaming with a chunk group size of 16KiB) to make sure that the data is correct. And we can just hash with the non-BLAKE3 hash function as soon as we have the complete blob.
+The first two criteria are simple to implement. We can just use the iroh-blobs sync protocol (which is basically BLAKE3 verified streaming with a chunk group size of 16KiB) to make sure that the data is correct. And we can just hash with the non-BLAKE3 hash function as soon as we have the complete blob.
 
 But the third criterium means that the information about the CIDs must only come from the roots we have asked for or from data we have locally. Otherwise the remote could just send us an arbitrary CID referring a lot of data like
 `rickroll.mp4`, and we would not notice this quickly.
 
 ### Request
 
-I have decided to go with a simple request/response protocol. This makes it possible to omit any information that we know both sides have, making the protocol very minimal and efficient, similar to BLAKE3 verifed streaming.
+For this experiment, we have decided to go with a simple request/response protocol. This makes it possible to omit any information that we know both sides have, making the protocol very minimal and efficient, similar to BLAKE3 verifed streaming.
 
-A request contains a configuration for a *deterministic traversal* of the DAG. The sender will execute this traversal on his local DAG and send information about the nodes it encounters to the requester. Information can be either just the BLAKE3 hash, or the BLAKE3 hash and the complete data inline in bao4 format.
+A request contains a configuration for a *deterministic traversal* of the DAG. The sender will execute this traversal on their local DAG and send information about the nodes it encounters to the requester. Information can be either just the BLAKE3 hash, or the BLAKE3 hash and the complete data inline in bao4 format.
 
 We don't include the CID, since as we have seen the information about the CID needs to come from the requester.
 
@@ -108,8 +90,9 @@ Or even more complex, only follow links in blocks where some sort of checksum or
 
 You could try to design a generic language to specify (deterministic) DAG traversals. A protocol that takes this approach is [graphsync](https://ipld.io/specs/transport/graphsync/). But especially for some of the more complex use cases mentioned above you would end up having to define a turing complete language.
 
-So I have decided to just implement a number of useful traversals of varying level of complexity, but allow implementing additional deterministic traversals in rust. Of course this means that sync will have to be tailored to the needs of the application, and different applications will have different ALPNs
-for their sync protocols
+So, we have decided to just implement a number of useful traversals of varying level of complexity, but allow implementing additional deterministic traversals in rust. Of course this means that sync will have to be tailored to the needs of the application, and different applications will have different ALPNs for their sync protocols.
+
+** **
 
 # Trying it out
 
@@ -117,16 +100,18 @@ The demo in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/t
 
 ## Generate some data
 
-We need a car file. You can just import some directory into ipfs and then export
-it as a car file. Make sure to use --raw-leaves to have a more interesting DAG.
+We need a car file. You can just import some directory into ipfs and then export it as a car file. Make sure to use `--raw-leaves` to have a more interesting DAG structure. You'll need [kubo](https://dist.ipfs.tech/#kubo) for this.
 
-Let's use the linux kernel sources as an example.
+Let's use the linux kernel sources as an example. Feel free to put any directory you like in here
 
 ```
-> ipfs add ../linux --raw-leaves
+> ipfs add -r --raw-leaves ../linux
 > ipfs DAG export QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV > linux.car
 ```
+
 ## Import the data
+
+Checkout the [iroh-dag-sync experiment](https://github.com/n0-computer/iroh-experiments/tree/main/iroh-dag-sync), change to the `iroh-dag-sync` directory, and run the import command:
 
 ```
 > cargo run --release import linux.car
@@ -136,7 +121,7 @@ root: QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
 
 This will create two databases in the current directory. DAG.db contains information about the structure of the DAG, blobs.db (a directory) contains the raw data.
 
-- Start a node that makes the data available
+### Start a node that makes the data available
 
 ```
 > cargo run --release node
@@ -145,7 +130,7 @@ I am irgkesdtbih664hq2fjgd6zf7g6mazqkr7deqzplavmwl3vdbboa
 
 ## Sync with the default traversal
 
-In a *different directory*, start the sync process:
+In a *different directory*, start the sync process, plugging in the CID we got from the import step, and the node we got from the node step:
 
 ```
 > mkdir tmp
@@ -161,6 +146,8 @@ This will traverse the entire DAG in depth-first, pre-order, left-to-right trave
 > cargo run --release export QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV --target output.car
 ```
 Note: exporting without specifying a target just dumps the CIDs to stdout.
+
+** **
 
 ## Advanced use
 
@@ -210,10 +197,6 @@ Here we already have `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztg
 
 # Next steps
 
-There are several parts missing to make this production ready.
-
-The next step would be to write generators for realistic DAGs and perform benchmarks with them.
-
-In addition, it needs a concept for tagging and garbage collection, very likely similar to the approach described in this [talk](https://www.youtube.com/watch?v=MCt3if9H64I).
+There are several parts missing to make this production ready. The next step would be to write generators for realistic DAGs and perform benchmarks with them. In addition, it needs a concept for tagging and garbage collection, very likely similar to the approach described in this [talk](https://www.youtube.com/watch?v=MCt3if9H64I).
 
 And last but not least it would be good to have a concept for multi-party sync. Basically requesting the same data from multiple nodes efficiently, including a stream of cancellations to avoid double downloads while having maximum throughput.
