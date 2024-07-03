@@ -1,5 +1,6 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 import Image from 'next/image'
+import {ThemeImage} from '@/components/ThemeImage'
 
 export const post = {
   draft: false,
@@ -16,6 +17,16 @@ export const metadata = {
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
+
+<div className='not-prose mb-5'>
+  <ThemeImage
+    lightSrc='/diagrams/dag_sync_post.svg'
+    darkSrc='/diagrams/dag_sync_post_dark.svg'
+    alt='a diagram of a directed acyclic graph with a root node and several children, synchronized between a phone and a computer'
+    width={800}
+    height={450}
+  />
+</div>
 
 ## Problem
 
@@ -92,8 +103,6 @@ You could try to design a generic language to specify (deterministic) DAG traver
 
 So, we have decided to just implement a number of useful traversals of varying level of complexity, but allow implementing additional deterministic traversals in rust. Of course this means that sync will have to be tailored to the needs of the application, and different applications will have different ALPNs for their sync protocols.
 
-** **
-
 # Trying it out
 
 The demo in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/iroh-DAG-sync)implements a simple unidirectional sync between two nodes. You can think of it as [sendme](https://crates.io/crates/sendme), but for DAGs.
@@ -102,7 +111,7 @@ The demo in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/t
 
 We need a car file. You can just import some directory into ipfs and then export it as a car file. Make sure to use `--raw-leaves` to have a more interesting DAG structure. You'll need [kubo](https://dist.ipfs.tech/#kubo) for this.
 
-Let's use the linux kernel sources as an example. Feel free to put any directory you like in here
+Let's use the linux kernel sources as an example. Feel free to use any directory you like.
 
 ```
 > ipfs add -r --raw-leaves ../linux
@@ -146,8 +155,6 @@ This will traverse the entire DAG in depth-first, pre-order, left-to-right trave
 > cargo run --release export QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV --target output.car
 ```
 Note: exporting without specifying a target just dumps the CIDs to stdout.
-
-** **
 
 ## Advanced use
 
