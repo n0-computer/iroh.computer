@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## Problem
 
-By default, iroh has a very minimal set of primitives for content-addressed data. We offer BLAKE3 hashed blobs of arbitrary size, with a very rich set of capabilities including verified range requests, verified streaming and size proofs. In addition, we offer a single container type: a sequence of BLAKE3 hashes. Using these two primitives, we provide specialized collections of data. A common pattern is to use a hash sequence, with the first child being a blob of self-describing metadata. These primitives are sufficiently versatile to handle many use cases, such as file system sync in [sendme](https://iroh.computer/sendme).
+By default, iroh has a very minimal set of primitives for content-addressed data. We offer [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) hashed blobs of arbitrary size, with a very rich set of capabilities including verified range requests, verified streaming and size proofs. In addition, we offer a single container type: a sequence of BLAKE3 hashes. Using these two primitives, we provide specialized collections of data. A common pattern is to use a hash sequence, with the first child being a blob of self-describing metadata. These primitives are sufficiently versatile to handle many use cases, such as file system sync in [sendme](https://iroh.computer/sendme).
 
 Focusing on BLAKE3 and the various capabilities that BLAKE3 makes possible is the right choice for iroh. But that does not change the fact that sometimes you have different needs. You might want to use different hash functions. For example, you may have existing data that is hashed with the ubiquitous SHA-2 hash function, or you might need to use a hash function like [poseidon](https://eprint.iacr.org/2019/458.pdf) that is more suitable to use in zero-knowledge proofs. Also, you might have data that naturally forms a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG), such as a git commit history, [unixfs](https://github.com/ipfs/specs/blob/main/UNIXFS.md) data, event logs, or even blockchains.
 
@@ -46,13 +46,13 @@ In addition, since extracting links out of IPLD data blocks can be somewhat expe
 
 - a table that contains the IPLD links for a (IPLD format, BLAKE3 hash) tuple.
 
-Using these two tables, we can cheaply traverse the DAG from a given root CID to answer questions of liveness. To look up the links for a CID, you first look up the corresponding BLAKE3 hash for the hash format and digest, then look up the links by IPLD format and BLAKE3 hash.
+Using these two tables, we can cheaply traverse the DAG from a given root CID, for example to answer questions of liveness. To look up the links for a CID, you first look up the corresponding BLAKE3 hash for the hash format and digest, then look up the links by IPLD format and BLAKE3 hash.
 
 As we will see, such traversals will also play a key role in the sync protocol.
 
 ## Sync protocol
 
-When syncing DAGs, especially deep DAGs such as the ones formed by event sourcing systems like, [IPFS](https://ipfs.tech), [actyx](https://developer.actyx.com/), commit histories, or blockchains, it is essential to minimize the number of roundtrips. A naive protocol might do the DAG traversal by just asking for blobs level by level. Such a scheme could use the existing iroh-blobs protocol, but it would lead to a very large number of roundtrips for deep DAGs. While for some shallow tree like DAGs this would not be a big deal, for deep DAGs we would never be able to saturate a link when syncing.
+When syncing DAGs, especially deep DAGs such as the ones formed by event sourcing systems like [actyx](https://developer.actyx.com/), [IPFS](https://ipfs.tech), commit histories, or blockchains, it is essential to minimize the number of roundtrips. A naive protocol might do the DAG traversal by just asking for blobs level by level. Such a scheme could use the existing iroh-blobs protocol, but it would lead to a very large number of roundtrips for deep DAGs. While for some shallow tree like DAGs this would not be a big deal, for deep DAGs we would never be able to saturate a good network connection when syncing.
 
 So we need a custom protocol that understands DAGs. Luckily it is very easy to define custom protocols in iroh, either by building a custom iroh node using iroh-net, or by using the [new (as of v0.19)](https://iroh.computer/blog/iroh-0-19-make-it-your-own) feature of custom protocol handlers.
 
@@ -66,7 +66,7 @@ One of the requirements for a sync protocol is that the receiver must be able to
 
 The first two criteria are simple to implement. We can just use the iroh-blobs sync protocol (which is basically BLAKE3 verified streaming with a chunk group size of 16KiB) to make sure that the data is correct. And we can just hash with the non-BLAKE3 hash function as soon as we have the complete blob.
 
-But the third criterium means that the information about the CIDs must only come from the roots we have asked for or from data we have locally. Otherwise the remote could just send us an arbitrary CID referring a lot of data like
+But the third criterium means that the information about the CIDs must only come from *the roots we have asked for* or from *data we have locally*. Otherwise the remote could just send us an arbitrary CID referring a lot of data like
 `rickroll.mp4`, and we would not notice this quickly.
 
 ### Request
@@ -105,7 +105,7 @@ So, we have decided to just implement a number of useful traversals of varying l
 
 # Trying it out
 
-The demo in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/iroh-DAG-sync)implements a simple unidirectional sync between two nodes. You can think of it as [sendme](https://crates.io/crates/sendme), but for DAGs.
+The demo in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/iroh-DAG-sync) implements a simple unidirectional sync between two nodes. You can think of it as [sendme](https://crates.io/crates/sendme), but for DAGs.
 
 ## Generate some data
 
@@ -128,7 +128,7 @@ Checkout the [iroh-dag-sync experiment](https://github.com/n0-computer/iroh-expe
 root: QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
 ```
 
-This will create two databases in the current directory. DAG.db contains information about the structure of the DAG, blobs.db (a directory) contains the raw data.
+This will create two databases in the current directory. `dag.db` contains information about the structure of the DAG, `blobs.db` (a directory) contains the raw data.
 
 ### Start a node that makes the data available
 
@@ -147,7 +147,7 @@ In a *different directory*, start the sync process, plugging in the CID we got f
 > cargo run --release sync --from irgkesdtbih664hq2fjgd6zf7g6mazqkr7deqzplavmwl3vdbboa QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV
 ```
 
-This will traverse the entire DAG in depth-first, pre-order, left-to-right traversal order. Which may take a while. But - it is just a single request/response pair, so we will saturate the wire.
+This will traverse the entire DAG in depth-first, pre-order, left-to-right traversal order. Which may take a while. But - it is just a single request/response pair, so we will saturate the network connection provided local io on both sides can keep up, even if the connection has a high latency.
 
 ## Export the synced data (optional)
 
@@ -188,7 +188,7 @@ In this case we do a full traversal, but only *inline data* for non-raw blocks t
 
 ```
 cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp4huq \
-  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",filter:OnlyRaw)'
+  --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",filter:JustRaw)'
 ```
 
 This traversal will fail unless the requester already has all non-leaf nodes. It can be used as a second step to do a complete sync if we already requested the branch nodes before.
@@ -200,7 +200,11 @@ cargo run --release sync --from bsmlrj4sodhaivs2r7tssw4zeasqqr42lk6xt4e42ikzazkp
   --traversal 'Full(root:"QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV",visited:["bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq"])'
 ```
 
-Here we already have `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` and everything below it, and want to sync only the DAG between QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV (inclusive) and `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` (exclusive).
+Here we already have `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` and everything below it, and want to sync only the DAG between `QmWyLtd4WEJe45UBqCZG94gYY9B8qF3k4DKFX3o2bodHmV` (inclusive) and `bafkreifm6edrm6jidkqb4ymcbdolkancs3kmboq3eissmfg2ofcwonztgq` (exclusive).
+
+## Other traversals
+
+As mentioned above, these are just examples to illustrate the concept of deterministic traversals. For a real demanding application you might have to write your own traversal that is specific to your application needs and run the protocol under a custom ALPN.
 
 # Next steps
 
