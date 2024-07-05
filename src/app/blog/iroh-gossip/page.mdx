@@ -1,0 +1,94 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-07-05',
+  title: 'Iroh gossip',
+  description:
+    'Iroh had a gossip protocol for a while to support docs, now you can use it too',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+<div className='not-prose mb-5'>
+  <ThemeImage
+    lightSrc='/diagrams/dag_sync_post.svg'
+    darkSrc='/diagrams/dag_sync_post_dark.svg'
+    alt='a diagram of a directed acyclic graph with a root node and several children, synchronized between a phone and a computer'
+    width={800}
+    height={450}
+  />
+</div>
+
+## Iroh gossip
+
+Iroh had a gossip protocol for quite some time now. It is published as a
+separate [crate](https://crates.io/crates/iroh-gossip) on crates.io since
+August 2023.
+
+It is based on the papers
+[HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) and
+[PlumTree](https://asc.di.fct.unl.pt/~jleitao/pdf/srds07-leitao.pdf). If you
+want more details about how it works, read the
+[docs](https://docs.rs/iroh-gossip/0.19.0/iroh_gossip/) or the papers.
+
+This gossip protocol is used internally by iroh documents, but so far there
+was no public API for it. With the [latest relase](link), this has finally
+changed.
+
+Iroh 0.20 provides a simple API to interact with our gossip system:
+
+# Example
+
+```rust
+let client = node.client();
+let topic = TopicId::from([0u8; 32]);
+let (mut sink, mut stream) = gossip1.subscribe(topic, [node_id]).await?;
+sink.send(Command::Broadcast("hello".into())).await?;
+while let Some(msg) = stream.next().await {
+  println!("{:?}", msg);
+}
+```
+
+# Explanation
+
+A topic id is, like so many things in iroh, a 32 byte blob. You can subscribe
+to a topic id, providing an optional set of bootstrap nodes.
+
+The gossip system will connect to the bootstrap nodes, finding them via
+[iroh node discovery](https://iroh.computer/blog/iroh-dns) if it does not have
+any additional information about the node id.
+
+From now on, just send gossip messages into the sink, and consume gossip
+messages by consuming the stream. As soon as you drop both, the gossip topic
+gets unsubscribed - assuming nobody else is listening on it.
+
+Messages from the gossip system include information about the neighbours
+as well as actual gossip messages. In addition, you will get an event when
+you were too slow in consuming the event stream and the system had to drop
+some of your messages.
+
+There are two different messages you can send to a topic. Broadcast and
+BroadcastNeighbours. Broadcast will try to send the message to all nodes
+listening to the topic, whereas BroadcastNeighbours will only send a message
+to the direct neighbours.
