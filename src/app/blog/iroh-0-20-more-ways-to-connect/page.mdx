@@ -87,6 +87,28 @@ If you have been using the Python, Swift, or Kotlin SDKs that we provide through
 
 Not only does this bring our SDKs closer to the functionality of the rust iroh repo, but this refactor also makes it simpler for us to add iroh methods, structs, etc., to the `iroh-ffi` repo in the future.
 
+```kotlin
+// kotlin:
+// Before
+val node = IrohNode("iroh-dir")
+val doc = node.docCreate()
+
+// After
+val node = IrohNode.persistent("iroh-dir")
+val doc = node.docCreate()
+```
+
+```python
+# python:
+# Before
+node = IrohNode("iroh-dir")
+doc = node.doc_create()
+
+# After
+node = await IrohNode.persistent("iroh-dir")
+doc = await node.doc_create()
+```
+
 If you encounter any issues, please let us know in the [`iroh-ffi`](https://github.com/n0-computer/iroh-ffi) repo.
 
 Checkout [PR #151](https://github.com/n0-computer/iroh-ffi/pull/151) for more details.
