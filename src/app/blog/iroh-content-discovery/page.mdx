@@ -74,14 +74,13 @@ These DHTs have also never really survived an attack from a well resourced adver
 
 ## Trackers
 
-A very straightforward solution is to have a server that just keeps track of who has content. Everybody who has content *announces* to this server, and whenever you need content you ask a tracker who has it. Such a tracker needs just a very simple key-value store to store very little information (just a set of signed node ids for each piece of content), so you could plausibly run a tracker for billions of pieces of content on a single state of the art server.
+A very straightforward solution is to have a server that just keeps track of who has content. Everybody who has content *announces* to this server, and whenever you need content you ask a tracker who has it. Such a tracker needs just a very simple key-value store to store very little information (just a set of signed node ids for each piece of content), so you could plausibly run a tracker for billions of pieces of content on a single state-of-the-art server.
 
 However, there are a few problems. First of all, if you have a piece of content with no context information attached, which tracker do you ask? Second, a tracker is a single point of failure.
 
 ### DNS
 
-For node discovery, we are using DNS with TXT records. We could do the same for content discovery. DNS is in this case just an efficient protocol for talking to a tracker, with the additional advantage that the global DNS system will
-help cache DNS records and take some read load off the trackers.
+For node discovery, we are using DNS with TXT records. We could do the same for content discovery. DNS is in this case just an efficient protocol for talking to a tracker, with the additional advantage that the global DNS system will help cache DNS records and take some read load off the trackers.
 
 # Desirable properties of a discovery mechanism
 
@@ -89,8 +88,7 @@ Now that we have described the problem and possible solutions, let's see if we c
 
 First of all, it is worth noting that content discovery is never over. You might look for some content and find no providers, but a few minutes later a node that has the content goes online.
 
-You could model such scenarios as the content discovery returning an infinite stream of information about the content location. Alternatively you could model it as a finite stream that represents the state of knowledge at request time,
-and have the requester deal with retrying. But in both cases the response would have to be a stream.
+You could model such scenarios as the content discovery returning an infinite stream of information about the content location. Alternatively you could model it as a finite stream that represents the state of knowledge at request time, and have the requester deal with retrying. But in both cases the response would have to be a stream.
 
 Second, when requesting content the requester should be able to attach context. The response should also contain information such as what content discovery system the entry is a result of.
 
@@ -98,7 +96,7 @@ Second, when requesting content the requester should be able to attach context. 
 
 ## DHT to find trackers
 
-It is possible to track a lot of content with a single state of the art server. However, as we have seen there is a problem in finding a tracker for some content.
+It is possible to track a lot of content with a single state of the art server. However, as we have seen, there is a problem  finding a tracker for some content.
 
 Trackers are most likely going to be big servers in the cloud at one of the big cloud providers or hosting providers. So they will have a public and relatively stable IP address.
 
@@ -106,24 +104,21 @@ So instead of using the mainline DHT directly for content discovery, we can use 
 
 This step is entirely optional. If you have a use case where the tracker to use is already known, you can just skip it. You might also keep a cache of trackers and ask them for content before even asking the mainline DHT.
 
-The just acts as a last resort to find a tracker in case either you don't know a tracker or the tracker you have been using goes offline.
+This just acts as a last resort to find a tracker in case you either don't know a tracker or the tracker you have been using goes offline.
 
 ## Signed announces
 
-Iroh nodes that share content have an ed keypair as the node id. So when announcing content we can sign the announce with this keypair. By doing this we prevent malicious actors from publishing fake announces to DDOS innocent nodes
-or to overwhelm the storage of the tracker.
+Iroh nodes that share content have an ed keypair as the node id. So when announcing content we can sign the announce with this keypair. By doing this we prevent malicious actors from publishing fake announces to DDOS innocent nodes or to overwhelm the storage of the tracker.
 
 ## Rate limiting
 
-The tracker needs to do strict rate limiting based on both ip address and node id. Rate limiting by node id is useful, but not sufficient. An adversary could just create a large number of node ids. By also limiting by ip address, we make
-sure that only a large botnet could DDOS a tracker.
+The tracker needs to do strict rate limiting based on both ip address and node id. Rate limiting by node id is useful, but not sufficient. An adversary could just create a large number of node ids. By also limiting by ip address, we make sure that only a large botnet could DDOS a tracker.
 
 We can make DDOSing a tracker even harder by validating announces immediately after getting them, and then discarding all announces that have not ever been validated.
 
 ## Validating announces
 
-Compared to other content-addressed systems, iroh has the advantage that BLAKE3 allows verified requests for slices with the granularity of 1 KiB. So when a node claims that they host some content (and only the node, the owner of the ed
-private key, can make that claim), we can *probe* that node by requesting a random chunk of content.
+Compared to other content-addressed systems, iroh has the advantage that BLAKE3 allows verified requests for slices with the granularity of 1 KiB. So when a node claims that they host some content (and only the node, the owner of the ed private key, can make that claim), we can *probe* that node by requesting a random chunk of content.
 
 If the node does not exist, or if the node does not have that data, the request will fail, and we can treat the announce as invalid and discard it.
 
@@ -131,7 +126,7 @@ It might be a good idea to require at least one successful probe before even sto
 
 ## Requesting content
 
-At this time, the content discovery system lives outside the blobs layer of iroh. When you want to download some content identified by a hash, you first ask the discovery system for a set of candidate nodes. In case of popular content you would ask for a random sample of candidate nodes.
+At this time, the content discovery system lives outside the blobs layer of iroh. When you want to download some content identified by a hash, you first ask the discovery system for a set of candidate nodes. In case of popular content, you would ask for a random sample of candidate nodes.
 
 You then take this set of candidate nodes and tell iroh to download the data from any of these nodes.
 
@@ -139,7 +134,7 @@ In the future we might integrate these two layers to have a pleasant API where y
 
 ## Possible high level API
 
-An ideal API would probably look like this: You have a simple function to discover and retrieve content. This function returns a struct that can be either used as a stream to get all the nitty gritty details of content discovery and download progress, or used as a future that can just be awaited once the data is downloaded.
+An ideal API would probably look like this: you have a simple function to discover and retrieve content. This function returns a struct that can be either used as a stream to get all the nitty gritty details of content discovery and download progress, or used as a future that can just be awaited once the data is downloaded.
 
 # The content discovery experiment
 
@@ -152,11 +147,12 @@ Currently, the above mechanism is implemented in a separate set of crates in [ir
   - quinn connections (dial by IP address)
   - UDP packets (no dial, just unreliable datagrams)
 
-There is also [swarmie](https://github.com/n0-computer/swarmie), which is a version
-of [sendme](https://iroh.computer/sendme) that allows to globally publish content.
+There is also [swarmie](https://github.com/n0-computer/swarmie), which is a version of [sendme](https://iroh.computer/sendme) that allows to globally publish content.
 
 # Next steps
 
 After the currently ongoing rework of the iroh blobs API, we will add a pluggable content discovery mechanism to iroh-blobs. This will be disabled by default, but will be an opportunity to experiment with different content discovery strategies. Projects using iroh will be able to run their own content tracker, and we will probably also run a heavily rate limited tracker.
 
 In other words, the introduction will be done in a similar way to node discovery, where we first had some [experiments](https://iroh.computer/blog/iroh-global-node-discovery) outside iroh and then decided to [add a default mechanism](https://iroh.computer/blog/iroh-dns) but still leave the mechanism pluggable.
+
+We are excited to continue to experiment with content discovery in iroh, and create APIs that allow you to experiment with us. Stay tuned to the [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/content-discovery) and this blog for updates.
