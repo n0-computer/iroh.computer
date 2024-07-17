@@ -12,7 +12,7 @@ import { Tag } from './Tag';
 const examples = [
   {
     // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
-    href: 'https://github.com/n0-computer/iroh-example-todos',
+    href: 'https://github.com/n0-computer/iroh-examples/tree/main/tauri-todos',
     name: 'Todos',
     description:
       'See iroh in the classic TODO app example, with a CLI & desktop GUI.',
