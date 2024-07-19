@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
@@ -11,32 +12,44 @@ import { Tag } from '@/components/Tag';
 
 const libraries = [
   {
-    href: '/docs/sdks/rust',
     name: 'Rust',
     description:
       'The core of iroh is written in rust, and can be used by directly importing iroh crates.',
     logo: logoRust,
+    links: [
+      { title: "docs.rs", href: "https://docs.rs/iroh", external: true },
+      { title: "crates.io", href: "https://crates.io/crates/iroh", external: true },
+      { title: "github", href: "https://github.com/n0-computer/iroh", external: true }
+    ]
   },
   {
-    href: '/docs/sdks/python',
     name: 'Python',
     description:
       'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
     logo: logoPython,
+    links: [
+      { title: "pypi", href: "https://pypi.org/project/iroh/", external: true },
+      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.python.md", external: true }
+    ]
   },
   {
-    href: '/docs/sdks/swift',
     name: 'Swift',
     description:
       'Build native iOS apps with iroh\'s swift SDK, tested with SwiftUI, works with uikit.',
     logo: logoSwift,
+    links: [
+      { title: "cocoapods", href: "https://cocoapods.org/pods/IrohLib", external: true },
+      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.swift.md", external: true }
+    ]
   },
   {
     name: 'Kotlin',
-    comingSoon: true,
     description:
       'Iroh\'s go SDK uses the rust implementation via c-bindings.',
     logo: logoKotlin,
+    links: [
+      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.kotlin.md", external: true }
+    ]
   }
 ];
 
@@ -59,10 +72,15 @@ export function Libraries() {
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {library.description}
               </p>
-              {library.href && <p className="mt-4">
-                <Button href={library.href} variant="text" arrow="right">
-                  Read more
-                </Button>
+              {library.links && <p className="mt-4">
+                {library.links.map((link,i) => (
+                  <div key={i}>
+                    <Button href={link.href} variant="text">
+                      {link.title}
+                      {link.external && <ArrowTopRightOnSquareIcon className="text-irohGray-500 hover:text-irohPurple-500 w-4 h-4 mt-1 ml-1" />}
+                    </Button>
+                  </div>
+                ))}
               </p>}
             </div>
             <Image
