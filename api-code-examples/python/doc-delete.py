@@ -1,43 +1,47 @@
-from iroh import IrohNode, Query
+import iroh
+import asyncio
 
- # Create an Iroh node
-node = IrohNode("iroh_data_dir")
 
-# Real programs handle errors!
-author = node.author_create()
-print(f"Created author {author.to_string()}")
+async def main():
+    node = await iroh.IrohNode.memory()
 
-doc = node.doc_create()
-print(f"Created document {doc.id().to_string()}")
+    # Real programs handle errors!
+    author = await node.author_create()
+    print(f"Created author {author}")
 
-key = b"python"
-hash = doc.set_bytes(author, key, b"says hello")
-print(f"Inserted {hash.to_string()}")
+    doc = await node.doc_create()
+    print(f"Created document {doc.id()}")
 
-# Get all the entries with default filtering and sorting
-query = Query.all(None)
-entries = doc.get_many(query)
+    key = b"python"
+    hash = await doc.set_bytes(author, key, b"says hello")
+    print(f"Inserted {hash}")
 
-print("Keys:")
-for entry in entries:
-    key = entry.key()
-    hash = entry.content_hash()
-    content = doc.read_to_bytes(entry)
-    print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash.to_string()})')
+    # Get all the entries with default filtering and sorting
+    query = iroh.Query.all(None)
+    entries = await doc.get_many(query)
 
-print(f"Removing entry for author {author.to_string()} and prefix {key.decode('utf-8')}.")
-# Removes all entries from that author and with the prefix "key"
-num_removed = doc.delete(author, key)
-print(f"Removed {num_removed} entry")
+    print("Keys:")
+    for entry in entries:
+        key = entry.key()
+        hash = entry.content_hash()
+        content = await entry.content_bytes(doc)
+        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
 
-entries = doc.get_many(query)
+        print(f"Removing entry for author {author} and prefix {key.decode('utf-8')}.")
 
-print("Keys:")
-for entry in entries:
-    key = entry.key()
-    hash = entry.content_hash()
-    content = doc.read_to_bytes(entry)
-    print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash.to_string()})')
+    # Removes all entries from that author and with the prefix "key"
+    # TODO: Currently Broken
+    # num_removed = doc.del(author, key)
+    # print(f"Removed {num_removed} entry")
+
+    entries = await doc.get_many(query)
+
+    print("Keys:")
+    for entry in entries:
+        key = entry.key()
+        hash = entry.content_hash()
+        content = await entry.content_bytes(doc)
+        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
 
 # Output:
 # Created author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a
@@ -48,3 +52,5 @@ for entry in entries:
 # Removing entry for author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a and prefix python.
 # Removed 1 entry
 # Keys:
+
+asyncio.run(main())
