@@ -46,33 +46,36 @@ Doc 2aoukeibc2vdy5n2 has been deleted.
 
 
 ```python {{ title: 'python' }}
-from iroh import IrohNode
+import iroh
+import asyncio
 
-# Create an Iroh node
-node = IrohNode("iroh_data_dir")
 
-# Create document
-doc = node.doc_create()
-print(f"Created document {doc.id().to_string()}")
+async def main():
+    # Create in memory iroh node
+    node = await iroh.IrohNode.memory()
 
-print("List of docs and their capabilities (0-Read, 1-Write):")
+    # Create document
+    doc = await node.doc_create()
+    print(f"Created document {doc.id()}")
 
-# Returns an array of `iroh.NamespaceAndCapability`s
-# NamespaceId is the Doc's Id
-# and the Capability is whether you have read or write access to the doc
-ns = node.doc_list()
-for entry in ns:
-    print(f"\t{entry.namespace.to_string()}\t{entry.capability}")
+    print("List of docs and their capabilities (0-Read, 1-Write):")
 
-# Drop document
-node.doc_drop(doc.id())
-print(f"Dropped document {doc.id().to_string()}")
+    # Returns an array of `iroh.NamespaceAndCapability`s
+    # NamespaceId is the Doc's Id
+    # and the Capability is whether you have read or write access to the doc
+    ns = await node.doc_list()
+    for entry in ns:
+        print(f"\t{entry.namespace}\t{entry.capability}")
 
-print("List of docs and their capabilities (0-Read, 1-Write):")
-ns = node.doc_list()
-# List no longer contains the dropped doc
-for entry in ns:
-    print(f"\t{entry.namespace.to_string()}\t{entry.capability}")
+    # Drop document
+    await node.doc_drop(doc.id())
+    print(f"Dropped document {doc.id()}")
+
+    print("List of docs and their capabilities (0-Read, 1-Write):")
+    ns = await node.doc_list()
+    # List no longer contains the dropped doc
+    for entry in ns:
+        print(f"\t{entry.namespace}\t{entry.capability}")
 
 # Output:
 # Created document zdv4ciupnlhxzvydn3f227k7tkq3pdljie7de6gtsesghmuu6tyq
@@ -81,6 +84,7 @@ for entry in ns:
 # Dropped document zdv4ciupnlhxzvydn3f227k7tkq3pdljie7de6gtsesghmuu6tyq
 # List of docs and their capabilities:
 
+asyncio.run(main())
 
 ```
 

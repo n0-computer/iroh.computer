@@ -33,6 +33,6 @@ for file in "$SCRIPT_DIR/python"/*.py; do
     echo "-----------------------"
 done
 
-rm -r "$SCRIPT_DIR/python/iroh_data_dir"
+rm -rf "$SCRIPT_DIR/python/iroh_data_dir"
 
 echo "All Python files executed successfully!"

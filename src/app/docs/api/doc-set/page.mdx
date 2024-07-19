@@ -39,36 +39,17 @@ created d7bb0092bf6d7ee3cb6bd255e88596d3ca16d50ce6935a7721f2ff836a3c0355
 ```
 
 ```rust {{ title: 'rust' }}
-#![cfg(feature = "mem-db")]
-
 use anyhow::{anyhow, Result};
-use futures::StreamExt;
 
-use iroh::{
-    collection::IrohCollectionParser,
-    node::Node,
-    bytes::util::runtime,
-};
-use iroh_sync::store::GetFilter;
+use iroh::docs::store::Query;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // build the node
-    let rt = runtime::Handle::from_currrent(1).unwrap();
-    let db = iroh::baomap::mem::Store::new(rt.clone());
-    let store = iroh_sync::store::memory::Store::default();
-    let node = Node::builder(db, store)
-        .collection_parser(IrohCollectionParser)
-        .runtime(&rt)
-        .bind_addr("127.0.0.1:0".parse()?);
-    
-    // start the node & create a client
-    let node = node.spawn().await?;
-    let client = node.client();
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    // create a document & author
-    let author = client.create_author().await?;
-    let doc = client.create_doc().await?;
+    // create a document
+    let author = node.authors().default().await?;
+    let doc = node.docs().create().await?;
 
     // set the key "key" to "value"
     let key = b"key";
@@ -77,14 +58,18 @@ async fn main() -> Result<()> {
     println!("key is set!");
 
     // read the value back
-    let filter = GetFilter::latest().with_key(key);
-    let entry = doc.get(filter).await?.next().await.ok_or_else(|| anyhow!("entry not found"))??;
-    let content = doc.get_content_bytes(&entry).await?;
-    
+    let query = Query::key_exact(key);
+    let entry = doc
+        .get_one(query)
+        .await?
+        .ok_or_else(|| anyhow!("entry not found"))?;
+    let content = entry.content_bytes(node.client()).await?;
+
     println!("value bytes: {:?}", content);
 
     Ok(())
 }
+
 ```
 
 
@@ -102,37 +87,41 @@ $ iroh doc 674deec7a19fec50fd6f486a5eef20509073ecf7c527b60a27c84baea90d3816 set 
 ```
 
 ```python {{ title: 'python' }}
-from iroh import IrohNode
-import os
+import iroh
+import asyncio
 
-# Create a new Iroh node
-node = IrohNode("iroh_data_dir")
 
-# Create an author
-author = node.author_create()
-print(f"Created author {author.to_string()}")
+async def main():
+    # Create in memory iroh node
+    node = await iroh.IrohNode.memory()
 
-# Create a document
-doc = node.doc_create()
-print(f"Created document {doc.id().to_string()}")
+    # Get default author
+    author = await node.author_default()
+    print(f"Default author {author}")
 
-# Set content in the document
-key = b"python"
-hash = doc.set_bytes(author, key, b"says hello")
-print(f"Inserted {hash.to_string()}")
+    # Create a document
+    doc = await node.doc_create()
+    print(f"Created document {doc.id()}")
 
-# Get an entry from the document
-entry = doc.get_exact(author, key, False)
+    # Set content in the document
+    key = b"python"
+    hash = await doc.set_bytes(author, key, b"says hello")
+    print(f"Inserted {hash}")
 
-# Read content from the entry
-content = entry.content_bytes(doc)
-print(f"Got content \"{content.decode('utf-8')}\"")
+    # Get an entry from the document
+    entry = await doc.get_exact(author, key, False)
+
+    # Read content from the entry
+    content = await entry.content_bytes(doc)
+    print(f"Got content \"{content.decode('utf-8')}\"")
 
 # Output:
 # Created author huarctxgpvq2ucnifubjxvmac7c26evzudnynp5xrugkkm37ma7q
 # Created document zmwwfsnnoxgij4q5bknfij5tpwbm2askypip3al3bahinucx65oq
 # Inserted bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte
 # Got content "says hello"
+
+asyncio.run(main())
 
 ```
 

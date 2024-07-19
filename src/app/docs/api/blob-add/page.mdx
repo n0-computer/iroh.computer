@@ -44,14 +44,14 @@ async fn main() -> anyhow::Result<()> {
     let node = iroh::node::Node::memory().spawn().await?;
 
     let data = "hello world".as_bytes();
-    let res = node.blobs.add_bytes(data).await?;
+    let res = node.blobs().add_bytes(data).await?;
 
     println!(
         "created blob! hash: {:?} size: {} bytes",
         res.hash, res.size
     );
 
-    let blob = node.blobs.read_to_bytes(res.hash).await?;
+    let blob = node.blobs().read_to_bytes(res.hash).await?;
     assert_eq!(blob, data);
 
     Ok(())
@@ -62,15 +62,14 @@ async fn main() -> anyhow::Result<()> {
 
 ```python {{ title: 'python' }}
 import os
-import sys
-import threading
-import time
 import shutil
-import datetime
+import iroh
+import asyncio
+
 from iroh import IrohNode, SetTagOption, WrapOption, AddProgressType
 
 class AddCallback:
-    def progress(self, event):
+    async def progress(self, event):
         t = event.type()
         if t == AddProgressType.FOUND:
             print("AddProgress - Found:")
@@ -83,11 +82,11 @@ class AddCallback:
         elif t == AddProgressType.DONE:
             print("AddProgress - Done:")
             done = event.as_done()
-            print(f"\tid: {done.id}, hash: {done.hash.to_string()}")
+            print(f"\tid: {done.id}, hash: {done.hash}")
         elif t == AddProgressType.ALL_DONE:
             print("AddProgress - AllDone:")
             all_done = event.as_all_done()
-            print(f"\thash: {all_done.hash.to_string()}, format: {all_done.format}, tag: {all_done.tag.to_string()}")
+            print(f"\thash: {all_done.hash}, format: {all_done.format}, tag: {all_done.tag}")
         elif t == AddProgressType.ABORT:
             print("AddProgress - Abort:")
             abort = event.as_abort()
@@ -95,51 +94,55 @@ class AddCallback:
         else:
             print("Unknown AddProgress event:", event)
 
-# Create folder
-os.mkdir("tmp")
+async def main():
+    # setup event loop, to ensure async callbacks work
+    iroh.iroh_ffi.uniffi_set_event_loop(asyncio.get_running_loop())
 
-try:
-    path = os.path.abspath(os.path.join("tmp"))
-    print("Created dir \"tmp\"")
+    # Create folder
+    os.mkdir("tmp")
 
-    file_names = ["foo", "bar", "bat"]
+    try:
+        path = os.path.abspath(os.path.join("tmp"))
+        print("Created dir \"tmp\"")
 
-    # Create three files in the folder
-    for file_name in file_names:
-        file_path = os.path.join("tmp", file_name)
-        with open(file_path, "w") as f:
-            f.write(f"{file_name}")
-        print(f"Created file {file_path}")
+        file_names = ["foo", "bar", "bat"]
 
-    node = IrohNode("iroh_data_dir")
+        # Create three files in the folder
+        for file_name in file_names:
+            file_path = os.path.join("tmp", file_name)
+            with open(file_path, "w") as f:
+                f.write(f"{file_name}")
+            print(f"Created file {file_path}")
 
-    # When `in_place` is True, iroh will NOT copy over the files into its
-    # internal database. Only use this option when you know the file will never
-    # move or change.
-    in_place = False
+        node = await IrohNode.memory()
 
-    # Iroh blobs can be "tagged" with human-readable names, this creates a tag
-    # automatically.
-    tag = SetTagOption.auto()
+        # When `in_place` is True, iroh will NOT copy over the files into its
+        # internal database. Only use this option when you know the file will never
+        # move or change.
+        in_place = False
 
-    # When adding a single file, if you use `WrapOption.wrap()`, you will turn
-    # the single file into a collection with one entry.
-    wrap = WrapOption.no_wrap()
+        # Iroh blobs can be "tagged" with human-readable names, this creates a tag
+        # automatically.
+        tag = SetTagOption.auto()
 
-    # You can use this callback to react to progress updates.
-    callback = AddCallback()
+        # When adding a single file, if you use `WrapOption.wrap()`, you will turn
+        # the single file into a collection with one entry.
+        wrap = WrapOption.no_wrap()
 
-    # Import the directory, creating one blob for each file, and one metadata
-    # blob that stores the file names for each blob.
-    # Also creates a 'collection' from the directory, grouping together the
-    # blobs.
+        # You can use this callback to react to progress updates.
+        callback = AddCallback()
 
-    node.blobs_add_from_path(path, in_place, tag, wrap, callback)
-except Exception as e:
-    print("error: ", e)
+        # Import the directory, creating one blob for each file, and one metadata
+        # blob that stores the file names for each blob.
+        # Also creates a 'collection' from the directory, grouping together the
+        # blobs.
 
-# cleanup dir
-shutil.rmtree("tmp")
+        await node.blobs_add_from_path(path, in_place, tag, wrap, callback)
+    except Exception as e:
+        print("error: ", e)
+
+    # cleanup dir
+    shutil.rmtree("tmp")
 
 # Output:
 # Created dir "tmp"
@@ -166,6 +169,8 @@ shutil.rmtree("tmp")
 # 	id: 1, hash: bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu
 # AddProgress - AllDone:
 # 	hash: bafkr4iaotzhxuiak7eusnngngnwsqdu4crf4lmdxzkbhuebunevecjzkim, format: BlobFormat.HASH_SEQ, tag: "auto-2023-12-09T22:25:45.296Z"
+
+asyncio.run(main())
 
 ```
 
