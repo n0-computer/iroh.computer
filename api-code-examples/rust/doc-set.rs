@@ -1,33 +1,14 @@
-#![cfg(feature = "mem-db")]
-
 use anyhow::{anyhow, Result};
-use futures::StreamExt;
 
-use iroh::{
-    collection::IrohCollectionParser,
-    node::Node,
-    bytes::util::runtime,
-};
-use iroh_sync::store::GetFilter;
+use iroh::docs::store::Query;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // build the node
-    let rt = runtime::Handle::from_currrent(1).unwrap();
-    let db = iroh::baomap::mem::Store::new(rt.clone());
-    let store = iroh_sync::store::memory::Store::default();
-    let node = Node::builder(db, store)
-        .collection_parser(IrohCollectionParser)
-        .runtime(&rt)
-        .bind_addr("127.0.0.1:0".parse()?);
-    
-    // start the node & create a client
-    let node = node.spawn().await?;
-    let client = node.client();
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    // create a document & author
-    let author = client.create_author().await?;
-    let doc = client.create_doc().await?;
+    // create a document
+    let author = node.authors().default().await?;
+    let doc = node.docs().create().await?;
 
     // set the key "key" to "value"
     let key = b"key";
@@ -36,10 +17,13 @@ async fn main() -> Result<()> {
     println!("key is set!");
 
     // read the value back
-    let filter = GetFilter::latest().with_key(key);
-    let entry = doc.get(filter).await?.next().await.ok_or_else(|| anyhow!("entry not found"))??;
-    let content = doc.get_content_bytes(&entry).await?;
-    
+    let query = Query::key_exact(key);
+    let entry = doc
+        .get_one(query)
+        .await?
+        .ok_or_else(|| anyhow!("entry not found"))?;
+    let content = entry.content_bytes(node.client()).await?;
+
     println!("value bytes: {:?}", content);
 
     Ok(())
