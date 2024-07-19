@@ -88,7 +88,7 @@ author:fhu3uk4w… doc:dyyelvqq…
 @fhu3uk4w…: foo = 6lujp3wx… (3 B)
 
 author:fhu3uk4w… doc:dyyelvqq…
-> doc get foo -c
+> doc get foo
 @fhu3uk4w…: foo = 6lujp3wx… (3 B)
 bar
 
