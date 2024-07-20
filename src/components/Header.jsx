@@ -91,7 +91,7 @@ export const Header = forwardRef(function Header({className}, ref) {
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://iroh.network/discord">Join Discord</Button>
+          <Button href="https://iroh.computer/discord">Join Discord</Button>
         </div>
       </div>
     </motion.div>
