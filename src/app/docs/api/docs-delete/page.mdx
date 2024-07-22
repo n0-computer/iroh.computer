@@ -1,0 +1,108 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "docs delete",
+    description: "Delete all document entries below a key prefix."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'docs delete', href: '/docs/api/docs-delete', current: true },
+    ]} />
+</div>
+
+# docs delete
+
+Delete all document entries below a key prefix. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| prefix  | required | Prefix to delete. All entries whose key starts with or is equal to the prefix will be deleted |
+
+
+
+## Examples
+
+<CodeGroup title="docs delete">
+```text {{ title: 'console' }}
+> docs create --switch
+2aoukeibc2vdy5n2jlihnyv3e26cmketqbropptqfef3v7poe5eq
+Active doc is now 2aoukeibc2vdy5n2
+
+author:luo73rdznvupzrjb doc:2aoukeibc2vdy5n2
+> docs set key value
+bafkr4iagirfesfxon7wneztow6ila3w5mm53jnmcq4sek6nnnxxv7wk6bm
+
+author:luo73rdznvupzrjb doc:2aoukeibc2vdy5n2
+> docs del key
+Deleting all entries whose key starts with key. Continue? yes
+Deleted 1 entries.
+Inserted an empty entry for author luo73rdznvupzrjb with key key
+```
+
+
+```python {{ title: 'python' }}
+import iroh
+import asyncio
+
+
+async def main():
+    node = await iroh.Iroh.memory()
+
+    # Real programs handle errors!
+    author = await node.authors().create()
+    print(f"Created author {author}")
+
+    doc = await node.docs().create()
+    print(f"Created document {doc.id()}")
+
+    key = b"python"
+    hash = await doc.set_bytes(author, key, b"says hello")
+    print(f"Inserted {hash}")
+
+    # Get all the entries with default filtering and sorting
+    query = iroh.Query.all(None)
+    entries = await doc.get_many(query)
+
+    print("Keys:")
+    for entry in entries:
+        key = entry.key()
+        hash = entry.content_hash()
+        content = await entry.content_bytes(doc)
+        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
+
+        print(f"Removing entry for author {author} and prefix {key.decode('utf-8')}.")
+
+    # Removes all entries from that author and with the prefix "key"
+    # num_removed = doc.delete_entry(author, key)
+    # print(f"Removed {num_removed} entry")
+
+    entries = await doc.get_many(query)
+
+    print("Keys:")
+    for entry in entries:
+        key = entry.key()
+        hash = entry.content_hash()
+        content = await entry.content_bytes(doc)
+        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
+
+# Output:
+# Created author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a
+# Created document ipqqeughovjrvcxl5sji3hlwycheqqgiajq5hgnf6vtqp6qigm6q
+# Inserted bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte
+# Keys:
+# python : says hello (hash: bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte)
+# Removing entry for author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a and prefix python.
+# Removed 1 entry
+# Keys:
+
+asyncio.run(main())
+
+```
+
+
+</CodeGroup>

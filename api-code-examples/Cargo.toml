@@ -12,17 +12,20 @@ futures-lite = "2.3"
 tokio = { version = "1", features = ["full"] }
 
 [[bin]]
-name = "blob-add"
-path = "./rust/blob-add.rs"
+name = "blobs-add"
+path = "./rust/blobs-add.rs"
 
 [[bin]]
-name = "doc-get"
-path = "./rust/doc-get.rs"
+name = "docs-get"
+path = "./rust/docs-get.rs"
 
 [[bin]]
-name = "doc-set"
-path = "./rust/doc-set.rs"
+name = "docs-set"
+path = "./rust/docs-set.rs"
 
 [[bin]]
-name = "doc-list"
-path = "./rust/doc-list.rs"
+name = "docs-list"
+path = "./rust/docs-list.rs"
+
+[patch.crates-io]
+iroh = { git = "https://github.com/n0-computer/iroh", branch = "main" }

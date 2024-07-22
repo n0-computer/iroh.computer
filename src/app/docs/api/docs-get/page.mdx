@@ -1,0 +1,127 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "docs get",
+    description: "Get entries in a document."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'docs get', href: '/docs/api/docs-get', current: true },
+    ]} />
+</div>
+
+# docs get
+
+Get entries in a document. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| key  | required | Key of the entry to fetch. |
+| doc_id  | required | Required unless the document is set through the IROH_DOC environment variable. Within the Iroh console, the active document can also set with `docs set`. |
+| prefix  |  | If true, get all entries that start with key. |
+| author  |  | If provided, only return entries from this author. |
+| old  |  | If true, old entries will be included. By default only the latest value for each key is shown. |
+| content  |  | Also print the content for each entry (but only if smaller than 1MB and valid UTf-8). |
+
+
+
+## Examples
+
+<CodeGroup title="docs get">
+```text {{ title: 'console' }}
+> docs create --switch
+dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
+Active doc is now dyyelvqq…
+
+author:fhu3uk4w… doc:dyyelvqq…
+> docs set foo bar
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+
+author:fhu3uk4w… doc:dyyelvqq…
+> docs get foo -c
+@fhu3uk4w…: foo = 6lujp3wx… (3 B)
+bar
+
+
+```
+
+```rust {{ title: 'rust' }}
+use anyhow::{anyhow, Result};
+
+use iroh::docs::store::Query;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let node = iroh::node::Node::memory().spawn().await?;
+
+    // create a document
+    let author = node.authors().default().await?;
+    let doc = node.docs().create().await?;
+
+    // set the key "key" to "value"
+    let key = b"key";
+    let value = b"value";
+    doc.set_bytes(author, key.to_vec(), value.to_vec()).await?;
+    println!("key is set!");
+
+    // read the value back
+    let query = Query::key_exact(key);
+    let entry = doc
+        .get_one(query)
+        .await?
+        .ok_or_else(|| anyhow!("entry not found"))?;
+    let content = entry.content_bytes(node.client()).await?;
+
+    println!("value bytes: {:?}", content);
+
+    Ok(())
+}
+
+```
+
+
+```python {{ title: 'python' }}
+import iroh
+import asyncio
+
+
+async def main():
+    # Create in memory iroh node
+    node = await iroh.Iroh.memory()
+
+    # Get default author
+    author = await node.authors().default()
+
+    # Create a document
+    doc = await node.docs().create()
+    print(f"Created document {doc.id()}")
+
+    # Set content in the document
+    key = b"python"
+    hash = await doc.set_bytes(author, key, b"says hello")
+    print(f"Inserted {hash}")
+
+    # Get an entry from the document
+    entry = await doc.get_exact(author, key, False)
+
+    # Read content from the entry
+    content = await entry.content_bytes(doc)
+    print(f"Got content \"{content.decode('utf-8')}\"")
+
+# Output:
+# Created author huarctxgpvq2ucnifubjxvmac7c26evzudnynp5xrugkkm37ma7q
+# Created document zmwwfsnnoxgij4q5bknfij5tpwbm2askypip3al3bahinucx65oq
+# Inserted bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte
+# Got content "says hello"
+
+asyncio.run(main())
+
+```
+
+
+</CodeGroup>
