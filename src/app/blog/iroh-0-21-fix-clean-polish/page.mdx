@@ -1,0 +1,128 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dig',
+  date: '2024-07-22',
+  title: 'iroh 0.21.0 - Fix, clean & polish',
+  description: 'Iroh 0.21.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for direct connections, moving data, and syncing state.
+
+This time around a lot of work went into fixing subtle bugs, improving documentation, and polishing APIs. We hope this will help you to enjoy iroh even more!
+
+## 👾 Iroh vs Tokio
+
+The `tokio_util` `LocalPoolHandle` does not properly handle `Drop` during shutdown. Its threads are just spawned as detached. So any `Drop` implementation that runs in a local pool thread will be stopped as soon as the process terminates.
+
+This in turn can have some serious consequences if the `Drop` operation performs IO, like closing files and committing database transactions.
+
+In order to fix this, we now have our own implementation of a `LocalPool`, which  more gracefully handles shutdown. The only thing you should notice about this, is that things are more stable.
+
+For details checkout [PR 2517](https://github.com/n0-computer/iroh/pull/2517)
+
+## 🐳 Docker Round 2
+
+Our docker images are now published to docker hub, and tested in CI. Check them out at
+
+- https://hub.docker.com/r/n0computer/iroh
+- https://hub.docker.com/r/n0computer/iroh-relay
+- https://hub.docker.com/r/n0computer/iroh-dns-server
+
+For details checkout [PR 2520](https://github.com/n0-computer/iroh/pull/2520)
+
+## 🎯 Realigning APIs
+
+Based on the Rust API, we have updated both the CLI and the FFI APIs, to make them as similar as possible.
+
+For example, listing all blobs, looks like this now
+
+```rust
+// Rust
+let blobs = iroh.blobs().list().await?;
+```
+
+```python
+# Python
+blobs = await iroh.blobs().list()
+```
+
+```kotlin
+// Kotlin
+val blobs = iroh.blobs().list()
+```
+
+```swift
+// Swift
+let blobs = try await iroh.blobs().list()
+```
+
+```python
+# CLI
+iroh blobs list blobs
+```
+
+For details checkout [iroh-ffi PR 167](https://github.com/n0-computer/iroh-ffi/pull/167) and [PR 2522](https://github.com/n0-computer/iroh/pull/2522).
+
+## ⚠️ Breaking Changes
+
+### Protocol Changes
+
+- iroh-relay
+    - Clients will dial `/relay` instead of `/derp`, this means all `0.21` nodes are only compatible with relays `>= 0.20`
+
+### API Changes
+
+- `iroh-cli`
+    - top level commands
+        - `author` -> `authors`
+        - `blob` -> `blobs`
+        - `doc` -> `docs`
+        - `tag` -> `tags`
+        - sub commands
+            - `new` -> `create`
+    - added `metrics_dump_path` on the top level CLI parameters, which if set will make sure metrics are collected at regular intervals and written to the provided path in CSV format.
+- `iroh`
+    - removed deprecated
+        - `client::MemIroh` use `iroh::client::Iroh` instead
+        - `client::QuicIroh` use `iroh::client::Iroh` instead
+        - `client::MemDoc`use `iroh::client::docs::Doc` instead
+        - `client::QuicDoc` use `iroh::client::docs::Doc` instead
+    -
+- `iroh-net`
+    - renamed
+        - field: `magicsock::metrics::Metrics::update_endpoints` -> `update_direct_addrs`.
+    - relay server is now behind the `iroh-relay` feature flag
+    - removed
+        - `endpoint::Builder::peers_path`
+    - added
+        - `endpoint::Builder::known_nodes`
+- no automatic storage of known peers anymore in `iroh-net`
+- Public interfaces using `tokio_util::task::LocalPoolHandle` now use our own `LocalPool`/`LocalPoolHandle`.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: https://github.com/n0-computer/iroh/releases/tag/v0.21.0.
+
+If you want to know what is coming up, check out the [0.22.0 milestone](https://github.com/n0-computer/iroh/milestone/28), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
