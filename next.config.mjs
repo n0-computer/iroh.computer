@@ -21,6 +21,11 @@ const redirects = async () => {
       basePath: false,
       permanent: false,
     },
+    
+    // removed old SDK landing pages due to lack of use, redirect to SDK page
+    { source: '/docs/sdks/python', destination: '/docs/sdks', permanent: false },
+    { source: '/docs/sdks/swift', destination: '/docs/sdks', permanent: false },
+    { source: '/docs/sdks/rust', destination: '/docs/sdks', permanent: false },
 
     // api section used to be called "commands" 
     {
