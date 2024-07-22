@@ -1,0 +1,28 @@
+[package]
+name = "iroh-examples"
+edition = "2021"
+description = "iroh examples"
+version = "0.0.1"
+authors = ["n0 team"]
+
+[dependencies]
+anyhow = "1"
+iroh = "0.21"
+futures-lite = "2.3"
+tokio = { version = "1", features = ["full"] }
+
+[[bin]]
+name = "blobs-add"
+path = "./rust/blobs-add.rs"
+
+[[bin]]
+name = "docs-get"
+path = "./rust/docs-get.rs"
+
+[[bin]]
+name = "docs-set"
+path = "./rust/docs-set.rs"
+
+[[bin]]
+name = "docs-list"
+path = "./rust/docs-list.rs"

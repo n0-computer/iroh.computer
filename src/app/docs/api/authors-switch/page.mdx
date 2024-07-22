@@ -1,0 +1,43 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "authors switch",
+    description: "Set the active author for doc insertion (only works within the console)."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'authors switch', href: '/docs/api/authors-switch', current: true },
+    ]} />
+</div>
+
+# authors switch
+
+Set the active author for doc insertion (only works within the console). {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| id  | required | Id of the author to switch to. |
+
+
+
+## Examples
+
+<CodeGroup title="authors switch">
+```text {{ title: 'console' }}
+# switch from one active author to another
+author:i3vpd4e7…
+> authors switch wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
+Active author is now wkl4cgry…
+
+author:wkl4cgry…
+>
+```
+
+
+
+</CodeGroup>

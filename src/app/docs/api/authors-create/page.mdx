@@ -1,0 +1,59 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "authors create",
+    description: "Create a new author."
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'authors create', href: '/docs/api/authors-create', current: true },
+    ]} />
+</div>
+
+# authors create
+
+Create a new author. {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| switch  |  | Switch to the created author (only in the iroh console). |
+
+
+
+## Examples
+
+<CodeGroup title="authors create">
+```text {{ title: 'console' }}
+> authors create --switch
+2rkuvpk4prtjbqh7rnksaet3a3hdvrrz5mqinjcjbutklotort5a
+Active author is now 2rkuvpk4…
+
+author:2rkuvpk4…
+>
+```
+
+
+```python {{ title: 'python' }}
+import iroh
+import asyncio
+
+
+async def main():
+    node = await iroh.Iroh.memory()
+    node_id = await node.node().node_id()
+    print(f"Started Iroh node: {node_id}")
+
+    author = await node.authors().create()
+    print(f"Created author: {author}")
+
+asyncio.run(main())
+
+```
+
+
+</CodeGroup>
