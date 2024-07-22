@@ -5,9 +5,9 @@ import asyncio
 async def main():
     node = await iroh.IrohNode.memory()
     node_id = await node.node_id()
-    print("Started Iroh node: {}".format(node_id))
+    print(f"Started Iroh node: {node_id}")
 
     author = await node.author_create()
-    print("Created author: {}".format(author))
+    print(f"Created author: {author}")
 
 asyncio.run(main())

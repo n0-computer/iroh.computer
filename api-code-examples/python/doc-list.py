@@ -5,22 +5,22 @@ async def main():
     # Create in memory iroh node
     node = await iroh.IrohNode.memory()
     node_id = await node.node_id()
-    print("Started Iroh node: {}".format(node_id))
+    print(f"Started Iroh node: {node_id}")
 
     # create a document
     doc = await node.doc_create()
-    print("Created doc: {}".format(doc.id()))
+    print(f"Created doc: {doc.id()}")
 
     # create a second document
     doc = await node.doc_create()
-    print("Created doc: {}".format(doc.id()))
+    print(f"Created doc: {doc.id()}")
 
     # list all your documents
-    docs = await node.doc_list();
-    print("List all {} docs:".format(len(docs)))
+    docs = await node.doc_list()
+    print(f"List all {len(docs)} docs:")
     # doc ids are also called "namespace ids"
     for namespace_and_capability in docs:
-        print("\t{}".format(namespace_and_capability.namespace))
+        print(f"\t{namespace_and_capability.namespace}")
 
 # Output:
 # Started Iroh node: jplmb4cgk2pxw3dwjehk7oes7ddphftlh3vdiib4e5bwhq2nnokq

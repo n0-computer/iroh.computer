@@ -5,15 +5,15 @@ import asyncio
 async def main():
     node = await iroh.IrohNode.memory()
     node_id = await node.node_id()
-    print("Started Iroh node: {}".format(node_id))
+    print(f"Started Iroh node: {node_id}")
 
     author = await node.author_create()
-    print("Created author: {}".format(author))
+    print(f"Created author: {author}")
 
     authors = await node.author_list()
     print("Authors:")
     for auth in authors:
-        print("\t{}".format(auth))
+        print(f"\t{auth}")
 
 # Output:
 # Started Iroh node: wbwpkauwmitrwwhmw534w3u6sxyhvbivuepcdze5jd3zeqpgxyfa

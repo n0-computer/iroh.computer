@@ -16,7 +16,7 @@ try:
     path = os.path.join("tmp", "hello_world")
     with open(path, "w") as f:
         f.write("Hello World!")
-    print(f"Created file \"hello_world\"")
+    print("Created file \"hello_world\"")
 
     # Create Iroh node
     node = IrohNode("iroh_data_dir")

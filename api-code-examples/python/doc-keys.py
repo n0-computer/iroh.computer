@@ -7,12 +7,12 @@ async def main():
     node = await iroh.IrohNode.memory()
 
     node_id = await node.node_id()
-    print("Started Iroh node: {}".format(node_id))
+    print(f"Started Iroh node: {node_id}")
 
     author = await node.author_default()
 
     doc = await node.doc_create()
-    print("Created doc: {}".format(doc.id()))
+    print(f"Created doc: {doc.id()}")
 
     for i, key in enumerate(['a', 'b', 'c']):
         await doc.set_bytes(author, bytes(key, "utf8"), bytes(str(i), "utf8"))

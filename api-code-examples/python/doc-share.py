@@ -5,16 +5,16 @@ async def main():
     # Create in memory iroh node
     node = await iroh.IrohNode.memory()
     node_id = await node.node_id()
-    print("Started Iroh node: {}".format(node_id))
+    print(f"Started Iroh node: {node_id}")
 
     doc = await node.doc_create()
-    print("Created doc: {}".format(doc.id()))
+    print(f"Created doc: {doc.id()}")
 
     ticket = await doc.share(iroh.ShareMode.READ, iroh.AddrInfoOptions.ID)
-    print("Read-Access Ticket: {}".format(ticket))
+    print(f"Read-Access Ticket: {ticket}")
 
     ticket = await doc.share(iroh.ShareMode.WRITE, iroh.AddrInfoOptions.ID)
-    print("Write-Access Ticket: {}".format(ticket))
+    print(f"Write-Access Ticket: {ticket}")
 
 # Output:
 # Started Iroh node: rwgutd2wazt756h5awh6x576jejizai6w2l6ae5gxsv7tpswmopq
