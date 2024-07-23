@@ -69,4 +69,12 @@ Every document is its own pubsub swarm, keyed by the public key of the document.
 Bartosz Sypytkowski has a great [blog post](https://www.bartoszsypytkowski.com/hyparview/) on HyParView & Plumtree, well worth reading.
 </Note>
 
-As authors write to a document, they publish these changes as pubsub messages that other peers pick up on & apply to their local state.
+As authors write to a document, they publish these changes as pubsub messages that other peers pick up on & apply to their local state
+
+## Storage
+
+Iroh docs can be used with in-memory or file-system based storage. The store is used to keep track of all relevant metadata necessary for management of documents, authors and keys. The contents associated to keys is managed by [`iroh-blobs`](/docs/layers/blobs), which stores data in a optimized, content-addressed manner. Data can be imported and exported out of Iroh's storage using [`doc import`](/docs/api/docs-import) and [`doc export`](/docs/api/docs-export).
+
+## API
+
+Documents can be manipulated and queried using the [docs API](/docs/api), also available via our various [official SDKs](/docs/sdks).
