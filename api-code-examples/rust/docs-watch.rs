@@ -1,67 +1,80 @@
-import asyncio
-import queue
-import iroh
-from iroh import Iroh, LiveEventType
+use futures_lite::StreamExt;
+use iroh::client::docs::LiveEvent;
 
-class Watch:
-    def __init__(self, queue):
-        self.queue = queue
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    async def event(self, e):
-        t = e.type()
-        if t == LiveEventType.INSERT_LOCAL:
-            entry = e.as_insert_local()
-            print(f"LiveEvent - InsertLocal: entry hash {entry.content_hash()}")
-            self.queue.put(True)
-        elif t == LiveEventType.INSERT_REMOTE:
-            insert_remove_event = e.as_insert_remote()
-            print(f"LiveEvent - InsertRemote:\n\tfrom: {insert_remove_event.from_}\n\tentry hash:\n\t{insert_remove_event.entry.content_hash()}\n\tcontent_status: {insert_remove_event.content_status}")
-            print("Insert Remove events will be eventually followed by the ContentReady event")
-        elif t == LiveEventType.CONTENT_READY:
-            hash_val = e.as_content_ready()
-            print(f"LiveEvent - ContentReady: hash {hash_val}")
-        elif t == LiveEventType.NEIGHBOR_UP:
-            node_id = e.as_neighbor_up()
-            print(f"LiveEvent - NeighborUp: node id {node_id}")
-        elif t == LiveEventType.NEIGHBOR_DOWN:
-            node_id = e.as_neighbor_down()
-            print(f"LiveEvent - NeighborDown: node id {node_id}")
-        elif t == LiveEventType.SYNC_FINISHED:
-            sync_event = e.as_sync_finished()
-            print(f"Live Event - SyncFinished: synced peer: {sync_event.peer}")
-        else:
-            raise Exception("unknown LiveEventType")
+    // Create  document
+    let author = node.authors().default().await?;
 
-async def main():
-    # setup event loop, to ensure async callbacks work
-    iroh.iroh_ffi.uniffi_set_event_loop(asyncio.get_running_loop())
+    let doc = node.docs().create().await?;
+    println!("Created document {}", doc.id());
 
-    # Create in memory iroh node
-    node = await Iroh.memory()
+    let mut sub = doc.subscribe().await?;
+    let handle = tokio::task::spawn(async move {
+        let mut insert = None;
+        while let Some(event) = sub.next().await {
+            let event = event?;
+            match event {
+                LiveEvent::InsertLocal { entry } => {
+                    println!(
+                        "LiveEvent - InsertLocal: entry hash {}",
+                        entry.content_hash()
+                    );
+                    insert = Some(entry.content_hash());
+                    break;
+                }
+                LiveEvent::InsertRemote {
+                    from,
+                    entry,
+                    content_status,
+                } => {
+                    println!("LiveEvent - InsertRemote:\n\tfrom: {}\n\tentry hash:\n\t{}\n\tcontent_status: {:?}", from, entry.content_hash(), content_status);
+                    println!("Insert Remove events will be eventually followed by the ContentReady event");
+                }
+                LiveEvent::ContentReady { hash } => {
+                    println!("LiveEvent - ContentReady: hash {hash}");
+                }
+                LiveEvent::NeighborUp(node_id) => {
+                    println!("LiveEvent - NeighborUp: node id {node_id}");
+                }
+                LiveEvent::NeighborDown(node_id) => {
+                    println!("LiveEvent - NeighborDown: node id {node_id}");
+                }
+                LiveEvent::PendingContentReady => {
+                    println!("LiveEvent - PendingContent Ready");
+                }
+                LiveEvent::SyncFinished(sync_event) => {
+                    println!(
+                        "Live Event - SyncFinished: synced peer: {}",
+                        sync_event.peer
+                    );
+                    break;
+                }
+            }
+        }
+        anyhow::Ok(insert)
+    });
 
-    # Create  document
-    author = await node.authors().default()
+    let key = b"watch-me";
+    let h = doc
+        .set_bytes(
+            author,
+            &key[..],
+            &b"I'm going to trigger an InsertLocal event."[..],
+        )
+        .await?;
 
-    doc = await node.docs().create()
-    print(f"Created document {doc.id()}")
+    let hash = handle.await??;
+    assert_eq!(hash, Some(h));
 
-    # Create a queue for synchronization
-    event_queue = queue.Queue()
+    println!("Done!");
+    Ok(())
+}
 
-    callback = Watch(event_queue)
-    await doc.subscribe(callback)
-
-    key = b"watch-me"
-    await doc.set_bytes(author, key, b"I'm going to trigger an InsertLocal event.")
-
-    # Wait for the watcher to get the insert local event
-    event_queue.get()
-
-    print("Done!")
-
-# Output:
-# Created document 3h6ea3d6ucs3iicwn2hzovpwhh3lpchs7b6nt5byoci3aqt6amfa
-# LiveEvent - InsertLocal: entry hash bafkr4ic24i3eenzjflowjva7e2tyw24yafro5kvve6p6ziwics5kc2id5e
-# Done!
-
-asyncio.run(main())
+// Output:
+// Created document 3h6ea3d6ucs3iicwn2hzovpwhh3lpchs7b6nt5byoci3aqt6amfa
+// LiveEvent - InsertLocal: entry hash bafkr4ic24i3eenzjflowjva7e2tyw24yafro5kvve6p6ziwics5kc2id5e
+// Done!

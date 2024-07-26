@@ -1,68 +1,69 @@
-import os
-import shutil
+use futures_lite::StreamExt;
+use iroh::{docs::store::Query, util::fs::path_to_key};
 
-from iroh import Iroh, Query, path_to_key
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let tmpdir = tempfile::tempdir()?;
+    let root = tmpdir.path();
 
-# Create folder
-os.mkdir("tmp")
+    let file_names = ["foo", "bar", "bat"];
+    // Create three files in the folder
+    for file_name in file_names {
+        let file_path = root.join(file_name);
+        tokio::fs::write(&file_path, file_name).await?;
+        println!("Created file {}", file_path.display());
+    }
 
-try:
-    root = os.path.abspath(os.path.join("tmp"))
-    print("Created dir \"tmp\"")
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    file_names = ["foo", "bar", "bat"]
-    # Create three files in the folder
-    for file_name in file_names:
-        file_path = os.path.join("tmp", file_name)
-        with open(file_path, "w") as f:
-            f.write(f"{file_name}")
-        print(f"Created file {file_path}")
+    // Create author and document
+    let author = node.authors().create().await?;
+    println!("Created author {}", author);
 
-    # Create an Iroh node
-    node = Iroh.memory()
+    let doc = node.docs().create().await?;
+    println!("Created document {}", doc.id());
 
-    # Create author and document
-    author = node.authors().create()
-    print(f"Created author {author.to_string()}")
+    let prefix = "import-example";
+    // Import the files
+    for file_name in file_names {
+        let path = root.join(file_name);
+        // create a key from the path, use the `iroh.PathToKey` function to ensure
+        // that we strip the root correctly, and add any prefix we want to add for
+        // organizational purposes
+        let key = path_to_key(&path, Some(prefix.into()), Some(root.into()))?;
+        doc.import_file(author, key, path, false)
+            .await?
+            .collect::<Vec<_>>()
+            .await;
+    }
 
-    doc = node.docs().create()
-    print(f"Created document {doc.id()}")
+    // Get all the entries with default filtering and sorting
+    let query = Query::all().build();
+    let entries = doc.get_many(query).await?.collect::<Vec<_>>().await;
 
-    prefix = "import-example"
-    # Import the files
-    for file_name in file_names:
-        path = os.path.abspath(os.path.join("tmp", file_name))
-        # create a key from the path, use the `iroh.PathToKey` function to ensure
-		# that we strip the root correctly, and add any prefix we want to add for
-		# organizational purposes
-        key = path_to_key(path, prefix, root)
-        doc.import_file(author, key, path, False, None)
+    println!("One entry for each file:");
+    for entry in entries {
+        let entry = entry?;
+        let key = entry.key();
+        let hash = entry.content_hash();
+        let content = entry.content_bytes(node.client()).await?;
+        println!(
+            "{}: {} (hash: {hash})",
+            std::str::from_utf8(key)?,
+            std::str::from_utf8(&content)?
+        );
+    }
+    Ok(())
+}
 
-    # Get all the entries with default filtering and sorting
-    query = Query.all(None)
-    entries = doc.get_many(query)
-
-    print("One entry for each file:")
-    for entry in entries:
-        key = entry.key()
-        hash = entry.content_hash()
-        content = entry.content_bytes(doc)
-        print(f"{key.decode('utf-8')}: {content.decode('utf-8')} (hash: {hash.to_string()})")
-
-except Exception as e:
-    print("error: ", e)
-
-# cleanup dir
-shutil.rmtree("tmp")
-
-# Output:
-# Created dir "tmp"
-# Created file tmp/foo
-# Created file tmp/bar
-# Created file tmp/bat
-# Created author kpksn2yl2c3nlppjtnpxa2h2utmu2fdnutuwptybenr3gxdlrkiq
-# Created document af7klzttoegn6kvr7p6j7tgw6tz2w54n5bfzqvpcfmy2mrkk3pgq
-# One entry for each file:
-# import-examplebar: bar (hash: bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu)
-# import-examplebat: bat (hash: bafkr4iabccdb2eyeu764xoewbcqv62sjaggxibtmxx5tnmwer3wp3rquq4)
-# import-examplefoo: foo (hash: bafkr4iae4c5tt4yldi76xcpvg3etxykqkvec352im5fqbutolj2xo5yc5e)
+// Output:
+// Created file <tmp>/foo
+// Created file <tmp>/bar
+// Created file <tmp>/bat
+// Created author kpksn2yl2c3nlppjtnpxa2h2utmu2fdnutuwptybenr3gxdlrkiq
+// Created document af7klzttoegn6kvr7p6j7tgw6tz2w54n5bfzqvpcfmy2mrkk3pgq
+// One entry for each file:
+// import-examplebar: bar (hash: bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu)
+// import-examplebat: bat (hash: bafkr4iabccdb2eyeu764xoewbcqv62sjaggxibtmxx5tnmwer3wp3rquq4)
+// import-examplefoo: foo (hash: bafkr4iae4c5tt4yldi76xcpvg3etxykqkvec352im5fqbutolj2xo5yc5e)
