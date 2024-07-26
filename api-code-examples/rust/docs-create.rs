@@ -1,17 +1,15 @@
-import iroh
-import asyncio
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
+    let node_id = node.node().node_id().await?;
+    println!("Started Iroh node: {node_id}");
 
-async def main():
-    # Create in memory iroh node
-    node = await iroh.Iroh.memory()
-    node_id = await node.node().node_id()
-    print(f"Started Iroh node: {node_id}")
+    let author = node.authors().default().await?;
+    println!("Default author: {author}");
 
-    author = await node.authors().default()
-    print(f"Default author: {author}")
-
-    doc = await node.docs().create()
-    print(f"Created doc: {doc.id()}")
-
-asyncio.run(main())
+    let doc = node.docs().create().await?;
+    println!("Created doc: {}", doc.id());
+    Ok(())
+}

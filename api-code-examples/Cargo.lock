@@ -2037,6 +2037,7 @@ dependencies = [
  "anyhow",
  "futures-lite 2.3.0",
  "iroh",
+ "tempfile",
  "tokio",
 ]
 

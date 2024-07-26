@@ -1,55 +1,70 @@
-import iroh
-import asyncio
+use futures_lite::StreamExt;
+use iroh::docs::store::Query;
 
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
-async def main():
-    node = await iroh.Iroh.memory()
+    let author = node.authors().create().await?;
+    println!("Created author {author}");
 
-    # Real programs handle errors!
-    author = await node.authors().create()
-    print(f"Created author {author}")
+    let doc = node.docs().create().await?;
+    println!("Created document {}", doc.id());
 
-    doc = await node.docs().create()
-    print(f"Created document {doc.id()}")
+    let key = b"python";
+    let hash = doc.set_bytes(author, &key[..], &b"says hello"[..]).await?;
+    println!("Inserted {hash}");
 
-    key = b"python"
-    hash = await doc.set_bytes(author, key, b"says hello")
-    print(f"Inserted {hash}")
+    // Get all the entries with default filtering and sorting
+    let query = Query::all().build();
+    let entries = doc.get_many(query.clone()).await?.collect::<Vec<_>>().await;
 
-    # Get all the entries with default filtering and sorting
-    query = iroh.Query.all(None)
-    entries = await doc.get_many(query)
+    println!("Keys:");
+    for entry in entries {
+        let entry = entry?;
+        let key = entry.key();
+        let hash = entry.content_hash();
+        let content = entry.content_bytes(node.client()).await?;
+        println!(
+            "{} : {} (hash: {hash})",
+            std::str::from_utf8(key).unwrap(),
+            std::str::from_utf8(&content).unwrap(),
+        );
 
-    print("Keys:")
-    for entry in entries:
-        key = entry.key()
-        hash = entry.content_hash()
-        content = await entry.content_bytes(doc)
-        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
+        println!(
+            "Removing entry for author {author} and prefix {}.",
+            std::str::from_utf8(key).unwrap(),
+        );
+    }
 
-        print(f"Removing entry for author {author} and prefix {key.decode('utf-8')}.")
+    // Removes all entries from that author and with the prefix "key"
+    let num_removed = doc.del(author, &key[..]).await?;
+    println!("Removed {num_removed} entry");
 
-    # Removes all entries from that author and with the prefix "key"
-    # num_removed = doc.delete_entry(author, key)
-    # print(f"Removed {num_removed} entry")
+    let entries = doc.get_many(query).await?.collect::<Vec<_>>().await;
 
-    entries = await doc.get_many(query)
+    println!("Keys:");
+    for entry in entries {
+        let entry = entry?;
+        let key = entry.key();
+        let hash = entry.content_hash();
+        let content = entry.content_bytes(node.client()).await?;
+        println!(
+            "{} : {} (hash: {hash})",
+            std::str::from_utf8(key).unwrap(),
+            std::str::from_utf8(&content).unwrap(),
+        );
+    }
+    Ok(())
+}
 
-    print("Keys:")
-    for entry in entries:
-        key = entry.key()
-        hash = entry.content_hash()
-        content = await entry.content_bytes(doc)
-        print(f'{key.decode("utf-8")} : {content.decode("utf-8")} (hash: {hash})')
-
-# Output:
-# Created author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a
-# Created document ipqqeughovjrvcxl5sji3hlwycheqqgiajq5hgnf6vtqp6qigm6q
-# Inserted bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte
-# Keys:
-# python : says hello (hash: bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte)
-# Removing entry for author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a and prefix python.
-# Removed 1 entry
-# Keys:
-
-asyncio.run(main())
+// Output:
+// Created author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a
+// Created document ipqqeughovjrvcxl5sji3hlwycheqqgiajq5hgnf6vtqp6qigm6q
+// Inserted bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte
+// Keys:
+// python : says hello (hash: bafkr4ihasgdyqs6onufsjrmk5h5vcg2ud75u2iaokavwiulyg7wfno6fte)
+// Removing entry for author ybkptbq4imifxaj544hl5etyszhecuepp66qlezov7sdzm3hqk4a and prefix python.
+// Removed 1 entry
+// Keys:

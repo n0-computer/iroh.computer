@@ -1,19 +1,22 @@
-import iroh
-import asyncio
+use futures_lite::StreamExt;
 
-async def main():
-    # Create in memory iroh node
-    node = await iroh.Iroh.memory()
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    # Typically only happens if you have not finished syncing or interrupted
-    # a download
-    incompletes = await node.blobs().list_incomplete()
+    // Typically only happens if you have not finished syncing or interrupted
+    // a download
+    let mut incompletes = node.blobs().list_incomplete().await?;
 
-    print("Incomplete blobs:")
-    for res in incompletes:
-        print(f"\thash: {res.hash} size: {res.size} expected size: {res.expected_size}")
+    println!("Incomplete blobs:");
+    while let Some(res) = incompletes.next().await {
+        let res = res?;
+        println!(
+            "\thash: {} size: {} expected size: {}",
+            res.hash, res.size, res.expected_size
+        );
+    }
 
-# Output:
-# Incomplete blobs:
-
-asyncio.run(main())
+    Ok(())
+}
