@@ -9,18 +9,62 @@ At the core of iroh is the ability to connect _any_ two devices, no matter where
 
 ## Nodes
 
-An iroh network is a collection of _nodes_. A node is a running process that might accept connections from other nodes on a given port. Multiple nodes can be run on the same physical device, but not the same port.
+On layer 0 an iroh network is a collection of nodes.
 
-A node has a cryptographic keypair used for signing messages. Nodes are uniquely identified by the public portion of their keypair.
+The primary functionality of the networking is to establish connections between two nodes,
+regardless of where they are located.
+To make this feasible the nodes are addressed by *NodeId* rather than by IP address and port.
+The *NodeId* is created from the public portion of a cryptographic keypair use for signing messages.
+
+A node still needs to bind to an IP address and port to be reachable,
+and IP addresses are still part of the addressing,
+though not the primary addressing mechanism.
+Multiple nodes can run on the same machine,
+but not share the same port.
+
+Networking nodes are created and controlled by the [Endpoint] struct in the `iroh-net` library.
+Often wrapped in the higher abstraction provided by [Node],
+when using multiple of iroh's layers together.
+
+[Endpoint]: https://docs.rs/iroh/latest/iroh/net/struct.Endpoint.html
+[Node]: https://docs.rs/iroh/latest/iroh/node/struct.Node.html
 
 ## Connections
 
-An iroh connection is a [QUIC](https://en.wikipedia.org/wiki/QUIC) connection running on a _MagicSocket_. QUIC is a modern transport protocol that provides a reliable, encrypted, multiplexed connection between two nodes. QUIC is built on top of UDP, and is designed to be used in situations where TCP is not a good fit (such as mobile networks).
+An iroh connection uses [QUIC] as the transport protocol,
+exposing a full QUIC API to application developers.
+QUIC is a modern transport protocol that provides a reliable, encrypted, multiplexed connection between two nodes.
+QUIC is build on top of UDP,
+and is designed to deal with a wider variety of network situations than TCP.
 
-## MagicSockets
+Iroh integrates with QUIC and the UDP transport to create direct connections between nodes.
+It dynamically routes the QUIC UDP packets via the best path to the peer,
+regularly performing latency probes to find the best path between nodes.
+Typically a connection starts relayed to ensure immediate connectivity.
+Iroh than coordinates [holepunching] to establish a direct connection between peers,
+once the direct connection exists the QUIC connection is seemlessly routed over it.
+When the network situation changes iroh quicly adapts to the new routes and seemlessly moves the connection over.
 
-Connections in iroh have a _MagicSocket_ sitting between QUIC and the operating system socket (the "real socket"). The MagicSocket simulates a connection for the quic transport, and dynamically optimizes the connection path between two nodes as connections are negotiated & optimized. The MagicSocket will perform _interactive connectivity establishment_ (ICE), using an advertised set of connection details to audition connections. The MagicSocket will perform latency probes for any viable connections, switching to find the fastest ping.
+For connections where no holepunching is needed iroh can establish a conection without a relay server.
+For this the application can explicitly provide IP addressing information for a peer node,
+or rely on a pluggable discovery mechanism.
+
+[QUIC]: https://en.wikipedia.org/wiki/QUIC
+[holepunching]: https://en.wikipedia.org/wiki/Hole_punching_(networking)
 
 ## Relays
 
-Sometimes it isn't possible to establish a direct connection between two nodes, often because of strict firewall rules or NAT configurations. In these cases the only fallback is to _relay_ traffic through a third node that both nodes can connect to. Instead of sending packets directly from one node to the other, packets in either direction are first sent to the relay node, which forwards packets on to their destination. All QUIC traffic is encrypted, and relayed traffic is no exception. The relaying server _cannot_ inspect the contents of the packets being forwarded. 
+The relay server is an important component to ensure a connection can be established swiftly between any two iroh nodes,
+regardless of their location.
+It helps when strict firewall rules or NAT configurations are on the network path.
+As the relay server is publicly reachable by all nodes it can pass UDP packets between nodes until they manage to establish a direct connection.
+It also plays a vital role in the [holepunching] by informing nodes of their networking situation and coordinating between nodes.
+
+Since all traffic between nodes is encrypted for the destination node only,
+relay servers have very little knowledge and _cannot_ inspect the contents of forwarded packets.
+
+## API docs
+
+See the [reference documentation] for more technical details and the API provided.
+
+[reference documentation]: https://docs.rs/iroh/latest/iroh/net/index.html
