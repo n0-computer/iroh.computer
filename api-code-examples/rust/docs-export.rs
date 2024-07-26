@@ -1,72 +1,72 @@
-import os
-import shutil
-from iroh import Iroh, key_to_path, path_to_key
+use futures_lite::StreamExt;
+use iroh::{
+    blobs::store::ExportMode,
+    util::fs::{key_to_path, path_to_key},
+};
 
-# Create folder
-os.mkdir("tmp")
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create folder
+    let tmpdir = tempfile::tempdir()?;
+    let temp_path = tmpdir.path();
 
-# Create an export directory
-os.mkdir("export")
+    let root = temp_path.join("import");
+    let export_path = temp_path.join("export");
 
-try:
-    root = os.path.abspath(os.path.join("tmp"))
-    print(f"Created dir {root}")
+    tokio::fs::create_dir_all(&root).await?;
+    tokio::fs::create_dir_all(&export_path).await?;
 
-    # Create file
-    path = os.path.join("tmp", "hello_world")
-    with open(path, "w") as f:
-        f.write("Hello World!")
-    print("Created file \"hello_world\"")
+    // Create file
+    tokio::fs::write(root.join("hello_world"), "Hello World!").await?;
+    println!("Created file \"hello_world\"");
 
-    # Create Iroh node
-    node = Iroh.memory()
+    // Create in memory iroh node
+    let node = iroh::node::Node::memory().spawn().await?;
 
-    # Create author and document
-    author = node.authors().create()
-    print(f"Created author {author.to_string()}")
+    // Create author and document
+    let author = node.authors().create().await?;
+    println!("Created author {author}");
 
-    doc = node.docs().create()
-    print(f"Created document {doc.id()}")
+    let doc = node.docs().create().await?;
+    println!("Created document {}", doc.id());
 
-    prefix = "import-example"
+    let prefix = "import-example";
 
-    # Import the file
-    path = os.path.abspath(os.path.join("tmp", "hello_world"))
-    key = path_to_key(path, prefix, root)
-    print(f"key: {key.decode('utf-8')}")
-    doc.import_file(author, key, path, False, None)
+    // Import the file
+    let path = root.join("hello_world");
+    let key = path_to_key(&path, Some(prefix.into()), Some(root.into()))?;
+    println!("key: {}", std::str::from_utf8(&key).unwrap());
+    doc.import_file(author, key.clone(), path, false)
+        .await?
+        .collect::<Vec<_>>()
+        .await;
 
-    # Export the file
-    # Get the entry via an exact author and key
-    entry = doc.get_exact(author, key, False)
+    // Export the file
+    // Get the entry via an exact author and key
+    let entry = doc.get_exact(author, key.clone(), false).await?.unwrap();
 
-    root = os.path.abspath(os.path.join("export"))
-    print(f"root: {root}")
+    println!("root: {}", export_path.display());
 
-    # Create the export path from the key, prefix, and directory location
-    export_path = key_to_path(key, prefix, root)
+    // Create the export path from the key, prefix, and directory location
+    let export_path = key_to_path(key, Some(prefix.into()), Some(export_path))?;
 
-    # Export the entry
-    doc.export_file(entry, export_path, None)
+    // Export the entry
+    doc.export_file(entry, &export_path, ExportMode::Copy)
+        .await?
+        .collect::<Vec<_>>()
+        .await;
 
-    # Open the exported file and print the contents
-    with open(export_path, "r") as f:
-        content = f.read()
-    print(f"file {export_path}: {content}")
+    // Open the exported file and print the contents
+    let content = tokio::fs::read_to_string(&export_path).await?;
+    println!("file {}: {content}", export_path.display());
+    Ok(())
+}
 
-except Exception as e:
-    print("error: ", e)
-
-# cleanup dir
-shutil.rmtree("tmp")
-# cleanup export dir
-shutil.rmtree("export")
-
-# Output:
-# Created dir $HOME/tmp
-# Created file "hello_world"
-# Created author 2bgy4eozp5mcrhzqm6fylwpqsm2mddqogg4yphunegll2gxtmh4q
-# Created document mu65dqhxcchrfkfm6meyllitrpayljdra4qrqy54s4sgfwlgr2tq
-# key: import-examplehello_world
-# root: $HOME/export
-# file $HOME/export/hello_world: Hello World!
+// Output:
+// Created dir $HOME/tmp
+// Created file "hello_world"
+// Created author 2bgy4eozp5mcrhzqm6fylwpqsm2mddqogg4yphunegll2gxtmh4q
+// Created document mu65dqhxcchrfkfm6meyllitrpayljdra4qrqy54s4sgfwlgr2tq
+// key: import-examplehello_world
+// root: $HOME/export
+// file $HOME/export/hello_world: Hello World!
