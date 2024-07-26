@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
                 break hash;
             }
             Some(Err(err)) => {
-                return Err(err.into());
+                return Err(err);
             }
             None => {
                 panic!("progress ended early");

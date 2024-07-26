@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Import the file
     let path = root.join("hello_world");
-    let key = path_to_key(&path, Some(prefix.into()), Some(root.into()))?;
+    let key = path_to_key(&path, Some(prefix.into()), Some(root))?;
     println!("key: {}", std::str::from_utf8(&key).unwrap());
     doc.import_file(author, key.clone(), path, false)
         .await?
