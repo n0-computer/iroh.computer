@@ -27,6 +27,30 @@ i3vpd4e7coeonwv6otni36bdux73opig5du6zjekvnl3c64gn4ua
 wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
 ```
 
+```rust {{ title: 'rust' }}
+use futures_lite::StreamExt;
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let node = iroh::node::Node::memory().spawn().await?;
+    let node_id = node.node().node_id().await?;
+    println!("Started Iroh node: {node_id}");
+
+    let author = node.authors().create().await?;
+    println!("Created author: {author}");
+
+    let mut authors = node.authors().list().await?;
+    println!("Authors:");
+    while let Some(author) = authors.next().await {
+        let author = author?;
+        println!("\t{author}");
+    }
+
+    Ok(())
+}
+
+```
+
 
 ```python {{ title: 'python' }}
 import iroh
