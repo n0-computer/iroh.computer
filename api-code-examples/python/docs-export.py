@@ -1,66 +1,69 @@
 import os
 import shutil
+import asyncio
 from iroh import Iroh, key_to_path, path_to_key
 
-# Create folder
-os.mkdir("tmp")
 
-# Create an export directory
-os.mkdir("export")
+async def main():
+    # Create folder
+    os.mkdir("tmp")
 
-try:
-    root = os.path.abspath(os.path.join("tmp"))
-    print(f"Created dir {root}")
+    # Create an export directory
+    os.mkdir("export")
 
-    # Create file
-    path = os.path.join("tmp", "hello_world")
-    with open(path, "w") as f:
-        f.write("Hello World!")
-    print("Created file \"hello_world\"")
+    try:
+        root = os.path.abspath(os.path.join("tmp"))
+        print(f"Created dir {root}")
 
-    # Create Iroh node
-    node = Iroh.memory()
+        # Create file
+        path = os.path.join("tmp", "hello_world")
+        with open(path, "w") as f:
+            f.write("Hello World!")
+        print("Created file \"hello_world\"")
 
-    # Create author and document
-    author = node.authors().create()
-    print(f"Created author {author.to_string()}")
+        # Create Iroh node
+        node = await Iroh.memory()
 
-    doc = node.docs().create()
-    print(f"Created document {doc.id()}")
+        # Create author and document
+        author = await node.authors().create()
+        print(f"Created author {author}")
 
-    prefix = "import-example"
+        doc = await node.docs().create()
+        print(f"Created document {doc.id()}")
 
-    # Import the file
-    path = os.path.abspath(os.path.join("tmp", "hello_world"))
-    key = path_to_key(path, prefix, root)
-    print(f"key: {key.decode('utf-8')}")
-    doc.import_file(author, key, path, False, None)
+        prefix = "import-example"
 
-    # Export the file
-    # Get the entry via an exact author and key
-    entry = doc.get_exact(author, key, False)
+        # Import the file
+        path = os.path.abspath(os.path.join("tmp", "hello_world"))
+        key = path_to_key(path, prefix, root)
+        print(f"key: {key.decode('utf-8')}")
+        await doc.import_file(author, key, path, False, None)
 
-    root = os.path.abspath(os.path.join("export"))
-    print(f"root: {root}")
+        # Export the file
+        # Get the entry via an exact author and key
+        entry = await doc.get_exact(author, key, False)
 
-    # Create the export path from the key, prefix, and directory location
-    export_path = key_to_path(key, prefix, root)
+        root = os.path.abspath(os.path.join("export"))
+        print(f"root: {root}")
 
-    # Export the entry
-    doc.export_file(entry, export_path, None)
+        # Create the export path from the key, prefix, and directory location
+        export_path = key_to_path(key, prefix, root)
 
-    # Open the exported file and print the contents
-    with open(export_path, "r") as f:
-        content = f.read()
-    print(f"file {export_path}: {content}")
+        # Export the entry
+        await doc.export_file(entry, export_path, None)
 
-except Exception as e:
-    print("error: ", e)
+        # Open the exported file and print the contents
+        with open(export_path, "r") as f:
+            content = f.read()
+            print(f"file {export_path}: {content}")
 
-# cleanup dir
-shutil.rmtree("tmp")
-# cleanup export dir
-shutil.rmtree("export")
+    except Exception as e:
+        print("error: ", e)
+
+    # cleanup dir
+    shutil.rmtree("tmp")
+    # cleanup export dir
+    shutil.rmtree("export")
 
 # Output:
 # Created dir $HOME/tmp
@@ -70,3 +73,5 @@ shutil.rmtree("export")
 # key: import-examplehello_world
 # root: $HOME/export
 # file $HOME/export/hello_world: Hello World!
+
+asyncio.run(main())
