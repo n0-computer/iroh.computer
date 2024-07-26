@@ -37,8 +37,8 @@ async fn main() -> Result<()> {
     let node = iroh::node::Node::memory().spawn().await?;
 
     // create a document
-    let doc_0 = node.docs().create().await?;
-    let doc_1 = node.docs().create().await?;
+    let _doc_0 = node.docs().create().await?;
+    let _doc_1 = node.docs().create().await?;
 
     println!("List all docs:");
     let mut doc_ids = node.docs().list().await?;

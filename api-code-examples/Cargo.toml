@@ -9,20 +9,79 @@ authors = ["n0 team"]
 anyhow = "1"
 iroh = "0.21"
 futures-lite = "2.3"
+tempfile = "3"
 tokio = { version = "1", features = ["full"] }
+
+[[bin]]
+name = "authors-create"
+path = "./rust/authors-create.rs"
+
+[[bin]]
+name = "authors-list"
+path = "./rust/authors-list.rs"
 
 [[bin]]
 name = "blobs-add"
 path = "./rust/blobs-add.rs"
+
+
+[[bin]]
+name = "blobs-list-blobs"
+path = "./rust/blobs-list-blobs.rs"
+
+
+[[bin]]
+name = "blobs-list-collections"
+path = "./rust/blobs-list-collections.rs"
+
+[[bin]]
+name = "blobs-list-incomplete-blobs"
+path = "./rust/blobs-list-incomplete-blobs.rs"
+
+[[bin]]
+name = "docs-create"
+path = "./rust/docs-create.rs"
+
+[[bin]]
+name = "docs-delete"
+path = "./rust/docs-delete.rs"
+
+[[bin]]
+name = "docs-drop"
+path = "./rust/docs-drop.rs"
+
+[[bin]]
+name = "docs-export"
+path = "./rust/docs-export.rs"
 
 [[bin]]
 name = "docs-get"
 path = "./rust/docs-get.rs"
 
 [[bin]]
-name = "docs-set"
-path = "./rust/docs-set.rs"
+name = "docs-import"
+path = "./rust/docs-import.rs"
+
+[[bin]]
+name = "docs-join"
+path = "./rust/docs-join.rs"
+
+[[bin]]
+name = "docs-keys"
+path = "./rust/docs-keys.rs"
 
 [[bin]]
 name = "docs-list"
 path = "./rust/docs-list.rs"
+
+[[bin]]
+name = "docs-set"
+path = "./rust/docs-set.rs"
+
+[[bin]]
+name = "docs-share"
+path = "./rust/docs-share.rs"
+
+[[bin]]
+name = "docs-watch"
+path = "./rust/docs-watch.rs"
