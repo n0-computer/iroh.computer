@@ -60,7 +60,7 @@ Redb, like [sqlite](https://www.sqlite.org/) and most other embedded databases, 
 
 Redb also allows only a single write transaction to be open at the same time. So naive use would simply open a new write transaction on every update. But the resulting performance would be absolutely horrible for demanding use cases, and our blob store is a *very* demanding use case.
 
-**#### IO worker threads**
+#### IO worker threads
 
 A very common pattern is to interact with a redb database via a handler thread that you interact with using message passing.
 
@@ -68,11 +68,11 @@ This is a pattern we have used in both the iroh blobs store and the iroh docs st
 
 For interaction between async and sync code, you need a channel that has both a pleasant sync API and a pleasant async API. Until recently, [flume](https://docs.rs/flume/latest/flume/) was our preferred crate for this. It is a mpmc queue that offers a rich async API including sink and stream wrappers for sender and receiver, as well as a pleasant sync api including sending and receiving with timeout.
 
-**#### Single threaded runtime**
+#### Single threaded runtime
 
 An alternative that we have recently implemented in iroh documents is to do blocking sync IO inside a thread that hosts a single-threaded Tokio runtime. Blocking IO will of course stop all tasks on this runtime, but it will not have any effect on the main runtime. You will be able to use lightweight tasks in this runtime, which simplifies having several concurrent db read operations like long lived iterators/streams.
 
-**#### File IO**
+#### File IO
 
 In addition to interacting with an embedded database, file io is a very important part of the blob store. A key distinguishing feature of iroh blobs compared to other content-addressed storage systems like [IPFS](https://ipfs.tech/) is the ability to handle blobs of arbitrary size up to terabytes. For performance, iroh blobs inlines small blobs in redb, but uses the file system for larger blobs.
 
