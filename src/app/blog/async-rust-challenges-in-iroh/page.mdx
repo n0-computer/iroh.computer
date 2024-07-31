@@ -1,0 +1,220 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-07-31',
+  title: 'Async Rust Challenges in Iroh',
+  description:
+    'Documenting some painful lessons we learned while writing iroh using async Rust',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## Background
+
+### What is iroh?
+
+Iroh is a set of Rust crates for p2p networking and data transfer. You can access iroh through the [iroh binary](https://crates.io/crates/iroh-cli), utilize various [FFI bindings](https://github.com/n0-computer/iroh-ffi), rely on the main [iroh crate](https://crates.io/crates/iroh), or import individual [modules](https://github.com/n0-computer/iroh) to integrate it into other Rust programs.
+
+### Platforms we need to support
+
+Iroh supports all major platforms, including mobile. It works on very diverse hardware from Raspberry Pis, to Android or iOS mobile phones, to beefy multicore servers in the cloud.
+
+### Why we need `async` at all
+
+While I often advise Rust beginners to avoid async until they have a solid grasp of the language, async Rust can be tricky even for experienced developers. For small personal projects, I tend to steer clear of async Rust. However, for [iroh-net](https://docs.rs/iroh-net/latest/iroh-net/), which is built on [quinn](https://docs.rs/quinn/latest/quinn/), an open-source Rust [QUIC](https://datatracker.ietf.org/doc/rfc9000/) implementation with an excellent async API, async is essential. Additionally, `iroh-blobs` requires handling frequent concurrent interactions with the blob store, making async a necessity.
+
+### Choosing a Runtime
+
+[Tokio](https://tokio.rs/) is the most popular and well-maintained async runtime, and it works across all platforms. It is also the default runtime for quinn, making it a natural choice for iroh, which is primarily focused on networking.
+
+Although there are criticisms of Tokio, the alternatives are limited. While Rust futures are designed to be runtime-agnostic, other runtimes like [async-std] have not seen updates in years, and [smol](https://crates.io/crates/smol) is not very active. Newer runtimes like [glommio](https://crates.io/crates/glommio) are promising but limited to Linux due to their reliance on `io_uring` for IO. Consequently, Tokio remains the best option for iroh.
+
+## Challenges in everyday `async` life
+
+### Dealing with the block(ing code)
+
+We are using [redb](https://docs.rs/redb/latest/redb/), a Rust embedded database.
+
+Redb, like [sqlite](https://www.sqlite.org/) and most other embedded databases, is fully synchronous. It performs blocking IO in most calls. So using it directly in a Tokio task is [*highly* discouraged](https://rust-exercises.com/08_futures/05_blocking).
+
+Redb also allows only a single write transaction to be open at the same time. So naive use would simply open a new write transaction on every update. But the resulting performance would be absolutely horrible for demanding use cases, and our blob store is a *very* demanding use case.
+
+#### **IO worker threads**
+
+A very common pattern is to interact with a redb database via a handler thread that you interact with using message passing.
+
+This is a pattern we have used in both the iroh blobs store and the iroh docs store. It is also a very useful pattern to add an async facade to a complex synchronous program.
+
+For interaction between async and sync code, you need a channel that has both a pleasant sync API and a pleasant async API. Until recently, [flume](https://docs.rs/flume/latest/flume/) was our preferred crate for this. It is a mpmc queue that offers a rich async API including sink and stream wrappers for sender and receiver, as well as a pleasant sync api including sending and receiving with timeout.
+
+#### **Single threaded runtime**
+
+An alternative that we have recently implemented in iroh documents is to do blocking sync IO inside a thread that hosts a single-threaded Tokio runtime. Blocking IO will of course stop all tasks on this runtime, but it will not have any effect on the main runtime. You will be able to use lightweight tasks in this runtime, which simplifies having several concurrent db read operations like long lived iterators/streams.
+
+#### **File IO**
+
+In addition to interacting with an embedded database, file io is a very important part of the blob store. A key distinguishing feature of iroh blobs compared to other content-addressed storage systems like [IPFS](https://ipfs.tech/) is the ability to handle blobs of arbitrary size up to terabytes. For performance, iroh blobs inlines small blobs in redb, but uses the file system for larger blobs.
+
+When sending or receiving data, work switches between waiting for the network and performing file system io. Due to the fact that many embedded databases are not `Send`, and we want to use the embedded database to inline small blocks, io in iroh has to happen on non-`Send` tasks (I might expand on this in a subsequent post).
+
+So we use a separate thread pool to spawn worker tasks on for bulk interactions with the blobs database.
+
+### Tokio panics
+
+In normal Rust code, you can usually understand how to safely use an API just by looking at the types.
+
+A very well designed API will make it *impossible* to use entities in an incorrect state because the different states the entities can be in are modeled in the type system. This follows a design principle called [make invalid states unrepesentable](https://geeklaunch.io/blog/make-invalid-states-unrepresentable/), and emerges naturally if you do the work to model your stateful entities as state machines.
+
+Normal Rust APIs such as the ones in [std::io](https://doc.rust-lang.org/std/io/index.html) will have functions return an error if you call them when the entity is in the wrong state. When you call a function that does not return a `Result`, you can safely call it without having to worry about panics.
+
+And then there is Tokio.
+
+In Tokio, you *have* to carefully read the docs to figure out when it is safe to call a function. The function signature itself does not provide any guarantees. Whether a function panics depends not just on the state of entities, but on global, or rather, thread-local state such as the ambient runtime or local set.
+
+Various functions such as [Tokio::spawn](https://docs.rs/tokio/latest/tokio/task/fn.spawn.html) panic if you call them *outside* a Tokio runtime. Some other functions such as [send_blocking](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.blocking_send) helpfully panic if you call them from *inside* a Tokio runtime.
+
+But it does not end there. When working with local (non-`Send`) tasks, things get even more complex. [spawn_local](https://docs.rs/tokio/latest/tokio/task/fn.spawn_local.html) panics when you are not "inside a LocalSet". Being inside a local set is inherited from the parent task when you are inside a task that was spawned via `spawn_local`, but not if you are inside a task that was spawned via `spawn`.
+
+But surely, if you are always in a runtime things are more regular? Yes...but. It also depends on what *kind* of runtime you are on. E.g. [sleep](https://docs.rs/tokio/latest/tokio/time/fn.sleep.html) will panic when run on a runtime with no `time` enabled. Some functions will panic when run on a runtime without `io` enabled.
+
+So in summary, to use local tasks you have to have a mental model of how the thread local variables underlying the global Tokio functions `spawn`, `spawn_local` and `spawn_blocking` work. A simple error, like spawning a task using `spawn` instead of `spawn_local`, can lead to a panic in a completely different part of the code base.
+
+The ergonomics of Tokio tasks for non-trivial use cases is already not great. And the ergonomics for non-`Send` tasks is even worse.
+
+**Recommendation**
+
+Unfortunately there is not a good solution for this yet, except maybe be extremely careful and aware in what context you call any Tokio method.
+
+### Drop
+
+Now, you could argue that you will not have these issues if you just stay within the Tokio runtime all the time. But for a complex program that has to interact with blocking io this is not practical. Neither is it practical for a library crate that your users might use from many different contexts.
+
+For example, you have an entity that contains an external resource such as a database or file, and want to cleanly close the resource on `Drop`. If this involves any interaction with the Tokio runtime, such as sending a shutdown message: good luck.
+
+You can not use [send](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.send) because Drop is not async. But you can also not use [blocking_send](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.blocking_send) because it will panic when used *within* a Tokio runtime.
+
+So if you want to do anything non-trivial, such as sending messages, in `Drop`, you need to use a queue that allows blocking send both inside and outside the Tokio runtime, such as [flume](https://docs.rs/flume/latest/flume/) or [async-channel](https://docs.rs/async-channel/latest/async_channel/). Or use a queue that allows force-sending a message without blocking in all cases, such as [force_send](https://docs.rs/async-channel/latest/async_channel/struct.Sender.html#method.force_send) in async channel.
+
+There is also a third option: using an unbounded queue. Sending on an unbounded queue is non-blocking, so for the case of sending a message on drop this is great. But within the normal operation of your program, you now have to either live with the lack of backpressure and possible OOM error for that unbounded queue, or limit the size of the queue in some other way. The latter is doable, but adds a lot of complexity.
+
+You could also just give up on one of the things that makes Rust so nice: resource acquisition is initialization [RAII](https://doc.rust-lang.org/Rust-by-example/scope/raii.html),
+and require the user to manually call `close().await` on each resource.
+
+**Recommendation**
+
+I refuse to give up on RAII. I might provide an async shutdown function that tries to do a gentle shutdown. But every entity should also attempt to clean up on `Drop`.
+
+When `Drop` needs to perform a more complex cleanup, I try to use a simple mechanism like a cancel token or a oneshot sender. If that is not possible, I use a queue that allows blocking send under all contexts or a queue that has `force_send`.
+
+A nice pattern is also to use a cancel token for hard shutdown, and a message for controlled shutdown. The shutdown message can then be sent from an async fn, and many of the described problems go away.
+
+### Detached tasks and swallowed panics
+
+Rust has a very powerful and ergonomic mechanism to handle results. Every well written Rust API will at a minimum return results for every function that can fail. When quickly writing prototypes, you will use a crate like [anyhow] to handle these results. When writing production library code, you might spend the effort to use a crate like [thiserror] to write custom error types. So Rust has the tools to ergonomically handle errors in both cases.
+
+A panic, on the other hand, indicates that something serious and very unexpected has gone wrong. At the very minimum you want to prominently log a panic, but in almost all cases the best course of action is gather as much information as possible about the panic and then shut down the entire process.
+
+Unfortunately, Tokio makes it very easy to detach tasks and swallow panics.
+
+When a panic happens in a Tokio task, it will be captured by the Tokio runtime and converted into a Tokio [JoinError](https://docs.rs/tokio/latest/tokio/task/struct.JoinError.html). What you get back from spawn is a [JoinHandle](https://docs.rs/tokio/latest/tokio/task/struct.JoinHandle.html) that can be awaited to get that join error and possibly re-emit or at least log the panic. But it is very easy and in fact encouraged to just drop the JoinHandle and run the task detached, in which case a panic will just be silently swallowed.
+
+In the vast majority of async examples I have seen, `tokio::spawn` is called and the resulting `JoinHandle` is immediately discarded.
+
+**Recommendation**
+
+Avoid using `tokio::spawn` without handling the result.
+
+- If you have a location that spawns multiple tasks, use a combinator like [buffered_unordered](https://docs.rs/futures-buffered/0.2.6/futures_buffered/trait.BufferedStreamExt.html#method.buffered_unordered) to make sure all the join handles are polled to completion. You will get the results, but you will also get at least an error when one of the tasks panics. **Do not** use complex combinators from the `futures` crate at this time - see below.
+- If you have a location that spawns multiple tasks that return nothing of interest, like an incoming request handler, use a [JoinSet](https://docs.rs/tokio/latest/tokio/task/join_set/struct.JoinSet.html) and poll it to completion. You will get an error on panic, and as an added benefit the `JoinSet` will abort all tasks on `Drop`. (It will, however, not join on `Drop`. It will also swallow panics even if you explicitly use shutdown. So this is only a partial solution which will not protect you from swallowing panics on shutdown)
+- If you have a single long lived task, we have an utility [AbortingJoinHandle](https://docs.rs/iroh-net/0.16.0/iroh_net/util/struct.AbortingJoinHandle.html) that wraps a `JoinHandle` and aborts it on drop.
+
+### Local pool drop issues
+
+As mentioned above, we are using local tasks for iroh blobs io. I initially wrote my own local task pool, but was very happy to find that `tokio_util` has a local pool implementation.
+
+Unfortunately this pool implementation has a major issue. It spawns all std threads detached, so that a `Drop` implementation that is executed on one of the local pool threads is not guaranteed to run to completion when the program is shutting down. It also does not provide any explicit helper functions for shutdown, unlike the main Tokio runtime itself, which has a [rich API](https://tokio.rs/tokio/topics/shutdown) to control shutdown behaviour and awaits blocking tasks on shutdown even by default.
+
+If you have a `Drop` implementation that performs something important, like close an external resource or commit an ongoing transaction in a database, it is now a matter of chance if this `Drop` implementation runs to completion, does not run at all, or is simply stopped in the middle when the process aborts.
+
+**Recommendation**
+
+Our solution for this problem is to use a custom implementation of a local pool. This local pool is implemented using dedicated threads that use a [LocalSet](https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html) internally and use a custom runtime handle, usually the runtime handle of the main runtime. That way if you use e.g. `spawn_blocking` from inside your local tasks, it will be executed on the io thread pool of the main runtime.
+
+Unfortunately this [local pool](https://github.com/n0-computer/iroh/blob/main/iroh-blobs/src/util/local_pool.rs) is tied to the iroh codebase and not available as a separate crate.
+
+### Complex combinators in futures are buggy
+
+We have noticed that some complex combinators such as [FuturesUnordered](https://docs.rs/futures/latest/futures/stream/struct.FuturesUnordered.html) in the `futures` crate are buggy. Unfortunately the code uses a lot of unsafe, so fixing it ourselves was not a realistic option.
+
+We have therefore decided to take the drastic step to stop using the `futures` crate altogether and use a set of crates to replace it: [futures-lite](https://crates.io/crates/futures-lite) for simple futures and streams combinators, [futures-buffered](https://crates.io/crates/futures-buffered) to replace `FuturesUnordered`, and [futures-util] from the `futures` repo for the rare case where we want to use something from `futures` that is not covered by either `futures-lite` or `futures-buffered`.
+
+This makes working with async code even more unpleasant than it already is because even writing simple code involves searching for a crate that has the required combinator or type in our set of safe crates.
+
+### Worrying tracing span bugs
+
+While developing the replacement for the `LocalPoolHandle`, I took a very close look at panics that were just silently swallowed before, in particular panics that happen during `Drop`.
+
+I discovered that occasionally we will get panics in the middle of the `tracing` library, in particular, when using some of the more advanced features of tracing, like spans.
+
+Here is the [issue](https://github.com/tokio-rs/tracing/issues/2870), which reminded me of some other issues I had with tracing spans many years ago: a [possible memory leak](https://github.com/tokio-rs/tracing/issues/515) and [high CPU usage](https://github.com/tokio-rs/tracing/issues/458).
+
+If I had to guess, I would say this is due to the internal state of the span handling code of tracing getting confused during a panic, which then causes another panic when that state is touched again during a drop. But I don't have a small reproducer yet.
+
+**Recommendation**
+
+We are still using spans extensively in our code base. I think the issue gets triggered by panics, so our current solution is to avoid panics (doh!) and to make sure we shut down the entire process on any panic.
+
+### Choosing an mpmc channel
+
+#### **flume**
+
+I have used [flume](https://docs.rs/flume/latest/flume/) whenever I needed either a mpmc queue, a queue to cross the sync/async barrier, or a queue that allows blocking send in any context.
+
+Unfortunately `flume` has several issues with cancel safety.
+
+Async `send` is not cancel-safe at all, and async `recv`, while being cancel safe (at least according to the docs), sometimes loses notifications, so you can get stuck. See [this reproducer](https://github.com/rklaehn/flume-bug-reproducer). Flume intentionally sacrifices cancel safety on send for performance reasons, and I would have been mostly OK with that. But cancel safety for `recv` is a must in many places where we use it internally.
+
+Flume is also ["casually maintained"](https://casuallymaintained.tech/).
+
+#### **Async-channel**
+
+Async-channel is the only alternative to `flume` that I am aware of that supports mpmc and has a sufficiently rich API to be generally usable for all use cases described above. At least experimentally, it is fully cancel safe for async `recv`. Replacing `flume` with `async-channel` in the reproducer above immediately fixes the issue.
+
+So for now we are going to use `async-channel` as the standard mpmc queue. But it would be great if there was a mpmc queue that was documented and tested to be cancel-safe for both `send` and `recv`, and supported by one of the big Rust users in industry.
+
+## The future & what we as a community can do
+
+I would love to have a wrapper for Tokio that removes the ability to access the global functions `spawn`, `spawn_blocking` and `spawn_local`. Spawning tasks should always be via an explicitly passed runtime handle.
+
+Using this handle, it should also be possible to make the capabilities of the runtime more explicit. For example, you could have a type parameter on the handle that encodes the capabilities, so that a function that requires `time` is simply not available on a runtime handle for a runtime with `time` disabled.
+
+The type parameter could be set to a default value that enables all capabilities to improve ergonomics.
+
+Last but not least, local tasks are sufficiently useful and common that local tasks should be a first class citizen. The ability to spawn local tasks would simply be another capabilty on the runtime handle that can be enabled in the builder and is enabled by default.
+
+Spawning tasks should be deemphasized in favour of structured concurrency. Spawn, whether local or `Send`, is a low level primitive that should not be the first thing you see in every example.
+
+Regarding the `futures` crate, either it has to become better maintained again, or the Rust async community needs to come up with a set of safe futures-related crates to use instead. Having to hunt for a combinator or struct in 5 different libraries because you can not use `futures` is no fun at all.
+
+For queues, there should be a rock solid async mpmc queue that is cancel safe regarding both `send` and `recv`. It does not have to be the fastest, but it should be safe under typical use such as in `select!`. Maybe `async_channel` is the solution, but it feels weird to have to mix and match from different competing projects for something as basic as this.
