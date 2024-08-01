@@ -19,6 +19,7 @@ import GithubStars from './GithubStars';
 export const navItems = [
   {content: 'Blog', href: '/blog'},
   {content: 'Docs', href: '/docs'},
+  {content: 'API', href: '/docs/api'},
   {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
 ];
 
