@@ -19,8 +19,8 @@ const guides = [
       'Documents point to blobs: opaque bytes identified by their hash',
   },
   {
-    href: '/docs/layers/connections',
-    name: 'Connections',
+    href: '/docs/layers/networking',
+    name: 'Networking',
     description:
       'At the core of iroh is the ability to connect to any online node with only a Peer identifier',
   },
