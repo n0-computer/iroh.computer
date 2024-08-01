@@ -189,11 +189,10 @@ export const navigation = [
   {
     title: 'Guides',
     links: [
-      {title: 'Introduction', href: '/docs'},
+      {title: 'Docs Home', href: '/docs'},
       {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
       {title: 'SDKs', href: '/docs/sdks'},
-      {title: 'API', href: '/docs/api'},
     ],
   },
   {title: 'Concepts',
@@ -224,6 +223,7 @@ export function Navigation(props) {
       <ul role="list">
         <TopLevelNavItem href="/blog">Blog</TopLevelNavItem>
         <TopLevelNavItem href="/docs">Docs</TopLevelNavItem>
+        <TopLevelNavItem href="/docs/api">API</TopLevelNavItem>
         <TopLevelNavItem href="https://github.com/n0-computer/iroh">GitHub</TopLevelNavItem>
         <TopLevelNavItem href="https://www.youtube.com/@n0computer">YouTube</TopLevelNavItem>
         {navigation.map((group, groupIndex) => (
