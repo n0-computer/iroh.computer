@@ -36,7 +36,7 @@ In `v0.22`, we’ve focused on fixing bugs and adding stability.
 
 We've untangled a few subtle interactions in the downloader in this release. These interactions involved attempting to download content that you already had and attempting to download content from yourself.
 
-Previously, if you tried to download a blob that you already had locally, the blob downloader would first attempt to open connections to peers *before* checking if you already had this blob locally. That process is now reversed: we check if you have a blob or collection locally before attempting to download it.
+Previously, if you tried to download a blob that you already had, the blob downloader would first attempt to open connections to peers *before* checking if you already had this blob locally. That process is now reversed: we check if you have a blob or collection locally before attempting to download it.
 
 The second, more insidious, bug happened when your own `NodeId` was listed as a potential provider of the content you were trying to download. Now, if your own `NodeId` is the only listed provider, the download will fail with the “No Providers” error.
 
@@ -46,7 +46,7 @@ For more information, checkout PR [#2586](https://github.com/n0-computer/iroh/pu
 
 In iroh, we relate many different addresses to one `NodeId` and we send data over the lowest latency path to that `NodeId`.
 
-Previously, however, we would wait until we knew the latency of a node's direct address before we attempted to send to that address. In many scenarios, specifically the ones where we would need to hole-punch before being able to connect directly anyway, waiting for the `Ping`/`Pong` process to determine the latency was fine.
+Previously, we would wait until we knew the latency of a node's direct address before we attempted to send to that address. In many scenarios, specifically the ones where we would need to hole-punch before being able to connect directly anyway, waiting for the `Ping`/`Pong` process to determine the latency was fine.
 
 However, there are real scenarios where you already know the public direct address of the node you want to talk to. In this case, the connection should be instant since you know that no hole-punching is needed to establish a direct connection.
 
