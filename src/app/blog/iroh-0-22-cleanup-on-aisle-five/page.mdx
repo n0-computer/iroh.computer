@@ -34,23 +34,23 @@ In `v0.22`, we’ve focused on fixing bugs and adding stability.
 
 ## 🏞️ Improved Handling of Existing Local Content
 
-We have a few subtle interactions happening in the downloader around downloading content that already existed in the node and attempting to download content from yourself that we’ve untangled in this release.
+We have a few subtle interactions happening in the downloader that we've untangled in this release. These interactions werearound around attempting to download content that you already had and attempting to download content from yourself.
 
-Previously, if you attempted to download a blob that you already had locally, the blob downloader would first attempt to open connections to peers *before* checking if you already had this blob locally. That process is now reversed: if you have a blob or collection locally, and then attempt to download it, the download process will complete without attempting to download anything.
+Previously, if you tried to download a blob that you already had locally, the blob downloader would first attempt to open connections to peers *before* checking if you already had this blob locally. That process is now reversed: we check if you have a blob or collection locally before attempting to download it.
 
-The second, more insidious bug, was went your own `NodeId` was listed as a potential provider to the content you were trying to download. Now, if your own `NodeId` is the only listed provider, the download will fail with the “No Providers” error.
+The second, more insidious, bug happened when your own `NodeId` was listed as a potential provider of the content you were trying to download. Now, if your own `NodeId` is the only listed provider, the download will fail with the “No Providers” error.
 
 For more information, checkout PR [#2586](https://github.com/n0-computer/iroh/pull/2586).
 
 ## 🚊 Fix regression: Fast direct connections
 
-In iroh, we relate many different addresses to one `NodeId` and we use the lowest latency path to that `NodeId` that we know of when we send data.
+In iroh, we relate many different addresses to one `NodeId` and we send data over the lowest latency path to that `NodeId`.
 
-Previously, however, we would wait until we knew the different latencies of each address before we attempted to send on that address. In a lot of scenarios, specifically the ones where we would need to hole-punch before being able to directly connect anyway, waiting for the `Ping`/`Pong` process to learn these latencies was fine.
+Previously, however, we would wait until we knew the latency of a node's direct address before we attempted to send on that address. In a lot of scenarios, specifically the ones where we would need to hole-punch before being able to directly connect anyway, waiting for the `Ping`/`Pong` process to determine the latency was fine.
 
-However, there are real scenarios where you might know the direct address of the node you want to talk to and already know that you can communicate to it without hole-punching. In this case, you would just want the connection to be instant.
+However, there are real scenarios where you might already know the public, direct address of the node you want to talk. In this case, you would just want the connection to be instant, since you know that no hole-punching is needed to establish a direct connection.
 
-The changes in this release make it possible. If you know that a node has a direct, public address, when you supply that address using a `NodeAddr`, iroh will now immediately attempt to connect to that addresses.
+The changes in this release make that possible. If you know that a node has a direct, public address, when you supply that address using a `NodeAddr`, iroh will now immediately attempt to connect to that addresses.
 
 For more information, checkout PR [#2580](https://github.com/n0-computer/iroh/pull/2580).
 
@@ -60,9 +60,9 @@ We’ve made some changes in `iroh-gossip`, to ensure we are closing and cleanin
 
 The `net::Gossip` struct now keeps track of the client-side subscribers per a topic. Once all the handles to a `GossipTopic` are dropped, the topic will quit itself.
 
-This change completely removes the `iroh_gossip::dispatcher` , and pulls most of those APIs into the `GossipTopic`. These APIs are not yet stable and may go through another round of changes as we work with `iroh_gossip` more.
+This change completely removes the `iroh_gossip::dispatcher`, and pulls most of those APIs into the `GossipTopic`. These APIs are not yet stable and may go through another round of changes as we work with `iroh_gossip` more.
 
-See below for the specific adjustments that need to be made to upgrade `iroh_gossip` .
+See below for the specific adjustments that need to be made to upgrade `iroh-gossip`.
 
 Check out PR [#2570](https://github.com/n0-computer/iroh/pull/2570) for more details.
 
