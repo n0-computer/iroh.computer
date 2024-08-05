@@ -34,7 +34,7 @@ In `v0.22`, we’ve focused on fixing bugs and adding stability.
 
 ## 🏞️ Improved Handling of Existing Local Content
 
-We have a few subtle interactions happening in the downloader that we've untangled in this release. These interactions werearound around attempting to download content that you already had and attempting to download content from yourself.
+We've untangled a few subtle interactions in the downloader in this release. These interactions involved attempting to download content that you already had and attempting to download content from yourself.
 
 Previously, if you tried to download a blob that you already had locally, the blob downloader would first attempt to open connections to peers *before* checking if you already had this blob locally. That process is now reversed: we check if you have a blob or collection locally before attempting to download it.
 
@@ -46,21 +46,21 @@ For more information, checkout PR [#2586](https://github.com/n0-computer/iroh/pu
 
 In iroh, we relate many different addresses to one `NodeId` and we send data over the lowest latency path to that `NodeId`.
 
-Previously, however, we would wait until we knew the latency of a node's direct address before we attempted to send on that address. In a lot of scenarios, specifically the ones where we would need to hole-punch before being able to directly connect anyway, waiting for the `Ping`/`Pong` process to determine the latency was fine.
+Previously, however, we would wait until we knew the latency of a node's direct address before we attempted to send to that address. In many scenarios, specifically the ones where we would need to hole-punch before being able to connect directly anyway, waiting for the `Ping`/`Pong` process to determine the latency was fine.
 
-However, there are real scenarios where you might already know the public, direct address of the node you want to talk. In this case, you would just want the connection to be instant, since you know that no hole-punching is needed to establish a direct connection.
+However, there are real scenarios where you already know the public direct address of the node you want to talk to. In this case, the connection should be instant since you know that no hole-punching is needed to establish a direct connection.
 
-The changes in this release make that possible. If you know that a node has a direct, public address, when you supply that address using a `NodeAddr`, iroh will now immediately attempt to connect to that addresses.
+The changes in this release make that possible. If you know that a node has a direct, public address, when you supply that address using a `NodeAddr`, iroh will now immediately attempt to connect to that address.
 
 For more information, checkout PR [#2580](https://github.com/n0-computer/iroh/pull/2580).
 
-## 🔁 More Robust Gossip dispatcher
+## 🔁 More Robust Gossip Dispatcher
 
-We’ve made some changes in `iroh-gossip`, to ensure we are closing and cleaning up connections safely and more reliably.
+We’ve made some changes in `iroh-gossip` to ensure we close and clean up connections safely and reliably.
 
-The `net::Gossip` struct now keeps track of the client-side subscribers per a topic. Once all the handles to a `GossipTopic` are dropped, the topic will quit itself.
+The `net::Gossip` struct now tracks the client-side subscribers per topic. The topic will quit once all the handles to a `GossipTopic` are dropped.
 
-This change completely removes the `iroh_gossip::dispatcher`, and pulls most of those APIs into the `GossipTopic`. These APIs are not yet stable and may go through another round of changes as we work with `iroh_gossip` more.
+This change completely removes the `iroh_gossip::dispatcher` and pulls most of those APIs into the `GossipTopic`. These APIs are not yet stable and may undergo another round of changes as we work with `iroh_gossip` more.
 
 See below for the specific adjustments that need to be made to upgrade `iroh-gossip`.
 
