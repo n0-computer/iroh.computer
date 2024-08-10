@@ -476,7 +476,7 @@ Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`,
     }
   },
   {
-    name: 'blobs get',
+    name: 'blobs download',  // console and cli blobs get
     description: 'Download data to the running node\'s database and provide it',
     slug: 'blobs-get',
     arguments: [
