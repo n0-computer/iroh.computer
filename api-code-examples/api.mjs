@@ -467,7 +467,12 @@ const blobs = [
       { name: 'no-ticket', necessity: '', description: 'Do not print the all-in-one ticket to get the added data from this node' }
     ],
     examples: {
-      console: '> blobs add'
+      console: `> blobs add ~/my_txt.txt
+Adding my_txt.txt as /Users/me/my_txt.txt...
+- /Users/me/my_txt.txt: 328 B bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4
+Total: 328 B
+
+Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`,
     }
   },
   {
@@ -510,7 +515,14 @@ const blobs = [
     slug: 'blobs-list-blobs',
     arguments: [],
     examples: {
-      console: '> blobs list blobs'
+      console: `> blobs list blobs
+ bafkr4idcy33utsake6atvbagnojkn7odp7mdo6n7tvspd4ndnewphj67xu (116.96 KiB)
+ bafkr4idyxc27uxtcrzl5a3t42xu7hm3h2wn4mfaqt3ma5ummofsitynxle (7 B)
+ bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke (46 B)
+ bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4 (328 B)
+ bafkr4igxrffos4lnhdjn7lioyvkcjsrsd3qsiu6vd4ntvxvxpuchl3myrq (5 B)
+ bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu (3 B)
+ bafkr4ih5e75yrvu63folnkhvppj3pnx3he2oudmr35x2xc2puodrr2kryy (47 B)`,
     }
   },
   {
