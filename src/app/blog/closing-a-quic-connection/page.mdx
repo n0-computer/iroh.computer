@@ -1,0 +1,152 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Floris Bruynooghe',
+  date: '2024-08-12',
+  title: 'Closing a QUIC Connection',
+  description:
+    'Closing a QUIC connection without losing any data, using the Quinn API.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+QUIC is a great transport protocol, and a very good choice in today's internet. I'm not going into too much detail here, there are plenty of explanations about what the benefits of QUIC are.
+
+Closing a QUIC connection without losing any data however, is not as straight forward as you might like. I'm going to discuss this using the [Quinn API](https://docs.rs/quinn/latest/quinn/), but it applies to any QUIC version really.
+
+## Connections and Streams
+
+At a high level you manage your QUIC connections using an [Endpoint](https://docs.rs/quinn/latest/quinn/struct.Endpoint.html), it is a bit like the socket for a TCP or UDP connection. From this you can connect or accept connections with a remote peer, giving you a [Connection](https://docs.rs/quinn/latest/quinn/struct.Connection.html) to this peer in the Quinn API.
+
+In a connection you can use any number of streams: either bi-directional where both endpoints can send as well as receive data, or uni-directional streams where application data flows in only one direction. These are represented by the [SendStream](https://docs.rs/quinn/latest/quinn/struct.SendStream.html) and [RecvStream](https://docs.rs/quinn/latest/quinn/struct.RecvStream.html) in Quinn, for a uni-directional stream you get only one of these, for a bi-directional stream you get these as a pair.
+
+These are the famous independent streams from QUIC: each stream delivers data in order inside it. But the streams themselves are independent of each other and delivery of data on one stream does not block other stream, e.g. when faced with packet loss.
+
+Now the question comes when you want to close the Connection, how do you coordinate this without losing any stream data?
+
+## TL;DR
+
+There really is only one reliable way to close a connection. However you arrange the application protocol, one peer is going to be sending the last bit of application data over a stream and the other peer will receive it.
+
+1. The *sender* sends the last stream data.
+2. The *sender* waits for the connection to be closed by the peer (using [Connection::closed](https://docs.rs/quinn/latest/quinn/struct.Connection.html#method.closed) in Quinn).
+3. The *receiver* receives the last stream data.
+4. The *receiver* **closes** the connection, ideally using a custom error code so that the sender knows the connection was closed orderly.
+5. The *receiver* may optionally close the  now. If so it should use [Endpoint::wait_idle](https://docs.rs/quinn/latest/quinn/struct.Endpoint.html#method.wait_idle) first to give the CONNECTION_CLOSE frame a chance to be re-sent if it did get lost.
+    
+    Endpoint
+    
+6. The *sender* finally gets notified of the closed connection. In the worst case it has to rely on its own maximum idle timeout to figure out that the connection is closed. If the peer was cooperative however, the custom error code should have been delivered.
+
+## Stream States
+
+So why is this the only right way to close a connection? There are a few things working together. Firstly let's consider the [stream states](https://www.rfc-editor.org/rfc/rfc9000.html#name-sending-stream-states) as defined by [RFC 9000](https://www.rfc-editor.org/rfc/rfc9000.html):
+
+### Sending Stream States
+
+    `o
+    | Create Stream (Sending)
+    | Peer Creates Bidirectional Stream
+    v
++-------+
+| Ready | Send RESET_STREAM
+|       |-----------------------.
++-------+                       |
+    |                           |
+    | Send STREAM /             |
+    |      STREAM_DATA_BLOCKED  |
+    v                           |
++-------+                       |
+| Send  | Send RESET_STREAM     |
+|       |---------------------->|
++-------+                       |
+    |                           |
+    | Send STREAM + FIN         |
+    v                           v
++-------+                   +-------+
+| Data  | Send RESET_STREAM | Reset |
+| Sent  |------------------>| Sent  |
++-------+                   +-------+
+    |                           |
+    | Recv All ACKs             | Recv ACK
+    v                           v
++-------+                   +-------+
+| Data  |                   | Reset |
+| Recvd |                   | Recvd |
++-------+                   +-------+`
+
+What matters here is only the last two states on the left branch: Data Sent and Data Recvd. Once the sender reaches the Data Recvd state it can not do anything anymore. This is a terminal state, the stream now no longer exists for the sender.
+
+All the sender could possibly do now is open or accept new streams, though that does not help with shutting down. So instead it has to wait until the remote closes the connection.
+
+### Receiving Stream States
+
+So why is the sender having reached Data Recvd not sufficient to close the connection? There are two parts to this, the first is in the stream state for the RecvStream:
+
+    `o
+    | Recv STREAM / STREAM_DATA_BLOCKED / RESET_STREAM
+    | Create Bidirectional Stream (Sending)
+    | Recv MAX_STREAM_DATA / STOP_SENDING (Bidirectional)
+    | Create Higher-Numbered Stream
+    v
++-------+
+| Recv  | Recv RESET_STREAM
+|       |-----------------------.
++-------+                       |
+    |                           |
+    | Recv STREAM + FIN         |
+    v                           |
++-------+                       |
+| Size  | Recv RESET_STREAM     |
+| Known |---------------------->|
++-------+                       |
+    |                           |
+    | Recv All Data             |
+    v                           v
++-------+ Recv RESET_STREAM +-------+
+| Data  |--- (optional) --->| Reset |
+| Recvd |  Recv All Data    | Recvd |
++-------+<-- (optional) ----+-------+
+    |                           |
+    | App Read All Data         | App Read Reset
+    v                           v
++-------+                   +-------+
+| Data  |                   | Reset |
+| Read  |                   | Read  |
++-------+                   +-------+`
+
+Again look at the bottom left of the diagram: the Data Recvd state matches the sender's Data Recvd state, but notice this isn't the final state yet. There is another Data Read state.
+
+The Data Recvd state is reached as soon as the QUIC stack of the receiver has successfully acknowledged all data to the sender. But this does not mean **the application** has read the data from the QUIC stack! And there is absolutely no way for the receiver to signal this to the sender.
+
+## Connection State
+
+You might think this is not so bad, there are plenty of situations in which this could provide sufficient guarantees for the sender to close the connection. Maybe you have a simple remote procedure call mechanism where it is up to the receiver to create a new connection and issue the request again if it did not store the response safely. Unfortunately this is still wrong, you might still risk the receiver not receiving all data!
+
+When QUIC closes a connection it sends a CONNECTION_CLOSE frame. As soon as this frame is received the receiver closes the connection. And when closing the connection it is allowed to drop (almost) all connection state. Including any stream data at that time in the Data Recvd state. This is the real reason why the sender can never rely on the Data Recvd state.
+
+However [RFC 9000](https://www.rfc-editor.org/rfc/rfc9000.html) is a bit lenient on what happens. Some implementations, including Quinn, will still deliver any acknowledged stream data before giving the connection closed error to the application. This is within bounds of what is allowed, but also not guaranteed. It does however mean that most folks will not notice this problem when testing and end up using wrongly designed application protocols.
+
+## Closing
+
+This brings us back to what was covered in the TL;DR section above. The only correct way to close a connection is for the receiver of the last stream data to close the connection. The sender of the last stream data can only wait until the peer closes the connection.
