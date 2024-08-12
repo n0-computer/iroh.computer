@@ -64,7 +64,7 @@ So why is this the only right way to close a connection? There are a few things 
 
 ### Sending Stream States
 
-    `o
+    ```o
     | Create Stream (Sending)
     | Peer Creates Bidirectional Stream
     v
@@ -94,6 +94,7 @@ So why is this the only right way to close a connection? There are a few things 
 | Data  |                   | Reset |
 | Recvd |                   | Recvd |
 +-------+                   +-------+`
+```
 
 What matters here is only the last two states on the left branch: Data Sent and Data Recvd. Once the sender reaches the Data Recvd state it can not do anything anymore. This is a terminal state, the stream now no longer exists for the sender.
 
@@ -103,7 +104,7 @@ All the sender could possibly do now is open or accept new streams, though that 
 
 So why is the sender having reached Data Recvd not sufficient to close the connection? There are two parts to this, the first is in the stream state for the RecvStream:
 
-    `o
+    ```o
     | Recv STREAM / STREAM_DATA_BLOCKED / RESET_STREAM
     | Create Bidirectional Stream (Sending)
     | Recv MAX_STREAM_DATA / STOP_SENDING (Bidirectional)
@@ -134,6 +135,7 @@ So why is the sender having reached Data Recvd not sufficient to close the con
 | Data  |                   | Reset |
 | Read  |                   | Read  |
 +-------+                   +-------+`
+```
 
 Again look at the bottom left of the diagram: the Data Recvd state matches the sender's Data Recvd state, but notice this isn't the final state yet. There is another Data Read state.
 
