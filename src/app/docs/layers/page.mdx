@@ -9,6 +9,6 @@ Iroh is organized into three _layers_. Each higher layer depends on functionalit
   <Concept name="Networking" href="/docs/layers/networking" description="Connect any set of devices, no matter where they are" />
 </Concepts>
 
-Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the networking layer.
+Most users can and should be able to build entire applications with only the documents layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blobs layer, or build your own networking protocol using the networking layer.
 
 As an example, you may be building a standalone chat app. The messages and all attachments in a chat can be stored in a document. Iroh could handle syncing & caching all messages & attachments for you at the document layer, and you could extend a "user is typing" protocol directly on the networking layer.
