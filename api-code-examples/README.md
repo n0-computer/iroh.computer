@@ -27,6 +27,13 @@ Use `run_rust.sh`
 Download & set up rust.
 
 
+### Nodejs
+
+Use `run_nodejs.sh`.
+
+Download and setup nodejs & yarn.
+
+
 ### Swift
 
 TODO:
