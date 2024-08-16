@@ -53,6 +53,19 @@ async fn main() -> anyhow::Result<()> {
 ```
 
 
+```js {{ title: 'nodejs' }}
+import { Iroh } from '@number0/iroh'
+
+const node = await Iroh.memory()
+const nodeId = await node.node.nodeId()
+console.log(`Started iroh node: ${nodeId}`)
+
+const author = await node.authors.create()
+console.log(`Created author: ${author.toString()}`)
+
+```
+
+
 ```python {{ title: 'python' }}
 import iroh
 import asyncio
