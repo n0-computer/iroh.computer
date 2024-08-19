@@ -1,0 +1,13 @@
+{
+  "name": "api-code-examples",
+  "version": "0.22.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@number0/iroh": "=0.22.1-test5"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node ./index.js"
+  }
+}

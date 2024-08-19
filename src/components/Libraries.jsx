@@ -8,6 +8,7 @@ import logoKotlin from '@/images/logos/kotlin.svg';
 import logoPython from '@/images/logos/python.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
+import logoNodeJs from '@/images/logos/node.svg';
 import { Tag } from '@/components/Tag';
 
 const libraries = [
@@ -20,6 +21,15 @@ const libraries = [
       { title: "docs.rs", href: "https://docs.rs/iroh", external: true },
       { title: "crates.io", href: "https://crates.io/crates/iroh", external: true },
       { title: "github", href: "https://github.com/n0-computer/iroh", external: true }
+    ]
+  },
+  {
+    name: 'node.js',
+    description: 'Iroh\'s node.js SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of javascript syntax.',
+    logo: logoNodeJs,
+    links: [
+      { title: "npm", href: "https://www.npmjs.com/package/@number0/iroh", external: true },
+      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/tree/main/iroh-js", external: true }
     ]
   },
   {

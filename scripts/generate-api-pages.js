@@ -28,7 +28,8 @@ function generateApiDoc(command, templateSource) {
     rust: readExample('rust', command.slug, 'rs'),
     python: readExample('python', command.slug, 'py'),
     swift: readExample('swift', command.slug, 'swift'),
-    kotlin: readExample('kotlin', command.slug, 'kotlin'),
+    kotlin: readExample('kotlin', command.slug, 'kt'),
+    nodejs: readExample('nodejs', command.slug, 'js'),
 
     ...command.examples
   }
