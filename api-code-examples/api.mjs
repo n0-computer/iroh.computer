@@ -580,7 +580,98 @@ blobac3nrhjc3t5dj4yeofwsmabskbty7ifh2h7b747kvncgsdowhdxpuaaaabtcrrhidtk7zld7ishg
   }
 ]
 
+const net = [
+  {
+    name: 'net remote-list',
+    description: 'Get information about the different remote nodes',
+    slug: 'net-remote-list',
+    arguments: [],
+    examples: {
+      console: `> net remote-list
+ current time: Tue, 20 Aug 2024 21:30:33 +0000
+
+ node id                                               relay  conn type  latency    last used 
+ ewrl7gvv6ndtqmtvd2s6tmblvcah3yl7mn4wyyftem7dtjkrlbvq         direct     1ms,527μs  3s`
+    }
+  },
+  {
+    name: 'net remote',
+    description: 'Get information about a particular remote node',
+    slug: 'net-remote',
+    arguments: [
+      {
+        name: 'node_id',
+        necessity: 'required',
+        description: ''
+      }
+    ],
+    examples: {
+      console: `> net remote ewrl7gvv6ndtqmtvd2s6tmblvcah3yl7mn4wyyftem7dtjkrlbvq
+ current time     Tue, 20 Aug 2024 21:30:50 +0000                      
+ node id          ewrl7gvv6ndtqmtvd2s6tmblvcah3yl7mn4wyyftem7dtjkrlbvq 
+ relay url        unknown                                              
+ connection type  direct                                               
+ latency          1ms,527μs                                            
+ last used        3s                                                   
+ known addresses  1                                                    
+
+ addr                latency     last control  last data  last alive 
+ 192.168.0.15:11204  1ms,527μs   ping← ( 3s )  3s         3s         `
+    }
+  },
+  {
+    name: 'net node-addr',
+    description: 'Get the node addr of this node',
+    slug: 'net-node-addr',
+    arguments: [],
+    examples: {
+      console: `> net node-addr
+Node ID: w3mj2iw47i2pgbdrnutaamsqm6h2bj6r7yp7h2vliruq3vry535a
+Home Relay: https://foo.bar/
+Direct Addresses (1):
+ 192.168.0.15:41918`
+    }
+  },
+  {
+    name: 'net add-node-addr',
+    description: 'Add this node addr to the known nodes',
+    slug: 'net-add-node-addr',
+    arguments: [
+      {
+        name: 'node_id',
+        necessity: 'required',
+        description: ''
+      },
+      {
+        name: 'relay',
+        necessity: 'required',
+        description: ''
+      },
+      {
+        name: 'addresses',
+        necessity: 'required',
+        description: ''
+      }
+    ],
+    examples: {
+      console: '> net add-node-addr dlwnphjvqn43cyywsurzmr46i5cpg56ox5xhsqyq2jddly3o5m5q  https://foo.bar/ 192.168.0.15:1120'
+    }
+  },
+  {
+    name: 'net home-relay',
+    description: 'Get the relay server we are connected to',
+    slug: 'net-home-relay',
+    arguments: [],
+    examples: {
+      console: `> net home-relay
+Home Relay: https://foo.bar/`
+    }
+  }
+]
+
+
 const api = {
+  net,
   doc,
   author,
   blob
