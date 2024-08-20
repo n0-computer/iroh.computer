@@ -2,12 +2,12 @@
 name = "iroh-examples"
 edition = "2021"
 description = "iroh examples"
-version = "0.22.0"
+version = "0.23.0"
 authors = ["n0 team"]
 
 [dependencies]
 anyhow = "1"
-iroh = "0.22"
+iroh = "0.23"
 futures-lite = "2.3"
 tempfile = "3"
 tokio = { version = "1", features = ["full"] }

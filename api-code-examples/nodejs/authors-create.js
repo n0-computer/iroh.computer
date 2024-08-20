@@ -1,7 +1,7 @@
 import { Iroh } from '@number0/iroh'
 
 const node = await Iroh.memory()
-const nodeId = await node.node.nodeId()
+const nodeId = await node.net.nodeId()
 console.log(`Started iroh node: ${nodeId}`)
 
 const author = await node.authors.create()

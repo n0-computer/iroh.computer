@@ -3,7 +3,7 @@ async fn main() -> anyhow::Result<()> {
     // Create in memory iroh node
     let node = iroh::node::Node::memory().spawn().await?;
 
-    let node_id = node.node().node_id().await?;
+    let node_id = node.net().node_id().await?;
     println!("Started Iroh node: {node_id}");
 
     // you'll need to get a ticket from somewhere, see the `doc share` command documentation
