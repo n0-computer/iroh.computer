@@ -33,7 +33,7 @@ use futures_lite::StreamExt;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let node = iroh::node::Node::memory().spawn().await?;
-    let node_id = node.node().node_id().await?;
+    let node_id = node.net().node_id().await?;
     println!("Started Iroh node: {node_id}");
 
     let author = node.authors().create().await?;
@@ -56,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
 import { Iroh } from '@number0/iroh'
 
 const node = await Iroh.memory()
-const nodeId = await node.node.nodeId()
+const nodeId = await node.net.nodeId()
 console.log(`Started iroh node: ${nodeId}`)
 
 const author = await node.authors.create()
@@ -78,7 +78,7 @@ import asyncio
 
 async def main():
     node = await iroh.Iroh.memory()
-    node_id = await node.node().node_id()
+    node_id = await node.net().node_id()
     print(f"Started Iroh node: {node_id}")
 
     author = await node.authors().create()
