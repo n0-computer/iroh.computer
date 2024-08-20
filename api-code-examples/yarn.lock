@@ -2,30 +2,80 @@
 # yarn lockfile v1
 
 
-"@number0/iroh-darwin-arm64@0.22.1-test5":
-  version "0.22.1-test5"
-  resolved "https://registry.npmjs.org/@number0/iroh-darwin-arm64/-/iroh-darwin-arm64-0.22.1-test5.tgz"
-  integrity sha512-zImGnJZFkfo6JKL2lg7m664AyeXFbS8ym3zLb0/qklbOW3XUMwuhcg8DwXA5n0u6ob9ysNN85peWJLEtiA6ThQ==
+"@number0/iroh-android-arm-eabi@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm-eabi/-/iroh-android-arm-eabi-0.23.0.tgz#8fd1c59f1cd3c3f83031b469cedbc960b281d8de"
+  integrity sha512-5C1q585/eCEOwtHcd5nSJjufhR/M7eMqoOkafpCl5K8udf3s9XJpAJDbvqjWCYtGlgqCl+EvRkI1HR6EYNnoQA==
 
-"@number0/iroh-darwin-universal@0.22.1-test5":
-  version "0.22.1-test5"
-  resolved "https://registry.npmjs.org/@number0/iroh-darwin-universal/-/iroh-darwin-universal-0.22.1-test5.tgz"
-  integrity sha512-yPaCIyL6ZLn4AdsF0iBVCsRyOP0OTzCPaziE3e+/g6k0/2GlnhKzocLOJf20pcJO5xAnzmjX8+KYStVFPzAnWQ==
+"@number0/iroh-android-arm64@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm64/-/iroh-android-arm64-0.23.0.tgz#2145aebcf25616659d6f17e73c8c9fcabbb0b2dd"
+  integrity sha512-QWENI4jk6kEk/UVwrsqilwcdvScO9bCmyPrZ5zuwzPmN3dFnJ8FseY4JbXRjYJaJkGn9zRkE79pW+ECrm6TgZg==
 
-"@number0/iroh@=0.22.1-test5":
-  version "0.22.1-test5"
-  resolved "https://registry.npmjs.org/@number0/iroh/-/iroh-0.22.1-test5.tgz"
-  integrity sha512-xMyLNKSyjpEXAcwgXmBKUFYvDzI+HJIPLF77sMMPPyvo1VgYAxFi0B/TbPRM/kfUA8V7PG2Ji3IJtOJuoAHFLQ==
+"@number0/iroh-darwin-arm64@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-arm64/-/iroh-darwin-arm64-0.23.0.tgz#8ae68cbaf623c553a34698b987c222b2c6e1ee9f"
+  integrity sha512-n5bgpeEFq4lTCCbkTXW+9fX4rJMUlgy8+0slSq1Ah6Fd2QiJKz6kFIr2SeDsXxU4X2soGHLWC0bV1b6ix8yDTw==
+
+"@number0/iroh-darwin-universal@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-universal/-/iroh-darwin-universal-0.23.0.tgz#bcca4663c2e4033f61379dd042fefc425ef83633"
+  integrity sha512-bwyNreOTo11hAgD0ie8i6cWsjEQP92u/n0MHtwi0JonYlk5CxBfIoBm4xN3H3NqzduWT4vbf5ewy+uV3qHwWnA==
+
+"@number0/iroh-linux-arm-gnueabihf@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-gnueabihf/-/iroh-linux-arm-gnueabihf-0.23.0.tgz#a45f738b971be2b36b93f45178ea3f671f404d37"
+  integrity sha512-7PtDVzHrsmpNF+2LTIGC4Oymi4XG+t8GnCubb0oBV54Qgh1GgyzmtsDG2mDrItS7QatBRtsJiUhywwFvN+UBaQ==
+
+"@number0/iroh-linux-arm-musleabihf@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-musleabihf/-/iroh-linux-arm-musleabihf-0.23.0.tgz#950072d690f50d42684daa544028840d59c68f84"
+  integrity sha512-KMIO5tzacjviwb01dt5PVOzKJcGKJbdolXTG4IKCkzwbfyzyU09EBE4gLEYPcVHaapDXmlbieSZ+ZhOrOeIXBA==
+
+"@number0/iroh-linux-arm64-gnu@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-gnu/-/iroh-linux-arm64-gnu-0.23.0.tgz#76e0933883c85a75bcb6d92a429c4c8ff989ab39"
+  integrity sha512-h7Bg7uCCRtol5kmAq88idar4bxJgbmhV2CSF1C3YYLUeGDtlaYxc4fYTzMbjiNU+Df0LOdHNmuyT61pzrExYCA==
+
+"@number0/iroh-linux-arm64-musl@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-musl/-/iroh-linux-arm64-musl-0.23.0.tgz#261b330d43ddcc327a09ef3a584593904bbd71de"
+  integrity sha512-mzZF5nmFA2jTeg166Jq9RJsr77MtgGhzsBVncsn3T8x60vLFADWSL10BJp8ou0EVrKIIFlXgQtCpn1bvHgn7xA==
+
+"@number0/iroh-linux-x64-gnu@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-gnu/-/iroh-linux-x64-gnu-0.23.0.tgz#6df89abb62d1c79af409affe4cc8b2067446bf92"
+  integrity sha512-JCC5pXwL3Hv6n57q7ERwqcAnAzh4ZcYjKFJ99nKOl48mWJB9W7JZfoZOpjgo3A8X9dWoZ931aCzeIHkPAiEIaA==
+
+"@number0/iroh-linux-x64-musl@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-musl/-/iroh-linux-x64-musl-0.23.0.tgz#b646897a5eb6cb05add3b3ea1bef4f9239c89002"
+  integrity sha512-4bgjN7bmxoL8HrCZaB+l4/m01DUS23E4EIuZEas0Fdivm/3n6rFX/VrLPX+M0yIz2YrZw0KAAyPD7pcM8jBDGA==
+
+"@number0/iroh-win32-arm64-msvc@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-arm64-msvc/-/iroh-win32-arm64-msvc-0.23.0.tgz#c6d428d3001dcd2b627bea323fde76ebca06a550"
+  integrity sha512-EZHnWuD8d0hmgtQY0wWcA75TWr3VzMgItoPTEuZcUgswQca+4rw2y3jSTZE2S3mJ2FBIARsL5EWYfrioR3WQMA==
+
+"@number0/iroh-win32-x64-msvc@0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-x64-msvc/-/iroh-win32-x64-msvc-0.23.0.tgz#98b481cdd65fb761ce385052b1b286913ffcc7e1"
+  integrity sha512-J0s0/xczvdoixeoRApa49iXdjbxJ4jQv5KkI9k18swLjJfDdZz8aWOfMZdIKu+2O5wCsJfEAbSLtRmb5Ny+KRQ==
+
+"@number0/iroh@=0.23.0":
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/@number0/iroh/-/iroh-0.23.0.tgz#1659b4d65e8f66e3639a76ba4f32001d6ef15244"
+  integrity sha512-lPhRd8CbqyzobzFyeBL5o6S1Zn3uKBkkU4xLel66/1layiTQlMm51u1ft7w+HeE3/YT30dgdZ8RpggHHOOfgNg==
   optionalDependencies:
-    "@number0/iroh-android-arm-eabi" "0.22.1-test5"
-    "@number0/iroh-android-arm64" "0.22.1-test5"
-    "@number0/iroh-darwin-arm64" "0.22.1-test5"
-    "@number0/iroh-darwin-universal" "0.22.1-test5"
-    "@number0/iroh-linux-arm-gnueabihf" "0.22.1-test5"
-    "@number0/iroh-linux-arm-musleabihf" "0.22.1-test5"
-    "@number0/iroh-linux-arm64-gnu" "0.22.1-test5"
-    "@number0/iroh-linux-arm64-musl" "0.22.1-test5"
-    "@number0/iroh-linux-x64-gnu" "0.22.1-test5"
-    "@number0/iroh-linux-x64-musl" "0.22.1-test5"
-    "@number0/iroh-win32-arm64-msvc" "0.22.1-test5"
-    "@number0/iroh-win32-x64-msvc" "0.22.1-test5"
+    "@number0/iroh-android-arm-eabi" "0.23.0"
+    "@number0/iroh-android-arm64" "0.23.0"
+    "@number0/iroh-darwin-arm64" "0.23.0"
+    "@number0/iroh-darwin-universal" "0.23.0"
+    "@number0/iroh-linux-arm-gnueabihf" "0.23.0"
+    "@number0/iroh-linux-arm-musleabihf" "0.23.0"
+    "@number0/iroh-linux-arm64-gnu" "0.23.0"
+    "@number0/iroh-linux-arm64-musl" "0.23.0"
+    "@number0/iroh-linux-x64-gnu" "0.23.0"
+    "@number0/iroh-linux-x64-musl" "0.23.0"
+    "@number0/iroh-win32-arm64-msvc" "0.23.0"
+    "@number0/iroh-win32-x64-msvc" "0.23.0"
