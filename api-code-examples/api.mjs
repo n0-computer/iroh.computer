@@ -362,11 +362,16 @@ const blob = [
       }
     ],
     examples: {
-      console: '> blobs add'
+      console: `> blobs add ~/my_txt.txt
+Adding my_txt.txt as /Users/me/my_txt.txt...
+- /Users/me/my_txt.txt: 328 B bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4
+Total: 328 B
+
+Collection: bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke`
     }
   },
   {
-    name: 'blobs get',
+    name: 'blobs download',
     description: 'Download data to the running node\'s database and provide it',
     slug: 'blobs-get',
     arguments: [
@@ -422,7 +427,9 @@ const blob = [
       }
     ],
     examples: {
-      console: '> blobs get'
+      console: `> blobs get his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a --address 192.168.0.15:41918 --node w3mj2iw47i2pgbdrnutaamsqm6h2bj6r7yp7h2vliruq3vry535a
+Fetching: his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a
+Transferred 14.20 KiB in 0 seconds, 173.20 KiB/s`
     }
   },
   {
@@ -452,7 +459,7 @@ const blob = [
       }
     ],
     examples: {
-      console: '> blobs export'
+      console: '> blobs export his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a ./very_important.txt'
     }
   },
   {
@@ -461,7 +468,14 @@ const blob = [
     slug: 'blobs-list-blobs',
     arguments: [],
     examples: {
-      console: '> blobs list blobs'
+      console: `> blobs list blobs
+ bafkr4idcy33utsake6atvbagnojkn7odp7mdo6n7tvspd4ndnewphj67xu (116.96 KiB)
+ bafkr4idyxc27uxtcrzl5a3t42xu7hm3h2wn4mfaqt3ma5ummofsitynxle (7 B)
+ bafkr4ie3xsx3vdsbflainnk6p4xs4h2hq3hdmuasuoflkgybvnsbljb3ke (46 B)
+ bafkr4igef2yiz2nz33tljfdezzr45cos5lnc2urjmfi6zghbsnfzvpdpa4 (328 B)
+ bafkr4igxrffos4lnhdjn7lioyvkcjsrsd3qsiu6vd4ntvxvxpuchl3myrq (5 B)
+ bafkr4ihs5cl65v6sa3gykxkecwmpuuq2xr22vfuvh2l4amgjmewdbqjjhu (3 B)
+ bafkr4ih5e75yrvu63folnkhvppj3pnx3he2oudmr35x2xc2puodrr2kryy (47 B)`,
     }
   },
   {
@@ -479,7 +493,8 @@ const blob = [
     slug: 'blobs-list-collections',
     arguments: [],
     examples: {
-      console: '> blobs list collections'
+      console: `> blobs list collections
+"auto-2024-08-20T17:49:54.244Z": myumj2a42x6ky72erzt4djhu3ya46h2e7sp4ibqzew2ne4xnbpua 3 blobs (0 B)`
     }
   },
   {
@@ -534,7 +549,6 @@ const blob = [
       }
     ],
     examples: {
-      console: '> blobs delete blob'
     }
   },
   {
@@ -559,7 +573,9 @@ const blob = [
       }
     ],
     examples: {
-      console: '> blobs share'
+      console: `> blobs share myumj2a42x6ky72erzt4djhu3ya46h2e7sp4ibqzew2ne4xnbpua
+Ticket for blob myumj2a42x6ky72erzt4djhu3ya46h2e7sp4ibqzew2ne4xnbpua (96 B)
+blobac3nrhjc3t5dj4yeofwsmabskbty7ifh2h7b747kvncgsdowhdxpuaaaabtcrrhidtk7zld7ishgpqne6tpadty7it6j7ragdes3juts5uf6q`
     }
   }
 ]

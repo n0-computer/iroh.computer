@@ -1,0 +1,49 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "blobs download",
+    description: "Download data to the running node&#39;s database and provide it"
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'blobs download', href: '/docs/api/blobs-get', current: true },
+    ]} />
+</div>
+
+# blobs download
+
+Download data to the running node&#39;s database and provide it {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| ticket or hash  | required | Ticket or Hash to use |
+| address  |  | Additional socket address to use to contact the node. Can be used multiple times |
+| relay-url  |  | Override the relay URL to use to contact the node |
+| recursive  |  | Override to treat the blob as a raw blob or a hash sequence |
+| override-addresses  |  | If set, the ticket&#39;s direct addresses will not be used |
+| node  |  | NodeId of the provider |
+| out  |  | Directory or file in which to save the file(s) |
+| stable  |  | If set, the data will be moved to the output directory, and iroh will assume that it will not change |
+| tag  |  | Tag to tag the data with |
+| queued  |  | If set, will queue the download in the download queue |
+
+
+
+## Examples
+
+<CodeGroup title="blobs download">
+```text {{ title: 'console' }}
+> blobs get his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a --address 192.168.0.15:41918 --node w3mj2iw47i2pgbdrnutaamsqm6h2bj6r7yp7h2vliruq3vry535a
+Fetching: his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a
+Transferred 14.20 KiB in 0 seconds, 173.20 KiB/s
+```
+
+
+
+
+</CodeGroup>

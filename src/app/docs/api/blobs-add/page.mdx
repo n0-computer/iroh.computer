@@ -2,7 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs'
 export const metadata = {
     title: "blobs add",
-    description: "Add data from PATH to the running provider&#39;s database."
+    description: "Add data from PATH to the running node"
 }
 
 <div className='not-prose mb-5'>
@@ -14,15 +14,19 @@ export const metadata = {
 
 # blobs add
 
-Add data from PATH to the running provider&#39;s database. {{ className: 'lead' }}
+Add data from PATH to the running node {{ className: 'lead' }}
 
 
 ### Arguments
 
 | name | necessity | description |
 | ---- | --------- | ----------- |
-| path  | required | The path to the file or folder to add. |
-| in-place  |  | Add in place. Set this to true only if you are sure that the data in its current location will not change. |
+| source  | required | Path to a file or folder |
+| in-place  |  | Add in place |
+| tag  |  | Tag to tag the data with |
+| wrap  |  | Wrap the added file or directory in a collection |
+| filename  |  | Override the filename used for the entry in the created collection |
+| no-ticket  |  | Do not print the all-in-one ticket to get the added data from this node |
 
 
 
