@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
-"@number0/iroh@file:../../../../opensource/iroh-ffi/iroh-js":
+"@number0/iroh-darwin-arm64@0.22.1-test5":
   version "0.22.1-test5"
-  resolved "file:../../../../opensource/iroh-ffi/iroh-js"
+  resolved "https://registry.npmjs.org/@number0/iroh-darwin-arm64/-/iroh-darwin-arm64-0.22.1-test5.tgz"
+  integrity sha512-zImGnJZFkfo6JKL2lg7m664AyeXFbS8ym3zLb0/qklbOW3XUMwuhcg8DwXA5n0u6ob9ysNN85peWJLEtiA6ThQ==
+
+"@number0/iroh-darwin-universal@0.22.1-test5":
+  version "0.22.1-test5"
+  resolved "https://registry.npmjs.org/@number0/iroh-darwin-universal/-/iroh-darwin-universal-0.22.1-test5.tgz"
+  integrity sha512-yPaCIyL6ZLn4AdsF0iBVCsRyOP0OTzCPaziE3e+/g6k0/2GlnhKzocLOJf20pcJO5xAnzmjX8+KYStVFPzAnWQ==
+
+"@number0/iroh@=0.22.1-test5":
+  version "0.22.1-test5"
+  resolved "https://registry.npmjs.org/@number0/iroh/-/iroh-0.22.1-test5.tgz"
+  integrity sha512-xMyLNKSyjpEXAcwgXmBKUFYvDzI+HJIPLF77sMMPPyvo1VgYAxFi0B/TbPRM/kfUA8V7PG2Ji3IJtOJuoAHFLQ==
+  optionalDependencies:
+    "@number0/iroh-android-arm-eabi" "0.22.1-test5"
+    "@number0/iroh-android-arm64" "0.22.1-test5"
+    "@number0/iroh-darwin-arm64" "0.22.1-test5"
+    "@number0/iroh-darwin-universal" "0.22.1-test5"
+    "@number0/iroh-linux-arm-gnueabihf" "0.22.1-test5"
+    "@number0/iroh-linux-arm-musleabihf" "0.22.1-test5"
+    "@number0/iroh-linux-arm64-gnu" "0.22.1-test5"
+    "@number0/iroh-linux-arm64-musl" "0.22.1-test5"
+    "@number0/iroh-linux-x64-gnu" "0.22.1-test5"
+    "@number0/iroh-linux-x64-musl" "0.22.1-test5"
+    "@number0/iroh-win32-arm64-msvc" "0.22.1-test5"
+    "@number0/iroh-win32-x64-msvc" "0.22.1-test5"
