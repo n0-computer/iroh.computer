@@ -1,0 +1,169 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-08-30',
+  title: 'iroh 0.23.0 - Welcoming Node.js to the family!',
+  description: 'Iroh 0.23.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for direct connections, moving data, and syncing state.
+
+We have exciting news! Iroh is now available for node.js. We’ll walk through how you can get started using iroh in your node projects, as well as talking about a few major api changes in the iroh library and CLI.
+
+## 🐢 Node.js
+
+Starting with iroh in `node.js` is as simple as adding `@number0/iroh` as a dependency. We also have started to update our docs on [iroh.computer](https://www.iroh.computer/docs/api) to add examples written in javascript. 
+
+We’ve release our package through [npm](https://www.npmjs.com/package/@number0/iroh). If you want to take at how we use `napi` to generate our  `node.js` bindings, head over to our `iroh-ffi` repo, specifically the [iroh-js](https://github.com/n0-computer/iroh-ffi/tree/main/iroh-js) section.
+
+## ☎️  The internal address book, why we changed `connections` to `remotes`
+
+The API methods and structs that were previously called `connection` and `ConnectionInfo` have been changed to `remote` and `RemoteInfo`. 
+
+Why? Well, it turns out we were lying to you a bit, sorry!
+
+The information returned in a `ConnectionInfo`, was not necessarily information on nodes that we have ever **connected** to. And when you, as a user, call an API named `connections`...you are probably expecting just that. But it turns out that we have information on nodes that we are not currently connected to, nodes we’ve connected to before, nodes that we’ve discovered addresses for but have never tried to connect to, etc.
+
+So instead, that information is now called a `RemoteInfo`, ie, information about a remote node. In the future, as our internal address book gets more sophisticated, we will bring you tools to more easily filter out nodes that you are currently communicating with. For now, you can take a look at the `RemoteInfo` and see what `conn_type: ConnectionType` you currently have with that node. 
+
+Checkout [PR#2610](https://github.com/n0-computer/iroh/issues/2610) for more details.
+
+## 🖥️ Letting `net` stand on its own
+
+Beyond the `connection / remote` rename, we’ve also restructured things a bit on our API and CLI, specifically around how you access the networking methods using an `iroh` node.
+
+Previously, the `net` methods were grouped with the `node` methods. We’ve pulled this part.
+
+```rust
+// lets say you want to get the addresses of our iroh node:
+let node = iroh::node::Node::memory().spawn().await?;
+// previously you would do:
+// let node_id = node.node().node_addr().await?;
+// now:
+let addr = node.net().node_addr().await?;
+```
+
+The `status`, `stats`, and `shutdown` methods have been moved “up a level” and are now directly accessible on the `iroh::node::Node`.
+
+This is reflected in the CLI as well, with `iroh status`, `iroh stats`, and `iroh shutdown` now top level commands:
+
+```rust
+Usage: iroh [OPTIONS] <COMMAND>
+
+Commands:
+  start     Start an iroh node
+  console   Open the iroh console
+  docs      Manage documents
+  authors   Manage document authors
+  blobs     Manage blobs
+  net       Manage the iroh network
+  gossip    Manage gossip
+  tags      Manage tags
+  stats     Get statistics and metrics from the running node
+  status    Get status of the running node
+  shutdown  Shutdown the running node
+  doctor    Diagnostic commands for the relay protocol
+```
+
+The commands that used to be nested under `iroh node` are now nested under `iroh net`:
+
+```rust
+Usage: iroh net [OPTIONS] <COMMAND>
+
+Commands:
+  remote-list    Get information about the different remote nodes
+  remote         Get information about a particular remote node
+  node-addr      Get the node addr of this node
+  add-node-addr  Add this node addr to the known nodes
+  home-relay     Get the relay server we are connected to
+```
+
+Take a look at [PR#2642](https://github.com/n0-computer/iroh/issues/2642) for more details.
+
+## 🍪 Baking up a new batch of blob APIs
+
+### Batch
+
+For complex update operations, there is a [`batch`](https://docs.rs/iroh/latest/iroh/client/blobs/struct.Client.html#method.batch) API that allows you to add multiple blobs in a single logical batch.
+
+Operations in a batch return [temporary tags](https://docs.rs/iroh/latest/iroh/blobs/struct.TempTag.html) that protect the added data from garbage collection as long as the batch is alive.
+
+To store the data permanently, a temp tag needs to be upgraded to a permanent tag using [`persist`](https://docs.rs/iroh/latest/iroh/client/blobs/struct.Batch.html#method.persist) or [`persist_to`](https://docs.rs/iroh/latest/iroh/client/blobs/struct.Batch.html#method.persist_to).
+
+Check out [PR#2545](https://github.com/n0-computer/iroh/pull/2545) for more details.
+
+### Events
+
+We have a `iroh_blobs::provider::CustomEventSender` trait that, when implemented, allows you to listen for events that happen on the provider. This gives you insight and allows you to react when a client has connected to the provider, a blob transfer has begun, finished, etc.
+
+However, when using `iroh` (rather than `iroh-blobs` directly), you previously had no way to add a `CustomEventSender`.
+
+Now you do! Using the `iroh::node::Builder::blob_events` method, pass down an `EventSender` that contains your `CustomEventSender` , and you can track and react to the events down in the provider!
+
+Check out [PR#2583](https://github.com/n0-computer/iroh/pull/2583) for more details.
+
+## ⚠️ Breaking Changes
+
+### Protocol Changes
+
+### API Changes
+
+- `iroh`
+    - No more `deref` of `iroh::net::Client` to `iroh::client::node::Node`
+    - `iroh::client::node` -> `iroh::client::net`
+    - `iroh::client::node::Node::shutdown` -> `iroh::client::Client::shutdown`
+    - `iroh::client::blobs::BlobStatus` has a new case `NotFound`
+    - `iroh::client::blobs::BlobStatus::Partial: size` is now a `BaoBlobSize` instead of a `u64`
+    - `V0` and `V1` of the `iroh_blobs` store are deprecated. Ensure data that is imported as `iroh_blobs::store::fs::Store::import_flat_store` is migrated before future versions, which won't support this.
+    - `client::node::Client::connection_info` -> `client::node::Client::remote_info`
+    - `client::node::Client::connections` -> `client::node::Client::remote_info_iter`
+- `iroh-cli`
+    - `--metrics-port` flag on the iroh cli is now `--metrics-addr`, eg: specify `127.0.0.1:9090` instead of `9090`
+    - `node connection-info` -> `node remote-info`
+    - `node connections` -> `node remote-list`
+- `iroh-blobs`
+    - Modifies `Event` enum:
+        - removes `CustomGetRequestReceived`
+        - adds `TransferProgress`
+    - `send_blob` now takes an `EventSender`
+    - trait `EventSender` has been renamed `CustomEventSender`
+    - the concrete (boxed) event sender is now called just `EventSender`
+    - `FlumeProgressSender` is now `AsyncChannelProgressSender`
+    - `iroh_blobs::store::fs::Store::import_flat_store` is deprecated. Ensure all data is migrated before future versions, which won't support this.
+    - `iroh_blobs::store::fs::FlatStorePaths` is deprecated. Ensure all data is migrated before future versions, which won't support this.
+    - `iroh-blobs::provider::transfer_collection` has been removed.
+- `iroh-net`
+    - `LocalSwarmDiscovery` is not longer `UnwindSafe`
+    - `endpoint::ConnectionInfo` -> `endpoint::RemoteInfo`
+    - `endpoint::ConnectionInfo::id` is removed since it's internal information.
+    - `endpoint::ConnectionInfo::last_alive_relay` is deprecated. Use `.relay_url.last_alive`
+    - `endpoint::Endpoint::connection_info` -> `endpoint::Endpoint::remote_info`
+    - `endpoint::Endpoint::connection_infos` -> `endpoint::Endpoint::remote_info_iter`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.23.0](https://github.com/n0-computer/iroh/releases/tag/v0.23.0).
+
+If you want to know what is coming up, check out the [0.24.0 milestone](https://github.com/n0-computer/iroh/milestone/30), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
