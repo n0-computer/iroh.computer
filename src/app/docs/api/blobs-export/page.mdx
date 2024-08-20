@@ -1,0 +1,41 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "blobs export",
+    description: "Export a blob from the internal blob store to the local filesystem"
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'blobs export', href: '/docs/api/blobs-export', current: true },
+    ]} />
+</div>
+
+# blobs export
+
+Export a blob from the internal blob store to the local filesystem {{ className: 'lead' }}
+
+
+### Arguments
+
+| name | necessity | description |
+| ---- | --------- | ----------- |
+| hash  | required | The hash to export |
+| out  | required | Directory or file in which to save the file(s) |
+| recursive  |  | Set to true if the hash refers to a collection and you want to export all children of the collection |
+| stable  |  | If set, the data will be moved to the output directory, and iroh will assume that it will not change |
+
+
+
+## Examples
+
+<CodeGroup title="blobs export">
+```text {{ title: 'console' }}
+> blobs export his7xcvl5jc734mwbtgtkkvxeafrdcitmg2jvdmxk7ri7abgr33a ./very_important.txt
+```
+
+
+
+
+</CodeGroup>

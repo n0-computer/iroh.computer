@@ -16,7 +16,7 @@ export const metadata = {
 
 <%= command.description %> {{ className: 'lead' }}
 
-<% if (command.arguments) { %>
+<% if (command.arguments && command.arguments.length > 0) { %>
 ### Arguments
 
 | name | necessity | description |
