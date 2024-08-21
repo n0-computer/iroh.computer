@@ -45,27 +45,13 @@ Type `help` for a list of commands.
 >
 ```
 
-## Create an Author
-
-Before we can work with documents, we need to create an _author_, which is an identity that will represent us while we work.
-
-<CodeGroup tag="CONSOLE">
-```text
-> author new --switch
-fhu3uk4wc2hl2e45nepyyic5u2tv37gmnmeoev4ka2bgieqhhz7a
-Active author is now fhu3uk4wc2hl2e45
-```
-</CodeGroup>
-
-We use the `--switch` flag to make this author the default author for the console. This means we don't have to pass the author ID to every command.
-
 ## Create a Document
 
 Next, let's create a document. Again we'll use the `--switch` the flag to use this document as the default document for the console session:
 
 <CodeGroup tag="CONSOLE">
 ```text
-> doc new --switch
+> docs new --switch
 x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
 Active doc is now x5qffedimrovdpsr
 
@@ -79,7 +65,7 @@ Next let's set a value in the document, and read it back.
 <CodeGroup tag="CONSOLE">
 ```
 author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> doc set foo bar
+> docs set foo bar
 6lujp3wx2idm3bk5iqkzr6ssdk6hlkuwsu7jpqbqzfqsymgbfe6q
 
 author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
@@ -97,7 +83,7 @@ Now let's actually sync this document with a second node. To disambiguate we'll 
 <CodeGroup tag="CONSOLE" title="Node A">
 ```
 author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> doc share write
+> docs share write
 doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
 ```
 </CodeGroup>
@@ -137,16 +123,16 @@ Now we can join the document from `Node B`, pasting in the value of the ticket w
 
 <CodeGroup tag="CONSOLE" title="Node B">
 ```text
-> author new --switch
+> authors new --switch
 ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
 Active author is now ksdx5fs4kwjmoaca
 
-> doc join --switch doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
+> docs join --switch doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
 x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
 Active doc is now x5qffedimrovdpsr
 
 author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
-> doc get foo
+> docs get foo
 @fhu3uk4wc2hl2e45: foo = "bar" (3 B)
 
 author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr

@@ -187,34 +187,39 @@ function NavigationGroup({group, className}) {
 
 export const navigation = [
   {
-    title: 'Guides',
+    title: 'Getting Started',
     links: [
-      {title: 'Docs Home', href: '/docs'},
       {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
-      {title: 'SDKs', href: '/docs/sdks'},
     ],
   },
-  {title: 'Concepts',
+  {title: 'Components',
     links: [
-      {title: 'Layers', href: '/docs/layers'},
-      {title: 'Documents', href: '/docs/layers/documents'},
+      {title: 'Overview', href: '/docs/layers'},
+      {title: 'Net', href: '/docs/layers/networking'},
       {title: 'Blobs', href: '/docs/layers/blobs'},
-      {title: 'Networking', href: '/docs/layers/networking'},
-      {title: 'Tickets', href: '/docs/concepts/tickets'},
+      {title: 'Gossip', href: '/docs/layers/gossip' },
+      {title: 'Documents', href: '/docs/layers/documents'},
     ],
   },
   {
     title: 'Resources',
     links: [
+      {title: 'API', href: '/docs/api'},
+      {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
-      {title: 'Config', href: '/docs/reference/config'},
-      {title: 'HTTP API', href: '/docs/reference/http-api'},
-      {title: 'IPFS', href: '/docs/ipfs'},
+      {title: 'Tickets', href: '/docs/concepts/tickets'},
       // TODO: finish first draft of spec
       // {title: 'Spec', href: '/spec'},
     ],
   },
+  {
+    title: 'Reference',
+    links: [
+      {title: 'Config', href: '/docs/reference/config'},
+      {title: 'HTTP API', href: '/docs/reference/http-api'},
+    ]
+  }
 ];
 
 export function Navigation(props) {

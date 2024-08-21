@@ -3,7 +3,6 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
-import logoGo from '@/images/logos/go.svg';
 import logoKotlin from '@/images/logos/kotlin.svg';
 import logoPython from '@/images/logos/python.svg';
 import logoRust from '@/images/logos/rust.svg';

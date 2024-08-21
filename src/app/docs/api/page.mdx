@@ -4,32 +4,32 @@ import ApiCommands from '@/components/ApiCommands'
 import commands from '../../../../api-code-examples/api'
 
 export const metadata = { 
-  title: 'iroh commands',
-  description: 'command documentation, code examples, and console prompts'
+  title: 'iroh API',
+  description: 'API reference, code examples, and console prompts'
 }
 
 # API
 
-Iroh has a single application programming interface (API), implemented in numerous languages. This reference covers what each API command does, with code examples for all supported languages. {{className: 'lead' }}
+Iroh has a single application programming interface (API), implemented in numerous languages. This reference covers what each API method does, with code examples for supported languages. {{className: 'lead' }}
 
 
-## Document Commands
+## Documents
 
-Commands for managing & manipulating [documents](/docs/layers/documents)
+Manage & manipulate [documents](/docs/layers/documents): syncable, multi-writer key-value stores.
 
 <ApiCommands commands={commands.doc} />
 
 ---
 
-## Author Commands
+## Authors
 
-[Author](/docs/layers/documents#authors-and-permissions) commands manage document editors & viewers.
+[Authors](/docs/layers/documents#authors-and-permissions) manage & view documents.
 
 <ApiCommands commands={commands.author} />
 
 ---
 
-## Blob Commands
+## Blobs
 
 [Blobs](/docs/layers/blobs) are opaque content-addressed byte sequences.
 
@@ -39,8 +39,7 @@ Commands for managing & manipulating [documents](/docs/layers/documents)
 
 ## Net
 
-
-Api to manage [the Iroh network](/docs/layers/networking) 
+Manage [remote node connections](/docs/layers/networking) 
 
 <ApiCommands commands={commands.net} />
 
