@@ -1,0 +1,35 @@
+{/* THIS FILE IS GENERATED FROM A TEMPLATE. See scripts/generate-api-pages.js for more */}
+import Breadcrumbs from '@/components/Breadcrumbs'
+export const metadata = {
+    title: "net remote-list",
+    description: "Get information about the different remote nodes"
+}
+
+<div className='not-prose mb-5'>
+    <Breadcrumbs pages={[
+        { name: 'API', href: '/docs/api', current: false },
+        { name: 'net remote-list', href: '/docs/api/net-remote-list', current: true },
+    ]} />
+</div>
+
+# net remote-list
+
+Get information about the different remote nodes {{ className: 'lead' }}
+
+
+
+## Examples
+
+<CodeGroup title="net remote-list">
+```text {{ title: 'console' }}
+> net remote-list
+ current time: Tue, 20 Aug 2024 21:30:33 +0000
+
+ node id                                               relay  conn type  latency    last used 
+ ewrl7gvv6ndtqmtvd2s6tmblvcah3yl7mn4wyyftem7dtjkrlbvq         direct     1ms,527μs  3s
+```
+
+
+
+
+</CodeGroup>
