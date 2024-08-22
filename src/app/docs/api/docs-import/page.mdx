@@ -164,7 +164,7 @@ await doc.importFile(author, key, filePath, true, (error, progress) => {
 const entry = await doc.getExact(author, key, false)
 const fromDocument = await node.blobs.readToBytes(entry.hash)
 
-// Prove taht doc contents matches imported file contents
+// Prove that doc contents matches imported file contents
 assert.equal("oh hi there!", Buffer.from(fromDocument).toString())
 ```
 
