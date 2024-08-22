@@ -687,6 +687,7 @@ const api = {
   net,
   docs,
   authors,
+  tags,
   blobs
 };
 
