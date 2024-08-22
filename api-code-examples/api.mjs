@@ -409,6 +409,50 @@ author:2ziftxhhind7atie
   }
 ]
 
+const tags = [
+  {
+    name: 'tags list',
+    description: 'List all tags',
+    slug: 'tags-list',
+    arguments: [],
+    examples: {
+      console: `> blobs add README.md --wrap --tag tagged-collection
+# blob is added as a collection
+> blobs add README.md --tag tagged-blob
+> tags list
+"tagged-collection": 27xwmw3552lwdme4t35yrlq6ny2tsq3b2wfegrxgmhkfb53vrxqq (HashSeq)
+"tagged-blob": 7lnuloaubh7sysukojybgp5xwgwe6jnochxy3ew4fxpzzjbuvpiq (Raw)`
+    }
+  },
+  {
+    name: 'tags delete',
+    description: 'Delete a tag',
+    slug: 'tags-delete',
+    arguments: [
+      {
+        name: 'tag',
+        necessity: 'required',
+        description: ''
+      },
+      {
+        name: 'hex',
+        necessity: '',
+        description: ''
+      }
+    ],
+    examples: {
+      console: `> tags list
+"tagged-blob": 7lnuloaubh7sysukojybgp5xwgwe6jnochxy3ew4fxpzzjbuvpiq (Raw)
+"tagged-collection": 27xwmw3552lwdme4t35yrlq6ny2tsq3b2wfegrxgmhkfb53vrxqq (HashSeq)
+
+> tags delete tagged-collection
+
+> tags list
+"tagged-blob": 7lnuloaubh7sysukojybgp5xwgwe6jnochxy3ew4fxpzzjbuvpiq (Raw)`
+    }
+  }
+]
+
 const blob = [
   {
     name: 'blobs add',
@@ -759,6 +803,7 @@ const api = {
   net,
   doc,
   author,
+  tags,
   blob
 };
 
