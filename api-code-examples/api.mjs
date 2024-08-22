@@ -281,45 +281,130 @@ doc:ktrygcpx
 const author = [
   {
     name: 'authors switch',
-    description: 'Set the active author for doc insertion (only works within the console).',
+    description: 'Set the active author (only works within the Iroh console)',
     slug: 'authors-switch',
     arguments: [
-      { name: 'id', necessity: 'required', description: 'Id of the author to switch to.' }
+      {
+        name: 'author',
+        necessity: 'required',
+        description: ''
+      }
     ],
     examples: {
-      console: `# switch from one active author to another
-author:i3vpd4e7…
-> authors switch wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq
-Active author is now wkl4cgry…
+      console: `author:2ziftxhhind7atie 
+> authors switch ofnu75vdzmg3wweuz6yamx65lryav62nk7zdjxtexvzcmiqzoloa
+Active author is now ofnu75vdzmg3wweu
 
-author:wkl4cgry…
->`,
-    }
-  },
-  {
-    name: 'authors list',
-    description: 'List authors.',
-    slug: 'authors-list',
-    examples: {
-      console: `> authors list
-i3vpd4e7coeonwv6otni36bdux73opig5du6zjekvnl3c64gn4ua
-wkl4cgrykxvcvr6pjnbvymrzm7h4je7d4ztszp35xfnk2rnflcxq`,
+author:ofnu75vdzmg3wweu 
+>`
     }
   },
   {
     name: 'authors create',
-    description: 'Create a new author.',
+    description: 'Create a new author',
     slug: 'authors-create',
     arguments: [
-      { name: 'switch', necessity: '', description: 'Switch to the created author (only in the iroh console).' }
+      {
+        name: 'switch',
+        necessity: '',
+        description: 'Switch to the created author (only in the Iroh console)'
+      }
     ],
     examples: {
-      console: `> authors create --switch
-2rkuvpk4prtjbqh7rnksaet3a3hdvrrz5mqinjcjbutklotort5a
-Active author is now 2rkuvpk4…
+      console: `author:ofnu75vdzmg3wweu 
+> authors create --switch
+nybdmk5526rlj4xcbr5urwhmy3at7z6rgn7dchkxhfsuydiibgca
+Active author is now nybdmk5526rlj4xc
 
-author:2rkuvpk4…
->`,
+author:nybdmk5526rlj4xc 
+>`
+    }
+  },
+  {
+    name: 'authors delete',
+    description: 'Delete an author',
+    slug: 'authors-delete',
+    arguments: [
+      {
+        name: 'author',
+        necessity: 'required',
+        description: ''
+      }
+    ],
+    examples: {
+      console: `author:6znvk7u4pw4wqwlu 
+> authors list
+ofnu75vdzmg3wweuz6yamx65lryav62nk7zdjxtexvzcmiqzoloa
+2ziftxhhind7atieqmppynzuiu6w6btadbizarqzi45hj3o5ltka
+6znvk7u4pw4wqwlup3qa2a4gs3dwn3zpeal7y55vhg2jcwgqa5ma
+
+author:6znvk7u4pw4wqwlu 
+> authors delete ofnu75vdzmg3wweuz6yamx65lryav62nk7zdjxtexvzcmiqzoloa
+Deleted author ofnu75vdzmg3wweu`
+    }
+  },
+  {
+    name: 'authors export',
+    description: 'Export an author',
+    slug: 'authors-export',
+    arguments: [
+      {
+        name: 'author',
+        necessity: 'required',
+        description: ''
+      }
+    ],
+    examples: {
+      console: `> authors export 2ziftxhhind7atieqmppynzuiu6w6btadbizarqzi45hj3o5ltka
+44vcteuiwhstlm6rs5ufzr3hbmdlwzahceundngymcmtdvxr5dxa`
+    }
+  },
+  {
+    name: 'authors import',
+    description: 'Import an author',
+    slug: 'authors-import',
+    arguments: [
+      {
+        name: 'author',
+        necessity: 'required',
+        description: ''
+      }
+    ],
+    examples: {
+      console: `> authors import qey4omlgcbx3gnve7ycaiyz2uh4twrxaiructiuynwosl4pfky4q
+Imported 6znvk7u4pw4wqwlu`
+    }
+  },
+  {
+    name: 'authors default',
+    description: 'Print the default author for this node',
+    slug: 'authors-default',
+    arguments: [
+      {
+        name: 'switch',
+        necessity: '',
+        description: 'Switch to the default author (only in the Iroh console)'
+      }
+    ],
+    examples: {
+      console: `author:6znvk7u4pw4wqwlu 
+> authors default --switch
+2ziftxhhind7atieqmppynzuiu6w6btadbizarqzi45hj3o5ltka
+Active author is now 2ziftxhhind7atie
+
+author:2ziftxhhind7atie 
+> `
+    }
+  },
+  {
+    name: 'authors list',
+    description: 'List authors',
+    slug: 'authors-list',
+    arguments: [],
+    examples: {
+      console: `> authors list
+2ziftxhhind7atieqmppynzuiu6w6btadbizarqzi45hj3o5ltka
+6znvk7u4pw4wqwlup3qa2a4gs3dwn3zpeal7y55vhg2jcwgqa5ma`
     }
   }
 ]
