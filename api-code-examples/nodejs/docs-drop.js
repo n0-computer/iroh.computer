@@ -17,5 +17,5 @@ assert.equal(docs.length, 1)
 await node.docs.dropDoc(doc.id())
 
 // we have zero documents
-docs = node.docs.list()
+docs = await node.docs.list()
 assert.equal(docs.length, 0)
