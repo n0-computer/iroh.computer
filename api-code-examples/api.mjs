@@ -1,5 +1,5 @@
 
-const doc = [
+const docs = [
   {
     name: 'docs delete',
     description: 'Delete all document entries below a key prefix.',
@@ -278,7 +278,7 @@ doc:ktrygcpx
 
 ]
 
-const author = [
+const authors = [
   {
     name: 'authors switch',
     description: 'Set the active author (only works within the Iroh console)',
@@ -453,7 +453,7 @@ const tags = [
   }
 ]
 
-const blob = [
+const blobs = [
   {
     name: 'blobs add',
     description: 'Add data from PATH to the running node',
@@ -801,10 +801,9 @@ Home Relay: https://foo.bar/`
 
 const api = {
   net,
-  doc,
-  author,
-  tags,
-  blob
+  docs,
+  authors,
+  blobs
 };
 
 export default api;
