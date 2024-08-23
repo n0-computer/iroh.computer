@@ -189,35 +189,27 @@ export const navigation = [
   {
     title: 'Getting Started',
     links: [
-      {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Install', href: '/docs/install'},
-    ],
-  },
-  {title: 'Components',
-    links: [
-      {title: 'Overview', href: '/docs/layers'},
-      {title: 'Net', href: '/docs/layers/networking'},
-      {title: 'Blobs', href: '/docs/layers/blobs'},
-      {title: 'Gossip', href: '/docs/layers/gossip' },
-      {title: 'Documents', href: '/docs/layers/documents'},
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      {title: 'API', href: '/docs/api'},
+      {title: 'Quickstart', href: '/docs/quickstart'},
       {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
+    ],
+  },
+  {title: 'Concepts',
+    links: [
+      {title: 'Components', href: '/docs/components'},
+      {title: 'Net', href: '/docs/components/net'},
+      {title: 'Blobs', href: '/docs/components/blobs'},
+      {title: 'Gossip', href: '/docs/components/gossip' },
+      {title: 'Documents', href: '/docs/components/docs'},
       {title: 'Tickets', href: '/docs/concepts/tickets'},
-      // TODO: finish first draft of spec
-      // {title: 'Spec', href: '/spec'},
     ],
   },
   {
     title: 'Reference',
     links: [
+      {title: 'API', href: '/docs/api'},
       {title: 'Config', href: '/docs/reference/config'},
-      {title: 'HTTP API', href: '/docs/reference/http-api'},
     ]
   }
 ];

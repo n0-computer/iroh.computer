@@ -1,0 +1,15 @@
+
+# Components
+
+Iroh is organized into four _components_. Each higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.{{className: 'lead'}}
+
+<Concepts>
+  <Concept name="Documents" href="/docs/components/docs" description="Realtime, multiwriter key-value sync" />
+  <Concept name="Blobs" href="/docs/components/blobs" description="Verifiable data transfer" />
+  <Concept name="Gossip" href="/docs/components/gossip" description="Broadcast messages to nodes by topic" />
+  <Concept name="Networking" href="/docs/components/networking" description="Connect any set of devices, no matter where they are" />
+</Concepts>
+
+Most users can and should be able to build entire applications with only the documents component. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blobs component, or build your own networking protocol using the networking component.
+
+As an example, you may be building a standalone chat app. The messages and all attachments in a chat can be stored in a document. Iroh could handle syncing & caching all messages & attachments for with a document, and you could extend a "user is typing" protocol directly on iroh-net.
