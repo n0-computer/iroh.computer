@@ -1,0 +1,83 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'matheus23',
+  date: '2024-09-4',
+  title: 'iroh 0.24.0 - Upgrading to Quinn 11',
+  description: 'Iroh 0.24.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for direct connections, moving data, and syncing state.
+
+We’ve squashed some bugs, written some refactors, but by far the biggest change in this release is updating our `quinn` dependency from 0.10 to 0.11. 
+
+## 🛤️ Upgrading to Quinn 0.11
+
+We’ve been working on this upgrade on-and-off since March earlier this year and have spent significant amounts of time to make sure we don’t accidentally introduce new, subtle bugs when rolling this out.
+
+This was a disruptive change, because the coupling between `quinn` and `iroh-net` is quite tight: iroh talks to `quinn` via the `AsyncUdpSocket` trait. This way we can abstract multiple possible network paths, such as multiple relays or actual IPv4 or IPv6 UDP sockets. In the recent update, this interface was refactored and so this meant some breakage for us.
+
+In the future we hope the way `iroh-net` and `quinn` interface will become a lot cleaner once [QUIC multipath](https://multipath-quic.org/) gets implemented.
+
+### ✏️ API Changes
+
+Okay, but what does this mean for you, the `iroh-net` user?
+
+In terms of APIs, very few things change. Because we re-export `quinn` data types, you’ll feel some of the [changes from quinn 0.10 to quinn 0.11](https://github.com/quinn-rs/quinn/releases/tag/0.11.0). In short:
+
+- `SendStream::finish` is now split into `finish` and `stopped`, and
+- there’s another intermediate step to accepting incoming connections, so `Endpoint::accept` now returns `Incoming` instead of `Connecting`. And you can `Incoming::retry`, or `Incoming::reject`, in addition to `Incoming::accept`, which gives you back your `Connecting` that you’re used to!
+
+Keep in mind that `Incoming::accept` may fail for various reasons, some of which resulting from benign network behavior, so don’t treat errors there as fatal. Ideally just log and move on.
+
+### 🦾 Performance
+
+With big changes in the deepest parts of our stack come changes to performance in `iroh`, too.
+
+In some cases, performance improves, in some cases it regresses. We continually monitor `iroh`’s performance, we even post our numbers publicly, see [https://perf.iroh.computer/](https://perf.iroh.computer/), so here’s a short summary of what we’ve found so far:
+
+- Local benchmarks of raw send/receive with `iroh-net` have seen roughly 1.05x better throughput.
+- Benchmarks that send data between two nodes 1:1 using `iroh start --add` and another `iroh blob get` have seen throughput regressions by as much as 0.6x. It’s still unclear why impact on `iroh-blobs` is much bigger than the impact on `iroh-net` (which `iroh-blobs` transfer is based on).
+- Benchmarks that handle multiple nodes at once have generally seen improvements, e.g. our 1-to-10 benchmark has seen a 1.45x improvement. This is due to changes in how `quinn` handles multiple connections: Each *connection* now has its own “driver” (loops handling messages), instead of a “driver” per the entire *endpoint.*
+
+### 🤝 Transitive dependencies
+
+By updating to the newest dependencies, we were generally able to reduce duplicated dependencies, thus reducing the dependency footprint of `iroh` in general.
+
+For example, with `iroh` v0.24, it’s not possible to only depend on a single copy of rustls version v0.23 in the dependency tree.
+
+We also transitively benefit from dependency upgrades in e.g. rustls’ `pki_types`, which [now works in browsers](https://github.com/rustls/pki-types/pull/32). This helps us move further along in our plan to compile iroh-net to Wasm.
+
+## ⚠️ Breaking changes
+
+- `iroh-net`
+    - swarm discovery will no longer send consecutive repeated values
+    - `iroh::net::endpoint::Endpoint::accept` now returns `Incoming` instead of `Connecting`. This allows rejecting incoming connections earlier, notify the initiating side to retry later and more. To get back `Connecting`, simply use `Incoming::accept()`. If all you did with `Connecting` before was to `.await` it, you can do the same with `Incoming`, too, and get back a `Connection`.
+    - Removed `iroh::net::endpoint::Builder::concurrent_connections`. The amount of concurrent connections is now controlled by either calling `Incoming::accept` or `Incoming::refuse` after `Endpoint::accept`.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.24.0](https://github.com/n0-computer/iroh/releases/tag/v0.23.0).
+
+If you want to know what is coming up, check out the [0.25.0 milestone](https://github.com/n0-computer/iroh/milestone/31), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
