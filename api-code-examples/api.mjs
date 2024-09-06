@@ -1,4 +1,3 @@
-
 const docs = [
   {
     name: 'docs delete',
@@ -409,6 +408,29 @@ author:2ziftxhhind7atie
   }
 ]
 
+const gossip = [
+  {
+    name: 'gossip subscribe',
+    description: 'Subscribe to a gossip topic',
+    slug: 'gossip-subscribe',
+    arguments: [
+      {
+        name: 'topic',
+        necessity: 'required',
+        description: 'The topic to subscribe to'
+      },
+      {
+        name: 'bootstrap',
+        necessity: '',
+        description: 'one or more nodeIDs to bootstrap the subscription (nodes already hosting the topic)'
+      }
+    ],
+    examples: {
+      console: `> gossip subscribe --topic your-topic-name-here`
+    }
+  },
+]
+
 const tags = [
   {
     name: 'tags list',
@@ -804,6 +826,7 @@ const api = {
   docs,
   authors,
   tags,
+  gossip,
   blobs
 };
 
