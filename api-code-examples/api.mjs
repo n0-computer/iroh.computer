@@ -1,4 +1,3 @@
-
 const docs = [
   {
     name: 'docs delete',
@@ -247,7 +246,7 @@ gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmru
     description: 'Set the active document (only works within the Iroh console).',
     slug: 'docs-switch',
     arguments: [
-      { name: 'id', necessity: 'required', description: 'The [identifier](/docs/layers/documents#document-identifiers) of the document to switch to.' },
+      { name: 'id', necessity: 'required', description: 'The [document identifier](/docs/components/documents#document-identifiers) of the document to switch to.' },
     ],
     examples: {
       console: `> docs create
@@ -407,6 +406,29 @@ author:2ziftxhhind7atie
 6znvk7u4pw4wqwlup3qa2a4gs3dwn3zpeal7y55vhg2jcwgqa5ma`
     }
   }
+]
+
+const gossip = [
+  {
+    name: 'gossip subscribe',
+    description: 'Subscribe to a gossip topic',
+    slug: 'gossip-subscribe',
+    arguments: [
+      {
+        name: 'topic',
+        necessity: 'required',
+        description: 'The topic to subscribe to'
+      },
+      {
+        name: 'bootstrap',
+        necessity: '',
+        description: 'one or more nodeIDs to bootstrap the subscription (nodes already hosting the topic)'
+      }
+    ],
+    examples: {
+      console: `> gossip subscribe --topic your-topic-name-here`
+    }
+  },
 ]
 
 const tags = [
@@ -804,6 +826,7 @@ const api = {
   docs,
   authors,
   tags,
+  gossip,
   blobs
 };
 

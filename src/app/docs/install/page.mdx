@@ -13,6 +13,7 @@ Iroh is meant be used as a library by importing one of the existing Iroh SDKs, b
 </div>
 </Note>
 
+## Install via bash script
 
 Run this script to get started:
 ```bash
@@ -34,7 +35,17 @@ $ iroh --help
 
 ## Docker Containers
 
-The Iroh CLI is not currently available as a docker image. We're working on it.
+Iroh is available as a Docker container. To run the latest version, run:
+
+```bash
+docker pull n0computer/iroh
+```
+
+We also make supporting binaries like the iroh relay & iroh DNS available on [docker hub](https://hub.docker.com/u/n0computer)
+
+## NixOS
+
+Iroh is available as a [nix flake](https://mynixos.com/nixpkgs/package/iroh)
 
 ## Building from Source
 Details on how to build from source can be found in the iroh [Developer documentation](https://github.com/n0-computer/iroh).

@@ -15,7 +15,7 @@ Iroh has a single application programming interface (API), implemented in numero
 
 ## Documents
 
-Manage & manipulate [documents](/docs/layers/documents): syncable, multi-writer key-value stores.
+Manage & manipulate [documents](/docs/components/docs): syncable, multi-writer key-value stores.
 
 <ApiCommands commands={commands.docs} />
 
@@ -23,9 +23,17 @@ Manage & manipulate [documents](/docs/layers/documents): syncable, multi-writer 
 
 ## Authors
 
-[Authors](/docs/layers/documents#authors-and-permissions) manage & view documents.
+[Authors](/docs/components/docs#authors-and-permissions) manage & view documents.
 
 <ApiCommands commands={commands.authors} />
+
+---
+
+## Gossip
+
+[Gossip](/docs/components/gossip) broadcasts messages to a group of nodes.
+
+<ApiCommands commands={commands.gossip} />
 
 ---
 
@@ -39,7 +47,7 @@ Tags are local, human-readable names for things iroh should keep.
 
 ## Blobs
 
-[Blobs](/docs/layers/blobs) are opaque content-addressed byte sequences.
+[Blobs](/docs/components/blobs) are opaque content-addressed byte sequences.
 
 <ApiCommands commands={commands.blobs} />
 
@@ -47,7 +55,7 @@ Tags are local, human-readable names for things iroh should keep.
 
 ## Net
 
-Manage [remote node connections](/docs/layers/networking) 
+Manage [remote node connections](/docs/components/networking) 
 
 <ApiCommands commands={commands.net} />
 
