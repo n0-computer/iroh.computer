@@ -33,7 +33,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 We chose QUIC as the transport protocol to underpin iroh on the network because it offers desirable user-facing features, such as multiple-ordered streams that do not block each other. However, we also chose QUIC for no small part because it sends UDP packets over the network. Leveraging UDP is instrumental in allowing us to do reliable hole-punching through firewalls and NAT routers to establish direct connections.
 
-We opted to use [Quinn](https://github.com/quinn-rs/quinn), a solid open-source implementation with all the features we needed for iroh. It allowed us to plug in our custom [MagicSocket](https://iroh.computer/docs/layers/networking#magic-sockets), which selects the best network path among multiple paths between iroh endpoints with the help of a relay server.
+We opted to use [Quinn](https://github.com/quinn-rs/quinn), a solid open-source implementation with all the features we needed for iroh. It allowed us to plug in our custom [MagicSocket](https://iroh.computer/docs/components/net#magic-sockets), which selects the best network path among multiple paths between iroh endpoints with the help of a relay server.
 
 We had great success integrating with the Quinn API. However, even with our success, we knew we would likely see some performance issues in iroh because we couldn’t integrate closely *enough* with certain QUIC features.
 

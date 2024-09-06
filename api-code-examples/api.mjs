@@ -246,7 +246,7 @@ gjfmivyaycuads6ek4asma3qacdtvs6waaaaaaaaaanctrkxaetag4aaq45mprsyystlwe66csxvqmru
     description: 'Set the active document (only works within the Iroh console).',
     slug: 'docs-switch',
     arguments: [
-      { name: 'id', necessity: 'required', description: 'The [identifier](/docs/layers/documents#document-identifiers) of the document to switch to.' },
+      { name: 'id', necessity: 'required', description: 'The [document identifier](/docs/components/documents#document-identifiers) of the document to switch to.' },
     ],
     examples: {
       console: `> docs create

@@ -43,9 +43,10 @@ Every key in a document points to a hash-verified blob of bytes. We say “blobs
 Iroh is organized into three _layers_. Each higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.
 
 <Concepts>
-  <Concept name="Documents" href="/docs/layers/documents" description="Collaborate on shared key-value tables of blobs with peers." />
-  <Concept name="Blobs" href="/docs/layers/blobs" description="Fetch and cache byte sequences by their hash." />
-  <Concept name="Connections" href="/docs/layers/connections" description="Open a connection to any available peer on the network." />
+  <Concept name="Documents" href="/docs/components/documents" description="Collaborate on shared key-value tables of blobs with peers." />
+  <Concept name="Blobs" href="/docs/components/blobs" description="Fetch and cache byte sequences by their hash." />
+  <Concept name="Gossip" href="/docs/components/gossip" description="Broadcast messages to a swarm of peers." />
+  <Concept name="Net" href="/docs/components/net" description="Open a connection to any available peer on the network." />
 </Concepts>
 
 Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the networking layer.
