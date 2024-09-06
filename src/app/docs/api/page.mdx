@@ -13,19 +13,11 @@ export const metadata = {
 Iroh has a single application programming interface (API), implemented in numerous languages. This reference covers what each API method does, with code examples for supported languages. {{className: 'lead' }}
 
 
-## Documents
+## Blobs
 
-Manage & manipulate [documents](/docs/layers/documents): syncable, multi-writer key-value stores.
+[Blobs](/docs/layers/blobs) are opaque content-addressed byte sequences.
 
-<ApiCommands commands={commands.docs} />
-
----
-
-## Authors
-
-[Authors](/docs/layers/documents#authors-and-permissions) manage & view documents.
-
-<ApiCommands commands={commands.authors} />
+<ApiCommands commands={commands.blobs} />
 
 ---
 
@@ -37,11 +29,11 @@ Tags are local, human-readable names for things iroh should keep.
 
 ---
 
-## Blobs
+## Gossip
 
-[Blobs](/docs/layers/blobs) are opaque content-addressed byte sequences.
+[Gossip](/docs/layers/gossip) is a way to share information with a group of peers.
 
-<ApiCommands commands={commands.blobs} />
+<ApiCommands commands={commands.tags} />
 
 ---
 
