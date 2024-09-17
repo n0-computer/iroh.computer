@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for direct connections, moving data, and syncing state.
 
-We’ve done many bug fixes this round, but we’d like to especially highlight two features. First, you are now able to bind to a specific interface, not just a specific port. And second, you can now write custom protocols in your native language to use on top of iroh connection in our `iroh` FFI languages (python, js, kotlin, and swift)!
+We’ve done many bug fixes this round, but we’d like to especially highlight two features. First, you are now able to bind to a specific interface, not just a specific port. And second, you can now write custom protocols in your native language to use on top of iroh connections in our FFI supported languages (python, js, kotlin, and swift)!
 
 ## 👏 Bind to a specific interface
 
@@ -60,7 +60,7 @@ If you do not specify specific addresses when building, `iroh-net` will bind to 
 
 We are extremely excited to bring one of the most important features from `iroh` to our other supported languages: the ability to write custom protocols ***in your native language*** on top of `iroh`.
 
-We hope that by offering custom protocols, we have opened up even more use cases for `iroh` in your stack. Now, you can rely on `iroh` for fast transfer of content addressed data using the `iroh-blobs` protocol AND any other custom protocols you need!  Our goal is that if you have an application that needs reliable direct connections, you can reach for `iroh` to fulfill your needs. 
+We hope that by offering custom protocols, we have opened up even more use cases for `iroh` in your stack. Now, you can rely on `iroh` for fast transfer of content addressed data using the `iroh-blobs` protocol AND any other custom protocols you need!  Our goal is that if you have an application that needs reliable direct connections, you can reach for `iroh` to fulfill those needs. 
 
 Here are examples from the different languages:
 
