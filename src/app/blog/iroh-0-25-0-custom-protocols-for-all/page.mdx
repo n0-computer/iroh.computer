@@ -1,0 +1,314 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-09-17',
+  title: 'iroh 0.25.0 - Custom Protocols For All!',
+  description: 'Iroh 0.25.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, the open-source distributed systems toolkit with tools for direct connections, moving data, and syncing state.
+
+We’ve done many bug fixes this round, but we’d like to especially highlight two features. First, you are now able to bind to a specific interface, not just a specific port. And second, you can now write custom protocols in your native language to use on top of iroh connection in our `iroh` FFI languages (python, js, kotlin, and swift)!
+
+## 👏 Bind to a specific interface
+
+Previously, we only allowed our users to supply a specific port to bind on, and we’d bind to the `Ipv4Addr::UNSPECIFIED` (`0.0.0.0`) and `Ipv6Addr::UNSPECIFIED` (`::`) addresses with that port.
+
+We now allow binding to a specific `SocketAddr` and have adjusted our APIs in `iroh-net::endpoint::Builder`  and `iroh::node::Builder` .
+
+### The Node Builder
+
+If you use the `iroh` crate to create a node, we now have a few different methods to bind to specific ports or socket addresses.
+
+If you previously used `iroh::node::Builder::bind(0)` to bind to a random port, now use `iroh::node::Builder::bind_random_port()`.
+
+To bind to a specific `SocketAddr`, use `iroh::node::Builder::bind_addr_v4` and `iroh::node::Builder::bind_addr_v6`.
+
+If you do not specify specific addresses when building, `iroh` will use the default IPv4 address `0.0.0.0::11204` and IPv6 address `::11205`.
+
+### The Endpoint Builder
+
+If you use the `iroh-net` crate directly, the API changes are similar, but the defaults are different.
+
+We’ve removed `iroh_net::endpoint::Builder::bind` in favor of `iroh:net::endpoint::Builder::bind_addr_v4` and `iroh_net::endpoint::Builder::bind_addr_v6`.
+
+If you do not specify specific addresses when building, `iroh-net` will bind to the `UNSPECIFIED` address and a random port.
+
+## 🌈 Custom Protocols for all supported FFI languages!
+
+We are extremely excited to bring one of the most important features from `iroh` to our other supported languages: the ability to write custom protocols ***in your native language*** on top of `iroh`.
+
+We hope that by offering custom protocols, we have opened up even more use cases for `iroh` in your stack. Now, you can rely on `iroh` for fast transfer of content addressed data using the `iroh-blobs` protocol AND any other custom protocols you need!  Our goal is that if you have an application that needs reliable direct connections, you can reach for `iroh` to fulfill your needs. 
+
+Here are examples from the different languages:
+
+### Python
+
+```python
+async def custom_protocol_example():
+    # setup event loop, to ensure async callbacks work
+    iroh.iroh_ffi.uniffi_set_event_loop(asyncio.get_running_loop())
+
+    class MyProtocol:
+        async def accept(self, connecting):
+            conn = await connecting.connect()
+            remote = conn.get_remote_node_id()
+            print("accepting from ", remote)
+            bi = await conn.accept_bi()
+            bytes = await bi.recv().read_to_end(64)
+            # prints "got yo":
+            print("got", bytes)
+            await bi.send().write_all(b"hello")
+            await bi.send().finish()
+            await bi.send().stopped()
+
+        async def shutdown(self):
+            print("shutting down")
+
+    class ProtocolCreator:
+        def create(self, endpoint, client):
+            return MyProtocol()
+
+    protocols = {}
+    protocols[b"example/protocol/0"] = ProtocolCreator()
+
+    options = NodeOptions()
+    options.protocols = protocols
+
+    # Create node_0
+    node_1 = await Iroh.memory_with_options(options)
+
+    # Create node_1
+    node_2 = await Iroh.memory_with_options(options)
+
+    alpn = b"example/protocol/0"
+    node_id = await node_1.net().node_id()
+
+    endpoint = node_2.node().endpoint()
+    conn = await endpoint.connect_by_node_id(node_id, alpn)
+    remote = conn.get_remote_node_id()
+    print("", remote)
+
+    bi = await conn.open_bi()
+
+    await bi.send().write_all(b"yo")
+    await bi.send().finish()
+    await bi.send().stopped()
+
+    out = await bi.recv().read_exact(5)
+    # prints "hello":
+    print("", out)
+
+    await node_2.node().shutdown(False)
+    await node_1.node().shutdown(False)
+```
+
+### NodeJS Example
+
+```jsx
+
+const alpn = Buffer.from('iroh-example/hello/0')
+
+const protocols = {
+  [alpn]: (err, ep, client) => ({
+    accept: async (err, connecting) => {
+	    if (err != null) {
+        throw err
+      }
+      console.log('accept')
+      const nodeId = await client.net.nodeId()
+      console.log(`accepting on node ${nodeId}`)
+      const alpn = await connecting.alpn()
+      console.log(`incoming on ${alpn.toString()}`)
+
+      const conn = await connecting.connect()
+      const remote = await conn.getRemoteNodeId()
+      console.log(`connected id ${remote.toString()}`)
+
+      const bi = await conn.acceptBi()
+
+      const bytes = await bi.recv.readToEnd(64)
+      // prints "got: yo":
+      console.log(`got: ${bytes.toString()}`)
+      await bi.send.writeAll(Buffer.from('hello'))
+      await bi.send.finish()
+      await bi.send.stopped()
+    },
+    shutdown: (err) => {
+      if (err != null) {
+        throw err
+      }
+      console.log('shutting down')
+    }
+  })
+}
+const node1 = await Iroh.memory({
+  protocols,
+})
+
+const nodeAddr = await node1.net.nodeAddr()
+
+const node2 = await Iroh.memory({ protocols })
+const status = await node2.node.status()
+console.log(`status ${status.version}`)
+const endpoint = node2.node.endpoint()
+console.log(`connecting to ${nodeAddr.nodeId}`)
+
+const conn = await endpoint.connect(nodeAddr, alpn)
+const remote = await conn.getRemoteNodeId()
+console.log(`connected to ${remote.toString()}`)
+
+const bi = await conn.openBi()
+
+await bi.send.writeAll(Buffer.from('yo'))
+await bi.send.finish()
+await bi.send.stopped()
+
+let out = Buffer.alloc(5)
+await bi.recv.readExact(out)
+
+// prints "read: hello":
+console.log(`read: ${out.toString()}`)
+
+await node2.node.shutdown(false)
+await node1.node.shutdown(false)
+
+console.log('end')
+```
+
+### Kotlin Example
+
+```kotlin
+class MyProtocol : ProtocolHandler {
+    override suspend fun accept(connecting: Connecting) {
+        val conn = connecting.connect()
+        val remote = conn.getRemoteNodeId()
+        println("accepting from $remote")
+        val bi = conn.acceptBi()
+
+        val bytes = bi.recv().readToEnd(64u)
+        val b = bytes.toString(Charsets.UTF_8)
+        // prints "got yo":
+        println("got $b")
+        bi.send().writeAll("hello".toByteArray(Charsets.UTF_8))
+        bi.send().finish()
+        bi.send().stopped()
+    }
+
+    override suspend fun shutdown() {
+        println("shutting down")
+    }
+}
+
+class MyProtocolCreator : ProtocolCreator {
+    override fun create(
+        endpoint: Endpoint,
+        client: Iroh,
+    ): MyProtocol = MyProtocol()
+}
+
+runBlocking {
+    val protocols =
+        hashMapOf(
+            "example/protocol/0".toByteArray(Charsets.UTF_8)
+                to
+                MyProtocolCreator(),
+        )
+
+    val options = NodeOptions()
+    options.protocols = protocols
+
+    // Create node1
+    val node1 = Iroh.memoryWithOptions(options)
+
+    // Create node2
+    val node2 = Iroh.memoryWithOptions(options)
+
+    val alpn = "example/protocol/0".toByteArray(Charsets.UTF_8)
+    val nodeAddr = node1.net().nodeAddr()
+
+    val endpoint = node2.node().endpoint()
+    val conn = endpoint.connect(nodeAddr, alpn)
+    val remote = conn.getRemoteNodeId()
+    println(remote)
+
+    val bi = conn.openBi()
+
+    bi.send().writeAll("yo".toByteArray(Charsets.UTF_8))
+    bi.send().finish()
+    bi.send().stopped()
+
+    val o = bi.recv().readExact(5u)
+    // prints "hello":
+    println(o.toString(Charsets.UTF_8))
+
+    node2.node().shutdown(false)
+    node1.node().shutdown(false)
+}
+```
+
+## Breaking Changes
+
+### Protocol
+
+None 🙂
+
+### API
+
+- `iroh-gossip`
+    - removed
+        - `Gossip::update_direct_addresses` Updating the direct addresses is now handled by `Gossip` automatically.
+- `iroh-net`
+    - removed
+        - `netcheck::Client::receive_stun_packet`
+        - `iroh_net::util`
+    - added
+        - `iroh_net::endpoint::Builder::bind_addr_v4`
+        - `iroh_net::endpoint::Builder::bind_addr_v6`
+    - changed
+        - `iroh_net::endpoint::Endpoint::bind` now takes no arguments
+        - `netcheck::Client` is not longer `Clone`.
+- `iroh-blobs`
+    - removed
+        - `Store::gc_sweep`
+        - `Store::gc_mark`
+        - `Store::gc_start`
+    - added
+        - `Store::gc_run` which starts the full gc schedule
+- `iroh`
+    - removed
+        - `node::ProtocolBuilder::downloader`
+        - `node::ProtocolBuilder::blobs_db`
+        - `node::Builder::bind_port`
+    - added
+        - `node::Builder::bind_addr_v4`
+        - `node::Builder::bind_addr_v6`
+        - `node::Builder::bind_random_port`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.25.0](https://github.com/n0-computer/iroh/releases/tag/v0.23.0).
+
+If you want to know what is coming up, check out the [0.26.0 milestone](https://github.com/n0-computer/iroh/milestone/32), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
