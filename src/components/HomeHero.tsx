@@ -12,9 +12,57 @@ const GRID_ROWS = GRID_HEIGHT / SQUARE_SIZE
 const TOTAL_SQUARES = GRID_COLUMNS * GRID_ROWS
 
 // This is a placeholder image URL. Replace with your actual sprite sheet URL
-const SPRITE_SHEET_URL = '/img/kv/iroh-kv-1.png'
+const SPRITE_SHEET_URL = '/img/kv/iroh_kv_1_1200.png'
 
 const noise3D = createNoise3D(() => 0.4)
+
+const alphaModifiers = [
+  [0,0,-0.3],
+  [1,0,-0.3],
+  [2,0,-0.3],
+  [3,0,-0.3],
+  [4,0,-0.3],
+  [4,0,-0.3],
+  [5,0,-0.3],
+  [6,0,-0.3],
+
+  [0,1,-0.3],
+  [1,1,-0.3],
+  [2,1,-0.3],
+  [3,1,-0.3],
+  [4,1,-0.3],
+  [4,1,-0.3],
+  [5,1,-0.3],
+
+  [0,2,-0.3],
+  [1,2,-0.3],
+  [2,2,-0.3],
+  [3,2,-0.3],
+  [4,2,-0.3],
+  [5,2,-0.3],
+  [6,2,-0.3],
+
+  [0,3,-0.3],
+  [1,3,-0.3],
+  [2,3,-0.3],
+  [3,3,-0.3],
+  [4,3,-0.3],
+  [4,3,-0.3],
+  [5,3,-0.3],
+  [6,3,-0.3],
+
+  [0,4,-0.3],
+  [1,4,-0.3],
+  [2,4,-0.3],
+  [3,4,-0.3],
+]
+
+const alphaModifierMap = Array.from({ length: TOTAL_SQUARES }).map((_, index) => {
+  const x = index % GRID_COLUMNS
+  const y = Math.floor(index / GRID_COLUMNS)
+  const mod = alphaModifiers.find((d) => d[0] === x && d[1] === y)
+  return mod ? mod[2] : 0
+})
 
 export const Hero = function Hero({ className, style }: { className: string, style: string }) {
   const [time, setTime] = useState(0)
@@ -66,6 +114,7 @@ export const Hero = function Hero({ className, style }: { className: string, sty
           const x = index % GRID_COLUMNS
           const y = Math.floor(index / GRID_COLUMNS)
           const noiseValue = getNoise(x, y, time)
+          let opacity = alphaModifierMap[index] + noiseValue;
           
           return (
             <div
@@ -83,7 +132,7 @@ export const Hero = function Hero({ className, style }: { className: string, sty
               <div className='w-full h-full' style={{
                 backgroundImage: `url(${SPRITE_SHEET_URL})`,
                 backgroundPosition: `-${x * SQUARE_SIZE}px -${y * SQUARE_SIZE}px`,
-                opacity: noiseValue,
+                opacity,
               }} />
             </div>
           )
