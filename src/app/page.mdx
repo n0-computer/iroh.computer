@@ -31,6 +31,7 @@ export const metadata = {
     'Sync Anywhere',
 };
 
+
 <HeaderSparse />
 
 <div className="bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
@@ -107,11 +108,14 @@ export const metadata = {
       </div>
     </section>
 
-    <section className='py-10'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <h3 className='text-2xl font-bold'>BYOP (build your own protocol)</h3>
+    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-10'>
+      <div className='w-1/2'>
+        <h3 className='text-3xl font-bold mb-4'>BYOP (build your own protocol)</h3>
         <p>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
-        <a>Start Building</a>
+        <a href="/docs" className="flex my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase">
+          Custom Protocol Docs
+          <ArrowRightIcon className="h-5 w-5 mt-0.5 ml-2" />
+        </a>
       </div>
     </section>
 
