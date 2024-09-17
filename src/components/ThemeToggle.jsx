@@ -39,8 +39,8 @@ export function ThemeToggle() {
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
       onClick={() => setTheme(otherTheme)}
     >
-      <SunIcon className="h-5 w-5 stroke-zinc-900 dark:hidden" />
-      <MoonIcon className="hidden h-5 w-5 stroke-white dark:block" />
+      <SunIcon className="h-5 w-5 stroke-zinc-500 dark:hidden" />
+      <MoonIcon className="h-5 w-5 hidden stroke-zinc-50 dark:block" />
     </button>
   );
 }

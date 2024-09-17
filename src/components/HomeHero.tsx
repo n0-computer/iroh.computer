@@ -16,45 +16,47 @@ const SPRITE_SHEET_URL = '/img/kv/iroh_kv_1_1200.png'
 
 const noise3D = createNoise3D(() => 0.4)
 
+const modAmount = -0.7
+
 const alphaModifiers = [
-  [0,0,-0.3],
-  [1,0,-0.3],
-  [2,0,-0.3],
-  [3,0,-0.3],
-  [4,0,-0.3],
-  [4,0,-0.3],
-  [5,0,-0.3],
-  [6,0,-0.3],
+  [0,0,modAmount],
+  [1,0,modAmount],
+  [2,0,modAmount],
+  [3,0,modAmount],
+  [4,0,modAmount],
+  [4,0,modAmount],
+  [5,0,modAmount + 0.5],
+  [6,0,modAmount + 0.3],
 
-  [0,1,-0.3],
-  [1,1,-0.3],
-  [2,1,-0.3],
-  [3,1,-0.3],
-  [4,1,-0.3],
-  [4,1,-0.3],
-  [5,1,-0.3],
+  [0,1,modAmount],
+  [1,1,modAmount],
+  [2,1,modAmount],
+  [3,1,modAmount],
+  [4,1,modAmount],
+  [4,1,modAmount],
+  [5,1,modAmount + 0.3],
 
-  [0,2,-0.3],
-  [1,2,-0.3],
-  [2,2,-0.3],
-  [3,2,-0.3],
-  [4,2,-0.3],
-  [5,2,-0.3],
-  [6,2,-0.3],
+  [0,2,modAmount],
+  [1,2,modAmount],
+  [2,2,modAmount],
+  [3,2,modAmount],
+  [4,2,modAmount],
+  [5,2,modAmount],
+  [6,2,modAmount + 0.3],
 
-  [0,3,-0.3],
-  [1,3,-0.3],
-  [2,3,-0.3],
-  [3,3,-0.3],
-  [4,3,-0.3],
-  [4,3,-0.3],
-  [5,3,-0.3],
-  [6,3,-0.3],
+  [0,3,modAmount],
+  [1,3,modAmount],
+  [2,3,modAmount],
+  [3,3,modAmount],
+  [4,3,modAmount],
+  [4,3,modAmount],
+  [5,3,modAmount],
 
-  [0,4,-0.3],
-  [1,4,-0.3],
-  [2,4,-0.3],
-  [3,4,-0.3],
+  [0,4,modAmount],
+  [1,4,modAmount],
+  [2,4,modAmount],
+  [3,4,modAmount],
+  [4,4,modAmount + 0.3],
 ]
 
 const alphaModifierMap = Array.from({ length: TOTAL_SQUARES }).map((_, index) => {
@@ -102,9 +104,9 @@ export const Hero = function Hero({ className, style }: { className: string, sty
   }, [])
 
   return (
-    <div className={clsx(className, "flex flex-col justify-center items-center")} style={{height: GRID_HEIGHT, ...style}}>
+    <div className={clsx(className, "flex flex-col justify-center items-center pointer-events-none")} style={{height: GRID_HEIGHT, ...style}}>
       <div
-        className="grid border-l border-t border-zinc-800"
+        className="grid border-l border-t border-irohGray-300 dark:border-irohGray-800"
         style={{
           width: `${GRID_WIDTH}px`,
           gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
@@ -119,7 +121,7 @@ export const Hero = function Hero({ className, style }: { className: string, sty
           return (
             <div
               key={index}
-              className="border-r border-b border-zinc-800 p-2"
+              className="p-2 border-r border-b border-irohGray-300 dark:border-irohGray-800"
               style={{
                 height: SQUARE_SIZE,
                 width: SQUARE_SIZE,

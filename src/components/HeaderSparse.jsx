@@ -7,7 +7,7 @@ import {Button} from '@/components/Button';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
 
-function TopLevelNavItem({ href, children}) {
+function TopLevelNavItem({ href, children }) {
   return (
     <li>
       <Link
@@ -43,9 +43,9 @@ export function HeaderSparse() {
     function handleScroll() {
       const navbar = document.getElementById('navbar');
       if (window.scrollY > 0) {
-        navbar.classList.add('bg-irohGray-900', 'shadow-md');
+        navbar.classList.add('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
       } else {
-        navbar.classList.remove('bg-irohGray-900', 'shadow-md');
+        navbar.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
       }
     }
 
@@ -57,7 +57,7 @@ export function HeaderSparse() {
 
   return (
     <nav id="navbar" className={clsx(
-      "fixed w-full z-90",
+      "fixed w-full z-50",
       "transition-colors ease-in duration-200 animate-all",
       mobileMenuOpen && 'backdrop-blur-md'
       )}

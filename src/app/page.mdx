@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { BookOpenIcon } from '@heroicons/react/24/outline'
+import { BookOpenIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
 import {Hero} from '@/components/HomeHero';
+import {UsersShowcase} from '@/components/UsersShowcase';
+import {GlowCard} from '@/components/GlowCard';
 
 import logoGo from '@/images/logos/go.svg';
 import logoPython from '@/images/logos/python.svg';
@@ -21,70 +23,59 @@ export const metadata = {
     'Sync Anywhere',
 };
 
+
 <HeaderSparse />
 
-<div className="bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
+<div className="bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
   <main className="mb-auto flex flex-col min-h-92">
-    {/* header */}
-    <section className="min-h-92 pt-20 bg-cover relative" style={{ height: 600 }}>
-      <div className='h-10 relative max-w-6xl mx-auto'>
-        <div className='absolute h-full w-0.5 t-0 l-0'
-          style={{
-
-            background: 'linear-gradient(to top, rgb(39, 39, 42), transparent)'
-          }}
-        />
-        <div className='absolute h-full t-0 right-0'
-          style={{
-            width: 1,
-            background: 'linear-gradient(to top, rgb(39, 39, 42), transparent)'
-          }}
-        />
+    {/* hero */}
+    <section className="min-h-92 pt-20 bg-cover" style={{ height: 600 }}>
+      <div className='relative h-10 max-w-6xl mx-auto'>
+        <div className='absolute h-full top-0 left-0 bg-gradient-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }} />
+        <div className='absolute h-full top-0 right-0 bg-gradient-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
       </div>
-      <Hero className='w-full' />
-      <div className="max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4" style={{ marginTop: -475 }}>
-        <div className="col-span-2 pl-10 pt-24">
-          <h1 className="z-50 text-5xl font-bold font-space-mono leading-tight">
-            the networking stack for user agency
-          </h1>
-          <h3 className="text-md font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
-          <div className='flex mt-3'>
-            <a href="https://iroh.computer/docs/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
-            <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
-              <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
-              Documentation
-            </a>
+      <div className='relative max-w-6xl mx-auto'>
+        <div className='absolute z-10'>
+          <Hero className='' />
+        </div>
+        <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
+          <div className="col-span-2 pl-8" style={{ paddingTop: 105 }}>
+            <h1 className="z-50 text-5xl font-bold font-space-mono leading-tight">
+              the networking stack for user agency
+            </h1>
+            <h3 className="text-md font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
+            <div className='flex mt-3'>
+              <a href="https://iroh.computer/docs/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
+              <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
+                <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
+                Documentation
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-zinc-800 pt-10'>
-      <div className="col-span-2"></div>
-      <div className="mlw-2xl px-4 pb-20 col-span-2">
+    <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
+      <div className="mlw-2xl p-5 md:col-span-2">
         <p className='italic text-md'>In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.</span></p>
-        <p>- Weird Folk</p>
+        <p>- The Weird Team</p>
+      </div>
+      <div className='md:col-span-2 p-5 border-l border-irohGray-300 dark:border-irohGray-800'>
+        <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
+        <p className='text-irohGray-500 dark:text-irohGray-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
       </div>
     </section>
 
-    <section>
-      <div className='max-w-6xl mx-auto px-4 pb-20 border-l border-r border-zinc-800 md:grid md:grid-cols-4'>
-        <div className='col-span-2'>
-          <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
-          <p className='text-zinc-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
-        </div>
-      </div>
-    </section>
-
-    {/* features */}
-    <section className='text-irohGray-100 py-20 border border-zinc-800'>
+    {/* custom protocols */}
+    <section className='text-irohGray-100 pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='pb-10'>
           <h3 className='text-3xl font-bold'>Compose your own tailor-made protocol stack</h3>
           <p>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
         </div>
-        <div className='md:grid md:grid-cols-4 md:gap-4'>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
+        <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
             <Image
               src={iconOpen}
               alt=""
@@ -95,8 +86,8 @@ export const metadata = {
               <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Blobs</h2>
               <p>Resumable, verifiable data transfer</p>
             </div>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
             <Image
               src={iconPlatforms}
               alt=""
@@ -107,8 +98,8 @@ export const metadata = {
               <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Gossip</h2>
               <p>Broadcast messages to groups of nodes by topic.</p>
             </div>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
             <Image
               src={iconFaster}
               alt=""
@@ -119,8 +110,8 @@ export const metadata = {
               <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Documents</h2>
               <p>Realtime, multiwriter, key-value sync</p>
             </div>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
             <Image
               src={iconFaster}
               alt=""
@@ -131,8 +122,8 @@ export const metadata = {
               <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Willow</h2>
               <p>multiwriter, key-value sync with fine-grained access control</p>
             </div>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
             <Image
               src={iconFaster}
               alt=""
@@ -143,53 +134,45 @@ export const metadata = {
               <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Automerge</h2>
               <p>CRDT-powered collaborative documents</p>
             </div>
-          </div>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
+            Learn More
+            <ArrowRightIcon className='w-10 h-10' />
+          </GlowCard>
         </div>
       </div>
     </section>
 
-    <section className='py-10'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <h3 className='text-2xl font-bold'>BYOP (build your own protocol)</h3>
+    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-10'>
+      <div className='w-1/2'>
+        <h3 className='text-3xl font-bold mb-4'>BYOP (build your own protocol)</h3>
         <p>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
-        <a>Start Building</a>
+        <a href="/docs" className="flex my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase">
+          Custom Protocol Docs
+          <ArrowRightIcon className="h-5 w-5 mt-0.5 ml-2" />
+        </a>
       </div>
     </section>
 
     {/* use cases */}
-    <section className='py-20'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <div className='mb-4'>
-          <h3 className='text-lg text-gray-500'>Real World Use:</h3>
-          <p className=''>Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
-        </div>
-        <div className='md:grid md:grid-cols-4 border-t pt-10 gap-4'>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
-            <h2 className='text-xl mb-2'>Delta Chat</h2>
-            <p>Iroh powers multi-device backup & live connections for in-chat WebXDC apps.</p>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
-            <h2 className='text-xl mb-2'>Shaga</h2>
-            <p>Streaming gaming to Android devices from high powered, gaming PCs. Iroh builds direct connections for simultaneous video, audio, and controller streams</p>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
-            <h2 className='text-xl mb-2'>Fish Folk</h2>
-            <p>Multiplayer driven by iroh direct connections</p>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
-            <h2 className='text-xl mb-2'>Sendme</h2>
-            <h2>Send files. Any size. No Accounts. Free.</h2>
-          </div>
-          <div className='mb-10 border-l border-zinc-800 pl-5'>
-            <h2 className='text-xl mb-2'>Dumbpipe</h2>
-            <h2>It&apos;s a unix pipe, over the internet</h2>
-          </div>
-        </div>
+    <section className='relative max-w-6xl w-full mx-auto border-l border-t border-r border-irohGray-300 dark:border-irohGray-800'>
+      <div className='absolute w-full h-full grid grid-cols-4'>
+        <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800 h-full' />
+        <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
+        <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
+      </div>
+      <div className='mb-4 md:w-1/2 p-10'>
+        <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
+        <p >Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
+      </div>
+      <div className='relative' style={{ width: '100%', height: 300 }}>
+        <UsersShowcase />
       </div>
     </section>
 
-    <section className='text-irohGray-100'>
-      <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10 border-r border-l border-zinc-800 py-20'>
+    {/* build in your language */}
+    <section>
+      <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
         <div className='lg:w-1/2 mb-10'>
           <div className='flex space-x-6 mb-6'>
             <div className=''>
@@ -298,27 +281,6 @@ bar
         </div>
       </div>
     </section>
-
-    {/* call to action */}
-    <section className=''>
-      <div className='max-w-6xl mx-auto px-4 border-r border-l border-t border-zinc-800 py-20'>
-        <Image
-          src={iconOpen}
-          alt=""
-          className="h-12 w-12 float-left md:float-none"
-          unoptimized
-          />
-        <div className=''>
-          <h1 className='text-3xl mt-6'>Install the CLI</h1>
-          <p>Install iroh now & jump into the <Link className='text-irohPurple-500 plausible-event-name=Home+Quickstart+Click' href="/docs/quickstart">quickstart.</Link></p>
-```bash
-$ curl -fsSL https://sh.iroh.computer/install.sh | bash
-$ iroh console --start
-```
-        </div>
-      </div>
-    </section>
-
   </main>
   <FooterMarketing />
 </div>
