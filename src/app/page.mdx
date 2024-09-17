@@ -2,14 +2,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { BookOpenIcon } from '@heroicons/react/24/outline'
 
-import {HeaderSparse} from '@/components/HeaderSparse';
 import {FooterMarketing} from '@/components/FooterMarketing';
+import {HeaderSparse} from '@/components/HeaderSparse';
+import {Hero} from '@/components/HomeHero';
 
 import logoGo from '@/images/logos/go.svg';
 import logoPython from '@/images/logos/python.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
-
 import iconCarat from '@/images/icons/icon_carat.svg';
 import iconFaster from '@/images/icons/icon_faster.svg';
 import iconOpen from '@/images/icons/icon_open.svg';
@@ -23,17 +23,31 @@ export const metadata = {
 
 <HeaderSparse />
 
-<div className="bg-irohGray-900 text-irohGray-700 h-92 justify-between font-space">
+<div className="bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
   <main className="mb-auto flex flex-col min-h-92">
-
     {/* header */}
-    <section className="min-h-92 bg-iroh-kv-1 pt-40 bg-cover">
-      <div className="max-w-6xl mx-auto px-4 lg:mt-100">
-        <div className="mt-14 min-h-[70vh] sm:w-2/3 lg:w-1/2">
-          <h1 className="text-5xl font-bold font-space-mono leading-tight">
-            Build distributed apps that raise the status quo for your users.
+    <section className="min-h-92 pt-20 bg-cover relative" style={{ height: 600 }}>
+      <div className='h-10 relative max-w-6xl mx-auto'>
+        <div className='absolute h-full w-0.5 t-0 l-0'
+          style={{
+
+            background: 'linear-gradient(to top, rgb(39, 39, 42), transparent)'
+          }}
+        />
+        <div className='absolute h-full t-0 right-0'
+          style={{
+            width: 1,
+            background: 'linear-gradient(to top, rgb(39, 39, 42), transparent)'
+          }}
+        />
+      </div>
+      <Hero className='w-full' />
+      <div className="max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4" style={{ marginTop: -450 }}>
+        <div className="col-span-2 pl-10 pt-24">
+          <h1 className="z-50 text-5xl font-bold font-space-mono leading-tight">
+            the networking stack for user agency
           </h1>
-          <h3 className="text-md font-space-mono mt-3 text-gray-700 leading-normal">Iroh is a toolkit for building distributed apps. Open source and universally compatible, it&apos;s the quickest route from concept to connected devices.</h3>
+          <h3 className="text-md font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
           <div className='flex mt-3'>
             <a href="https://iroh.computer/docs/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
             <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
@@ -45,122 +59,137 @@ export const metadata = {
       </div>
     </section>
 
+    <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-zinc-800 pt-10'>
+      <div className="col-span-2"></div>
+      <div className="mlw-2xl px-4 pb-20 col-span-2">
+        <p className='italic text-md'>In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.</span></p>
+        <p>- Weird Folk</p>
+      </div>
+    </section>
+
+    <section>
+      <div className='max-w-6xl mx-auto px-4 pb-20 border-l border-r border-zinc-800 md:grid md:grid-cols-4'>
+        <div className='col-span-2'>
+          <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
+          <p className='text-zinc-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
+        </div>
+      </div>
+    </section>
+
     {/* features */}
-    <section className='text-irohGray-100 py-20'>
-      <div className='max-w-6xl mx-auto px-4 md:flex md:gap-x-20'>
-        <div className='mb-10 md:w-1/3'>
-          <Image
-            src={iconOpen}
-            alt=""
-            className="h-12 w-12 float-left md:float-none"
-            unoptimized
-            />
-          <div className='pl-20 md:pl-0'>
-            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Live collaborate on anything</h2>
-            <p>Effortlessly invite users to a dynamic shared environment. iroh offers intuitive syncing across devices, with seamless hooks for instant read & write operations, simplifying the developer experience.</p>
+    <section className='text-irohGray-100 py-20 border border-zinc-800'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='pb-10'>
+          <h3 className='text-3xl font-bold'>Compose your own tailor-made protocol stack</h3>
+          <p>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+        </div>
+        <div className='md:grid md:grid-cols-4 md:gap-4'>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <Image
+              src={iconOpen}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Blobs</h2>
+              <p>Resumable, verifiable data transfer</p>
+            </div>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <Image
+              src={iconPlatforms}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Gossip</h2>
+              <p>Broadcast messages to groups of nodes by topic.</p>
+            </div>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <Image
+              src={iconFaster}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Documents</h2>
+              <p>Realtime, multiwriter, key-value sync</p>
+            </div>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <Image
+              src={iconFaster}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Willow</h2>
+              <p>multiwriter, key-value sync with fine-grained access control</p>
+            </div>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <Image
+              src={iconFaster}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Automerge</h2>
+              <p>CRDT-powered collaborative documents</p>
+            </div>
           </div>
         </div>
-        <div className='mb-10 md:w-1/3'>
-          <Image
-            src={iconPlatforms}
-            alt=""
-            className="h-12 w-12 float-left md:float-none"
-            unoptimized
-            />
-          <div className='pl-20 md:pl-0'>
-            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>No central server required</h2>
-            <p>Iroh establishes direct connections between devices for you, traversing across network address translation (NATs) with best-in-class connection rates.</p>
-          </div>
-        </div>
-        <div className='mb-10 md:w-1/3'>
-          <Image
-            src={iconFaster}
-            alt=""
-            className="h-12 w-12 float-left md:float-none"
-            unoptimized
-            />
-          <div className='pl-20 md:pl-0'>
-            <h2 className='text-2xl mb-4 md:text-3xl md:mt-6 md:mb-4 text-irohPurple-500'>Scale without limits</h2>
-            <p>Iroh handles data of any magnitude, ensuring peak performance even when individual device capacities are exceeded.</p>
-          </div>
-        </div>
+      </div>
+    </section>
+
+    <section className='py-10'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <h3 className='text-2xl font-bold'>BYOP (build your own protocol)</h3>
+        <p>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
+        <a>Start Building</a>
       </div>
     </section>
 
     {/* use cases */}
-    <section className='bg-white py-20'>
+    <section className='py-20'>
       <div className='max-w-6xl mx-auto px-4'>
-        <p className='text-gray-500'>built with iroh:</p>
-        <div className='md:flex'>
-          <div className='md:w-1/2 mb-10'>
-            <Image
-              src='/svg/dumbpipe_icon.svg'
-              width={600}
-              height={475}
-              className="max-w-sm"
-              unoptimized
-              />
-            <div className='mt-4'>
-              <a href="https://dumbpipe.dev" className='text-3xl mb-5 font-bold'>dumb pipe</a>
-              <p className='mt-3 max-w-sm'>Connect Any two devices, directly. Dumb pipe is an open project built on iroh connections</p>
-              <div>
-                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://dumbpipe.dev">website</a>
-                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://github.com/n0-computer/dumbpipe">source code</a>
-              </div>
-            </div>
-          </div>
-          <div className='md:w-1/2 mb-10'>
-            <Image
-              src='/svg/sendme_icon.svg'
-              alt=""
-              width={600}
-              height={475}
-              className="max-w-sm"
-              unoptimized
-              />
-            <div className='mt-4'>
-              <a href="https://iroh.computer/sendme" className='text-3xl mb-5 font-bold'>sendme</a>
-              <p className='max-w-sm'>Send files anywhere for free, without an account. Sendme is built on iroh blobs and connections.</p>
-              <div>
-                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://iroh.computer/sendme">website</a>
-                <a className='text-irohPurple-500 mr-5 mt-3 text-lg' href="https://github.com/n0-computer/sendme">source code</a>
-              </div>
-            </div>
-          </div>
+        <div className='mb-4'>
+          <h3 className='text-lg text-gray-500'>Real World Use:</h3>
+          <p className=''>Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
         </div>
-        <div className='md:flex md:gap-x-20 border-t pt-10'>
-          <div className='mb-10 md:w-1/3'>
-            <h2 className='text-xl mb-2'>Move data for free</h2>
-            <p>Direct connections don't come with a bill. With iroh it's possible to build & use zero-cost tooling.</p>
+        <div className='md:grid md:grid-cols-4 border-t pt-10 gap-4'>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <h2 className='text-xl mb-2'>Delta Chat</h2>
+            <p>Iroh powers multi-device backup & live connections for in-chat WebXDC apps.</p>
           </div>
-          <div className='mb-10 md:w-1/3'>
-            <h2 className='text-xl mb-2'>Build self-sustaining networks</h2>
-            <p>users can start a movie on their computer, then transfer to their phone, bringing data with them.</p>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <h2 className='text-xl mb-2'>Shaga</h2>
+            <p>Streaming gaming to Android devices from high powered, gaming PCs. Iroh builds direct connections for simultaneous video, audio, and controller streams</p>
           </div>
-          <div className='mb-10 md:w-1/3'>
-            <h2 className='text-xl mb-2'>Sync between services</h2>
-            <h2>write integrations into services</h2>
-            <a>See Integration Examples</a>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <h2 className='text-xl mb-2'>Fish Folk</h2>
+            <p>Multiplayer driven by iroh direct connections</p>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <h2 className='text-xl mb-2'>Sendme</h2>
+            <h2>Send files. Any size. No Accounts. Free.</h2>
+          </div>
+          <div className='mb-10 border-l border-zinc-800 pl-5'>
+            <h2 className='text-xl mb-2'>Dumbpipe</h2>
+            <h2>It&apos;s a unix pipe, over the internet</h2>
           </div>
         </div>
       </div>
     </section>
 
-    {/* iroh.network */}
-    <section className='text-irohGray-800 bg-iroh-kv-4 bg-cover pt-20 pb-40'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <div className='max-w-md'>
-          <h2 className='text-xl text-irohPurple-500'>iroh.network</h2>
-          <h1 className='text-3xl mt-2 mb-4'>Seamless cloud backing</h1>
-          <p>Connect to a global network of iroh nodes that keep your data available at all times. iroh.network is an optional service for working with iroh.</p>
-          <a href="https://iroh.network" className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Iroh+Dot+Network+Signup+Click'>Sign up for a free account</a>
-        </div>
-      </div>
-    </section>
-
-    {/* principled software & call-to-action */}
-    <section className='text-irohGray-100 py-20'>
-      <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10'>
+    <section className='text-irohGray-100'>
+      <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10 border-r border-l border-zinc-800 py-20'>
         <div className='lg:w-1/2 mb-10'>
           <div className='flex space-x-6 mb-6'>
             <div className=''>
@@ -271,8 +300,8 @@ bar
     </section>
 
     {/* call to action */}
-    <section className='bg-white py-20'>
-      <div className='max-w-6xl mx-auto px-4'>
+    <section className=''>
+      <div className='max-w-6xl mx-auto px-4 border-r border-l border-t border-zinc-800 py-20'>
         <Image
           src={iconOpen}
           alt=""
