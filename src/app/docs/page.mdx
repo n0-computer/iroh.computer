@@ -17,7 +17,7 @@ export const sections = [
 
 # Iroh Documentation
 
-Iroh is a protocol for syncing bytes. Bytes of any size, across any number of devices. Use iroh to create apps that scale differently. {{className: 'lead'}}
+Iroh is the networking stack for user agency. Use it to build apps on direct connections between devices. {{className: 'lead'}}
 
 <div className="not-prose">
   <div className="mb-16 mt-6 flex gap-3">
@@ -26,18 +26,20 @@ Iroh is a protocol for syncing bytes. Bytes of any size, across any number of de
   </div>
 </div>
 
-{/* ## Getting started {{anchor: false}}
+## Iroh Net
 
-The best place to start is by reading the overview, a high level look at the problems iroh solves by looking at component pieces. {{className: 'lead'}}
+At the core of iroh is the ability to connect to any online node with only a Peer identifier. {{className: 'lead'}}
+
+`iroh-net` is a library to establish direct connectivity between peers. It exposes an interface to QUIC connections and streams to the user, while implementing direct connectivity using hole punching complemented by relay servers under the hood.
 
 <div className="not-prose">
   <Button
-    href="/overview"
+    href="/docs/net"
     variant="text"
     arrow="right"
     children="Read the Overview"
   />
-</div> */}
+</div>
 
 <Guides />
 
@@ -70,11 +72,11 @@ The best place to start is by reading the overview, a high level look at the pro
     icon='EnvelopeIcon'
     pattern={{ y: 32, squares: [[0, 2],[1, 4]] }}
   /> */}
-  <Resource
+  {/* <Resource
     href='/docs/ipfs'
     name='iroh & IPFS'
     description='Iroh is an IPFS system.'
     icon='UsersIcon'
     pattern={{ y: 22, squares: [[0, 1]] }}
-  />
+  /> */}
 </Resources>
