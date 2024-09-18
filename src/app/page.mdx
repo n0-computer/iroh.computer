@@ -7,11 +7,14 @@ import {HeaderSparse} from '@/components/HeaderSparse';
 import {Hero} from '@/components/HomeHero';
 import {UsersShowcase} from '@/components/UsersShowcase';
 import {GlowCard} from '@/components/GlowCard';
+import {FromTheBlog} from '@/components/FromTheBlog';
 
 import logoGo from '@/images/logos/go.svg';
 import logoPython from '@/images/logos/python.svg';
 import logoRust from '@/images/logos/rust.svg';
 import logoSwift from '@/images/logos/swift.svg';
+import logoNode from '@/images/logos/node.svg';
+import logoKotlin from '@/images/logos/kotlin.svg';
 import iconCarat from '@/images/icons/icon_carat.svg';
 import iconFaster from '@/images/icons/icon_faster.svg';
 import iconOpen from '@/images/icons/icon_open.svg';
@@ -57,22 +60,22 @@ export const metadata = {
     </section>
 
     <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
-      <div className="mlw-2xl p-5 md:col-span-2">
-        <p className='italic text-md'>In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.</span></p>
-        <p>- The Weird Team</p>
+      <div className="text-right mlw-xl px-5 py-20 md:col-span-2">
+        <p className='italic text-3xl text-irohGray-500/50 mb-5'>&quot; In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.</span></p>
+        <p className=''>- The Weird Team</p>
       </div>
-      <div className='md:col-span-2 p-5 border-l border-irohGray-300 dark:border-irohGray-800'>
+      <div className='md:col-span-2 px-5 py-20 border-l border-irohGray-300 dark:border-irohGray-800'>
         <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
         <p className='text-irohGray-500 dark:text-irohGray-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
       </div>
     </section>
 
     {/* custom protocols */}
-    <section className='text-irohGray-100 pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
+    <section className='pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='pb-10'>
-          <h3 className='text-3xl font-bold'>Compose your own tailor-made protocol stack</h3>
-          <p>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+          <h3 className='text-3xl font-bold mb-2'>Compose your own tailor-made protocol stack</h3>
+          <p className='text-irohGray-500 text-lg'>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
         </div>
         <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
           <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
@@ -83,8 +86,8 @@ export const metadata = {
               unoptimized
               />
             <div className='pl-20 md:pl-0'>
-              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Blobs</h2>
-              <p>Resumable, verifiable data transfer</p>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Blobs</h2>
+              <p className=''>Resumable, verifiable data transfer</p>
             </div>
           </GlowCard>
           <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
@@ -95,7 +98,7 @@ export const metadata = {
               unoptimized
               />
             <div className='pl-20 md:pl-0'>
-              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Gossip</h2>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Gossip</h2>
               <p>Broadcast messages to groups of nodes by topic.</p>
             </div>
           </GlowCard>
@@ -107,7 +110,7 @@ export const metadata = {
               unoptimized
               />
             <div className='pl-20 md:pl-0'>
-              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Documents</h2>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Documents</h2>
               <p>Realtime, multiwriter, key-value sync</p>
             </div>
           </GlowCard>
@@ -119,7 +122,7 @@ export const metadata = {
               unoptimized
               />
             <div className='pl-20 md:pl-0'>
-              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Willow</h2>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Willow</h2>
               <p>multiwriter, key-value sync with fine-grained access control</p>
             </div>
           </GlowCard>
@@ -131,12 +134,12 @@ export const metadata = {
               unoptimized
               />
             <div className='pl-20 md:pl-0'>
-              <h2 className='text-2xl mb-4 md:mt-6 md:mb-4 text-irohPurple-500'>Automerge</h2>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Automerge</h2>
               <p>CRDT-powered collaborative documents</p>
             </div>
           </GlowCard>
           <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
-            Learn More
+            <h1 className='text-2xl mb-2 text-irohGray-500'>Browse all protocols</h1>
             <ArrowRightIcon className='w-10 h-10' />
           </GlowCard>
         </div>
@@ -165,7 +168,7 @@ export const metadata = {
         <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
         <p >Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
       </div>
-      <div className='relative' style={{ width: '100%', height: 300 }}>
+      <div className='relative overflow-hidden' style={{ width: '100%', height: 350 }}>
         <UsersShowcase />
       </div>
     </section>
@@ -196,6 +199,22 @@ export const metadata = {
                 src={logoSwift}
                 alt=""
                 className="h-12 w-12"
+                unoptimized
+                />
+            </div>
+            <div className=''>
+              <Image
+                src={logoKotlin}
+                alt=""
+                className="mt-2.5 ml-3 h-9 w-9"
+                unoptimized
+                />
+            </div>
+            <div className=''>
+              <Image
+                src={logoNode}
+                alt=""
+                className="h-14 w-14"
                 unoptimized
                 />
             </div>
@@ -260,7 +279,7 @@ let value = try! doc.getContentBytes(hash: hash)
 
 ```
 
-```text {{ title: 'console' }}
+```js {{ title: 'nodejs' }}
 > doc new --switch
 dyyelvqqruxjwrlntsdvsksopwznmgnfxpehcsoqckklvqfxar2q
 Active doc is now dyyelvqq…
@@ -280,6 +299,12 @@ bar
 
         </div>
       </div>
+    </section>
+    <section className='max-w-6xl mx-auto px-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
+      <div className='w-full px-5'>
+        <h3 className='text-3xl font-bold text-irohGray-300 dark:text-irohGray-800'>From the Blog</h3>
+      </div>
+      <FromTheBlog />
     </section>
   </main>
   <FooterMarketing />
