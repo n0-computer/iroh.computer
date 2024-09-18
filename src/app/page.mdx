@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import clsx from 'clsx'
 import { BookOpenIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import {FooterMarketing} from '@/components/FooterMarketing';
@@ -61,12 +62,12 @@ export const metadata = {
 
     <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
       <div className="text-right mlw-xl px-5 py-20 md:col-span-2">
-        <p className='italic text-3xl text-irohGray-500/50 mb-5'>&quot; In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.</span></p>
+        <p className='italic text-3xl text-irohGray-600 dark:text-irohGray-400 mb-5'>&ldquo;In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
         <p className=''>- The Weird Team</p>
       </div>
       <div className='md:col-span-2 px-5 py-20 border-l border-irohGray-300 dark:border-irohGray-800'>
         <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
-        <p className='text-irohGray-500 dark:text-irohGray-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
+        <p className='text-irohGray-600 dark:text-irohGray-400 dark:text-irohGray-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
       </div>
     </section>
 
@@ -75,7 +76,7 @@ export const metadata = {
       <div className='max-w-6xl mx-auto px-4'>
         <div className='pb-10'>
           <h3 className='text-3xl font-bold mb-2'>Compose your own tailor-made protocol stack</h3>
-          <p className='text-irohGray-500 text-lg'>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+          <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
         </div>
         <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
           <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
@@ -146,14 +147,14 @@ export const metadata = {
       </div>
     </section>
 
-    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-10'>
+    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-20'>
       <div className='w-1/2'>
         <h3 className='text-3xl font-bold mb-4'>BYOP (build your own protocol)</h3>
-        <p>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
-        <a href="/docs" className="flex my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase">
-          Custom Protocol Docs
-          <ArrowRightIcon className="h-5 w-5 mt-0.5 ml-2" />
-        </a>
+        <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
+        <Link href="/docs/quickstart" className={clsx(
+          "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
+            <span className=''>Custom Protocol Docs</span>
+        </Link>
       </div>
     </section>
 
@@ -166,7 +167,7 @@ export const metadata = {
       </div>
       <div className='mb-4 md:w-1/2 p-10'>
         <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
-        <p >Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
+        <p>Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
       </div>
       <div className='relative overflow-hidden' style={{ width: '100%', height: 350 }}>
         <UsersShowcase />
@@ -219,7 +220,7 @@ export const metadata = {
                 />
             </div>
           </div>
-          <h1 className='text-2xl mb-2 lg:text-3xl lg:mb-4'>Build in your language</h1>
+          <h1 className='text-3xl font-bold mb-2'>Build in your language</h1>
           <p>Iroh supports a growing set of languages, embedding nodes directly in your project without any need to call out to an external API</p>
           <Link href='/docs/examples' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 uppercase plausible-event-name=Home+Start+Building+Click'>start building</Link>
         </div>
@@ -302,7 +303,7 @@ bar
     </section>
     <section className='max-w-6xl mx-auto px-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
       <div className='w-full px-5'>
-        <h3 className='text-3xl font-bold text-irohGray-300 dark:text-irohGray-800'>From the Blog</h3>
+        <h3 className='text-3xl font-bold text-irohGray-600 dark:text-irohGray-400'>From the Blog</h3>
       </div>
       <FromTheBlog />
     </section>
