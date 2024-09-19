@@ -6,7 +6,7 @@ import { Card } from '@/components/Card'
 
 function Article({ className, post }) {
   return (
-    <article className={clsx(className, "m-10")}>
+    <article className={clsx(className, "my-10 md:m-10")}>
       <Card className="">
         <Card.Eyebrow
           as="time"

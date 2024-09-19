@@ -163,8 +163,8 @@ export const metadata = {
       </div>
     </section>
 
-    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 grid grid-cols-4'>
-      <div className='md:col-span-2 px-10 py-20'>
+    <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 md:grid md:grid-cols-4'>
+      <div className='md:col-span-2 px-10 py-20 md:border-r border-irohGray-300 dark:border-irohGray-800'>
         <HammerWrenchCodeIcon className='w-20 h-20' />
         <h3 className='text-3xl font-bold mb-4'>Build your own protocol</h3>
         <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
@@ -173,7 +173,7 @@ export const metadata = {
           <span>Custom Protocol Docs</span>
         </Link>
       </div>
-      <div className='md:col-span-2 px-10 py-20 md:border-l border-irohGray-300 dark:border-irohGray-800'>
+      <div className='md:col-span-2 px-10 py-10 md:py-20 border-t md:border-none border-irohGray-300 dark:border-irohGray-800'>
         <PerfChartIllustration />
         <h3 className='text-3xl font-bold mb-4'>Continuously Measured</h3>
         <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>All commits to iroh's main branch run through a growing set of simulations & tests</p>
@@ -328,8 +328,8 @@ bar
       </div>
     </section>
     <section className='max-w-6xl mx-auto px-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
-      <div className='w-full px-5'>
-        <h3 className='text-3xl font-bold text-irohGray-600 dark:text-irohGray-400'>From the Blog</h3>
+      <div className='w-full md:px-5'>
+        <h3 className='text-lg tracking-wider font-bold text-irohGray-600 dark:text-irohGray-400 uppercase'>From the Blog</h3>
       </div>
       <FromTheBlog />
     </section>
