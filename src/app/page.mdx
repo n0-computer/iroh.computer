@@ -9,6 +9,9 @@ import {Hero} from '@/components/HomeHero';
 import {UsersShowcase} from '@/components/UsersShowcase';
 import {GlowCard} from '@/components/GlowCard';
 import {FromTheBlog} from '@/components/FromTheBlog';
+import {HammerWrenchCodeIcon} from '@/components/icons/HammerWrenchCodeIcon';
+import {PerfChartIllustration} from '@/components/PerfChartIllustration';
+import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
 
 import logoGo from '@/images/logos/go.svg';
 import logoPython from '@/images/logos/python.svg';
@@ -43,11 +46,11 @@ export const metadata = {
           <Hero className='' />
         </div>
         <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
-          <div className="col-span-2 pl-8" style={{ paddingTop: 105 }}>
+          <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
             <h1 className="z-50 text-5xl font-bold font-space-mono leading-tight">
               the networking stack for user agency
             </h1>
-            <h3 className="text-md font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
+            <h3 className="text-lg font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
             <div className='flex mt-3'>
               <a href="https://iroh.computer/docs/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
               <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
@@ -61,13 +64,14 @@ export const metadata = {
     </section>
 
     <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
-      <div className="text-right mlw-xl px-5 py-20 md:col-span-2">
-        <p className='italic text-3xl text-irohGray-600 dark:text-irohGray-400 mb-5'>&ldquo;In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
-        <p className=''>- The Weird Team</p>
-      </div>
-      <div className='md:col-span-2 px-5 py-20 border-l border-irohGray-300 dark:border-irohGray-800'>
+      <div className='md:col-span-3 px-5 py-20 border-r border-irohGray-300 dark:border-irohGray-800'>
+        <ConnectDevicesIllustration className='mb-12 max-w-xl' />
         <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
-        <p className='text-irohGray-600 dark:text-irohGray-400 dark:text-irohGray-200'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
+        <p className='text-irohGray-600 dark:text-irohGray-400 dark:text-irohGray-200 max-w-2xl'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find & maintain the fastest connection for you, regardless of where it is.</p>
+      </div>
+      <div className="text-right mlw-xl px-5 py-20 md:col-span-1">
+        <p className='italic text-xl text-irohGray-600 dark:text-irohGray-400 mb-5'>&ldquo;In stark contrast to other p2p & dweb technologies we've played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
+        <p className=''>- The Weird Team</p>
       </div>
     </section>
 
@@ -101,6 +105,18 @@ export const metadata = {
             <div className='pl-20 md:pl-0'>
               <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>Gossip</h2>
               <p>Broadcast messages to groups of nodes by topic.</p>
+            </div>
+          </GlowCard>
+          <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
+            <Image
+              src={iconOpen}
+              alt=""
+              className="h-12 w-12 float-left md:float-none"
+              unoptimized
+              />
+            <div className='pl-20 md:pl-0'>
+              <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>DMs</h2>
+              <p>Simple node-to-node message passing</p>
             </div>
           </GlowCard>
           <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
@@ -147,13 +163,23 @@ export const metadata = {
       </div>
     </section>
 
-    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-20'>
-      <div className='w-1/2'>
-        <h3 className='text-3xl font-bold mb-4'>BYOP (build your own protocol)</h3>
+    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 grid grid-cols-4'>
+      <div className='md:col-span-2 px-10 py-20'>
+        <HammerWrenchCodeIcon className='w-20 h-20' />
+        <h3 className='text-3xl font-bold mb-4'>Build your own protocol</h3>
         <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
         <Link href="/docs/quickstart" className={clsx(
           "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
-            <span className=''>Custom Protocol Docs</span>
+          <span>Custom Protocol Docs</span>
+        </Link>
+      </div>
+      <div className='md:col-span-2 px-10 py-20 md:border-l border-irohGray-300 dark:border-irohGray-800'>
+        <PerfChartIllustration />
+        <h3 className='text-3xl font-bold mb-4'>Continuously Measured</h3>
+        <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>All commits to iroh's main branch run through a growing set of simulations & tests</p>
+        <Link href="https://perf.iroh.computer" className={clsx(
+          "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
+          <span>Iroh Perf Site</span>
         </Link>
       </div>
     </section>
