@@ -108,13 +108,23 @@ export const metadata = {
       </div>
     </section>
 
-    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 py-20'>
-      <div className='w-1/2'>
-        <h3 className='text-3xl font-bold mb-4'>BYOP (build your own protocol)</h3>
+    <section className='max-w-6xl mx-auto px-4 border-l border-r border-irohGray-300 dark:border-irohGray-800 grid grid-cols-4'>
+      <div className='md:col-span-2 px-10 py-20'>
+        <HammerWrenchCodeIcon className='w-20 h-20' />
+        <h3 className='text-3xl font-bold mb-4'>Build your own protocol</h3>
         <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
         <Link href="/docs/quickstart" className={clsx(
           "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
-            <span className=''>Custom Protocol Docs</span>
+          <span>Custom Protocol Docs</span>
+        </Link>
+      </div>
+      <div className='md:col-span-2 px-10 py-20 md:border-l border-irohGray-300 dark:border-irohGray-800'>
+        <PerfChartIllustration />
+        <h3 className='text-3xl font-bold mb-4'>Continuously Measured</h3>
+        <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>All commits to iroh's main branch run through a growing set of simulations & tests</p>
+        <Link href="https://perf.iroh.computer" className={clsx(
+          "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
+          <span>Iroh Perf Site</span>
         </Link>
       </div>
     </section>
