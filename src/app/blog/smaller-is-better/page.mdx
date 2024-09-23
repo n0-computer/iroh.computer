@@ -29,9 +29,9 @@ export const metadata = {
 export default (props) => <BlogPostLayout article={post} {...props} />
 
 
-We're excited to share a refinement in the way define iroh that we think will set more folks up for success. In the upcoming v0.26.0 release, **We're doubling down on iroh's networking stack as “what iroh is”, and describing everything else as a custom protocol.**
+We're excited to share a refinement in the way we define iroh that will set more folks up for success: **We're doubling down on iroh's networking stack as “what iroh is” and describing everything else as a custom protocol.**
 
-We want to focus on making Iroh composable with other technologies, specifically *technologies that we don't make*. This will let us be explicit, vocal supporters of projects like Automerge, Willow, UCANs, and others that are doing great work in the p2p space.
+We want to focus on making iroh composable with other technologies, specifically *technologies that we don't make*. This will let us be explicit, vocal supporters of projects like Automerge, Willow, UCANs, and others that are doing great work in the p2p space.
 
 **You can still get the exact stack that iroh currently presents.** This change is mainly a communication change. We're not stopping work on existing stuff, but will be able to more clearly label each protocol as “production ready” or “experimental”.
 
@@ -44,7 +44,7 @@ We've spoken with a bunch of teams building on iroh and noticed three things:
 2. Nearly everyone is using iroh-net.
 3. Everyone wants their upstream dependencies to be both stable and predictable.
 
-The first point is not surprising if you come from outside the p2p space. It's very strange to think of an HTTP server framework picking auth middleware for you, But we have a tendency to build p2p libraries as monolithic stacks. _We want to stop doing that_. The second point is also not surprising if you come from the p2p space: iroh has some of the best connectivity numbers in the business, combined with a stack that's friendly to federation, it's easily the most useful part that deals with a persistent problem in p2p: reliable connections.
+The first point is not surprising if you come from outside the p2p space. It's very strange to think of an HTTP server framework picking auth middleware for you, and yet we have a tendency to build p2p libraries as monolithic stacks that constrain choices to modules within the framework. _We want to stop doing that_. The second point is also not surprising if you come from the p2p space: iroh has some of the best connectivity numbers in the business, combined with a stack that's friendly to federation. iroh-net is easily the most useful part that deals with a persistent problem in p2p: reliable connections.
 
 Lastly, having reliable dependencies sounds like a no-brainer, but considering that we have a lot of folks very comfortable building with bleeding-edge tech, it came as a healthy reminder that a smaller, more stable API that changes less over time is just more useful. Making iroh smaller gets us there faster.
 
@@ -56,11 +56,11 @@ We circulated the idea of a smaller API focused on dialing by nodeID + hooks to 
 * **Focus on integrations**: We'll work on promoting other projects that are executing better at different places in the p2p stack
 * **FFI Bindings**: We shipped support for writing custom protocols in Python, Swift, Kotlin, and Node.js in the latest release. We still need to figure out what to do with the existing blobs, docs, and gossip protocols, which still have special treatment in FFI bindings.
 
-## What's _not_ Changing
+## What's _Not_ Changing
 * **our existing stack**: No code is going away, and work isn't stopping on blobs, gossip, or docs. The point is to be more clear about what's production ready and what's experimental.
 * **our work on an implementation of the [Willow protocol](https://willowprotocol.org/)**: We're still working on this, and can get it out sooner under an experimental label, while also not giving it special treatment in the iroh API.
 
 As for technical changes, we started rolling this out with the latest v0.25.0 release, and plan to complete the transition over the next two releases. The biggest change will be to iroh's FFI bindings from rust to Python, Swift, Kotlin, and Node.js, where we're adding support for defining custom protocols in those languages, at the cost of not giving special treatment to blobs, docs and gossip as we currently do. We think the number of users affected by this change is small enough to work with all of you on a case-by-case basis to get something better than what you currently have.
 
 ## Timeline
-We've already started, and should complete the bulk of this transition by v0.27.0, which should land in late October, 2024. We're aiming to have a 1.0 roadmap published by the end of 2025.
+We've already started, and should complete the bulk of this transition by late October 2024 with the v0.28.0 release. We're aiming to publish a 1.0 roadmap in 2025.
