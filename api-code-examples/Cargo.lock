@@ -1836,7 +1836,7 @@ dependencies = [
 
 [[package]]
 name = "iroh-examples"
-version = "0.24.0"
+version = "0.25.0"
 dependencies = [
  "anyhow",
  "futures-lite 2.3.0",
@@ -5017,3 +5017,8 @@ name = "zeroize"
 version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"
+
+[[patch.unused]]
+name = "iroh"
+version = "0.25.0"
+source = "git+https://github.com/n0-computer/iroh?branch=main#2d863a94cc19faab860e85b164abf47a8669cfa9"
