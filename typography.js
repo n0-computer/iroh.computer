@@ -67,10 +67,12 @@ module.exports = ({ theme }) => ({
 
       // Lists
       ol: {
+        fontSize: theme('fontSize.base')[0],
         listStyleType: 'decimal',
         marginTop: theme('spacing.5'),
         marginBottom: theme('spacing.5'),
         paddingLeft: '1.625rem',
+        paddingRight: '1rem'
       },
       'ol[type="A"]': {
         listStyleType: 'upper-alpha',
@@ -100,10 +102,12 @@ module.exports = ({ theme }) => ({
         listStyleType: 'decimal',
       },
       ul: {
+        fontSize: theme('fontSize.base')[0],
         listStyleType: 'disc',
         marginTop: theme('spacing.5'),
         marginBottom: theme('spacing.5'),
         paddingLeft: '1.625rem',
+        paddingRight: '1rem'
       },
       li: {
         marginTop: theme('spacing.2'),
