@@ -84,7 +84,7 @@ export const UsersShowcase = function UsersShowcase() {
           <button
             key={index}
             className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? 'bg-irohGray-300 dark:bg-irohGray-800' : 'bg-irohGray-300/40 dark:bg-irohGray-800/40'
+              index === currentIndex ? 'bg-irohGray-600 dark:bg-irohGray-300' : 'bg-irohGray-700/20 dark:bg-irohGray-600/40'
             }`}
             onClick={() => {
               setCurrentIndex(index)

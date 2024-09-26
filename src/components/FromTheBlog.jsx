@@ -28,7 +28,7 @@ function Article({ className, post }) {
 
 export async function FromTheBlog() {
   let posts = await getAllPosts()
-  posts = posts.slice(0, 4)
+  posts = posts.slice(0, 2)
 
   return (
     <div className="w-full md:grid md:grid-cols-4">
