@@ -1,13 +1,13 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
 import {Button} from '@/components/Button';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
 
-function TopLevelNavItem({ href, children}) {
+function TopLevelNavItem({ href, children }) {
   return (
     <li>
       <Link
@@ -25,7 +25,7 @@ function DiscordLink(props) {
     <li>
       <Link
         href="https://iroh.computer/discord"
-        className='px-3 py-2 -mt-2 flex text-sm fill-zinc-400 text-zinc-600 transition hover:text-zinc-900 hover:bg-black/10 rounded'>
+        className='px-3 py-2 -mt-2 flex text-sm bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 transition hover:text-irohPurple-500 dark:hover:text-irohPurple-500 hover:bg-black/10 rounded'>
         Join Discord
       </Link>
     </li>
@@ -39,8 +39,29 @@ export function HeaderSparse() {
     setMobileMenuOpen(!mobileMenuOpen);
   }
 
+  useEffect(() => {
+    function handleScroll() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 0) {
+        navbar.classList.add('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+      } else {
+        navbar.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <nav id="navbar" className={clsx("fixed w-full transition-colors ease-in duration-1000 animate-all", mobileMenuOpen && 'backdrop-blur-md')}>
+    <nav id="navbar" className={clsx(
+      "fixed w-full z-50",
+      "transition-colors ease-in duration-200 animate-all",
+      mobileMenuOpen && 'backdrop-blur-md'
+      )}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="relative flex items-center justify-between h-20">
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
