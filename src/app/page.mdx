@@ -5,7 +5,7 @@ import { BookOpenIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
-import {Hero} from '@/components/HomeHero';
+import {HomeHero} from '@/components/HomeHero';
 import {UsersShowcase} from '@/components/UsersShowcase';
 import {GlowCard} from '@/components/GlowCard';
 import {FromTheBlog} from '@/components/FromTheBlog';
@@ -43,8 +43,8 @@ export const metadata = {
         <div className='absolute h-full top-0 right-0 bg-gradient-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
       </div>
       <div className='relative max-w-6xl mx-auto'>
-        <div className='absolute z-10'>
-          <Hero className='' />
+        <div className='absolute z-10 overflow-hidden w-full'>
+          <HomeHero className='' />
         </div>
         <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
           <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
