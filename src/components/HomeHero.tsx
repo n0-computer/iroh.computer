@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createNoise3D } from 'simplex-noise'
 
 const GRID_WIDTH = 1152
-const GRID_HEIGHT = 480
+const GRID_HEIGHT = 482
 const SQUARE_SIZE = 96
 const GRID_COLUMNS = GRID_WIDTH / SQUARE_SIZE
 const GRID_ROWS = GRID_HEIGHT / SQUARE_SIZE
@@ -66,7 +66,7 @@ const alphaModifierMap = Array.from({ length: TOTAL_SQUARES }).map((_, index) =>
   return mod ? mod[2] : 0
 })
 
-export const Hero = function Hero({ className, style }: { className: string, style: string }) {
+export const HomeHero = function HomeHero({ className, style }: { className: string, style: string }) {
   const [time, setTime] = useState(0)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
@@ -104,9 +104,9 @@ export const Hero = function Hero({ className, style }: { className: string, sty
   }, [])
 
   return (
-    <div className={clsx(className, "flex flex-col justify-center items-center pointer-events-none")} style={{height: GRID_HEIGHT, ...style}}>
+    <div className={clsx(className, "flex flex-col pointer-events-none")} style={{height: GRID_HEIGHT, ...style}}>
       <div
-        className="grid border-l border-t border-irohGray-300 dark:border-irohGray-800"
+        className="grid border-l border-r border-t border-irohGray-300 dark:border-irohGray-800"
         style={{
           width: `${GRID_WIDTH}px`,
           gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,

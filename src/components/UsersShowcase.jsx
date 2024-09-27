@@ -3,27 +3,33 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const projects = [
   { title: "Delta Chat",
     description: "Iroh powers multi-device backup & live connections for in-chat WebXDC apps",
     thumbnail: '/img/users/delta_chat.png',
+    href: 'https://delta.chat',
   },
   { title: "Shaga",
     description: "Streaming gaming to Android devices from high powered, gaming PCs. Iroh builds direct connections for simultaneous video, audio, and controller streams.",
     thumbnail: '/img/users/shaga.png',
+    href: 'https://shaga.xyz',
   },
   { title: "Fish Folk",
     description: "Multiplayer driven by iroh direct connections.",
     thumbnail: '/img/users/fish_folk.png',
+    href: 'https://fishfolk.org/',
   },
   { title: "Sendme",
     description: "Send files. Any size. No Accounts. Free.",
     thumbnail: '/img/users/sendme.png',
+    href: '/sendme',
   },
   { title: "Dumbpipe",
     description: "It's a unix pipe, over the internet",
     thumbnail: '/img/users/dumbpipe.png',
+    href: 'https://dumbpipe.dev',
   },
 ]
 
@@ -63,19 +69,23 @@ export const UsersShowcase = function UsersShowcase() {
             exit={{ opacity: 0, x: -300 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="absolute inset-0 flex items-center justify-center max-w-xl mx-auto px-10">
-              <div className="">
-                <Image
-                  src={projects[currentIndex].thumbnail}
-                  alt={projects[currentIndex].title}
-                  width={150} 
-                  height={150}
-                  className='rounded-lg overflow-hidden shadow-sm mx-auto mb-5'
-                  />
-                <h2 className="text-2xl font-bold">{projects[currentIndex].title}</h2>
-                <p className="text-sm">{projects[currentIndex].description}</p>
+              <div className="absolute inset-0 flex items-center justify-center max-w-xl mx-auto px-10">
+                <div className="">
+                  <Link href={projects[currentIndex].href}>
+                    <Image
+                      src={projects[currentIndex].thumbnail}
+                      alt={projects[currentIndex].title}
+                      width={150} 
+                      height={150}
+                      className='rounded-lg overflow-hidden shadow-sm mx-auto mb-5'
+                      />
+                  </Link>
+                  <Link className='cursor-pointer' href={projects[currentIndex].href}>
+                    <h2 className="text-2xl font-bold">{projects[currentIndex].title}</h2>
+                  </Link>
+                  <p className="text-sm">{projects[currentIndex].description}</p>
+                </div>
               </div>
-            </div>
           </motion.div>
         </AnimatePresence>
       </div>
