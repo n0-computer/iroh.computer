@@ -55,9 +55,9 @@ The default way to store a private key is to just store it in a hidden directory
 
 I was vaguely aware that something like threshold signatures exist. This is - very roughly speaking - a scheme where you split the private key into multiple parts called *shares*, and need a certain number of these shares to sign a message. Since the shares never have to be in one place, this provides safety in case a single share gets compromised.
 
-What I did not know however is that the generated signature is fully compatible with normal ed25519 signatures. So you can sign a message with a threshold signature scheme and then validate the signature as usual using the ed public key.
+What I did not know however is that there exist threshold signature schemes such as FROST that can be instantiated with Ed25519 such that generated signatures are fully compatible with normal ed25519 signatures. So you can sign a message with a threshold signature scheme and then validate the signature as usual using the ed public key.
 
-This means that threshold signatures are compatible with existing infrastructure such as [bep-0044] in the mainline DHT, [pkarr], and [nostr].
+This means that such threshold signatures are compatible with existing infrastructure such as [bep-0044] in the mainline DHT, [pkarr], and [nostr].
 
 They are also compatible with all the other places in iroh where we are using ed keypairs.
 
