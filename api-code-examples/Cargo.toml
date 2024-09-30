@@ -2,7 +2,7 @@
 name = "iroh-examples"
 edition = "2021"
 description = "iroh examples"
-version = "0.25.0"
+version = "0.26.0"
 authors = ["n0 team"]
 
 [dependencies]
