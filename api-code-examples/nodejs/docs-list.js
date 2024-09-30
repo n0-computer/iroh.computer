@@ -2,7 +2,7 @@ import assert from 'assert'
 import { Iroh, Query } from '@number0/iroh'
 
 // Create a node & 2 documents
-const node = await Iroh.memory()
+const node = await Iroh.memory({ enableDocs: true })
 const doc1 = await node.docs.create()
 const doc2 = await node.docs.create()
 

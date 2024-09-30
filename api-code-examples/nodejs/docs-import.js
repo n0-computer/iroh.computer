@@ -11,7 +11,7 @@ const filePath = path.join(dir, "hello.txt")
 await writeFile(filePath, "oh hi there!")
 
 // Create in memory iroh node
-const node = await Iroh.memory()
+const node = await Iroh.memory({ enableDocs: true })
 
 // Create a document
 const doc = await node.docs.create()

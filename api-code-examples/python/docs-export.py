@@ -21,8 +21,12 @@ async def main():
             f.write("Hello World!")
         print("Created file \"hello_world\"")
 
-        # Create Iroh node
-        node = await Iroh.memory()
+        # Set options to enable docs
+        options = iroh.NodeOptions()
+        options.enable_docs = True
+
+        # Create in memory iroh node
+        node = await iroh.Iroh.memory_with_options(options)
 
         # Create author and document
         author = await node.authors().create()

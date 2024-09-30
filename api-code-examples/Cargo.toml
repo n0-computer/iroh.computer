@@ -7,7 +7,7 @@ authors = ["n0 team"]
 
 [dependencies]
 anyhow = "1"
-iroh = "0.24"
+iroh = "0.26"
 futures-lite = "2.3"
 tempfile = "3"
 tokio = { version = "1", features = ["full"] }
@@ -85,6 +85,3 @@ path = "./rust/docs-share.rs"
 [[bin]]
 name = "docs-watch"
 path = "./rust/docs-watch.rs"
-
-[patch.crates-io]
-iroh = { git = "https://github.com/n0-computer/iroh", branch = "main" }

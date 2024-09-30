@@ -4,7 +4,7 @@ use iroh::client::docs::LiveEvent;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Create in memory iroh node
-    let node = iroh::node::Node::memory().spawn().await?;
+    let node = iroh::node::Node::memory().enable_docs().spawn().await?;
 
     // Create  document
     let author = node.authors().default().await?;

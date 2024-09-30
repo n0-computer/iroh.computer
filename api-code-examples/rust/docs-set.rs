@@ -4,7 +4,7 @@ use iroh::docs::store::Query;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let node = iroh::node::Node::memory().spawn().await?;
+    let node = iroh::node::Node::memory().enable_docs().spawn().await?;
 
     // create a document
     let author = node.authors().default().await?;

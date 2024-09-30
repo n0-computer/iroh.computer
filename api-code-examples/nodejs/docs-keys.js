@@ -1,7 +1,7 @@
 import { Iroh, Query } from '@number0/iroh'
 
 // Create a node, author & document
-const node = await Iroh.memory()
+const node = await Iroh.memory({ enableDocs: true })
 const author = await node.authors.default();
 const doc = await node.docs.create()
 
