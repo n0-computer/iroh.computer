@@ -1,0 +1,334 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-09-30',
+  title: 'Frost threshold signatures',
+  description:
+    'Frost threshold signatures - or how to keep your private keys safe',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## Ed keys everywhere
+
+In [iroh](https://github.com/n0-computer/iroh) we are using [Ed25519](https://en.wikipedia.org/wiki/EdDSA) keypairs **a lot**. Nodes are identified by ed keypairs, documents are identified by keypairs, authors, namespaces etc. A gossip topic is an arbitrary 32 byte blob, which conveniently fits an ed public key.
+
+With [pkarr](https://github.com) we have a great mechanism to publish information about keypairs. We are running a dns server, and we can also use the bittorrent [mainline](https://en.wikipedia.org/wiki/Mainline_DHT) DHT for a fully peer to peer mechanism to publish and resolve pkarr packets.
+
+Other recent protocols such as [Nostr](https://nostr.org/) are also using ed25519 keypairs.
+
+## How to keep the keys safe
+
+A problem that frequently comes up when using a keypair to control access to an identity or a resource is how to keep the private key safe.
+
+Some keypairs are ephemeral and don't need to be safeguarded much.
+
+Some will have significant security implications from the start (e.g. a keypair associated with access to a crypto wallet).
+
+And some will initially be of low value, but might grow in value over time (e.g. a social media account).
+
+In most cases, there is a constant conflict between the need to keep the keys safe and the need to constantly access the private key for signing messages.
+
+## Existing solutions
+
+### Secure key storage
+
+Most modern hardware supports secure storage for private keys. However, access to such secure storage locations is highly platform dependent. Also, while secure storage makes the key relatively inaccessible, it does not protect against key loss. It also does not provide a mechanism for revocation.
+
+### Delegation schemes
+
+With the tools of public key cryptography you can come up with delegation schemes where a rarely used master key is used to delegate to a more frequently used keypair that can be revoked using the master key.
+
+### Local file system
+
+The default way to store a private key is to just store it in a hidden directory in your local file system. While this is not extremely secure, it is still highly preferable to not using encryption at all. In many scenarios, e.g. device loss or theft, this is perfectly safe for low to medium value keypairs.
+
+## Threshold signatures
+
+I was vaguely aware that something like threshold signatures exist. This is - very roughly speaking - a scheme where you split the private key into multiple parts called *shares*, and need a certain number of these shares to sign a message. Since the shares never have to be in one place, this provides safety in case a single share gets compromised.
+
+What I did not know however is that the generated signature is fully compatible with normal ed25519 signatures. So you can sign a message with a threshold signature scheme and then validate the signature as usual using the ed public key.
+
+This means that threshold signatures are compatible with existing infrastructure such as [bep-0044] in the mainline DHT, [pkarr], and [nostr].
+
+They are also compatible with all the other places in iroh where we are using ed keypairs.
+
+## Creating key shares
+
+The reason I got interested in threshold signatures is the backwards compatibility.
+
+There are various ways to create key shares. One I find interesting in particular is the ability to just take an existing ed private key and generate key shares from it.
+
+Other ways include a scheme that requires a central trusted dealer, so basically a place that is considered secure at generation time and a way to securely transfer the fragments.
+
+And as the most advanced option a Distributed Key
+Generation scheme that allows generating the key shares directly on the target devices without ever having them all in one place.
+
+The advanced key share generation schemes are certainly interesting, but given that we are starting off with ed private keys in hidden directories, even the trusted dealer approach is fine for an initial exploration.
+
+## Exploring the [frost_ed25519] crate
+
+The FROST scheme is implemented in the paper [FROST: Flexible Round-Optimized
+Schnorr Threshold Signatures](https://eprint.iacr.org/2020/852.pdf). Luckily for me there is also a crate implementing the scheme, that is pretty approachable.
+
+### Local operations - split and reconstruct
+
+So I implemented a little command line tool to split existing iroh keys into key shares.
+
+I also implemented a way to reconstruct a signing key from a sufficient number of key shares. Note that you can't reconstruct the ed private key, but just a key that can be used for signing.
+
+This is all easy enough, but if the key shares are all on the same file system the scheme just adds complexity but no additional security.
+
+So we need a way to distribute the key shares on multiple machines that can be physically separated.
+
+Iroh is a library that can get you a fast and encrypted connection between any two devices anywhere in the world. So this should be easy.
+
+### Remote operations - sign and cosign
+
+For using the key shares, there are two possible roles. The *signer* actively wants to sign a message, e.g. to publish it somewhere, but does not have the entire private key. Depending on the exact parameters for the key shares, it needs one more more co-signers.
+
+The *co-signer* is a little daemon that just has a number of key shares. For this exploration it will just wait for incoming co-sign requests and sign them.
+
+## The protocol
+
+The rough protocol looks like this
+
+- The signer sends a request to its co-signers to sign a message for a public key.
+- Each co-signer that has a key share for the requested public key answers with a commitment and remembers a corresponding nonce.
+- The signer waits until it gets the required number of commitments. It then creates a signing package from all the commitments and the message and sends that to all co-signers.
+- all co-signers sign the signing package and return a signature share.
+- as soon as the signer has enough signing shares, it can create a signature.
+
+## Co-Signer
+
+The co-signer in this scheme acts as a server. It needs to locally store its iroh keypair to have a stable id. It also needs to publish discovery information. It does not, however, have to look up discovery information since it does not call other nodes.
+
+```rust
+    let discovery = PkarrPublisher::n0_dns(secret_key.clone());
+    let endpoint = iroh_net::endpoint::Endpoint::builder()
+        .alpns(vec![COSIGN_ALPN.to_vec()])
+        .secret_key(secret_key)
+        .discovery(Box::new(discovery))
+        .bind()
+        .await?;
+```
+
+Once the endpoint is created, it needs to run a normal accept loop where it just handles incoming co-sign requests
+
+```rust
+    while let Some(incoming) = endpoint.accept().await {
+        let data_path = data_path.clone();
+        tokio::task::spawn(async {
+            if let Err(cause) = handle_cosign_request(incoming, data_path).await {
+                tracing::error!("Error handling cosign request: {:?}", cause);
+            }
+        });
+    }
+```
+
+Handling a request is described above.
+
+To run the co-sign daemon, you just need to run the co-sign daemon with a directory containing a key share.
+
+```
+> cargo run cosign --data-path b
+Can cosign for following keys
+- 25mzjgjlrcrma7wkm4l3fjv2afcs53cvmmyw3v2uwwt2dczsinaa (min 2 signers)
+
+Listening on 4bqd4r3fivo5722twrvmlwcs7wjlnv6xf567lyweb7yyb34x37ba
+```
+
+## Signer
+
+The signer in this scheme acts as client. It does not need a stable node id, but it needs the ability to look up the addresses of other nodes.
+
+```rust
+    let discovery = DnsDiscovery::n0_dns();
+    let endpoint = iroh_net::endpoint::Endpoint::builder()
+        .secret_key(secret_key)
+        .discovery(Box::new(discovery))
+        .bind()
+        .await?;
+```
+
+It first calls out to all configured co-signers and sends them a co-sign request for the key to be signed for.
+Then it waits until it has a sufficient number of valid responses and starts with the next stage.
+
+```rust
+    let cosigners = futures::stream::iter(args.cosigners.iter())
+        .map(|cosigner| send_cosign_request_round1(&endpoint, &cosigner, &args.key))
+        .buffer_unordered(10)
+        .filter_map(|res| async {
+            match res {
+                Ok(res) => Some(res),
+                Err(cause) => {
+                    tracing::warn!("Error sending cosign request: {:?}", cause);
+                    None
+                }
+            }
+        })
+        .take(min_cosigners as usize)
+        .collect::<Vec<_>>()
+        .await;
+```
+
+In the next stage, it creates a signing package, sends it to all the co-signers that answered in the first round, and then collects the signature shares.
+
+As soon as all signature shares arrive, it can sign the message. We validate the signature against the public key.
+
+To sign, you need to provide the node ids of one or more co-signers. You also need to provide a local data path containing the local signature share.
+
+```
+> cargo run sign --message test --key 25mzjgjlrcrma7wkm4l3fjv2afcs53cvmmyw3v2uwwt2dczsinaa --data-path c 4bqd4r3fivo5722twrvmlwcs7wjlnv6xf567lyweb7yyb34x37ba
+Signature: a42d8ada7fc84a99f95e588eed99f89cc3ffdf3806862d6f5efd6511dd7b97912d04655e2c5f8f42e85c231ba8e084ae07d3e88c1bc17bc31156a9765b71200b
+```
+
+## Possible usage
+
+So now we have a way to split an ed keypair into multiple key shares, store these shares on multiple devices, and sign a message using a co-signer.
+
+How would we use this to have good usabilty when publishing to pkarr while still keeping the key safe?
+
+One key share `a` will be on the device that is actively publishing. One key share `b` would be on a remote server, either on a computer owned by the user or on a server operated by a service provider. And the third share `c` would be safely stored by the user, e.g. on a USB stick.
+
+The user device would first do a co-sign request, which would be answered by the co-sign server. Then it would publish the signed message.
+
+The co-sign server has a key share for the key, but that alone is not sufficient to publish to the key.
+
+## Recovery on key loss
+
+If the user device is lost or compromised, the user can simply disable publishing to the key by stopping the co-sign server. Then he can regenerate the signing key on a secure device, create a new set of three key shares `a2`, `b2`, `c2`, destroy the old two key shares `b` and `c`, and start from scratch with a similar setup as before.
+
+The key `b` on the lost device is completely useless without either `b` or `c`.
+
+## Automation
+
+This entire process could be automated to provide a smooth user experience.
+
+- [pkarr]: https://pkarr.org/
+- [bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
+- [nostr]: https://nostr.org/
+- [frost_ed25519]: https://docs.rs/frost-ed25519/latest/frost_ed25519/
+
+
+In [iroh](https://github.com/n0-computer/iroh) or iroh based tools like [sendme](https://iroh.computer/sendme) and [dumbpipe](https://www.dumbpipe.dev/), you establish connections between nodes using [tickets](/docs/concepts/tickets).
+
+Tickets contain both the iroh node id (an [ed25519](https://en.wikipedia.org/wiki/EdDSA) public key), direct addresses of the node, and the url of the DERP relay server that is closest to the node in terms of latency. This allows iroh to connect to the node no matter if it is publicly reachable or behind a firewall.
+
+But what if a ticket is outdated, or you don’t have a ticket at all?
+
+<Note>
+The information in tickets is usually pretty long lived - while the direct addresses frequently change, the derp url will only change if the node changes its geographic region or when it is intentionally reconfigured. Nevertheless it can happen that the derp url changes. E.g. your colleague gave you a ticket at conference in Europe and now is back in the US. Or you have just switched VPN exit nodes.
+</Note>
+
+Maybe you have a system where you do not want to store the ticket at all. Globally identifying nodes with just a node id can be very useful when you have to keep and transmit information about many nodes, such as global content discovery.
+
+In such cases you need some kind of global address book where each node that wants to participate publishes a mapping from its node id to its current direct and derp addresses.
+
+## Possible solutions
+
+One possible implementation of such a global address book is a centralised service. While there is nothing wrong with that in principle, running such a centralised service is not free.
+
+My [first implementation](https://github.com/n0-computer/iroh-discovery-cloudflare-worker) of global node discovery was actually using [cloudflare workers](https://developers.cloudflare.com/workers/) and the cloudflare [KV database](https://developers.cloudflare.com/kv/). But while each request to a cloudflare worker is very cheap, in a system of millions of nodes frequently looking other nodes up, these queries could quickly become expensive.
+
+Another possible implementation would be using the DNS system. You could store information such as the current addresses and derp url in a DNS TXT record for a domain. But while that would give you the ability to give nodes human readable names, it has some problems. Publishing DNS records is relatively slow, and each iroh user would have to have access to a DNS registrar such as [AWS route53](https://aws.amazon.com/route53/). And while DNS lookup is free, publishing new records comes with cost.
+
+But using DNS is pretty close to what we want. We want to assign some information (the derp url and direct addresses) to a name. Only that the name is a 32 byte ed25519 key and therefore not scarce, and we would like some kind of permissionless global system that can be updated relatively quickly.
+
+## Pkarr
+
+A typical solution for such a permissionless global registry is a [distributed hash table](https://en.wikipedia.org/wiki/Distributed_hash_table) or DHT. So we would need a DHT. IPFS and hypercore use a DHT for similar problems. 
+
+The largest existing DHT is the bittorrent [mainline DHT](https://en.wikipedia.org/wiki/Mainline_DHT). While it is old, it is a very minimalist and robust design. It is also one of the few DHTs out there that has survived despite being frequently attacked by powerful adversaries.
+
+The mainline DHT, originally just used for retrieving the location of content identified by SHA1 infohashes, has been extended many times. One such extension, [bep0044](https://www.bittorrent.org/beps/bep_0044.html), allows publishing mutable, signed data given an ed25519 keypair. This sounds pretty close to what we want.
+
+But in what format should we publish the data? Well, we want something like DNS, and maybe even something that is interoperable with the omnipresent DNS system. So why not publish DNS records? That’s the idea behind [pkarr](https://pkarr.org), or Public-Key Addressable Resource Records.
+
+It’s a very simple system for publishing and resolving DNS resource records that are signed by an ed keypair, with one of many possible storage mechanisms being the bittorrent mainline DHT.
+
+## Implementation
+
+The [mainline](https://crates.io/crates/mainline) crate makes interacting with the bittorrent DHT in rust very simple. The [pkarr](https://crates.io/search?q=pkarr) crate, built on top of the mainline crate, adds the concept of publishing signed records.
+
+Iroh provides a trait to plug in node discovery mechanisms. So all we have to do is to implement the [Discovery trait](https://docs.rs/iroh-net/0.12.0/iroh_net/magicsock/trait.Discovery.html) and implement the two methods publish and resolve.
+
+Resolving is pretty straightforward - you just ask the DHT for signed resource records, then sift through the answers to find valid ones. Due to the signing, the only entity that can publish a valid record is the owner of the private key corresponding to the public key that serves as a name. So the worst thing that can happen is that you get a slightly outdated record.
+
+Publishing is a bit more involved. At first you create a DNS resource record and sign it. But since DHT nodes are constantly coming and going, and DHT nodes will not retain information forever, you have to constantly republish the record for it to remain reachable.
+
+The constructor for pkarr node discovery needs the private key of the node in order to be able to sign the DNS records.
+
+Publishing is optional - there might be cases such as short lived nodes or nodes that do not want to be publicly reachable where publishing is not wanted.
+
+## Trying it out
+
+[iroh-pkarr-node-discovery](https://crates.io/crates/iroh-pkarr-node-discovery) is a tiny library crate that implements the iroh Discovery trait using pkarr. It comes with an [example](https://github.com/n0-computer/iroh-examples/blob/ced16b02ff3bc1aa445a41c15b8812c0b1a0d7c7/iroh-pkarr-node-discovery/examples/chat.rs) that creates a minimal chat program, just send from standard input and receive to standard output.
+
+### Publishing
+
+When starting the example without parameters, it creates a magicsocket using a random private key. It then publishes the address information for this node id on the mainline DHT in DNS resource record format.
+
+```bash
+❯ cargo run --example chat
+    Finished dev [unoptimized + debuginfo] target(s) in 0.68s
+     Running `target/debug/examples/chat`
+Listening on hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+pkarr z32: 8sxbksnfnwbzrhfsw7w7rqbt1bsafseqkk7oy83y5rdiswoofbcy
+see https://app.pkarr.org/?pk=8sxbksnfnwbzrhfsw7w7rqbt1bsafseqkk7oy83y5rdiswoofbcy
+```
+
+Both iroh and pkarr use 32 byte ed25519 public keys as names, but while iroh is using normal base32 encoding, pkarr is using [zbase32](https://philzimmermann.com/docs/human-oriented-base-32-encoding.txt) encoding. Normally as an iroh user you don’t have to care about this, but printing the zbase32 encoded id is helpful for looking up the created record on the pkarr webapp.
+
+### Verifying the published DNS record
+
+Pkarrr comes with a web app that allows inspecting DNS records on the mainline DHT. We can inspect the published record using this tool.
+
+<div className="not-prose">
+  <Image src="/blog/iroh-global-node-discovery/pkarr.png" width={1222} height={1090} alt="pkarr app" />
+</div>
+
+This is just a DNS record. As you can see, the current direct addresses of the node are published as TXT records under the `@` key, and the derp URL is published under the key `_derp_url.iroh`.
+
+I live in Romania, but when I tried this out I had a VPN connection to the US open to use some tools that are not available in the EU. So iroh-net has determined that the closest derper is use1-1.derp.iroh.network. In addition to the region, the record reveals some details about my networking setup. E.g. that `192.168.1.129` is the IP address of my laptop within my home network.
+
+This shows one reason pkarr record publishing is optional and should only be used if you want global discovery. You might not want to blast information about your rough location and private networking config all over the internet, even if it is harmless. When using tools like sendme that don’t have global node discovery enabled, only the recipients of the ticket get this information.
+
+### Resolving
+
+When starting the example with an iroh node id as a parameter, it will try to look up the node information on the DHT, and then try to connect using the chat ALPN. No matter if the other side is in the same local network or on the other side of the world, iroh will create a connection.
+
+Since this side does not want to be connected to, the discovery mechanism is not configured to publish but just to resolve records.
+
+The chat example is very minimal, without good error handling and UX. You just run it with a node id, and it will connect to the other side and allow you to chat.
+
+```bash
+❯ cargo run --example chat hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+    Finished dev [unoptimized + debuginfo] target(s) in 0.16s
+     Running `target/debug/examples/chat hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma`
+We are qzjliknxohvy3sfdfrl62oydl6qc2qougrxrtel4uygjzhlvotlq and connecting to hwpbkwcfcubxe4fwu5u5eobrsbwyfwiokk5qahza3edvwuqqfbma
+hi
+hello back
+```
+
+# Why is this not built in
+
+Other systems such as IPFS have the publishing of the node id on some DHT permanently enabled.
+
+But as we have seen there are many use cases where a node either does not want to be publicly reachable at all, or only wants to be able to resolve other nodes.
+
+Also, there are various different possible node resolution approaches, all with different benefits and downsides. E.g. for many apps using a centralised service such as the mentioned cloudflare worker might be the best solution. It has some cost, but will be more private, performant and reliable than a DHT.
+
+Last but not least, having this permanently enabled would add additional dependencies to the iroh networking library that would needlessly increase compile times and binary size. The pkarr and mainline crates are very frugal in terms of dependencies, but still you don’t want anything you don’t use.
+
+# Real world use
+
+Many iroh based tools do not make use of this mechanism, for the reasons we have described. In a later blog post I will describe a system that makes use of this mechanism to allow global content publishing. Examples where using this mechanism would make sense include any service that should be globally reachable under a stable identifier.
