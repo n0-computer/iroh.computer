@@ -3,8 +3,12 @@ import asyncio
 
 
 async def main():
+    # Set options to enable docs
+    options = iroh.NodeOptions()
+    options.enable_docs = True
+
     # Create in memory iroh node
-    node = await iroh.Iroh.memory()
+    node = await iroh.Iroh.memory_with_options(options)
 
     # Create document
     doc = await node.docs().create()

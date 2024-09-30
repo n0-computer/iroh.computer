@@ -3,7 +3,7 @@ use futures_lite::stream::StreamExt;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let node = iroh::node::Node::memory().spawn().await?;
+    let node = iroh::node::Node::memory().enable_docs().spawn().await?;
 
     // create a document
     let _doc_0 = node.docs().create().await?;

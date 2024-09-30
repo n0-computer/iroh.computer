@@ -1,13 +1,13 @@
 import { AddrInfoOptions, DownloadPolicy, FilterKind, Iroh, ShareMode } from '@number0/iroh'
 
 // Setup Alice
-const alice = await Iroh.memory()
+const alice = await Iroh.memory({ enableDocs: true })
 const aliceId = await alice.net.nodeId()
 const aliceAuthor = await alice.authors.default()
 console.log(`Started alice: ${aliceId}`)
 
 // Setup Bob
-const bob = await Iroh.memory()
+const bob = await Iroh.memory({ enableDocs: true })
 const bobId = await bob.net.nodeId()
 console.log(`Started bob: ${bobId}`)
 

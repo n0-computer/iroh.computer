@@ -15,7 +15,7 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Create in memory iroh node
-    let node = iroh::node::Node::memory().spawn().await?;
+    let node = iroh::node::Node::memory().enable_docs().spawn().await?;
 
     // Create author and document
     let author = node.authors().create().await?;

@@ -4,7 +4,7 @@ import { mkdtemp } from 'node:fs/promises'
 import { Iroh } from '@number0/iroh'
 
 // build an in-memory iroh node
-const node = await Iroh.memory()
+const node = await Iroh.memory({ enableDocs: true })
 const nodeId = await node.net.nodeId()
 console.log(`Started iroh node: ${nodeId}`)
 

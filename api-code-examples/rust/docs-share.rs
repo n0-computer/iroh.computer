@@ -3,7 +3,7 @@ use iroh::{base::node_addr::AddrInfoOptions, client::docs::ShareMode};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Create in memory iroh node
-    let node = iroh::node::Node::memory().spawn().await?;
+    let node = iroh::node::Node::memory().enable_docs().spawn().await?;
 
     let node_id = node.net().node_id().await?;
     println!("Started Iroh node: {node_id}");

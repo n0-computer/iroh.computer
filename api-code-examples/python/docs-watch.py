@@ -36,8 +36,12 @@ async def main():
     # setup event loop, to ensure async callbacks work
     iroh.iroh_ffi.uniffi_set_event_loop(asyncio.get_running_loop())
 
+    # Set options to enable docs
+    options = iroh.NodeOptions()
+    options.enable_docs = True
+
     # Create in memory iroh node
-    node = await Iroh.memory()
+    node = await iroh.Iroh.memory_with_options(options)
 
     # Create  document
     author = await node.authors().default()

@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { Iroh } from '@number0/iroh'
 
-const node = await Iroh.memory()
+const node = await Iroh.memory({ enableDocs: true })
 const nodeId = await node.net.nodeId()
 console.log(`Started iroh node: ${nodeId}`)
 
