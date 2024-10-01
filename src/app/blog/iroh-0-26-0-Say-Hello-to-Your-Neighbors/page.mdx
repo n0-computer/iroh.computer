@@ -1,0 +1,125 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-10-01',
+  title: 'iroh 0.26.0 - Say Hello to Your Neighbors',
+  description: 'Iroh 0.26.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+If you’ve been following along on our updates some of the changes in this release won’t come as a surprise. If not, take a look at our last blog post [Smaller is Better](https://www.iroh.computer/blog/smaller-is-better). To pull the most pertinent quote: “**We're doubling down on iroh's networking stack as “what iroh is” and describing everything else as a custom protocol.”** The post goes into more detail about those changes and the reasoning behind it.
+
+The first code changes that support our revised view on “what iroh is”  show up in this release: docs are now disabled by default. And since the scope of iroh is smaller, centering around creating direct connections, we are also starting the journey to help users manage and understand the remote nodes at the other ends of those connections better. Now, a `RemoteInfo` gives you information about where each address of the remote was discovered, whether because you the user gave that address to us, iroh discovered the address using our discovery system, that remote actually called you first, etc. Specifically, you can use these `Source`s to learn which nodes may actually be in your local network, ala airdrop or mDNS.
+
+## Docs are disabled by default
+
+Docs are now considered a protocol on top of iroh, rather than a core part of iroh itself, and so, are disabled by default. Don’t worry thought, enabling docs is simple. Here are examples from the languages we support:
+
+```rust
+// Rust
+let node = Node::memory().enable_docs().spawn().await?;
+```
+
+```jsx
+// JavaScript
+const node = await Iroh.memory({ enableDocs: true })
+```
+
+```python
+# Python
+options = NodeOptions()
+options.enable_docs = True
+node = await Iroh.memory_with_options(options)
+```
+
+```kotlin
+// Kotlin
+val options = NodeOptions()
+options.enableDocs = true
+val node = Iroh.memoryWithOptions(options)
+```
+
+## Sources for addresses
+
+Each `DirectAddrInfo` (which contains information about a particular direct address for a remote node) has a field `sources: HashMap<Source, Duration>` , where `Source` is how we learned about this address and `Duration` is how long ago we learned about it. We only keep the most recent duration for a `Source`, so you could have learned about this address via discovery one hour ago and rediscovered it one minute ago, and we would only show you the more recent duration of one minute. Also, you can have learned about a particular address multiple ways, which is why we keep a `HashMap` of `Source`s, and not one single `Source`. 
+
+The `RemoteInfo::sources` method will merge and deduplicate all of the `Source`s of each `DirectAddrInfo` on the `RemoteInfo` into one `Vec<(Source, Duration)>` , to give you ALL of the different ways that this remote as been discovered. 
+
+We can use that to filter for remotes that have been discovered in particular ways during a particular time period. The use case that was most requested by users was a way to understand which remote nodes were discovered “locally.” In other words, which nodes were discovered using local swarm discovery, our adjusted version of mDNS. The following is an example that shows how you can get a list of `RemoteInfo`s that have been discovered locally in the past 10 minutes:
+
+```rust
+// grab the discovery name
+use iroh_net::discovery::local_swarm_discovery::NAME as SWARM_DISCOVERY_NAME;
+
+// get an iterator of all the remote nodes this endpoint knows about
+let remotes = ep.remote_info_iter();
+// duration of 10 minutes
+let limit = Duration::from_secs(600);
+
+// Filter that list down to the nodes that set `Source::Discovery` with
+// the right service name
+
+println!("found:");
+
+for remote in remotes {
+    for (source, last_seen) in remote.sources() {
+        if let Source::Discovery { name } = source {
+            if name == SWARM_DISCOVERY_NAME && *last_seen <= limit {
+                println!("\t{:?}", remote.node_id);
+            }
+        }
+    }
+}
+```
+
+## Breaking Changes
+
+### Protocol
+
+None 🙂
+
+### API
+
+- `iroh`
+    - changed
+        - `client::Blobs::read_at` and `read_at_to_bytes` now take
+        `ReadAtLen` instead of `Option<usize>`
+        - by default `node::Node::memory` & `persistent` have docs disabled
+    - removed
+        - `node::Builder::disable_docs`
+    - added
+        - `node::Builder::enable_docs`
+- `iroh-net`
+    - struct `DirectAddrInfo` now has field `sources`, which is a `HashMap` of `endpoint::Source` to `Duration`. The `Source` is how we heard about the remote, and the `Duration` is how long ago we heard about it. We keep only the shortest `Duration`.
+- `iroh-blobs`
+    - changed
+        - `util::local_pool::LocalPool` will now install the tracing subscriber of the thread creating the pool, into each thread managed by the pool.  Practically this should not break any code already managing their tracing subscribers either manually inside tasks or by setting a global subscriber before creating the pool.  But if you really liked the behaviour of swallowing the logs on doing this it's a breaking change
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.26.0](https://github.com/n0-computer/iroh/releases/tag/v0.26.0).
+
+If you want to know what is coming up, check out the [0.27.0](https://github.com/n0-computer/iroh/milestone/33) , and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
