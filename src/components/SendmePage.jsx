@@ -45,7 +45,7 @@ export default function SendmePage() {
           <div className='md:flex'>
             <div className='px-5 py-10 border-b md:border-r md:w-5/12'>
               <h2 className='text-4xl text-zinc-700 font-koulen'>File transfer<br />doesn&apos;t need to be complicated</h2>
-              <p className='mt-1 text-sm/6 text-gray-500'>It&apos;s like <span className='font-space-mono bg-zinc-100 px-1 py-0.5 rounded'>scp</span> without needing to know the IP address. Add some files to sendme, and it will give you a pastable ticket that you can give to anyone who needs your files. Sendme will connect your devices directly & transfer the data without any accounts or configuration.</p>
+              <p className='mt-5 text-md/10 text-gray-500'>It&apos;s like <span className='font-space-mono bg-zinc-100 px-1 py-0.5 rounded'>scp</span> without needing to know the IP address. Add some files to sendme, and it will give you a pastable ticket that you can give to anyone who needs your files. Sendme will connect your devices directly & transfer the data without any accounts or configuration.</p>
             </div>
 
             <div className='px-5 py-10 border-b flex-1 md:w-7/12'>
@@ -60,6 +60,9 @@ export default function SendmePage() {
                   ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
                   : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
               </button>
+              <div className='mt-2 text-xs/6 text-gray-500'>
+                <p>This will copy the sendme binary to the path you ran the script from.<br />Run it with <pre className='font-mono text-sm/6 rounded bg-zinc-100 px-2 py-1 inline'>./sendme</pre> on unix systems</p>
+              </div>
             </div>
           </div>
         </div>
