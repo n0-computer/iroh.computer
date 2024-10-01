@@ -60,7 +60,7 @@ export function BlogPostLayout({ article, references = [], children }) {
                   <References references={references} />
                 )}
                 <div className="text-base text-zinc-400 dark:text-zinc-500 italic">
-                Iroh is a distributed systems toolkit. New tools for moving data, syncing state, and connecting devices directly. Iroh is open source, and already running in production on hundreds of thousands of devices. <br/>
+                  Iroh is a dial-any-device networking library that just works. Compose from an ecosystem of ready-made protocols to get the features you need, or go fully custom on a clean abstraction over dumb pipes. Iroh is open source, and already running in production on hundreds of thousands of devices.<br/>
                   To get started, take a look at our <a href="https://iroh.computer/docs">docs</a>, dive directly into <a href="https://github.com/n0-computer/iroh">the code</a>, or chat with us in our <a href="https://iroh.computer/discord">discord channel</a>.
                 </div>
               </Prose>

@@ -30,13 +30,13 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
 
-If you’ve been following along on our updates some of the changes in this release won’t come as a surprise. If not, take a look at our last blog post [Smaller is Better](https://www.iroh.computer/blog/smaller-is-better). To pull the most pertinent quote: “**We're doubling down on iroh's networking stack as “what iroh is” and describing everything else as a custom protocol.”** The post goes into more detail about those changes and the reasoning behind it.
+If you’ve been following along on our updates some of the changes in this release won’t come as a surprise. If not, take a look at our last blog post [Smaller is Better](https://www.iroh.computer/blog/smaller-is-better). To pull the most pertinent quote: “**We're doubling down on iroh's networking stack as 'what iroh is' and describing everything else as a custom protocol.”** The post goes into more detail about those changes and the reasoning behind it.
 
-The first code changes that support our revised view on “what iroh is”  show up in this release: docs are now disabled by default. And since the scope of iroh is smaller, centering around creating direct connections, we are also starting the journey to help users manage and understand the remote nodes at the other ends of those connections better. Now, a `RemoteInfo` gives you information about where each address of the remote was discovered, whether because you the user gave that address to us, iroh discovered the address using our discovery system, that remote actually called you first, etc. Specifically, you can use these `Source`s to learn which nodes may actually be in your local network, ala airdrop or mDNS.
+The first code changes that support our revised view on “what iroh is”  show up in this release: docs are now disabled by default. And since the scope of iroh is smaller, centering around creating direct connections, we are also starting the journey to help users manage and understand the remote nodes at the other ends of those connections better. Now, a `RemoteInfo` gives you information about where each address of the remote was discovered, whether because you the user gave that address to us, iroh discovered the address using our discovery system, that remote actually called you first, etc. Specifically, you can use these `Source`s to learn which nodes may actually be in your local network, similar to airdrop or mDNS.
 
 ## Docs are disabled by default
 
-Docs are now considered a protocol on top of iroh, rather than a core part of iroh itself, and so, are disabled by default. Don’t worry thought, enabling docs is simple. Here are examples from the languages we support:
+Docs are now considered a protocol on top of iroh, rather than a core part of iroh itself, and so, are disabled by default. Don’t worry though, enabling docs is simple. Here are examples from the languages we support:
 
 ```rust
 // Rust
