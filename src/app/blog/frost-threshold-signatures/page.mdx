@@ -77,9 +77,11 @@ The advanced key share generation schemes are certainly interesting, but given t
 
 The FROST scheme is implemented in the paper [FROST: Flexible Round-Optimized Schnorr Threshold Signatures](https://eprint.iacr.org/2020/852.pdf). Luckily for me there is also a crate implementing the scheme, that is pretty approachable.
 
+My experiment can be found [here](https://github.com/rklaehn/frosty).
+
 ### Local operations - split and reconstruct
 
-So I implemented a little command line tool to split existing iroh keys into key shares.
+I implemented a little command line tool to split existing iroh keys into key shares.
 
 I also implemented a way to reconstruct a signing key from a sufficient number of key shares. Note that you can't reconstruct the ed private key, but just a key that can be used for signing.
 
@@ -134,7 +136,7 @@ Once the endpoint is created, it needs to run a normal accept loop where it just
 
 Handling a request is described above.
 
-To run the co-sign daemon, you just need to run the co-sign daemon with a directory containing a key share.
+To run the co-sign daemon, you just need a directory containing one or more key shares you want it to co-sign.
 
 ```
 > cargo run cosign --data-path b
@@ -199,7 +201,7 @@ One key share `a` will be on the device that is actively publishing. One key sha
 
 The user device would first do a co-sign request, which would be answered by the co-sign server. Then it would publish the signed message.
 
-The co-sign server has a key share for the key, but that alone is not sufficient to publish to the key.
+The co-sign server has a key share `b` for the key, but that alone is not sufficient to publish to the key. The device itself has a key share `a` for the key, but this is also insufficient to publish to the key. So device loss or even device compromise is insufficient to gain access to publishing to the key.
 
 ## Recovery on key loss
 
@@ -209,7 +211,7 @@ The key `b` on the lost device is completely useless without either `b` or `c`.
 
 ## Automation
 
-This entire process could be automated to provide a smooth user experience.
+This entire process could be automated to provide a smooth user experience. A user could go through many devices without ever having to change a public key.
 
 - [pkarr]: https://pkarr.org/
 - [bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
