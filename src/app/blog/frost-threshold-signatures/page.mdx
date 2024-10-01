@@ -19,7 +19,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## Ed keys everywhere
 
-In [iroh](https://github.com/n0-computer/iroh) we are using [Ed25519] keypairs **a lot**. Nodes are identified by ed keypairs, documents are identified by keypairs, authors, namespaces etc. A gossip topic is an arbitrary 32 byte blob, which conveniently fits an ed public key.
+In [iroh](https://github.com/n0-computer/iroh) we are using [Ed25519] keypairs *a lot*. Nodes are identified by ed keypairs, documents are identified by keypairs, also authors, namespaces etc. A gossip topic is an arbitrary 32 byte blob, which conveniently fits an ed public key.
 
 With [pkarr] we have a great mechanism to publish information about keypairs. We are running a dns server, and we can also use the bittorrent [mainline](https://en.wikipedia.org/wiki/Mainline_DHT) DHT for a fully peer to peer mechanism to publish and resolve pkarr packets.
 
@@ -55,7 +55,7 @@ The default way to store a private key is to just store it in a hidden directory
 
 I was vaguely aware that something like threshold signatures exist. This is - very roughly speaking - a scheme where you split the private key into multiple parts called *shares*, and need a certain number of these shares to sign a message. Since the shares never have to be in one place, this provides safety in case a single share gets compromised or lost.
 
-What I did not know however is that there exist threshold signature schemes such as FROST that work with Ed25519 such that generated signatures are fully compatible with normal Ed25519 signatures. So you can sign a message with a threshold signature scheme and then validate the signature as usual using the ed public key.
+What I did not know however is that there exist threshold signature schemes such as FROST that work with Ed25519 such that generated signatures are *fully compatible* with normal Ed25519 signatures. So you can sign a message with a threshold signature scheme and then validate the signature as usual using the ed public key.
 
 This means that such threshold signatures are compatible with existing infrastructure such as [bep-0044] in the mainline DHT, [pkarr], and [nostr].
 
@@ -75,7 +75,7 @@ The advanced key share generation schemes are certainly interesting, but given t
 
 ## Exploring the [frost_ed25519] crate
 
-The FROST scheme is implemented in the paper [FROST: Flexible Round-Optimized Schnorr Threshold Signatures](https://eprint.iacr.org/2020/852.pdf). Luckily for me there is also a crate implementing the scheme, that is pretty approachable.
+The FROST scheme is described in the paper [FROST: Flexible Round-Optimized Schnorr Threshold Signatures](https://eprint.iacr.org/2020/852.pdf). Luckily for me there is also a crate implementing the scheme, that is pretty approachable.
 
 My experiment can be found [here](https://github.com/rklaehn/frosty).
 
@@ -100,6 +100,10 @@ The *co-signer* is a little daemon that just has a number of key shares. For thi
 ## The protocol
 
 The rough protocol looks like this
+
+<div className="not-prose">
+  <Image src="/blog/frost-threshold-signatures/protocol.jpeg" width={1222} height={1090} alt="protocol" />
+</div>
 
 - The signer sends a request to all configured co-signers to sign a message for a 32 byte public key.
 - Each co-signer that has a key share for the requested public key answers with a commitment and remembers a corresponding nonce.
@@ -141,7 +145,7 @@ Handling a request is described above.
 
 The code contains a lot of boilerplate for serialization and deserialization, but other than that pretty straightforward. The fact that the [frost_ed25519] crate has nice package structs for the different steps including serialization helped a lot.
 
-One thing to be aware of is that the request handler has to wait for the other side to close the connection, otherwise the last packet sent from our side might get lost.
+One thing to be aware of is that the request handler has to wait for the other side to close the connection, otherwise the last packet sent from our side might get lost. For a detailed explanation, look at our blog post [Closing a QUIC Connection](/blog/closing-a-quic-connection).
 
 ```rust
     let connection = incoming.await?;
@@ -292,6 +296,10 @@ How would we use this to have good usabilty when publishing to e.g. pkarr while 
 
 One key share `a` will be on the device that is actively publishing. One key share `b` would be on a remote server, either on a computer owned by the user or on a server operated by a service provider. And the third share `c` would be safely stored by the user, e.g. on a USB stick.
 
+<div className="not-prose">
+  <Image src="/blog/frost-threshold-signatures/usage.jpeg" width={1222} height={1090} alt="usage" />
+</div>
+
 The user device would first do a co-sign request, which would be answered by the co-sign server. Then it would publish the signed message.
 
 The co-sign server has a key share `b` for the key, but that alone is not sufficient to sign messages for the key. The device itself has a key share `a` for the key, but this is also insufficient to sign for the key. So device loss or even device compromise is insufficient to gain access to publishing to the key.
@@ -302,12 +310,14 @@ If the user device is lost or compromised, the user can simply disable publishin
 
 The key share `a` on the lost device is completely useless without either `b` or `c`.
 
+If a higher level of security is required, you could run multiple co-sign servers on separate devices.
+
 ## Automation
 
 This entire process would be automated to provide a smooth user experience, for both publishing and decomissioning device. A user could go through many devices without ever having to change a public key.
 
-- [pkarr]: https://pkarr.org/
-- [bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
-- [nostr]: https://nostr.org/
-- [frost_ed25519]: https://docs.rs/frost-ed25519/latest/frost_ed25519/
-- [Ed25519]: https://en.wikipedia.org/wiki/EdDSA
+[pkarr]: https://pkarr.org/
+[bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
+[nostr]: https://nostr.org/
+[frost_ed25519]: https://docs.rs/frost-ed25519/latest/frost_ed25519/
+[Ed25519]: https://en.wikipedia.org/wiki/EdDSA
