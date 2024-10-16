@@ -61,13 +61,17 @@ This means that such threshold signatures are compatible with existing infrastru
 
 They are also compatible with all the other places in iroh where we are using ed keypairs.
 
+Compared to Shamir Secret Sharing, the FROST scheme does not require the shares to be in one place to sign. 
+
 ## Creating key shares
 
 The reason I got interested in threshold signatures is the backwards compatibility.
 
-There are various ways to create key shares. One I find interesting in particular is the ability to just take an *existing* ed private key and generate key shares from it. This way the scheme is not just compatible with Ed25519 signatures in general, but even with existing keypairs. So for example you can use this algorithm for an existing node id, document, or [nostr] account.
+There are various ways to create key shares.
 
-Other ways include a scheme that requires a central *trusted dealer*, so basically a place that is considered secure at generation time and a way to securely transfer the shares.
+One I find interesting in particular is the ability to just take an *existing* ed private key and generate key shares from it. This way the scheme is not just compatible with Ed25519 signatures in general, but even with existing keypairs. So for example you can use this algorithm for an existing node id, document, or [nostr] account. Here you start with the keypair in one place and need to trust the security of that device, so you implicitly have a *trusted dealer*. You also need a secure way to transfer the shares to the target locations.
+
+As a second option you can create the keypair and then immediately split it, again requiring a place that is considered secure at generation time and a way to securely transfer the shares.
 
 And as the most advanced option a DKG (Distributed Key Generation) scheme that allows generating the key shares directly on the target devices without ever having them all in one place.
 
@@ -126,7 +130,7 @@ Iroh is a library that can get you a fast and encrypted connection between any t
 
 ### Remote operations - sign and cosign
 
-For using the key shares, there are two possible roles. The *signer* actively wants to sign a message, e.g. to publish it somewhere, but does not have the entire private key. Depending on the exact parameters for the key shares, it needs one more more co-signers.
+For using the key shares, there are two possible roles. The *signer* actively wants to sign a message, e.g. to publish it somewhere, but does not have the entire private key. Depending on the exact parameters for the key shares, it needs one or more co-signers.
 
 The *co-signer* is a little daemon that has one or more key share for which it can co-sign. For this exploration it will just wait for incoming co-sign requests and sign them.
 
@@ -174,9 +178,9 @@ while let Some(incoming) = endpoint.accept().await {
 }
 ```
 
-Handling a request is described above.
+Handling a request is described below.
 
-The code contains a lot of boilerplate for serialization and deserialization, but other than that pretty straightforward. The fact that the [frost_ed25519] crate has nice package structs for the different steps including serialization helped a lot.
+The code contains a lot of boilerplate for serialization and deserialization, but other than that is pretty straightforward. The fact that the [frost_ed25519] crate has nice package structs for the different steps including serialization helped a lot.
 
 One thing to be aware of is that the request handler has to wait for the other side to close the connection, otherwise the last packet sent from our side might get lost. For a detailed explanation, look at our blog post [Closing a QUIC Connection](/blog/closing-a-quic-connection).
 
@@ -337,7 +341,7 @@ Note that if you want to publish from multiple devices, you would still use the 
 
 ## Automation
 
-This entire process would be automated to provide a smooth user experience, for both publishing and decomissioning device. A user could go through many devices without ever having to change a public key.
+This entire process would be automated to provide a smooth user experience, for both publishing and decomissioning a device. A user could go through many devices without ever having to change a public key.
 
 [pkarr]: https://pkarr.org/
 [bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
