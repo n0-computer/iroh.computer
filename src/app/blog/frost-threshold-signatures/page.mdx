@@ -41,7 +41,7 @@ In most cases, there is a constant conflict between the need to keep the keys sa
 
 ### Local file system
 
-The default way to store a private key is to just store it in a hidden directory in your local file system. While this is not extremely secure, it is still highly preferable to not using encryption at all. In many scenarios, e.g. device loss or theft, this is perfectly safe for low to medium value keypairs.
+The default way to store a private key is to just store it in a hidden directory in your local file system. While this is not extremely secure, it is still highly preferable to not using encryption at all. In many scenarios, e.g. device loss or theft, this is perfectly fine for low to medium value keypairs.
 
 ### Secure key storage
 
@@ -313,6 +313,8 @@ So now we have a way to split an ed keypair into multiple key shares, store thes
 
 How would we use this to have good usabilty when publishing to e.g. pkarr or nostr while still keeping the key safe?
 
+Here is one of many possible schemes:
+
 One key share `a` will be on the device that is actively publishing. One key share `b` would be on a remote server, either on a computer owned by the user or on a server operated by a service provider. And the third share `c` would be safely stored by the user, e.g. on a USB stick.
 
 <div className="not-prose">
@@ -330,6 +332,8 @@ If the user device is lost or compromised, the user can simply disable publishin
 The key share `a` on the lost device is completely useless without either `b` or `c`.
 
 If a higher level of security is required, you could change the minimum required number of shares to 3 and run multiple co-sign servers on separate devices.
+
+Note that if you want to publish from multiple devices, you would still use the same key share `a` on all those devices instead of creating an additional key share. That way you avoid the key becoming compromised when multiple devices get lost or stolen, e.g. when your laptop and phone get stolen at the same time.
 
 ## Automation
 
