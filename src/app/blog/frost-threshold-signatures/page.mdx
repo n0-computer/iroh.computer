@@ -5,7 +5,7 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2024-09-30',
-  title: 'How to keep your private keys safe even if a device gets lost or compromised',
+  title: 'Lose your device, but keep your keys',
   description:
     'FROST threshold signatures - or how to keep your private keys safe even if a device gets lost or compromised',
 }
@@ -67,7 +67,7 @@ The reason I got interested in threshold signatures is the backwards compatibili
 
 There are various ways to create key shares. One I find interesting in particular is the ability to just take an *existing* ed private key and generate key shares from it. This way the scheme is not just compatible with Ed25519 signatures in general, but even with existing keypairs. So for example you can use this algorithm for an existing node id, document, or [nostr] account.
 
-Other ways include a scheme that requires a central trusted dealer, so basically a place that is considered secure at generation time and a way to securely transfer the shares.
+Other ways include a scheme that requires a central *trusted dealer*, so basically a place that is considered secure at generation time and a way to securely transfer the shares.
 
 And as the most advanced option a DKG (Distributed Key Generation) scheme that allows generating the key shares directly on the target devices without ever having them all in one place.
 
@@ -77,7 +77,7 @@ The advanced key share generation schemes are certainly interesting, but given t
 
 The FROST scheme is described in the paper [FROST: Flexible Round-Optimized Schnorr Threshold Signatures](https://eprint.iacr.org/2020/852.pdf). There is a crate implementing the scheme, from the [ZCash foundation](https://zfnd.org/), that is pretty approachable.
 
-My experiment can be found [here](https://github.com/rklaehn/frosty).
+My experiment can be found [here](https://github.com/n0-computer/iroh-examples/tree/main/frosty).
 
 ### Local operations - split, reconstruct, re-split
 
@@ -152,26 +152,26 @@ The co-signer in this scheme acts as a server, so it needs to locally store its 
 So this is how the endpoint setup looks like:
 
 ```rust
-    let discovery = PkarrPublisher::n0_dns(secret_key.clone());
-    let endpoint = iroh_net::endpoint::Endpoint::builder()
-        .alpns(vec![COSIGN_ALPN.to_vec()])
-        .secret_key(secret_key)
-        .discovery(Box::new(discovery))
-        .bind()
-        .await?;
+let discovery = PkarrPublisher::n0_dns(secret_key.clone());
+let endpoint = iroh_net::endpoint::Endpoint::builder()
+    .alpns(vec![COSIGN_ALPN.to_vec()])
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    .bind()
+    .await?;
 ```
 
 Once the endpoint is created, the co-signer needs to run a normal accept loop where it just handles incoming co-sign requests
 
 ```rust
-    while let Some(incoming) = endpoint.accept().await {
-        let data_path = data_path.clone();
-        tokio::spawn(async {
-            if let Err(cause) = handle_cosign_request(incoming, data_path).await {
-                tracing::error!("Error handling cosign request: {:?}", cause);
-            }
-        });
-    }
+while let Some(incoming) = endpoint.accept().await {
+    let data_path = data_path.clone();
+    tokio::spawn(async {
+        if let Err(cause) = handle_cosign_request(incoming, data_path).await {
+            tracing::error!("Error handling cosign request: {:?}", cause);
+        }
+    });
+}
 ```
 
 Handling a request is described above.
@@ -182,33 +182,32 @@ One thing to be aware of is that the request handler has to wait for the other s
 
 ```rust
 let connection = incoming.await?;
-    let connection = incoming.await?;
-    let remote_node_id = iroh_net::endpoint::get_remote_node_id(&connection)?;
-    info!("Incoming connection from {}", remote_node_id,);
-    let (mut send, mut recv) = connection.accept_bi().await?;
-    let key_bytes = read_exact_bytes(&mut recv).await?;
-    let key = PublicKey::from_bytes(&key_bytes)?;
-    info!("Received request to co-sign for key {}", key);
-    let secret_share_path = data_path.join(format!("{}.secret", key));
-    let secret_share = SecretShare::deserialize(&std::fs::read(&secret_share_path)?)?;
-    let key_package = KeyPackage::try_from(secret_share)?;
-    info!("Got fragment, creating commitment");
-    let (nonces, commitments) =
-        frost::round1::commit(key_package.signing_share(), &mut thread_rng());
-    info!("Sending identifier");
-    send.write_all(&key_package.identifier().serialize()).await?;
-    info!("Sending commitment");
-    write_lp(&mut send, &commitments.serialize()?).await?;
-    info!("Waiting for signing package");
-    let signing_package = SigningPackage::deserialize(&read_lp(&mut recv).await?)?;
-    info!("Received signing package, creating signature share");
-    let signature_share = frost::round2::sign(&signing_package, &nonces, &key_package)?;
-    info!("Sending signature share");
-    send.write_all(&signature_share.serialize()).await?;
-    info!("Finished handling cosign request");
-    // wait for the connection to close.
-    // if we don't do this, we might lose the last message in transit
-    connection.closed().await;
+let remote_node_id = iroh_net::endpoint::get_remote_node_id(&connection)?;
+info!("Incoming connection from {}", remote_node_id,);
+let (mut send, mut recv) = connection.accept_bi().await?;
+let key_bytes = read_exact_bytes(&mut recv).await?;
+let key = PublicKey::from_bytes(&key_bytes)?;
+info!("Received request to co-sign for key {}", key);
+let secret_share_path = data_path.join(format!("{}.secret", key));
+let secret_share = SecretShare::deserialize(&std::fs::read(&secret_share_path)?)?;
+let key_package = KeyPackage::try_from(secret_share)?;
+info!("Got fragment, creating commitment");
+let (nonces, commitments) =
+    frost::round1::commit(key_package.signing_share(), &mut thread_rng());
+info!("Sending identifier");
+send.write_all(&key_package.identifier().serialize()).await?;
+info!("Sending commitment");
+write_lp(&mut send, &commitments.serialize()?).await?;
+info!("Waiting for signing package");
+let signing_package = SigningPackage::deserialize(&read_lp(&mut recv).await?)?;
+info!("Received signing package, creating signature share");
+let signature_share = frost::round2::sign(&signing_package, &nonces, &key_package)?;
+info!("Sending signature share");
+send.write_all(&signature_share.serialize()).await?;
+info!("Finished handling cosign request");
+// wait for the connection to close.
+// if we don't do this, we might lose the last message in transit
+connection.closed().await;
 ```
 
 To run the co-sign daemon, you just need a directory containing one or more key shares you want it to co-sign, in the format generated by the split or re-split commands.
@@ -228,77 +227,77 @@ In a real use case this would be embedded in an application, but for this explor
 The signer in this scheme acts as client. It does not need a stable node id, but it needs the ability to look up the addresses of other nodes. So the endpoint setup looks like this:
 
 ```rust
-    let endpoint = iroh_net::endpoint::Endpoint::builder()
-        .secret_key(secret_key)
-        .discovery(Box::new(DnsDiscovery::n0_dns()))
-        .bind()
-        .await?;
+let endpoint = iroh_net::endpoint::Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(DnsDiscovery::n0_dns()))
+    .bind()
+    .await?;
 ```
 
 For signing, it first calls out to all configured co-signers and sends them a co-sign request for the key to be signed for. Then it waits until it has a sufficient number of valid responses.
 
 ```rust
-    let cosigners = futures::stream::iter(args.cosigners.iter())
-        .map(|cosigner| send_cosign_request_round1(&endpoint, &cosigner, &args.key))
-        .buffer_unordered(10)
-        .filter_map(|res| async {
-            res.inspect_err(|e| warn!("Error sending cosign request: {:?}", e))
-                .ok()
-        })
-        .take(min_cosigners)
-        .collect::<Vec<_>>()
-        .await;
+let cosigners = futures::stream::iter(args.cosigners.iter())
+    .map(|cosigner| send_cosign_request_round1(&endpoint, &cosigner, &args.key))
+    .buffer_unordered(10)
+    .filter_map(|res| async {
+        res.inspect_err(|e| warn!("Error sending cosign request: {:?}", e))
+            .ok()
+    })
+    .take(min_cosigners)
+    .collect::<Vec<_>>()
+    .await;
 ```
 
 Once it has a sufficient number of co-signers, it creates a commitments map from the received commitments and adds a commitment from the local key share.
 
 ```rust
-    let mut commitments_map = BTreeMap::new();
-    for (_, _, identifier, commitments) in cosigners.iter() {
-        commitments_map.insert(*identifier, commitments.clone());
-    }
-    let local_identifier = *key_package.identifier();
-    commitments_map.insert(local_identifier, commitments);
+let mut commitments_map = BTreeMap::new();
+for (_, _, identifier, commitments) in cosigners.iter() {
+    commitments_map.insert(*identifier, commitments.clone());
+}
+let local_identifier = *key_package.identifier();
+commitments_map.insert(local_identifier, commitments);
 ```
 
 From this point on it is assumed that the co-signers will be reachable. If a co-signer would drop out after this point, you would have to repeat the entire signing process.
 
 In the next step, the signer creates a signing package, sends it to all the co-signers that answered in the first round, and then collects the signature shares. It also generates a local signature share from the local key share.
 
-We keep the connections to the co-signers open between the first and second round by just keeping the SendStream and RecvStream around.
+We keep the connections to the co-signers open between the first and second round by just keeping the SendStream and RecvStream around. Keeping the SendStream or RecvStream around keeps the connection alive despite the actual Connection object being dropped.
 
 ```rust
-    let signing_package = frost::SigningPackage::new(commitments_map, args.message.as_bytes());
-    let signing_package_bytes = signing_package.serialize()?;
-    let signing_package_bytes_len = signing_package_bytes.len() as u32;
-    let mut signature_shares = BTreeMap::new();
-    info!("Creating local signature share");
-    let local_signature_share = frost::round2::sign(&signing_package, &nonce, &key_package)?;
-    signature_shares.insert(local_identifier, local_signature_share);
-    for (mut send, mut recv, identifier, _) in cosigners {
-        write_lp(&mut send, &signing_package_bytes).await?;
-        let signature_share_bytes = read_exact_bytes(&mut recv).await?;
-        let signature_share = frost::round2::SignatureShare::deserialize(signature_share_bytes)?;
-        signature_shares.insert(identifier, signature_share);
-    }
+let signing_package = frost::SigningPackage::new(commitments_map, args.message.as_bytes());
+let signing_package_bytes = signing_package.serialize()?;
+let signing_package_bytes_len = signing_package_bytes.len() as u32;
+let mut signature_shares = BTreeMap::new();
+info!("Creating local signature share");
+let local_signature_share = frost::round2::sign(&signing_package, &nonce, &key_package)?;
+signature_shares.insert(local_identifier, local_signature_share);
+for (mut send, mut recv, identifier, _) in cosigners {
+    write_lp(&mut send, &signing_package_bytes).await?;
+    let signature_share_bytes = read_exact_bytes(&mut recv).await?;
+    let signature_share = frost::round2::SignatureShare::deserialize(signature_share_bytes)?;
+    signature_shares.insert(identifier, signature_share);
+}
 ```
 
-As soon as all requested signature shares arrive, it can finally create the signature by aggregating the signing shares. For this step we also need the PublicKeyPackage which is identical for all shares and contains no secret information.
+As soon as all requested signature shares arrive, it can finally create the signature by aggregating the signing shares. For this step we also need the `PublicKeyPackage` which is identical for all shares and contains no secret information.
 
 ```rust
-    info!("got {} signature shares", signature_shares.len());
-    let signature = frost::aggregate(&signing_package, &signature_shares, &public_key_package)?;
+info!("got {} signature shares", signature_shares.len());
+let signature = frost::aggregate(&signing_package, &signature_shares, &public_key_package)?;
 ```
 
 Once we finally have the signature, we can quickly check if it is actually a correct signature for the private key. In a real application we would now take the signed data and send it somewhere, e.g. to pkarr. But for this exploration we just print it.
 
 ```rust
-    let bytes = signature.serialize();
-    let iroh_signature: iroh_net::key::Signature = bytes.into();
-    if let Err(cause) = key.verify(args.message.as_bytes(), &iroh_signature) {
-        error!("Verification failed: {:?}", cause);
-    }
-    println!("Signature: {}", hex::encode(&bytes));
+let bytes = signature.serialize();
+let iroh_signature = iroh_net::key::Signature::from(bytes);
+if let Err(cause) = key.verify(args.message.as_bytes(), &iroh_signature) {
+    error!("Verification failed: {:?}", cause);
+}
+println!("Signature: {}", hex::encode(&bytes));
 ```
 
 Usage:
@@ -312,7 +311,7 @@ Signature: a42d8ada7fc84a99f95e588eed99f89cc3ffdf3806862d6f5efd6511dd7b97912d046
 
 So now we have a way to split an ed keypair into multiple key shares, store these shares on multiple devices, and sign a message using a co-signer.
 
-How would we use this to have good usabilty when publishing to e.g. pkarr while still keeping the key safe?
+How would we use this to have good usabilty when publishing to e.g. pkarr or nostr while still keeping the key safe?
 
 One key share `a` will be on the device that is actively publishing. One key share `b` would be on a remote server, either on a computer owned by the user or on a server operated by a service provider. And the third share `c` would be safely stored by the user, e.g. on a USB stick.
 
@@ -326,7 +325,7 @@ The co-sign server has a key share `b` for the key, but that alone is not suffic
 
 ## Recovery on key loss
 
-If the user device is lost or compromised, the user can simply disable publishing to the key by stopping the co-sign server. Then he can regenerate the signing key on a secure device, create a new set of three key shares `a2`, `b2`, `c2`, destroy the old two key shares `b` and `c`, and start from scratch with a similar setup as before.
+If the user device is lost or compromised, the user can simply disable publishing to the key by stopping the co-sign server. Then regenerate the signing key on a secure device, create a new set of three key shares `a2`, `b2`, `c2`, destroy the old two key shares `b` and `c`, and start from scratch with a similar setup as before.
 
 The key share `a` on the lost device is completely useless without either `b` or `c`.
 
