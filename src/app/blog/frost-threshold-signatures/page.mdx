@@ -1,5 +1,5 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
-import Image from 'next/image'
+import {ThemeImage} from '@/components/ThemeImage'
 
 export const post = {
   draft: false,
@@ -139,7 +139,13 @@ The *co-signer* is a little daemon that has one or more key share for which it c
 The protocol looks like this
 
 <div className="not-prose">
-  <Image src="/blog/frost-threshold-signatures/protocol.jpeg" width={1222} height={1090} alt="protocol" />
+<ThemeImage
+    lightSrc='/blog/frost-threshold-signatures/frost_protocol_light.svg'
+    darkSrc='/blog/frost-threshold-signatures/frost_protocol_dark.svg'
+    alt='frost protocol diagram'
+    width={800}
+    height={600}
+  />
 </div>
 
 - The signer sends a request to all configured co-signers to sign a message for a 32 byte public key.
@@ -322,7 +328,13 @@ Here is one of many possible schemes:
 One key share `a` will be on the device that is actively publishing. One key share `b` would be on a remote server, either on a computer owned by the user or on a server operated by a service provider. And the third share `c` would be safely stored by the user, e.g. on a USB stick.
 
 <div className="not-prose">
-  <Image src="/blog/frost-threshold-signatures/usage.jpeg" width={1222} height={1090} alt="usage" />
+<ThemeImage
+    lightSrc='/blog/frost-threshold-signatures/frost_usage_light.svg'
+    darkSrc='/blog/frost-threshold-signatures/frost_usage_dark.svg'
+    alt='frost protocol diagram'
+    width={800}
+    height={500}
+  />
 </div>
 
 The user device would first do a co-sign request, which would be answered by the co-sign server. Then it would publish the signed message.
