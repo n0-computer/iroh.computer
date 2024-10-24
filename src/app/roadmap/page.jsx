@@ -39,7 +39,9 @@ export default function Component() {
 function Release({ data }) {
   const { version, done, doc, released, expected } = data;
   return (
-    <div className={clsx('pr-5 ml-calc pt-8 pb-2 relative w-32 border-r dark:border-irohGray-400 text-right', done && 'border-irohPurple-500 dark:border-irohPurple-500')}>
+    <div className={clsx(
+      'pr-5 ml-calc pt-8 pb-2 relative w-32 border-r dark:border-irohGray-700 text-right', 
+      done && 'border-irohPurple-500 dark:border-irohPurple-500')}>
       <div className='absolute -right-3.5 top-8 w-7 h-7 rounded-full bg-white dark:bg-irohGray-900'>
         {done
           ? <CheckCircleIcon className='w-7 h-7 text-irohPurple-500' />
