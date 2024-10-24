@@ -8,7 +8,7 @@
       "tracking_issue": "https://github.com/n0-computer/iroh/pull/2748"
     },
     { "version": "v0.26.0", "done": true, "released": "2024-09-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
-    { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "" },
+    { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "https://www.iroh.computer/blog/iroh-0-27-0-Squashing-Bugs-And-Taking-Names" },
     { 
       "done": false,
       "title": "pull custom protocols out of iroh",
