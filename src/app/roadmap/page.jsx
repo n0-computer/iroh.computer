@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import clsx from 'clsx';
-import { CheckCircleIcon, TrophyIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon, EllipsisHorizontalIcon, TrophyIcon } from '@heroicons/react/20/solid';
 
 import roadmap from './roadmap.json';
 import { BlankLayout } from '@/components/BlankLayout';
@@ -31,6 +31,8 @@ export default function Component() {
             return <Release key={i} data={milestone} />
           } else if (milestone.all_done === false || milestone.all_done === true) {
             return <AllDone key={i} data={milestone} />
+          } else if (milestone.ellipsis) {
+            return <Ellipsis key={i} data={milestone} />
           }
           return <Milestone key={i} data={milestone} />
         })}
@@ -99,6 +101,19 @@ function Subtasks({ data }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+function Ellipsis() {
+  return (
+    <div style={{ marginLeft: '7.95rem' }} className='relative py-10 border-l max-w-md dark:border-irohGray-700'>
+      <div className='absolute -left-2.5 rounded-full bg-white dark:bg-irohGray-900'>
+        <EllipsisHorizontalIcon className='w-5 h-5 text-irohGray-600 dark:text-irohGray-400' />
+      </div>
+      <div className='px-4 pb-3'>
+        <p className='text-sm leading-5 font-space italic text-irohGray-500'>future work</p>
+      </div>
+    </div>
   )
 }
 

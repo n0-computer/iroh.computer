@@ -53,6 +53,7 @@
       "tracking_issue": null
     },
     { "version": "v0.29.0", "done": false, "released": "", "doc": "", "expected": "Nov 18, 2024" },
+    { "ellipsis": true },
     {
       "done": false,
       "title": "draft specification",
