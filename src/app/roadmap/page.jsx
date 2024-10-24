@@ -40,7 +40,7 @@ function Release({ data }) {
   const { version, done, doc, released, expected } = data;
   return (
     <div className={clsx(
-      'pr-5 ml-calc pt-8 pb-2 relative w-32 border-r dark:border-irohGray-700 text-right', 
+      'pr-5 ml-calc pt-9 pb-2 relative w-32 border-r dark:border-irohGray-700 text-right', 
       done && 'border-irohPurple-500 dark:border-irohPurple-500')}>
       <div className='absolute -right-3.5 top-8 w-7 h-7 rounded-full bg-white dark:bg-irohGray-900'>
         {done
@@ -48,7 +48,7 @@ function Release({ data }) {
           : <CheckCircleIcon className='w-7 h-7 text-irohGray-200 dark:text-irohGray-400' />}
       </div>
       <div>
-        <h2 className='text-lg font-space font-bold tracking-tight text-irohGray-400'>
+        <h2 className='text-lg font-space font-bold tracking-tight leading-tight text-irohGray-400'>
         {doc
           ? <Link className='text-irohPurple-500 cursor-pointer' href={doc}>{version}</Link>
           : version }</h2>
