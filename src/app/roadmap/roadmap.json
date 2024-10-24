@@ -1,0 +1,105 @@
+{
+  "last_updated": "2025-10-23",
+  "milestones": [
+    {
+      "done": true,
+      "title": "docs are disabled by default",
+      "description": "transition node builder away from assuming all users want the docs protocol",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/2748"
+    },
+    { "version": "v0.26.0", "done": true, "release_date": "2024-9-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
+    { 
+      "done": false,
+      "title": "pull custom protocols out of iroh",
+      "description": "pull custom protocols out of iroh and into  separate package",
+      "tracking_issue": null,
+      "subtasks": {
+        "iroh-blobs": true,
+        "iroh-docs": false,
+        "iroh-gossip": false,
+        "iroh-router": false
+      }
+    },
+    { "version": "v0.28.0", "done": false, "release_date": "", "doc": "", "expected": "Nov. 4, 2024" },
+    {
+      "done": false,
+      "title": "draft specification",
+      "description": "draft a specification for the iroh protocol, outlining all open standards iroh uses, noting any deviations",
+      "tracking_issue": null,
+      "subtasks": {
+        "self-signed TLS": false,
+        "QUIC": false,
+        "ICE over QUIC": false,
+        "STUN over QUIC": false,
+        "DNS Discovery": false,
+        "Pkarr": false,
+        "MDNs": false,
+        "WebSockets": false,
+        "iroh relay": false
+      }
+    },
+    {
+      "done": false,
+      "title": "custom protocol template repo",
+      "description": "create a template repo for custom protocols with examples for shipping RPC interfaces and FFI bindings",
+      "tracking_issue": null
+    },
+    {
+      "done": false,
+      "title": "net-tools repo",
+      "description": "factor a number of networking tools out of iroh-net and into a separate repo",
+      "doc": "",
+      "subtasks": {
+        "netcheck": false,
+        "portmapper": false,
+        "netmon": false,
+        "iroh-relay": false,
+        "stun over quic": false
+      }
+    },
+    {
+      "done": false,
+      "title": "QUIC Multipath support",
+      "description": "implement QUIC multipath",
+      "tracking_issue": "",
+      "subtasks": {
+        "quinn iroh fork": false,
+        "plumb into iroh-net": false,
+        "upstream to quinn": false
+      }
+    },
+    {
+      "done": false,
+      "title": "ICE over QUIC",
+      "description": "implement ICE over QUIC",
+      "tracking_issue": ""
+    },
+    {
+      "done": false,
+      "title": "Formalize Error Responses",
+      "description": "transition from anyhow to thiserror in all critical code paths",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
+    },
+    {
+      "done": false,
+      "title": "browser support",
+      "description": "iroh-net compiles to web assembly and runs in the browser",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
+      "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
+    },
+    {
+      "done": false,
+      "title": "finalize 1.0 spec",
+      "description": "ratify the iroh 1.0 wire protocol",
+      "tracking_issue": ""
+    },
+    {
+      "done": false,
+      "title": "release candidate",
+      "description": "publish a release candidate, seeking feedback from the community",
+      "tracking_issue": "",
+      "doc": ""
+    },
+    { "version": "v1.0", "done": false, "release_date": "", "link": "", "expected": "H2 2025" }
+  ]
+}
