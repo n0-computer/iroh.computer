@@ -32,7 +32,7 @@ Welcome to a new release of iroh, a library for building on direct connections b
 
 We’ve fixed some bugs, including a yucky one that only showed up on long running nodes (thank you [fishfolk](https://github.com/fishfolk) for making us aware!), adjusted some config options that made it too easy to point production code to our staging relays, and streamlined adding `Discovery` services to the `iroh_net::Endpoint`.
 
-## Stay connected plz
+## ☎️ Stay connected plz
 
 An integral part of our hole punching work includes maintaining a connection to one of our relay servers. If our connection to the relay server ever fails, the next time we go to send information to the relay server, we run the connect process over again to ensure we have a connection.
 
@@ -40,7 +40,7 @@ This is great if you are on the *sending* side of a connection, since if anythin
 
 We’ve refactored this code path to attempt to reconnect when there is a connection failure, and to not wait for the node to need to send data before attempting to reconnect.
 
-## Sensible config options can go a looooong way
+## 💡 Sensible config options can go a looooong way
 
 We had a bug that did not select the proper relay server (production vs staging) when building our binaries. So we decided to simplify the logic that does the selection!
 
@@ -54,7 +54,7 @@ We no longer rely on the `test-utils` feature or the `#[cfg(test)]` annotations 
 
 For end users *this should have no real effect*, but if you **do** rely on any of these, setting the `IROH_FORCE_STAGING_RELAYS` environment variable when running in CI or running tests will result in the same behaviour as before!
 
-## Easier Discovery
+## 🪄 Easier Discovery
 
 We’ve streamlined adding the “default” `Discovery` services, when you use the `iroh-net` crate directly.
 
