@@ -1,0 +1,92 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2024-10-24',
+  title: 'iroh 0.27.0 - Squashing Bugs and Taking Names',
+  description: 'Iroh 0.27.0 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+We’ve fixed some bugs, including a yucky one that only showed up on long running nodes (thank you [fishfolk](https://github.com/fishfolk) for making us aware!), adjusted some config options that made it too easy to point production code to our staging relays, and streamlined adding `Discovery` services to the `iroh_net::Endpoint`.
+
+## ☎️ Stay connected plz
+
+An integral part of our hole punching work includes maintaining a connection to one of our relay servers. If our connection to the relay server ever fails, the next time we go to send information to the relay server, we run the connect process over again to ensure we have a connection.
+
+This is great if you are on the *sending* side of a connection, since if anything fails, you immediately attempt to re-connect to the server the next time you send bytes, but if you are on the *receiving* end, and something fails…you never attempt to re-connect!
+
+We’ve refactored this code path to attempt to reconnect when there is a connection failure, and to not wait for the node to need to send data before attempting to reconnect.
+
+## 💡 Sensible config options can go a looooong way
+
+We had a bug that did not select the proper relay server (production vs staging) when building our binaries. So we decided to simplify the logic that does the selection!
+
+This resulted in some minor but breaking changes to the existing API.
+
+`iroh-net` now exposes a new function named `force_staging_infra` in `iroh-net/src/relay.rs` which abstracts the selection logic.
+
+We’ve also removed the `TEST_DNS_NODE_ORIGIN` and refactored any tests that require a DNS `Discovery` service to either spin up their own node to publish to or run against already existing infrastructure.
+
+We no longer rely on the `test-utils` feature or the `#[cfg(test)]` annotations for determining whether code runs against production or staging infrastructure, but only on the `IROH_FORCE_STAGING_RELAYS` environment variable being set to a non empty value
+
+For end users *this should have no real effect*, but if you **do** rely on any of these, setting the `IROH_FORCE_STAGING_RELAYS` environment variable when running in CI or running tests will result in the same behaviour as before!
+
+## 🪄 Easier Discovery
+
+We’ve streamlined adding the “default” `Discovery` services, when you use the `iroh-net` crate directly.
+
+Before, in order to enable the different default `Discovery` services on the `iroh_net::Endpoint`,  you needed to do the following:
+
+```rust
+let secret_key = SecretKey::generate();
+let discovery = ConcurrentDiscovery::from_services(vec![
+    Box::new(PkarrPublisher::n0_dns(secret_key.clone())),
+    Box::new(DnsDiscovery::n0_dns()),
+    Box::new(LocalSwarmDiscovery::new(secret_key.public())?),
+]);
+let ep = iroh_net::Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    .alpns(vec![EXAMPLE_ALPN.to_vec()])
+    .bind()
+     .await
+```
+
+Now, that’s simplified to:
+
+```rust
+let ep = iroh_net::Endpoint::builder()
+    .discovery_n0()
+    .alpns(vec![EXAMPLE_ALPN.to_vec()])
+    .bind()
+     .await
+```
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.27.0](https://github.com/n0-computer/iroh/releases/tag/v0.27.0).
+
+If you want to know what is coming up, check out the [0.27.0](https://github.com/n0-computer/iroh/milestone/34) , and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
