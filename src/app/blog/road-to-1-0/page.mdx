@@ -1,0 +1,66 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'b5',
+  date: '2024-10-25',
+  title: 'Iroh 1.0 Roadmap: The future will be connected directly',
+  description: 'We are committing to releasing iroh 1.0 in the second half of 2025',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+
+<Note>
+### TL;DR
+We are committing to releasing iroh 1.0 in the second half of 2025. Stay updated with our progress on the [roadmap](/roadmap).
+</Note>
+
+The time has come to talk about iroh 1.0! We have the clarity we need to publish a roadmap, which we’re putting out today, and will maintain moving forward.
+
+### Why Now?
+
+We’re ready to ship 1.0 because the team behind iroh finally agrees on *what iroh is:* Dialing devices by node identifiers, and tools for building protocols on direct connections.
+
+Iroh has been through a lot of permutations. It started as an implementation of IPFS, which we r[e-wrote from scratch](https://www.iroh.computer/blog/a-new-direction-for-iroh), then realized [iroh was too opinionated](https://www.iroh.computer/blog/smaller-is-better), and zeroed in on reliable direct connections as the core value iroh provides. We know we’re ready for 1.0 because our plan has *nothing left to remove*.
+
+The project has also gotten enough production use for us to confirm it works. We’re seeing half a million unique nodes hitting the public network in a thirty day span, and know that number roughly doubles when we talk to our partners running their own iroh relays. We know of at least 40 project [building on iroh](https://github.com/n0-computer/awesome-iroh), and we’re discovering new projects all the time. Users have run iroh in production for months without issue.
+
+In talking with iroh users, they ask for what we all want out of an upstream dependency: Do the thing reliably, and don’t break the API, which sounds exactly what getting to 1.0 would deliver.
+
+### The Plan
+
+Before we can ship we have a few major milestones to clear:
+
+- **Complete the transition to custom protocols**
+Finish pulling blobs, gossip, and documents out into separate repos, publish a template so anyone can build a custom protocol on iroh. We’ll continue maintaining blobs, gossip, and documents, under their own version numbers.
+- **Ship iroh in browsers**
+Support WASM compilation & running over standard browser APIs.
+- **Clarify the standards we use & publish a spec**
+Iroh is built on open specs & standards. We’ll publish a spec describing how we compose these standards, and the small additions we make.
+- **One round of network protocol breaks**
+We have a bunch of protocol-breaking changes we know we need to land. We’re going to try to do them all at once.
+- **Finalize the Rust API**
+We’ll need to settle on error types, what should be async, weather we can live with Bytes as a data structure, and so on.
+
+### Track Progress
+
+We’ll be continuously updating our [roadmap](/roadmap) with the latest milestones, features, and developments. Stay tuned, provide feedback, and contribute to the ongoing development of iroh. We’re excited to collaborate with the community as we approach the release of iroh 1.0 in late 2025.
