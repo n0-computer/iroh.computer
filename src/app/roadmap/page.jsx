@@ -46,7 +46,7 @@ function Milestone({ data }) {
         : <CheckCircleIcon className='w-5 h-5 text-irohGray-200 absolute -left-2.5 top-1' />}
       <div className='px-4'>
         <h3 className='text-xl font-space font-bold'>{title}</h3>
-        <p className='text-md font-spaceMono text-irohGray-500'>{description}</p>
+        <p className='text-sm font-spaceMono text-irohGray-500'>{description}</p>
         {tracking_issue && <a href={tracking_issue} className='text-md underline mr-4'>#{issueNunber}</a>}
         {doc && <a href={doc} className='text-md underline'>details</a>}
         <Subtasks data={subtasks} />

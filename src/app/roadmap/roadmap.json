@@ -8,6 +8,7 @@
       "tracking_issue": "https://github.com/n0-computer/iroh/pull/2748"
     },
     { "version": "v0.26.0", "done": true, "release_date": "2024-9-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
+    { "version": "v0.27.0", "done": true, "release_date": "2024-9-30", "doc": "" },
     { 
       "done": false,
       "title": "pull custom protocols out of iroh",
@@ -19,6 +20,18 @@
         "iroh-gossip": false,
         "iroh-router": false
       }
+    },
+    {
+      "done": false,
+      "title": "STUN over QUIC",
+      "description": "send STUN probs over QUIC connections so we don't drop packets",
+      "tracking_issue": null
+    },
+    {
+      "done": false,
+      "title": "Iroh CLI Deprecation Warning",
+      "description": "warn users that the iroh CLI is deprecated and will be removed in the next release",
+      "tracking_issue": null
     },
     { "version": "v0.28.0", "done": false, "release_date": "", "doc": "", "expected": "Nov. 4, 2024" },
     {
