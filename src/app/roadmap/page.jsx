@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import clsx from 'clsx';
-import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon, TrophyIcon } from '@heroicons/react/20/solid';
 
 import roadmap from './roadmap.json';
 import { BlankLayout } from '@/components/BlankLayout';
@@ -29,6 +29,8 @@ export default function Component() {
         {roadmap.milestones.map((milestone, i) => {
           if (milestone.version) {
             return <Release key={i} data={milestone} />
+          } else if (milestone.all_done === false || milestone.all_done === true) {
+            return <AllDone key={i} data={milestone} />
           }
           return <Milestone key={i} data={milestone} />
         })}
@@ -97,5 +99,25 @@ function Subtasks({ data }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+function AllDone({ data }) {
+  const { title, description, link, all_done } = data;
+  return (
+    <div style={{ marginLeft: '7.95rem' }} className={clsx(
+      'relative pb-5 max-w-md dark:border-irohGray-700', 
+      all_done && 'border-irohPurple-500 dark:border-irohPurple-500'
+    )}>
+      <div className='absolute -left-2.5 rounded-full bg-white dark:bg-irohGray-900'>
+        <Link href={link}>
+          <TrophyIcon className='w-5 h-5 text-irohGray-600 dark:text-irohGray-400' />
+        </Link>
+      </div>
+      <div className='px-4 pb-3'>
+        <h3 className='text-xl mb-1 leading-6 text-irohGray-600 font-space font-bold dark:text-irohGray-400'>{title}</h3>
+        <p className='text-sm leading-5 font-space text-irohGray-500'>{description}</p>
+      </div>
+    </div>
   )
 }
