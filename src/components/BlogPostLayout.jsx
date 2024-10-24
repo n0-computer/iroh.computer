@@ -1,9 +1,5 @@
 'use client'
 
-import { useContext } from 'react'
-import { useRouter } from 'next/navigation'
-
-import { AppContext } from '@/app/providers'
 import { Prose } from '@/components/Prose'
 import { formatDate } from '@/lib/formatDate'
 import References from '@/components/References'
@@ -11,23 +7,7 @@ import BlogHeader from '@/components/BlogHeader'
 import { FooterMarketing } from './FooterMarketing'
 import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
-function ArrowLeftIcon(props) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
-      <path
-        d="M7.25 11.25 3.75 8m0 0 3.5-3.25M3.75 8h8.5"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 export function BlogPostLayout({ article, references = [], children }) {
-  let router = useRouter()
-  let { previousPathname } = useContext(AppContext)
-
   return (
     <div>
       <BlogHeader />
