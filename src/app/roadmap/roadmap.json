@@ -23,14 +23,14 @@
     },
     {
       "done": false,
-      "title": "STUN over QUIC",
+      "title": "Implement QUIC Address Discovery",
       "description": "send STUN probes over QUIC connections so we don't drop STUN packets",
-      "tracking_issue": null
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
     },
     {
       "done": false,
       "title": "Iroh CLI Deprecation Warning",
-      "description": "warn users that the iroh CLI is deprecated and will be removed in the next release",
+      "description": "warn users that the iroh CLI is deprecated and will be converted to an example in the next release",
       "tracking_issue": null
     },
     { "version": "v0.28.0", "done": false, "released": "", "doc": "", "expected": "Nov 4, 2024" },
@@ -38,6 +38,12 @@
       "done": false,
       "title": "FFI bindings move to protocols",
       "description": "move FFI bindings to each protocol, demonstrating how to ship custom protocols with language bindings",
+      "tracking_issue": null
+    },
+    {
+      "done": false,
+      "title": "custom protocol template repo",
+      "description": "create a template repo for custom protocols with examples for shipping RPC interfaces and FFI bindings",
       "tracking_issue": null
     },
     {
@@ -70,12 +76,6 @@
         "WebSockets": false,
         "iroh relay": false
       }
-    },
-    {
-      "done": false,
-      "title": "custom protocol template repo",
-      "description": "create a template repo for custom protocols with examples for shipping RPC interfaces and FFI bindings",
-      "tracking_issue": null
     },
     {
       "done": false,
