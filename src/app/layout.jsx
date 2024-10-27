@@ -1,8 +1,8 @@
 import glob from 'fast-glob';
+import Script from 'next/script';
 
 import {Providers} from '@/app/providers';
 import {Layout} from '@/components/Layout';
-
 import '@/styles/tailwind.css';
 
 export const metadata = {
@@ -45,8 +45,8 @@ export default async function RootLayout({children}) {
             </Layout>
           </div>
         </Providers>
-        <script defer data-domain="iroh.computer" src="https://plausible.io/js/script.tagged-events.js"></script>
       </body>
+      <Script defer data-domain="iroh.computer" src="https://plausible.io/js/plausible.js" />
     </html>
   );
 }

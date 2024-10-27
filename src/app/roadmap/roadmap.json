@@ -10,15 +10,15 @@
     { "version": "v0.26.0", "done": true, "released": "2024-09-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
     { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "https://www.iroh.computer/blog/iroh-0-27-0-Squashing-Bugs-And-Taking-Names" },
     { 
-      "done": false,
+      "done": true,
       "title": "pull custom protocols out of iroh",
       "description": "pull custom protocols out of iroh and into separate repositories",
       "tracking_issue": null,
       "subtasks": {
         "iroh-blobs": true,
-        "iroh-docs": false,
-        "iroh-gossip": false,
-        "iroh-router": false
+        "iroh-docs": true,
+        "iroh-gossip": true,
+        "iroh-router": true
       }
     },
     {

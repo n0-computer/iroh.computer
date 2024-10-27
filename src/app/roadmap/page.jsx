@@ -49,7 +49,7 @@ function Release({ data }) {
       <div className='absolute -right-3.5 top-8 w-7 h-7 rounded-full bg-white dark:bg-irohGray-900'>
         {done
           ? <CheckCircleIcon className='w-7 h-7 text-irohPurple-500' />
-          : <CheckCircleIcon className='w-7 h-7 text-irohGray-200 dark:text-irohGray-400' />}
+          : <div className='w-5 h-5 m-1 rounded-full bg-irohGray-600 dark:bg-irohGray-400' />}
       </div>
       <div>
         <h2 className='text-lg font-space font-bold tracking-tight leading-tight text-irohGray-400'>
@@ -74,7 +74,7 @@ function Milestone({ data }) {
       <div className='absolute -left-2.5 rounded-full bg-white dark:bg-irohGray-900'>
         {done
           ? <CheckCircleIcon className='w-5 h-5 text-irohPurple-500' />
-          : <CheckCircleIcon className='w-5 h-5 text-irohGray-600 dark:text-irohGray-400' />}
+          : <div className='w-3 h-3 m-1 rounded-full bg-irohGray-600 dark:bg-irohGray-400' />}
       </div>
       <div className='px-4 pb-3'>
         <h3 className='text-xl mb-1 leading-6 text-irohGray-600 font-space font-bold dark:text-irohGray-400'>{title}</h3>
@@ -96,7 +96,7 @@ function Subtasks({ data }) {
         <li key={i}>
           {data[taskName]
             ? <CheckCircleIcon className='w-4 h-4 text-irohPurple-500 inline-block' />
-            : <CheckCircleIcon className='w-4 h-4 text-irohGray-200 dark:text-irohGray-400 inline-block' />}
+            : <div className='w-2.5 h-2.5 ml-0.5 rounded-full bg-irohGray-600 dark:bg-irohGray-500 inline-block' />}
           <span className='ml-2 leading-tight text-xs font-spaceMono text-irohGray-500'>{taskName}</span>
         </li>
       ))}
