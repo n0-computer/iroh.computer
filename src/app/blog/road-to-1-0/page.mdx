@@ -61,6 +61,13 @@ We have a bunch of protocol-breaking changes we know we need to land. We’re go
 - **Finalize the Rust API**
 We’ll need to settle on error types, what should be async, weather we can live with Bytes as a data structure, and so on.
 
+### Work on Protocols Continues
+
+Work on existing protocols like blobs, gossip, and docs **is not stopping**. Instead each is moving into it's own repo, and getting it's own version number, which will accurately reflect the stability and maturity of each protocol. We're planning to get get [blobs](https://github.com/n0-computer/blobs) into a 1.0 state around the same time as iroh itself.
+
+This will also give us space to get new protocols like [willow](https://github.com/n0-computer/iroh/pull/2231) out into the world in an earlier, more experimental state, so folks can start playing with them, and put community-contributed protocols on the same footing as the ones the number 0 team maintains.
+
+
 ### Track Progress
 
 We’ll be continuously updating our [roadmap](/roadmap) with the latest milestones, features, and developments. Stay tuned, provide feedback, and contribute to the ongoing development of iroh. We’re excited to collaborate with the community as we approach the release of iroh 1.0 in late 2025.
