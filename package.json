@@ -39,6 +39,7 @@
     "remark": "^14.0.3",
     "remark-gfm": "^3.0.1",
     "remark-mdx": "^2.3.0",
+    "rss": "^1.2.2",
     "shiki": "^0.11.1",
     "simple-functional-loader": "^1.2.1",
     "simplex-noise": "^4.0.3",
