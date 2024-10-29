@@ -1,11 +1,10 @@
-'use client'
+import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
 import { Prose } from '@/components/Prose'
-import { formatDate } from '@/lib/formatDate'
 import References from '@/components/References'
 import BlogHeader from '@/components/BlogHeader'
-import { FooterMarketing } from './FooterMarketing'
-import { ChevronLeftIcon } from '@heroicons/react/20/solid'
+import { FooterMarketing } from '@/components/FooterMarketing'
+import { formatDate } from '@/lib/formatDate'
 
 export function BlogPostLayout({ article, references = [], children }) {
   return (

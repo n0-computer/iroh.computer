@@ -275,11 +275,11 @@ function SearchDialog({open, setOpen, className}) {
     },
   });
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
   useEffect(() => {
     setOpen(false);
-  }, [pathname, searchParams, setOpen]);
+  }, [pathname, setOpen]);
 
   useEffect(() => {
     if (open) {

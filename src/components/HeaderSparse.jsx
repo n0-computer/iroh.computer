@@ -3,7 +3,6 @@
 import React, {useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
-import {Button} from '@/components/Button';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
 

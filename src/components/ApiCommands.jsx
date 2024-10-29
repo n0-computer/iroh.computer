@@ -3,7 +3,7 @@
 import Link from 'next/link'
 
 function ApiCommand({ command }) {
-
+  if (!command) return null;
   return (
     <div
       key={command.href}

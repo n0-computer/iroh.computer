@@ -55,15 +55,15 @@ export function MobileNavigation() {
   const {isOpen, toggle, close} = useMobileNavigationStore();
   const ToggleIcon = isOpen ? XIcon : MenuIcon;
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  // const searchParams = await useSearchParams();
   const initialPathname = useRef(pathname).current;
-  const initialSearchParams = useRef(searchParams).current;
+  // const initialSearchParams = useRef(searchParams).current;
 
   useEffect(() => {
-    if (pathname !== initialPathname || searchParams !== initialSearchParams) {
+    if (pathname !== initialPathname) {
       close();
     }
-  }, [pathname, searchParams, close, initialPathname, initialSearchParams]);
+  }, [pathname, close, initialPathname]);
 
   function onClickDialog(event) {
     const link = event.target.closest('a');
