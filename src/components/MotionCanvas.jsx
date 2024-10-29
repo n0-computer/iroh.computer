@@ -1,23 +1,16 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import '@motion-canvas/core';
+import '@motion-canvas/player';
 
-// motion canvas player relies on 'HTMLElement' being defined,
-// which is a browser API and not available in Node.js/
-// This wrapper component disables server-side rendering
-// https://nextjs.org/docs/messages/prerender-error#5-disable-server-side-rendering-for-components-using-browser-apis
-export const MotionCanvasNoSSR = dynamic(
-  () => import('@motion-canvas/player'),
-  { ssr: false }
-)
-
-export function MotionCanvas(props) {
+export default function MotionCanvas(props) {
   const { src, auto = false } = props;
   return (
-    <MotionCanvasNoSSR
+    <motion-canvas-player
       src={src}
-      auto={auto}
+      // TODO - re-enable auto-play, this throws an 'attempt to set getter-only property' error
+      // client side at the moment
+      // auto={false}
       />
   );
 }
