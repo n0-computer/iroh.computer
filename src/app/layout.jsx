@@ -6,6 +6,7 @@ import {Layout} from '@/components/Layout';
 import '@/styles/tailwind.css';
 
 export const metadata = {
+  metadataBase: new URL('https://www.iroh.computer'),
   title: {
     template: '%s - Iroh',
     default: 'docs, guides, and examples',

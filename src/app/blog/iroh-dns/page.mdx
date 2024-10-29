@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
 import { BlogPostLayout } from '@/components/BlogPostLayout'
-import { MotionCanvas } from '@/components/MotionCanvas'
+import { MotionCanvasDynamic } from '@/components/MotionCanvasDynamic'
 
 export const post = {
   draft: false,
@@ -59,7 +59,7 @@ The following sections describe the format of the Pkarr publishing records and N
 ## Node announces via `pkarr`
 
 <div className='not-prose mb-5'>
-  <MotionCanvas src='/motion-canvas/Publishing.project.js' />
+  <MotionCanvasDynamic src='/motion-canvas/Publishing.project.js' />
 </div>
 
 Nodes announce their address information in [Pkarr](https://github.com/Nuhvi/pkarr/) signed packets. The TXT records, as described below, are added to the `answers` section of a DNS server. Their name must be `_iroh.<node-id>.` The encoded node ID must be the root name, no other origin but `.` (the single dot) is permitted.
@@ -71,7 +71,7 @@ DNS servers that support this spec will receive these Pkarr signed packets, chec
 ## Node discovery via DNS
 
 <div className='not-prose mb-5'>
-  <MotionCanvas src='/motion-canvas/Discovery.project.js' />
+  <MotionCanvasDynamic src='/motion-canvas/Discovery.project.js' />
 </div>
 
 When connecting to an unknown `NodeId`, the DNS discovery mechanism in iroh will perform a DNS query to discover relays or addresses for the node. The DNS discovery is configured with a *origin domain* (which defaults to *dns.iroh.link*, a server run by n0). iroh will then perform a DNS query through the configured DNS resolver (which defaults to using the host system's nameservers):

@@ -15,7 +15,7 @@ export async function GET() {
     title: "Blog posts | RSS Feed",
     description: "Welcome to this blog posts!",
     site_url: site_url,
-    feed_url: `${site_url}/rss.xml`,
+    feed_url: `${site_url}/rss`,
     image_url: `${site_url}/img/logo/iroh-wordmark-purple.svg`,
     pubDate: new Date(),
     copyright: `All rights reserved ${new Date().getFullYear()}`,
