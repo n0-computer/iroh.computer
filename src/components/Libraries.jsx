@@ -54,7 +54,7 @@ const libraries = [
   {
     name: 'Kotlin',
     description:
-      'Iroh\'s go SDK uses the rust implementation via c-bindings.',
+      'Iroh\'s Kotlin SDK uses the rust implementation via c-bindings.',
     logo: logoKotlin,
     links: [
       { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.kotlin.md", external: true }
