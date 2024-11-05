@@ -22,18 +22,30 @@
       }
     },
     {
-      "done": false,
+      "done": true,
       "title": "Implement QUIC Address Discovery",
-      "description": "send STUN probes over QUIC connections so we don't drop STUN packets",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+      "description": "Add QUIC Address Discovery functionality to `iroh-quinn`",
+      "tracking_issue": "https://github.com/n0-computer/quinn/pull/12"
     },
     {
-      "done": false,
+      "done": true,
       "title": "Iroh CLI Deprecation Warning",
       "description": "warn users that the iroh CLI is deprecated and will be converted to an example in the next release",
       "tracking_issue": null
     },
-    { "version": "v0.28.0", "done": false, "released": "", "doc": "", "expected": "Nov 4, 2024" },
+    {
+      "done": true,
+      "title": "Iroh `client` Deprecation Warning",
+      "description": "warn users that the iroh `client` is deprecated and will be converted to an example in the next release",
+      "tracking_issue": null
+    },
+    { "version": "v0.28.1", "done": true, "released": "", "doc": "", "expected": "Nov 4, 2024" },
+    {
+      "done": false,
+      "title": "Add QUIC Address Discovery to iroh-relay and netwatcher",
+      "description": "have QUIC Address Discovery as another probe option in netwatcher",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+    },
     {
       "done": false,
       "title": "FFI bindings move to protocols",
