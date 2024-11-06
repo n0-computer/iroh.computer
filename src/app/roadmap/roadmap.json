@@ -35,8 +35,8 @@
     },
     {
       "done": true,
-      "title": "Iroh `client` Deprecation Warning",
-      "description": "warn users that the iroh `client` is deprecated and will be converted to an example in the next release",
+      "title": "Iroh client Deprecation Warning",
+      "description": "warn users that the iroh client is deprecated and will be converted to an example in the next release",
       "tracking_issue": null
     },
     { "version": "v0.28.1", "done": true, "released": "", "doc": "", "expected": "Nov 4, 2024" },
