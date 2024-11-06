@@ -23,7 +23,9 @@ In [iroh](https://github.com/n0-computer/iroh) we are using [Ed25519] keypairs *
 
 With [pkarr] we have a great mechanism to publish information about keypairs. We are running a dns server, and we can also use the bittorrent [mainline](https://en.wikipedia.org/wiki/Mainline_DHT) DHT for a fully peer to peer mechanism to publish and resolve pkarr packets.
 
-Other recent protocols such as [nostr] are also using ed25519 keypairs.
+~~Other recent protocols such as [nostr] are also using ed25519 keypairs.~~
+
+**Correction**: Nostr does not use Ed25519 keypairs but Secp256k1. Fortunately there is a FROST implementation for secp256k1 as well. [frost-secp256k1](https://crates.io/crates/frost-secp256k1).
 
 ## How to keep the keys safe
 
