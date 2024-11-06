@@ -2,80 +2,80 @@
 # yarn lockfile v1
 
 
-"@number0/iroh-android-arm-eabi@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm-eabi/-/iroh-android-arm-eabi-0.25.0.tgz#820ec1f273ddadb76b1865a71ec332cb044d21f6"
-  integrity sha512-u58hCgjw29HFgIIo/et+WAbg+Ro/jKoA7f/hrwwd3gEwmuGQaS/+Y2I92VFUXIpseAGBbMv7TYRSDzIN8e2T6Q==
+"@number0/iroh-android-arm-eabi@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm-eabi/-/iroh-android-arm-eabi-0.28.1.tgz#58239479bbfc795f6b48412e41d786d13fb93c2f"
+  integrity sha512-wYu9+6HhbmgDl8nNWsU6ZO4Or4pL54JktOAcQqr/BsvBUezUEA+SwKTuNFGUnqI77Yzo+8vsuzNMernuAZ8nLw==
 
-"@number0/iroh-android-arm64@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm64/-/iroh-android-arm64-0.25.0.tgz#3d33e52d1526509e4336abfc1a7a4840542ac082"
-  integrity sha512-ea8VTmsVFEDNKAzbwflQABiveksaxp03DPIE/dWpz8kkIQce+Jf3K84gwGiuAWgsQILg/3DmNUY9LM4pc4T36g==
+"@number0/iroh-android-arm64@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-android-arm64/-/iroh-android-arm64-0.28.1.tgz#8f25fac04231f4ba19a9ff58cbee1863ef4ae4b5"
+  integrity sha512-mMHFmcIvFxmakshGmWGfmIAwWziZZmyV97d3DrqbTA5pfVbF+hF75asal6nX1BL0KQY2OiX9a8CtQspxz1qEYg==
 
-"@number0/iroh-darwin-arm64@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-arm64/-/iroh-darwin-arm64-0.25.0.tgz#9cb7bf3970fa36950f0be09c1034545d0f962a96"
-  integrity sha512-gpfG1p+LiECo1G50wh4V19TN7AoIRGxmqqBfs2jBgw/W6aDv1IP+Rsfi1obj7LSTbmGGhaPUpkcxQG66cVWHoA==
+"@number0/iroh-darwin-arm64@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-arm64/-/iroh-darwin-arm64-0.28.1.tgz#c81edba97c3e0620aa82216d42cc1a5833d1db0d"
+  integrity sha512-Xvj+fBHKL2XkYs+sz4Y4mYznRmxm73NexrGd6UCyl/kqX7jEYGNoz+vOPom1ghp7AC59E3O1ok5KoOh89nqtcA==
 
-"@number0/iroh-darwin-universal@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-universal/-/iroh-darwin-universal-0.25.0.tgz#a5f4216f8296903fa568e48e4b69bb682c6ed135"
-  integrity sha512-rloz90uAf91fRF2ZBIF2/IVlia7CcR1tEsGi5lSoFv6K7v/MHN7frXDGr/8Cc50jE84j77KhmGi1kNtQyn26hw==
+"@number0/iroh-darwin-universal@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-darwin-universal/-/iroh-darwin-universal-0.28.1.tgz#4a0884455f98fc5a8185d377d446b46e6a1a83e0"
+  integrity sha512-1VFcTqTKKJAsETHyF4P16u8hFWbeJW/QIeoHsUocJX8JrvjmsujFtBAINlKv9gkcXYHvd2fzwWD7agny9lMlJA==
 
-"@number0/iroh-linux-arm-gnueabihf@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-gnueabihf/-/iroh-linux-arm-gnueabihf-0.25.0.tgz#4613883a7574e73b929b6835c3915b36b836e386"
-  integrity sha512-LGFsixbZY6lvDIL4xYWZWNBr/uGXcdu0RfTeVTM38Keub/G3pY37PPJLJc0ikJN/nCOvTwRSX4JhyeQqztEVLg==
+"@number0/iroh-linux-arm-gnueabihf@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-gnueabihf/-/iroh-linux-arm-gnueabihf-0.28.1.tgz#690664b59a3e59c7a06fc267b7d8c9b4b106f7b6"
+  integrity sha512-Pop0hr7jsaJ9+NPxEDeyRGB4ek4tmB7DeNLpjx8dfVk2NRG+8aazZrS9RDVYuxW0OyJLKlSVLhYOih0mkjcXUA==
 
-"@number0/iroh-linux-arm-musleabihf@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-musleabihf/-/iroh-linux-arm-musleabihf-0.25.0.tgz#f0138ee4d81e0ae33271d237d137667c89133ff5"
-  integrity sha512-BJxJo96BHtrutJOyB+yKp71RTEDF8p3mA6XmNXfBL3LgTNQr6S5LBSTydq9AQo73qAKMc67Lphz87iPf1fPKNg==
+"@number0/iroh-linux-arm-musleabihf@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm-musleabihf/-/iroh-linux-arm-musleabihf-0.28.1.tgz#7bdf3063f85c3e38a602c481aa4ef6952e34772f"
+  integrity sha512-hnA8YGthKZxv2d0fknDdIfRnLUHKy0KJf8tenuXodITaYqoo4NTB3t3tNp9OHtodP2MPr9691N3By07LFD0IMQ==
 
-"@number0/iroh-linux-arm64-gnu@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-gnu/-/iroh-linux-arm64-gnu-0.25.0.tgz#3c3b01ecb820fc7e9c2338aeec4a21fee2bd1668"
-  integrity sha512-JAzK4rP76p3fsX3RRSWgVqJ9IzERbqdn0gygjjz0cq8aJ7SSgNdrgRkCKrW75xkbYswj/KkNwTL0Wkbs1XTAQQ==
+"@number0/iroh-linux-arm64-gnu@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-gnu/-/iroh-linux-arm64-gnu-0.28.1.tgz#776314e0d82b9a330f322875371a4f0ed84c2d90"
+  integrity sha512-0AMYJxsuXyIJDc5zBaq9k/LzulXFmbWMfWYuTwBDhoAgO/4i3kpYE5ilsWm66kFJiWtMgbLqbHA2MgMo1R95cg==
 
-"@number0/iroh-linux-arm64-musl@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-musl/-/iroh-linux-arm64-musl-0.25.0.tgz#e0b8b4eaebd70619c86cd547b03d5d6975a26a62"
-  integrity sha512-pKb+esVccs8FGuHQwW0Gr0x9YhaWzerp/cIKPZY4dt43393Ts17VH+1slE1ogIfIySgiPwTgQB8XxXk5XXPlrA==
+"@number0/iroh-linux-arm64-musl@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-arm64-musl/-/iroh-linux-arm64-musl-0.28.1.tgz#64d5cfa26bb40fda1188bb3dc84cd71087298910"
+  integrity sha512-ooPniqN1VSfXZbNSmE0OmY0vk8d6goI7hn5m7UmuZiv5UOwb4aAMHGOBp/zIlYeFGySbmbopTOmMgzbCJWkITA==
 
-"@number0/iroh-linux-x64-gnu@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-gnu/-/iroh-linux-x64-gnu-0.25.0.tgz#139fc70b0ed2b4c225dc1ea31a266ab8e9668a36"
-  integrity sha512-/SjRuBnHsEmN1twOtvUSmi1oPoMnxorLa00HlbgpOHD5io8XNW88dyqZmP0EjnMfyMuiIFwPu3GloMh16z4QYQ==
+"@number0/iroh-linux-x64-gnu@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-gnu/-/iroh-linux-x64-gnu-0.28.1.tgz#abcef57ed18c46f0fd0a37ada001dca23868005a"
+  integrity sha512-Xh8w9ujYpbXX7gzvk70hHUdl7xXkAB+RNHe/TrI32mSl/TfF8ypNI4Pn8wvw35iGAALjTA8eXqL8F3c7mb7Pmg==
 
-"@number0/iroh-linux-x64-musl@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-musl/-/iroh-linux-x64-musl-0.25.0.tgz#63160f70e123cbf6c34be13334d3473262e2f85f"
-  integrity sha512-3RqouW1V7AZgUEVFNKivdHi2SmwCW6J3KV3BHUzJhebPym04n1P0VOsydslvZ1wo+/oNYlAAaEQc9oWF+RnPPg==
+"@number0/iroh-linux-x64-musl@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-linux-x64-musl/-/iroh-linux-x64-musl-0.28.1.tgz#b5907b4b1eb0ce021ed0a5503dafcf18c8d15dfe"
+  integrity sha512-3bVb2B4ytfEqs974vrIthr1JzM2je+rj7SMMAqgt5IPRvV3RnTNblAOXpT22O/4Sfk8NzqNnnBAs4n34TBPsbA==
 
-"@number0/iroh-win32-arm64-msvc@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-arm64-msvc/-/iroh-win32-arm64-msvc-0.25.0.tgz#543ef021a1b058438a79e20415e4b8c5541aaacd"
-  integrity sha512-RnXStXg0aO7eHbPfLVvQVjHjJJ1cxZFxG8NgB106XCDyddydXe0ghHdvOyIl8opqj0qlh70NEw2oS66vdRkGIQ==
+"@number0/iroh-win32-arm64-msvc@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-arm64-msvc/-/iroh-win32-arm64-msvc-0.28.1.tgz#ba6764a08c10856fcfdfabed7c48ab9b3c1475a0"
+  integrity sha512-tr048mJwASWr1Vr4ixEAG7DJws5c+n8jAFgOrsaUbqBC0nuxuUhIRs9cbesLzzf6xqU4hD9PJhu1eoJasUQfHA==
 
-"@number0/iroh-win32-x64-msvc@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-x64-msvc/-/iroh-win32-x64-msvc-0.25.0.tgz#9766e3d46f1801b5444e7c1e6abcf75145ca6d08"
-  integrity sha512-sFerHl/VpvdbcM2WM4DjBNjV9BTJC4CnMKR0SJoWZfltbCKkY5A218xiEN01+0cx7QpIyO/Dft0LrDdaJee2Ig==
+"@number0/iroh-win32-x64-msvc@0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh-win32-x64-msvc/-/iroh-win32-x64-msvc-0.28.1.tgz#e0263b581fefbd14ccf16877a0814e9cc6a6db41"
+  integrity sha512-j2b8s5kDtkDfB9/rPaT821iM6o0lc1bENDMJaZfst89KBiPo8xb20ZaqCao6XzMxMaJgBgFN/EjrYU7kmErB1w==
 
-"@number0/iroh@=0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@number0/iroh/-/iroh-0.25.0.tgz#aee0e7e095b493122c0db4fc343716be9879d0aa"
-  integrity sha512-i0DpL20wduM5C5T7YOl4X0CSjNoPvwdWqDGeKrV5wIUFljVdAHySi4Y3vFruIVTfoqKncAA9jWgRis1U+xCnYA==
+"@number0/iroh@=0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@number0/iroh/-/iroh-0.28.1.tgz#f0dd0193bf287d6ec1b991f67161b9bf879c7b14"
+  integrity sha512-J6qLo3TAUNT2cFtjwgu5UUxO6poKO2MpjOf7mjtbu7jPkXZB1DuUsg7nhcwjoQEvIIqrKUK7xo0LwIkK8vu53Q==
   optionalDependencies:
-    "@number0/iroh-android-arm-eabi" "0.25.0"
-    "@number0/iroh-android-arm64" "0.25.0"
-    "@number0/iroh-darwin-arm64" "0.25.0"
-    "@number0/iroh-darwin-universal" "0.25.0"
-    "@number0/iroh-linux-arm-gnueabihf" "0.25.0"
-    "@number0/iroh-linux-arm-musleabihf" "0.25.0"
-    "@number0/iroh-linux-arm64-gnu" "0.25.0"
-    "@number0/iroh-linux-arm64-musl" "0.25.0"
-    "@number0/iroh-linux-x64-gnu" "0.25.0"
-    "@number0/iroh-linux-x64-musl" "0.25.0"
-    "@number0/iroh-win32-arm64-msvc" "0.25.0"
-    "@number0/iroh-win32-x64-msvc" "0.25.0"
+    "@number0/iroh-android-arm-eabi" "0.28.1"
+    "@number0/iroh-android-arm64" "0.28.1"
+    "@number0/iroh-darwin-arm64" "0.28.1"
+    "@number0/iroh-darwin-universal" "0.28.1"
+    "@number0/iroh-linux-arm-gnueabihf" "0.28.1"
+    "@number0/iroh-linux-arm-musleabihf" "0.28.1"
+    "@number0/iroh-linux-arm64-gnu" "0.28.1"
+    "@number0/iroh-linux-arm64-musl" "0.28.1"
+    "@number0/iroh-linux-x64-gnu" "0.28.1"
+    "@number0/iroh-linux-x64-musl" "0.28.1"
+    "@number0/iroh-win32-arm64-msvc" "0.28.1"
+    "@number0/iroh-win32-x64-msvc" "0.28.1"
