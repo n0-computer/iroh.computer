@@ -21,7 +21,7 @@ export const protocols = [
     "icon": "iconFaster",
     "title": "Documents",
     "tagline": "Realtime, multiwriter, key-value sync",
-    "slug": "documents"
+    "slug": "docs"
   },
   // {
   //   "icon": "iconFaster",

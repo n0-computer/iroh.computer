@@ -197,11 +197,11 @@ export const navigation = [
   },
   {title: 'Concepts',
     links: [
-      {title: 'Components', href: '/docs/components'},
-      {title: 'Net', href: '/docs/components/net'},
-      {title: 'Blobs', href: '/docs/components/blobs'},
-      {title: 'Gossip', href: '/docs/components/gossip' },
-      {title: 'Documents', href: '/docs/components/docs'},
+      {title: 'Protocols', href: '/docs/protocols'},
+      {title: 'Net', href: '/docs/protocols/net'},
+      {title: 'Blobs', href: '/docs/protocols/blobs'},
+      {title: 'Gossip', href: '/docs/protocols/gossip' },
+      {title: 'Documents', href: '/docs/protocols/docs'},
       {title: 'Tickets', href: '/docs/concepts/tickets'},
     ],
   },
@@ -220,7 +220,7 @@ export function Navigation(props) {
       <ul role="list">
         <TopLevelNavItem href="/blog">Blog</TopLevelNavItem>
         <TopLevelNavItem href="/docs">Docs</TopLevelNavItem>
-        <TopLevelNavItem href="/docs/api">API</TopLevelNavItem>
+        <TopLevelNavItem href="/roadmap">Roadmap</TopLevelNavItem>
         <TopLevelNavItem href="https://github.com/n0-computer/iroh">GitHub</TopLevelNavItem>
         <TopLevelNavItem href="https://www.youtube.com/@n0computer">YouTube</TopLevelNavItem>
         {navigation.map((group, groupIndex) => (
