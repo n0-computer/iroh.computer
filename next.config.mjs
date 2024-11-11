@@ -63,6 +63,14 @@ const redirects = async () => {
     { source: '/docs/layers/blobs', destination: '/docs/components/blobs', permanent: true, },
     { source: '/docs/layers/gossip', destination: '/docs/components/gossip', permanent: true, },
     { source: '/docs/layers/networking', destination: '/docs/components/net', permanent: true, },
+
+    // transition from "components" to "protocols"
+    // we'll likely want to use `/docs/layers` to explain the layers thing, so no redirect for the root:
+    // { source: '/docs/layers', destination: '/docs/components', permanent: true, },
+    { source: '/docs/components/documents', destination: '/docs/protocols/docs', permanent: true, },
+    { source: '/docs/components/blobs', destination: '/docs/protocols/blobs', permanent: true, },
+    { source: '/docs/components/gossip', destination: '/docs/protocols/gossip', permanent: true, },
+    { source: '/docs/components/networking', destination: '/docs/protocols/net', permanent: true, },
   ]
 }
 

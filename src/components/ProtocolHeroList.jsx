@@ -21,7 +21,7 @@ export const ProtocolHeroList = function ProtocolHeroList() {
   return (
     <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
       {protocols.map((proto, i) => (
-        <Link href={`/docs/components/${proto.slug}`} key={i}>
+        <Link href={`/docs/protocols/${proto.slug}`} key={i}>
         <GlowCard key={i} className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
           <Image
             src={icons[proto.icon]}
@@ -37,7 +37,7 @@ export const ProtocolHeroList = function ProtocolHeroList() {
         </Link>
       ))}
       <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
-        <Link href='/docs/components'>
+        <Link href='/docs/protocols'>
           <h1 className='text-2xl mb-2 text-irohGray-500'>Browse all protocols</h1>
           <ArrowRightIcon className='w-10 h-10' />
         </Link>

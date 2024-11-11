@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-10-24",
+  "last_updated": "2024-11-11",
   "milestones": [
     {
       "done": true,
@@ -39,7 +39,7 @@
       "description": "warn users that the iroh client is deprecated and will be converted to an example in the next release",
       "tracking_issue": null
     },
-    { "version": "v0.28.1", "done": true, "released": "", "doc": "", "expected": "Nov 4, 2024" },
+    { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates", "expected": "" },
     {
       "done": false,
       "title": "Add QUIC Address Discovery to iroh-relay and netwatcher",
@@ -70,7 +70,7 @@
       "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
       "tracking_issue": null
     },
-    { "version": "v0.29.0", "done": false, "released": "", "doc": "", "expected": "Nov 18, 2024" },
+    { "version": "v0.29.0", "done": false, "released": "", "doc": "", "expected": "Nov 25, 2024" },
     { "ellipsis": true },
     {
       "done": false,
