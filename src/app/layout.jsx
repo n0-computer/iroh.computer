@@ -13,12 +13,12 @@ export const metadata = {
   },
   openGraph: {
     title: 'iroh',
-    description: 'A distributed systems toolkit',
+    description: 'less net work for networks',
     images: [{
-      url: '/api/og?title=iroh&subtitle=A distributed systems toolkit',
+      url: '/api/og?title=iroh&subtitle=less net work for networks',
       width: 1200,
       height: 630,
-      alt: 'iroh. A distributed systems toolkit',
+      alt: 'iroh. less net work for networks',
       type: 'image/png',
     }],
     type: 'website'
