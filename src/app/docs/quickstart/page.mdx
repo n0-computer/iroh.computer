@@ -1,164 +1,44 @@
 export const metadata = {
   title: 'Quickstart',
   description:
-    'This guide will take you on a quick tour of iroh from the command line',
+    'Transfer a file peer-to-peer between nodes',
 };
+
 
 # Quickstart
 
-This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between two terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
-
-<Note>
-Iroh is meant be used as a library by importing one of the existing Iroh SDKs. the Quickstart uses the CLI as a language-agnostic starting point.
-
-<div className="not-prose mb-16 mt-6 flex gap-3">
-  <Button href="/docs/sdks" arrow="right" variant="text" children="Explore SDKs" />
-</div>
-</Note>
-
-## Install Iroh
-
-The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install) to install iroh.
-
-<div className='not-prose'>
-  <Button arrow="right" href="/docs/install">Install Iroh CLI</Button>
-</div>
-
-Confirm iroh works & is installed correctly by running `iroh help`. You should see help text that starts like this:
-
-```text
-$ iroh help
-Iroh is a tool for syncing bytes.
-https://iroh.computer/docs
-
-Usage: iroh [OPTIONS] [COMMAND]
-...
-```
-
-## Start the iroh console
-
-```text
-$ iroh start
-Iroh is running
-Node ID: l5kkl6u6fqcnjxvdkoihq3nbsqczxeulfsqvatb2qh3bwheoyaha
-```
-
-Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console` and connect to the node we started using the `iroh start` command.
-
-```text
-$ iroh console
-Welcome to the Iroh console!
-Type `help` for a list of commands.
-
->
-```
-
-## Create a Document
-
-Next, let's create a document. Again we'll use the `--switch` the flag to use this document as the default document for the console session:
-
-<CodeGroup tag="CONSOLE">
-```text
-> docs create --switch
-x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedimrovdpsr
-
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> 
-```
-</CodeGroup>
-
-Next let's set a value in the document, and read it back.
-
-<CodeGroup tag="CONSOLE">
-```
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs set foo bar
-6lujp3wx2idm3bk5iqkzr6ssdk6hlkuwsu7jpqbqzfqsymgbfe6q
-
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs get foo
-@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
-```
-</CodeGroup>
-
-If the content can be displayed as utf-8, the console will display the beginning of the text, otherwise the `doc get` command will display the content's hash. You can use the `--mode` flag to force the content to be printed in different ways. For example, using the option `--mode hash`, will always show the hash of the content, and `--mode content` will write the entire contents to the terminal, regardless of format.
-
-## Sync the document
-
-Now let's actually sync this document with a second node. To disambiguate we'll call the node we've been working with so far "Node A", and the new one we'll create "Node B". We'll start by _sharing_ write access to the document from `Node A`:
-
-<CodeGroup tag="CONSOLE" title="Node A">
-```
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs share write
-doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
-```
-</CodeGroup>
-
-That long `doclzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
-
-```text
-$ export IROH_DATA_DIR=./
-$ iroh console --start
-Iroh is running
-Node ID: 66lfqj4wjtza777baet27crxvqu4bkmts6uciawwer2qo64awheq
-
-Welcome to the Iroh console!
-Type `help` for a list of commands.
-
->
-```
-
-Iroh has a default data directory , and a default rpc port ([`1337`](https://en.wikipedia.org/wiki/Leet)), for internal communication between the different iroh processes. We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. Iroh will also detect that another process is using the default rpc port, and will assign a different one for internal communcation, using the `IROH_DATA_DIR` as the place to coordinate which rpc port that iroh process is listening on.
-
-Notice that here we have combined the previous steps to get the console running from two commands (each in a separate terminal), to just one command. The `--start` flag tells the iroh node that we want to both start an iroh node and also connect the console to that node.
-
-To run these as separate commands, you would need to set the `IROH_DATA_DIR` flag to point to the same directory for each terminal window:
-```text
-# in one terminal:
-$ export IROH_DATA_DIR=./
-$ iroh start
-```
-
-```text
-# and in another terminal:
-$ export IROH_DATA_DIR=./
-$ iroh console
-```
-
-Now we can join the document from `Node B`, pasting in the value of the ticket we created with `doc share write` on `Node A`:
-
-<CodeGroup tag="CONSOLE" title="Node B">
-```text
-> authors create --switch
-ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
-Active author is now ksdx5fs4kwjmoaca
-
-> docs join --switch doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
-x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedimrovdpsr
-
-author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
-> docs get foo
-@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
-
-author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
-```
-</CodeGroup>
-
-The two consoles are now syncronized! We can see the value we set from `Node A` on `Node B`. Any edit you make in one console will be reflected in the other in real time.
-
-<Note>
-  To make this more interesting, try running this step on a separate computer.
-  Iroh's networking stack will establish a connection for you. Nothing will change about these instructions.
-</Note>
+The best way to experience the magic of iroh first hand is to try out one of the example products.
+This guide will walk you through usage of the [`sendme`](https://www.iroh.computer/sendme) tool.
 
 
-### Next Steps
+## About `sendme`
 
-Now that you've seen iroh in action, you're ready to start integrating it into your application. The Command Reference is a good place to start. It covers the CLI commands we used here, as well as code examples showing how to use Iroh in your language.
+The `sendme` product is a very small CLI wrapper around the main [`iroh` networking library](https://docs.rs/iroh) and the [`iroh-blobs`](https://github.com/n0-computer/iroh-blobs/) protocol implementation.
 
-<div className='not-prose'>
-  <Button arrow="right" href="/docs/commands">Command Reference</Button>
-</div>
+Its implementation is a single, 700 LoC file, mostly handling file paths and progress bars.
+You could have easily implemented something like sendme within 20 minutes using iroh!
+
+This makes it a great demonstration of what iroh can do for you.
+
+
+## Install `sendme`
+
+TODO: Install instructions
+
+
+## Transfer a File
+
+TODO:
+- show transfer
+- show offline node discovery (i.e. same WiFi & mdns)
+- show direct connection speed
+
+
+## Under the Hood
+
+`sendme` is a fairly small (single file!) CLI wrapper around the `iroh-blobs` protocol using the `iroh` networking library.
+If you want to check out how to build something like it, we recommend taking a look at some example code of an even simpler version of sendme.
+
+
+## Next Steps
+
