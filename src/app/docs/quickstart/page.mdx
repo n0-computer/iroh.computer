@@ -81,14 +81,14 @@ Here are some things to try:
 
 ## Under the Hood
 
-`sendme` is a fairly small (single file!) CLI wrapper around the `iroh-blobs` protocol using the `iroh` networking library.
+`sendme` is a fairly small (single file!) CLI wrapper around the iroh-blobs protocol and the iroh networking library.
 If you want to check out how to build something like it, we recommend taking a look at [the `transfer.rs` example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
 It is in essence `sendme`, but even more simplified.
 
-### What does `iroh` do for `sendme`?
+### What does iroh do for `sendme`?
 
-`sendme` uses `iroh` to establish connections between devices.
-Because `iroh` uses the [QUIC protocol](https://en.wikipedia.org/wiki/QUIC) underneath, it encrypts and authenticates these connections end-to-end.
+`sendme` uses iroh to establish connections between devices.
+Because iroh uses the [QUIC protocol](https://en.wikipedia.org/wiki/QUIC) underneath, it encrypts and authenticates these connections end-to-end.
 It also uses [hole-punching](https://en.wikipedia.org/wiki/Hole_punching_(networking)) to try to establish a *direct* connection, even if the devices are behind NATs.
 And if everything fails, as long as you can open a website on both devices, iroh will be able to connect them using relay servers.
 
@@ -104,20 +104,20 @@ Should your device change its network (e.g. switch Wifi or move to cellular or b
 
 Read more about iroh's features on the [overview page](/docs/overview).
 
-### What is the `iroh-blobs` protocol?
+### What is the iroh-blobs protocol?
 
-In addition to `iroh`, `sendme` uses `iroh-blobs` for injesting the files from the local file system and streaming them via the iroh protocol.
+In addition to iroh, `sendme` uses iroh-blobs for injesting the files from the local file system and streaming them via the iroh protocol.
 
 This powers the resumption feature, allowing you to resume interrupted downloads.
 
-In the first step when `sendme` is "injesting" a file, `iroh-blobs` runs the [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) hashing function over the whole file.
+In the first step when `sendme` is "injesting" a file, iroh-blobs runs the [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) hashing function over the whole file.
 Internally, BLAKE3 arranges the hashing in a tree structure, allowing you to resume a download and verify that the bytes from the resumption are exactly the data you wanted to have initially.
 
 The argument you're passing to `sendme receive` is a so-called "blob ticket".
 It contains information about the node identifier to connect to, that node's potential IP addresses and home relay as well as the BLAKE3 hash of what to fetch.
 Try pasting this ticket into the [iroh ticket inspector](https://ticket.iroh.computer) (or see [this example ticket](https://ticket.iroh.computer/?ticket=blobabp7qggx4vklzxiztbjcflhdd6fdaahmcnssufpvqxixn5v4hf2rsajdnb2hi4dthixs6zlvo4ys2mjoojswyylzfzuxe33ifzxgk5dxn5zgwlrpa4akyeiaagsmqayavqjaaanezabqbmgh2hljryabadakqadduteagajkakahcdmfdhaaaaaaaaaaainfuxeagajkakahcdmfdhaajgh3xlxbmgbbuxeagajkakahcdmfdhak5tjs256ftancuxeagakaek74k62i3lmdeqsybdsaovkuovzbimt3ql57fgsysi5nntxyn4)).
 
-There's additional `iroh-blobs` features that `sendme` doesn't make use of yet, like queueing or deduplicating downloads and even multi-provider fan-in in the future.
+There's additional iroh-blobs features that `sendme` doesn't make use of yet, like queueing or deduplicating downloads and even multi-provider fan-in in the future.
 
 
 ## Next Steps
