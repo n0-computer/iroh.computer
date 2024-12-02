@@ -195,22 +195,12 @@ export const navigation = [
       {title: 'Examples', href: '/docs/examples'},
     ],
   },
-  {title: 'Concepts',
+  {title: 'Protocols',
     links: [
-      {title: 'Protocols', href: '/docs/protocols'},
-      {title: 'Net', href: '/docs/protocols/net'},
       {title: 'Blobs', href: '/docs/protocols/blobs'},
       {title: 'Gossip', href: '/docs/protocols/gossip' },
       {title: 'Documents', href: '/docs/protocols/docs'},
-      {title: 'Tickets', href: '/docs/concepts/tickets'},
     ],
-  },
-  {
-    title: 'Reference',
-    links: [
-      {title: 'API', href: '/docs/api'},
-      {title: 'Config', href: '/docs/reference/config'},
-    ]
   }
 ];
 
