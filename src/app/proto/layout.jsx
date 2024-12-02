@@ -3,14 +3,19 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {motion} from 'framer-motion';
-import {protocols} from '@/app/proto/protocols'
+import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
+import { FooterMarketing } from '@/components/FooterMarketing'
+import { formatDate } from '@/lib/formatDate'
+import { Prose } from '@/components/Prose'
 import {Footer} from '@/components/Footer';
-import {Prose} from '@/components/Prose';
 import {Header} from '@/components/Header';
 import {Logotype} from '@/components/Logotype';
 import {Navigation} from '@/components/Navigation';
+import {protocols} from '@/app/proto/protocols'
 import {SectionProvider} from '@/components/SectionProvider';
+import BlogHeader from '@/components/BlogHeader'
+import References from '@/components/References'
 
 export const navItems = [
   { title: "protocols",
@@ -18,13 +23,20 @@ export const navItems = [
   }
 ];
 
-export default function DocsLayout({children, sections = {}}) {
+export default function ProtocolsLayout({children, sections = {}}) {
   const pathname = usePathname();
   sections = sections[pathname] || [];
 
   return (
     <SectionProvider sections={sections}>
-      <div className="h-full lg:ml-72 xl:ml-80">
+      <BlogHeader />
+      <div className="px-5 sm:px-0 mt-16 lg:mt-32">
+        <div className="mx-auto mt-32 mb-64 max-w-5xl">
+          {children}
+        </div>
+      </div>
+      <FooterMarketing />
+      {/* <div className="h-full lg:ml-72 xl:ml-80">
         <motion.header
           layoutScroll
           className="contents lg:pointer-events-none lg:fixed lg:inset-0 lg:z-40 lg:flex"
@@ -49,7 +61,7 @@ export default function DocsLayout({children, sections = {}}) {
           </main>
           <Footer navItems={navItems} />
         </div>
-      </div>
+      </div> */}
     </SectionProvider>
   );
 }

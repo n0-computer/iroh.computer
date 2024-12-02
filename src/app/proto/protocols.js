@@ -4,7 +4,7 @@ export const protocols = [
     "icon": "iconOpen",
     "title": "Blobs",
     "tagline": "Resumable, verifiable data transfer",
-    "slug": "blobs",
+    "slug": "iroh-blobs",
     "repository": "https://github.com/n0-computer/iroh-blobs",
     "documentation": "https://docs.rs/iroh-blobs/latest/iroh_blobs/",
     "version": "v0.28.1" // TODO - pull version from github
@@ -14,7 +14,7 @@ export const protocols = [
     "icon": "iconPlatforms",
     "title": "Gossip",
     "tagline": "Broadcast messages to groups of nodes by topic.",
-    "slug": "gossip",
+    "slug": "iroh-gossip",
     "repository": "https://github.com/n0-computer/iroh-gossip",
     "documentation": "https://docs.rs/iroh-blobs/latest/iroh_gossip/",
     "version": "v0.28.1" // TODO - pull version from github
@@ -24,7 +24,7 @@ export const protocols = [
     "icon": "iconFaster",
     "title": "Documents",
     "tagline": "Realtime, multiwriter, key-value sync",
-    "slug": "docs",
+    "slug": "iroh-docs",
     "documentation": "https://docs.rs/iroh-blobs/latest/iroh_docs/",
     "repository": "https://github.com/n0-computer/iroh-docs",
     "version": "v0.28.0" // TODO - pull version from github

@@ -6,6 +6,8 @@ import NotFound from "@/app/not-found";
 import { Heading } from "@/components/Heading";
 import { useEffect, useState } from "react";
 import { Readme } from "@/components/Readme";
+import { Prose } from "@/components/Prose";
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 
 
 export default function Protocol() {
@@ -39,33 +41,51 @@ export default function Protocol() {
   }
 
   return (
-    <div className="">
-      <Heading level={1}>
-        {protocol.title} <span className="text-gray-500/50 ml-2">{protocol.version}</span>
-      </Heading>
-      <Heading level={4}>
-        {repoData.description}
-      </Heading>
-      <div className="border-t border-gray-200/10 my-4"></div>
-      <div className="sm:flex sm:space-x-4">
-        <div className="sm:w-2/3">
-          <Readme text={markdown} />
+    <div>
+      <a
+        href="/proto"
+        aria-label="Go back to articles"
+        className="flex text-sm font-medium -ml-5 text-irohPurple-500 mb-5"
+      >
+        <ChevronLeftIcon className="mr-1 mt-1 h-4 w-4" />
+        All Protocols
+      </a>
+      <article>
+        <div className="flex flex-col">
+          <div className="w-full font-space">
+            <Heading level={1} className="text-3xl font-bold">
+              {protocol.title} <span className="text-gray-500/50 ml-2">{protocol.version}</span>
+            </Heading>
+            <Heading level={4} className="text-lg text-gray-500/90 mt-2">
+              {repoData.description}
+            </Heading>
+            <div className="border-t border-gray-200/10 my-4 w-full"></div>
+          </div>
+          <div className="w-full sm:flex sm:space-x-4">
+            <div className="sm:w-2/3">
+              <Prose>
+                <Readme text={markdown} />
+              </Prose>
+            </div>
+            <div className="sm:w-1/3">
+              <Prose>
+                {repoData?.license && <div className="mt-4 pb-2 border-b border-gray-200/10">
+                  <Heading level={3}>License</Heading>
+                  <div>{repoData.license.name}</div>
+                </div>}
+                {protocol.documentation && <div className="mt-4 pb-2 border-b border-gray-200/10">
+                  <Heading level={3}>Documentation</Heading>
+                  <a href={protocol.documentation} target="_blank" rel="noopener noreferrer">{protocol.documentation}</a>
+                </div>}
+                {protocol.repository && <div className="mt-4 pb-2 border-b border-gray-200/10">
+                  <Heading level={3}>Repository</Heading>
+                  <a href={protocol.repository} target="_blank" rel="noopener noreferrer">{protocol.repository}</a>
+                </div>}
+              </Prose>
+            </div>
+          </div>
         </div>
-        <div className="sm:w-1/3">
-          {repoData?.license && <div className="mt-4 pb-2 border-b border-gray-200/10">
-            <Heading level={3}>License</Heading>
-            <div>{repoData.license.name}</div>
-          </div>}
-          {protocol.documentation && <div className="mt-4 pb-2 border-b border-gray-200/10">
-            <Heading level={3}>Documentation</Heading>
-            <a href={protocol.documentation} target="_blank" rel="noopener noreferrer">{protocol.documentation}</a>
-          </div>}
-          {protocol.repository && <div className="mt-4 pb-2 border-b border-gray-200/10">
-            <Heading level={3}>Repository</Heading>
-            <a href={protocol.repository} target="_blank" rel="noopener noreferrer">{protocol.repository}</a>
-          </div>}
-        </div>
-      </div>
+      </article>
     </div>
   );
 }
