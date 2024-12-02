@@ -13,10 +13,11 @@ This gives you fast, reliable connections that are authenticated and encrypted e
 
 ## Iroh is "dial by public key"
 
-In the iroh world, you dial another node by its `NodeId`, (a 32-byte ed25519 public key).
-Unlike IP addresses, this ID is globally unique.
-It doesn't change when you change networks, there's no such things as NATs getting in your way.
-Basing connections on asymmetric public keys allows iroh to *always* end-to-end encrypt and authenticate connections.
+In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 public key.
+Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself.
+It also doesn't change when you change networks.
+You won't have to think about NATs getting in your way, iroh traverses them for you.
+Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 
 
 ## Iroh is built on QUIC
@@ -26,13 +27,11 @@ This gives iroh super-powers:
 - stream multiplexing
   - no head-of-line blocking issues
   - stream priorities
-  - shared congestion controller
+  - one shared congestion controller
 - an encrypted, unreliable datagram transport
 - zero round trip time connection establishment if you've connected to another node before
 
-A single QUIC connection can power all of your protocol's complex interactions.
-
-For example:
+A single QUIC connection can power all of your protocol's complex interactions:
 - Stream both video and audio without video packet loss affecting audio. Prioritize audio by increasing its stream's priority.
 - Use the unreliable datagram transport for your game's state and input networking. Also re-use the same connection for streaming assets or real-time audio or video.
 - Avoid unnecessary network round-trips when your phone comes back from suspension with zero round trip time connection establishment.
