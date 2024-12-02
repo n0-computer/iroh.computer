@@ -6,7 +6,6 @@ import {usePathname} from 'next/navigation';
 import clsx from 'clsx';
 import {AnimatePresence, motion, useIsPresent} from 'framer-motion';
 
-import {Button} from '@/components/Button';
 import {useIsInsideMobileNavigation} from '@/components/MobileNavigation';
 import {useSectionStore} from '@/components/SectionProvider';
 import {Tag} from '@/components/Tag';
