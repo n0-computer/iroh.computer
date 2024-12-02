@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
-import {protocols} from '@/protocols'
+import {protocols} from '@/app/proto/protocols'
 import {GlowCard} from '@/components/GlowCard';
 
 import iconCarat from '@/images/icons/icon_carat.svg';

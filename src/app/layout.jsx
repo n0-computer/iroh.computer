@@ -2,7 +2,6 @@ import glob from 'fast-glob';
 import Script from 'next/script';
 
 import {Providers} from '@/app/providers';
-import {Layout} from '@/components/Layout';
 import '@/styles/tailwind.css';
 
 export const metadata = {
@@ -43,10 +42,7 @@ export default async function RootLayout({children}) {
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
           <div className="w-full">
-            <Layout
-              allSections={allSections}>
-              {children}
-            </Layout>
+            {children}
           </div>
         </Providers>
       </body>

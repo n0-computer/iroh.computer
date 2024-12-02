@@ -185,35 +185,18 @@ function NavigationGroup({group, className}) {
   );
 }
 
-export const navigation = [
-  {
-    title: 'Getting Started',
-    links: [
-      {title: 'Install', href: '/docs/install'},
-      {title: 'Quickstart', href: '/docs/quickstart'},
-      {title: 'Language SDKs', href: '/docs/sdks'},
-      {title: 'Examples', href: '/docs/examples'},
-    ],
-  },
-  {title: 'Protocols',
-    links: [
-      {title: 'Blobs', href: '/docs/protocols/blobs'},
-      {title: 'Gossip', href: '/docs/protocols/gossip' },
-      {title: 'Documents', href: '/docs/protocols/docs'},
-    ],
-  }
-];
-
 export function Navigation(props) {
+  const { sidebar = [] } = props;
   return (
     <nav {...props}>
       <ul role="list">
         <TopLevelNavItem href="/blog">Blog</TopLevelNavItem>
         <TopLevelNavItem href="/docs">Docs</TopLevelNavItem>
+        <TopLevelNavItem href="/proto">Protocols</TopLevelNavItem>
         <TopLevelNavItem href="/roadmap">Roadmap</TopLevelNavItem>
         <TopLevelNavItem href="https://github.com/n0-computer/iroh">GitHub</TopLevelNavItem>
         <TopLevelNavItem href="https://www.youtube.com/@n0computer">YouTube</TopLevelNavItem>
-        {navigation.map((group, groupIndex) => (
+        {sidebar.map((group, groupIndex) => (
           <NavigationGroup
             key={group.title}
             group={group}

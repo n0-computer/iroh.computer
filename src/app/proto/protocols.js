@@ -3,13 +3,15 @@ export const protocols = [
     "icon": "iconOpen",
     "title": "Blobs",
     "tagline": "Resumable, verifiable data transfer",
-    "slug": "blobs"
+    "slug": "blobs",
+    "featured": 1
   },
   {
     "icon": "iconPlatforms",
     "title": "Gossip",
     "tagline": "Broadcast messages to groups of nodes by topic.",
-    "slug": "gossip"
+    "slug": "gossip",
+    "featured": 2
   },
   // {
   //   "icon": "iconOpen",
@@ -21,7 +23,8 @@ export const protocols = [
     "icon": "iconFaster",
     "title": "Documents",
     "tagline": "Realtime, multiwriter, key-value sync",
-    "slug": "docs"
+    "slug": "docs",
+    "featured": 3
   },
   // {
   //   "icon": "iconFaster",
