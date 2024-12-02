@@ -37,6 +37,9 @@ export default async function RootLayout({children}) {
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <link rel="me" href="https://mastodon.social/@n0iroh" />
+      </head>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
           <div className="w-full">
