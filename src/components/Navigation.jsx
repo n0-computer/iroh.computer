@@ -189,29 +189,28 @@ export const navigation = [
   {
     title: 'Getting Started',
     links: [
-      {title: 'Install', href: '/docs/install'},
+      {title: 'Overview', href: '/docs/overview'},
       {title: 'Quickstart', href: '/docs/quickstart'},
-      {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
     ],
   },
-  {title: 'Concepts',
+  {
+    title: 'Guides',
     links: [
-      {title: 'Protocols', href: '/docs/protocols'},
-      {title: 'Net', href: '/docs/protocols/net'},
-      {title: 'Blobs', href: '/docs/protocols/blobs'},
-      {title: 'Gossip', href: '/docs/protocols/gossip' },
-      {title: 'Documents', href: '/docs/protocols/docs'},
-      {title: 'Tickets', href: '/docs/concepts/tickets'},
-    ],
+      {title: 'Building your protocol', href: '/docs/guides/building-your-protocol'},
+      {title: 'Closing QUIC connections', href: '/docs/guides/closing-quic-connections'},
+      {title: 'Using the ticket pattern', href: '/docs/guides/using-the-ticket-pattern'},
+    ]
   },
   {
-    title: 'Reference',
+    title: 'Protocols',
     links: [
-      {title: 'API', href: '/docs/api'},
-      {title: 'Config', href: '/docs/reference/config'},
+      {title: 'Blobs', href: '/docs/protocols/blobs'},
+      {title: 'Gossip', href: '/docs/protocols/gossip'},
+      {title: 'Documents', href: '/docs/protocols/docs'},
+      {title: 'Willow', href: '/docs/protocols/willow'},
     ]
-  }
+  },
 ];
 
 export function Navigation(props) {
