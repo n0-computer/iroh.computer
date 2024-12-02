@@ -4,6 +4,7 @@ export const protocols = [
     "title": "Blobs",
     "tagline": "Resumable, verifiable data transfer",
     "slug": "blobs",
+    "source": "https://github.com/n0-computer/iroh-blobs",
     "featured": 1
   },
   {
@@ -11,19 +12,15 @@ export const protocols = [
     "title": "Gossip",
     "tagline": "Broadcast messages to groups of nodes by topic.",
     "slug": "gossip",
+    "source": "https://github.com/n0-computer/iroh-gossip",
     "featured": 2
   },
-  // {
-  //   "icon": "iconOpen",
-  //   "title": "DM",
-  //   "tagline": "Simple node-to-node message passing",
-  //   "slug": "dm"
-  // },
   {
     "icon": "iconFaster",
     "title": "Documents",
     "tagline": "Realtime, multiwriter, key-value sync",
     "slug": "docs",
+    "source": "https://github.com/n0-computer/iroh-docs",
     "featured": 3
   },
   // {
