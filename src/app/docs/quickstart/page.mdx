@@ -45,25 +45,25 @@ Depending on how big this file is, `sendme` will first "injest" this file:
 $ sendme send ~/Downloads/Win11.iso
 ⠁ [00:00:00] [1/2] Ingesting 1 files, 6.33 GiB
 
-[2/2] /home/user/Downloads/Win11.iso⠲ [00:00:02] [########>------------------------] 1.37 GiB/6.33 GiB
+[2/2] /home/user/Downloads/Win11.iso⠲ [00:00:02] [#######>---------------------] 1.37 GiB/6.33 GiB
 ```
 
 And finally print a so-called "ticket" together with a command to run on another machine allowing you to retrieve this file there:
 
 ```
-imported file /home/user/Downloads/Win11.iso, 6.33 GiB, hash 4022bfc57b48dad832425808e4075554757214327b82fbf29a58923ad6cef86f
+imported file /home/user/Downloads/Win11.iso, 6.33 GiB, hash 4022bfc57b48dad[...]
 to get this data, use
-sendme receive blobabp7qggx4vk<...>
+sendme receive blobabp7qggx4vk[...]
 ```
 
 Now, possibly on any other machine, try receiving this file by copying the command that was printed above (with the whole ticket).
 Make sure to keep the previous command running.
 
 ```
-$ sendme receive blobabp7qggx4vk<...>
-getting collection 4022bfc57b48dad832425808e4075554757214327b82fbf29a58923ad6cef86f 1 files, 6.33 GiB
+$ sendme receive blobabp7qggx4vk[...]
+getting collection 4022bfc57b48dad[...] 1 files, 6.33 GiB
 [3/3] Downloading 3 blob(s)
-⠒ [00:00:05] [###>---------------------------------------------------] 387.48 MiB/6.33 GiB 74.70 MiB/s
+⠒ [00:00:05] [###>-----------------------------------------------] 387.48 MiB/6.33 GiB 74.70 MiB/s
 ```
 
 Once this command finishes, your file will be present in your current directory.
