@@ -13,7 +13,7 @@ A blob is a sequence of bytes. Those bytes can be a JPEG image, a text file, a v
 
 All blobs within iroh-blobs are referred to by the BLAKE3 [1] hash of its content. BLAKE3 is a _tree hashing_ algorithm, that splits its input into uniform chunks and arranges them as the leaves of a binary tree, producing intermediate _chunk hashes_ that accumulate up to a _root hash._ Iroh uses the 32 byte root hash (or just “hash”) as an immutable blob identifier. 
 
-<div className='not-prose mb-5'>
+<div className='not-prose in-prose mb-5'>
   <ThemeImage
     lightSrc='/diagrams/blobs_fig_1_blob.svg'
     darkSrc='/diagrams/blobs_fig_1_blob_dark.svg'
@@ -35,7 +35,7 @@ A _collection_ is an ordered set of blob hashes. {{ className: 'lead' }}
 
 Iroh-blobs uses collections as immutable, ordered lists of blobs. Collections themselves are blobs, serialized as a _hash sequence_ of one hash after another, with no separators or headers. Because all hashes in iroh-blobs are 32-byte BLAKE3 hashes, the byte length of a collection will always be a multiple of 32.
 
-<div className='not-prose mb-5'>
+<div className='not-prose in-prose mb-5'>
   <ThemeImage
     lightSrc='/diagrams/blobs_fig_2_collection.svg'
     darkSrc='/diagrams/blobs_fig_2_collection_dark.svg'
