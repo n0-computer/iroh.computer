@@ -1,164 +1,127 @@
 export const metadata = {
   title: 'Quickstart',
   description:
-    'This guide will take you on a quick tour of iroh from the command line',
+    'Transfer a file peer-to-peer between nodes',
 };
+
 
 # Quickstart
 
-This guide will give you a quick tour of iroh from the command line. We'll create a document and sync it between two terminals. After that we'll look at where to go next to learn about how iroh works & where to integrate into your application. {{className: 'lead'}}
+The best way to experience the magic of iroh first hand is to try out one of the example projects.
+This guide will walk you through usage of the [`sendme`](https://www.iroh.computer/sendme) tool. {{ className: 'lead' }}
+
+
+## About `sendme`
+
+The `sendme` tool is a CLI wrapper around the main [iroh networking library](https://docs.rs/iroh) and the [iroh-blobs](https://github.com/n0-computer/iroh-blobs/) protocol implementation.
+
+Its implementation is a single, 700 LoC file, mostly handling file paths and progress bars.
+You could have easily implemented something like `sendme` in 20 minutes using iroh!
+
+This makes it a great demonstration of what iroh can do for you.
+
+
+## Install `sendme`
+
+You can download binaries for `sendme` on Unix systems by running `curl -fsSL https://iroh.computer/sendme.sh | sh`.
+This will put the `sendme` executable into your current directory.
+Run it using `./sendme`, or move it somewhere into your `PATH`.
+
+Alternatively you can compile it from source using `cargo install sendme`.
+This will put `sendme` into `$HOME/.cargo/bin/sendme` on Unix systems and similar places on other platforms.
+Running `sendme` on your command line should work, otherwise make sure that this directory is configured in your `PATH`.
+
+
+## Transfer a File
+
+By running `sendme help` you can see how `sendme` works.
+
+Find some file you want to transfer.
+In this example, we'll use a 6.8GB Windows iso image for this, and run `sendme send <path-to-file>`.
+
+Depending on how big this file is, `sendme` will first "injest" this file:
+
+```
+$ sendme send ~/Downloads/Win11.iso
+⠁ [00:00:00] [1/2] Ingesting 1 files, 6.33 GiB
+
+[2/2] /home/user/Downloads/Win11.iso⠲ [00:00:02] [########>------------------------] 1.37 GiB/6.33 GiB
+```
+
+And finally print a so-called "ticket" together with a command to run on another machine allowing you to retrieve this file there:
+
+```
+imported file /home/user/Downloads/Win11.iso, 6.33 GiB, hash 4022bfc57b48dad832425808e4075554757214327b82fbf29a58923ad6cef86f
+to get this data, use
+sendme receive blobabp7qggx4vk<...>
+```
+
+Now, possibly on any other machine, try receiving this file by copying the command that was printed above (with the whole ticket).
+Make sure to keep the previous command running.
+
+```
+$ sendme receive blobabp7qggx4vk<...>
+getting collection 4022bfc57b48dad832425808e4075554757214327b82fbf29a58923ad6cef86f 1 files, 6.33 GiB
+[3/3] Downloading 3 blob(s)
+⠒ [00:00:05] [###>---------------------------------------------------] 387.48 MiB/6.33 GiB 74.70 MiB/s
+```
+
+Once this command finishes, your file will be present in your current directory.
+
+Feel free to try experimenting with this a bit.
+Here are some things to try:
+- Run a file transfer within the local network, but without internet access.
+  If possible, iroh will still find a way to connect these devices.
+- Try connecting one device to mobile cellular using tethering/a hotspot.
+  It might be slower, but it should find a way for these devices to talk to each other either way.
+  (Make sure not to burn your cellular data!)
+- Try interrupting the download and re-starting it.
+  Partial downloads will resume from where they last left off.
+
+
+## Under the Hood
+
+`sendme` is a fairly small (single file!) CLI wrapper around the iroh-blobs protocol and the iroh networking library.
+If you want to check out how to build something like it, we recommend taking a look at [the `transfer.rs` example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
+It is in essence `sendme`, but even more simplified.
+
+### What does iroh do for `sendme`?
+
+`sendme` uses iroh to establish connections between devices.
+Because iroh uses the [QUIC protocol](https://en.wikipedia.org/wiki/QUIC) underneath, it encrypts and authenticates these connections end-to-end.
+It also uses [hole-punching](https://en.wikipedia.org/wiki/Hole_punching_(networking)) to try to establish a *direct* connection, even if the devices are behind NATs.
+And if everything fails, as long as you can open a website on both devices, iroh will be able to connect them using relay servers.
 
 <Note>
-Iroh is meant be used as a library by importing one of the existing Iroh SDKs. the Quickstart uses the CLI as a language-agnostic starting point.
-
-<div className="not-prose mb-16 mt-6 flex gap-3">
-  <Button href="/docs/sdks" arrow="right" variant="text" children="Explore SDKs" />
-</div>
+[number 0](https://n0.computer), the company behind iroh runs some public relay servers that iroh uses by default.
+If you want, it's very easy to switch to your custom relay servers though:
+All you need is a machine with a stable, public IP address and a domain name pointed at that IP address.
+The `iroh-relay` server code that we run for the public servers is [open source](https://github.com/n0-computer/iroh/tree/main/iroh-relay) and permissively licensed.
 </Note>
 
-## Install Iroh
+Oh, and one more thing:
+Should your device change its network (e.g. switch Wifi or move to cellular or back), iroh will migrate the connection in the background without `sendme`'s involvement.
 
-The first thing you'll need to do is get the iroh CLI. Follow the instructions on our [install guide](/docs/install) to install iroh.
+Read more about iroh's features on the [overview page](/docs/overview).
 
-<div className='not-prose'>
-  <Button arrow="right" href="/docs/install">Install Iroh CLI</Button>
-</div>
+### What is the iroh-blobs protocol?
 
-Confirm iroh works & is installed correctly by running `iroh help`. You should see help text that starts like this:
+In addition to iroh, `sendme` uses iroh-blobs for injesting the files from the local file system and streaming them via the iroh protocol.
 
-```text
-$ iroh help
-Iroh is a tool for syncing bytes.
-https://iroh.computer/docs
+This powers the resumption feature, allowing you to resume interrupted downloads.
 
-Usage: iroh [OPTIONS] [COMMAND]
-...
-```
+In the first step when `sendme` is "injesting" a file, iroh-blobs runs the [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) hashing function over the whole file.
+Internally, BLAKE3 arranges the hashing in a tree structure, allowing you to resume a download and verify that the bytes from the resumption are exactly the data you wanted to have initially.
 
-## Start the iroh console
+The argument you're passing to `sendme receive` is a so-called "blob ticket".
+It contains information about the node identifier to connect to, that node's potential IP addresses and home relay as well as the BLAKE3 hash of what to fetch.
+Try pasting this ticket into the [iroh ticket inspector](https://ticket.iroh.computer) (or see [this example ticket](https://ticket.iroh.computer/?ticket=blobabp7qggx4vklzxiztbjcflhdd6fdaahmcnssufpvqxixn5v4hf2rsajdnb2hi4dthixs6zlvo4ys2mjoojswyylzfzuxe33ifzxgk5dxn5zgwlrpa4akyeiaagsmqayavqjaaanezabqbmgh2hljryabadakqadduteagajkakahcdmfdhaaaaaaaaaaainfuxeagajkakahcdmfdhaajgh3xlxbmgbbuxeagajkakahcdmfdhak5tjs256ftancuxeagakaek74k62i3lmdeqsybdsaovkuovzbimt3ql57fgsysi5nntxyn4)).
 
-```text
-$ iroh start
-Iroh is running
-Node ID: l5kkl6u6fqcnjxvdkoihq3nbsqczxeulfsqvatb2qh3bwheoyaha
-```
-
-Now that we have a node running, let's create a document. We'll do that from the _console_. The console is a REPL that lets you talk to the node. We open the console with `iroh console` and connect to the node we started using the `iroh start` command.
-
-```text
-$ iroh console
-Welcome to the Iroh console!
-Type `help` for a list of commands.
-
->
-```
-
-## Create a Document
-
-Next, let's create a document. Again we'll use the `--switch` the flag to use this document as the default document for the console session:
-
-<CodeGroup tag="CONSOLE">
-```text
-> docs create --switch
-x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedimrovdpsr
-
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> 
-```
-</CodeGroup>
-
-Next let's set a value in the document, and read it back.
-
-<CodeGroup tag="CONSOLE">
-```
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs set foo bar
-6lujp3wx2idm3bk5iqkzr6ssdk6hlkuwsu7jpqbqzfqsymgbfe6q
-
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs get foo
-@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
-```
-</CodeGroup>
-
-If the content can be displayed as utf-8, the console will display the beginning of the text, otherwise the `doc get` command will display the content's hash. You can use the `--mode` flag to force the content to be printed in different ways. For example, using the option `--mode hash`, will always show the hash of the content, and `--mode content` will write the entire contents to the terminal, regardless of format.
-
-## Sync the document
-
-Now let's actually sync this document with a second node. To disambiguate we'll call the node we've been working with so far "Node A", and the new one we'll create "Node B". We'll start by _sharing_ write access to the document from `Node A`:
-
-<CodeGroup tag="CONSOLE" title="Node A">
-```
-author:fhu3uk4wc2hl2e45 doc:x5qffedimrovdpsr
-> docs share write
-doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
-```
-</CodeGroup>
-
-That long `doclzkcgw...` string is a _ticket_ to join the document. Anyone who has that ticket can join & write to this document. Let's use it to join the document from `Node B`, but first we need to create Node B. In another terminal, run:
-
-```text
-$ export IROH_DATA_DIR=./
-$ iroh console --start
-Iroh is running
-Node ID: 66lfqj4wjtza777baet27crxvqu4bkmts6uciawwer2qo64awheq
-
-Welcome to the Iroh console!
-Type `help` for a list of commands.
-
->
-```
-
-Iroh has a default data directory , and a default rpc port ([`1337`](https://en.wikipedia.org/wiki/Leet)), for internal communication between the different iroh processes. We pass `IROH_DATA_DIR=./` as an environment variable to override this directory, because we're already using it for our first iroh node. Iroh will also detect that another process is using the default rpc port, and will assign a different one for internal communcation, using the `IROH_DATA_DIR` as the place to coordinate which rpc port that iroh process is listening on.
-
-Notice that here we have combined the previous steps to get the console running from two commands (each in a separate terminal), to just one command. The `--start` flag tells the iroh node that we want to both start an iroh node and also connect the console to that node.
-
-To run these as separate commands, you would need to set the `IROH_DATA_DIR` flag to point to the same directory for each terminal window:
-```text
-# in one terminal:
-$ export IROH_DATA_DIR=./
-$ iroh start
-```
-
-```text
-# and in another terminal:
-$ export IROH_DATA_DIR=./
-$ iroh console
-```
-
-Now we can join the document from `Node B`, pasting in the value of the ticket we created with `doc share write` on `Node A`:
-
-<CodeGroup tag="CONSOLE" title="Node B">
-```text
-> authors create --switch
-ksdx5fs4kwjmoaca2bod3z62vsm7ny42vubfxpczyr34trjvxp6q
-Active author is now ksdx5fs4kwjmoaca
-
-> docs join --switch doclzkcgw25utyfj3o4q5dbeo5tyevcjutr25nagmzi5yfsgtqoeohqcig35slag7ibfh3ddcls4szbl3k4q6m6d7gnrpgnv66tlnk3gktxaabqa3bjffy7riydabwcsklryrlqbqfikyrmivybae
-x5qffedimrovdpsr3andm3hdjo6g2nlaqstdm6oe3utblxsdh3eq
-Active doc is now x5qffedimrovdpsr
-
-author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
-> docs get foo
-@fhu3uk4wc2hl2e45: foo = "bar" (3 B)
-
-author:ksdx5fs4kwjmoaca doc:x5qffedimrovdpsr
-```
-</CodeGroup>
-
-The two consoles are now syncronized! We can see the value we set from `Node A` on `Node B`. Any edit you make in one console will be reflected in the other in real time.
-
-<Note>
-  To make this more interesting, try running this step on a separate computer.
-  Iroh's networking stack will establish a connection for you. Nothing will change about these instructions.
-</Note>
+There's additional iroh-blobs features that `sendme` doesn't make use of yet, like queueing or deduplicating downloads and even multi-provider fan-in in the future.
 
 
-### Next Steps
+## Next Steps
 
-Now that you've seen iroh in action, you're ready to start integrating it into your application. The Command Reference is a good place to start. It covers the CLI commands we used here, as well as code examples showing how to use Iroh in your language.
-
-<div className='not-prose'>
-  <Button arrow="right" href="/docs/commands">Command Reference</Button>
-</div>
+- Understand how `sendme` works by looking at a similar, [simpler example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
+- Have a look at the [`iroh` rust API](https:://docs.rs/iroh)
+- Check out Python, Swift, Kotlin and JavaScript bindings for iroh in the [`iroh-ffi` repository](https://github.com/n0-computer/iroh-ffi/)

@@ -4,75 +4,50 @@ export const metadata = {
     'A high-level description of what iroh is',
 };
 
+
 # Overview
 
-Iroh is a protocol for scaling byte distribution. Here's a high level description of how that works {{className: 'lead'}}
-
-Any app that includes the iroh library an iroh _node_. Iroh is designed to work in lots of places, including phones, tablets, desktop devices, and web servers.
-
-A node provides a database to the user, and can connect to any other node on the network to fetch and send data to populate the database. Because nodes can connect directly to each other iroh networks can reach massive sizes without over-burdening any one node.
-
-The database is made up of _documents_, a set of key-value entries.
-
-Every iroh network has an _anchor_, a node that functions like a traditional web server to support the network. They help peers find each other and back up content to keep it available when peers go offline. Anchor nodes can be created with one click.
-
-## What iroh is great for
-
-User Generated Content
-
-## What iroh is not great for
+Iroh lets you establish direct peer-to-peer connections whenever possible, falling back to relay servers if necessary.
+This gives you fast, reliable connections that are authenticated and encrypted end-to-end using QUIC. {{className: 'lead'}}
 
 
+## Iroh is "dial by public key"
+
+In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 public key.
+Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself.
+It also doesn't change when you change networks.
+You won't have to think about NATs getting in your way, iroh traverses them for you.
+Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 
 
+## Iroh is built on QUIC
 
-In the tech industry we talk a lot about scaling, but have a very funny 
+This gives iroh super-powers:
+- encryption & authentication
+- stream multiplexing
+  - no head-of-line blocking issues
+  - stream priorities
+  - one shared congestion controller
+- an encrypted, unreliable datagram transport
+- zero round trip time connection establishment if you've connected to another node before
 
-The solution using cloud technologies alone is to throw more (cloud) computing at the problem.
+A single QUIC connection can power all of your protocol's complex interactions:
+- Stream both video and audio without video packet loss affecting audio. Prioritize audio by increasing its stream's priority.
+- Use the unreliable datagram transport for your game's state and input networking. Also re-use the same connection for streaming assets or real-time audio or video.
+- Avoid unnecessary network round-trips when your phone comes back from suspension with zero round trip time connection establishment.
 
-Numerous bandwidth-intensive applications have hit these scaling limitations
 
-Iroh takes this 
+## Protocols
 
-Iroh peers create and join *documents:* mutable key-value stores that multiple users read from, write to, and sync with, subscribing to live updates in real time.
+(talk about ALPNs, existing protocols & link to how to build custom protocols)
 
-Every key in a document points to a hash-verified blob of bytes. We say “blobs” because Iroh doesn’t care about what bytes you need moved, the structure is up to you. Document blobs can be thousands of tiny JSON files, gig-sized movies, or multi-gig machine learning models. Every blob gets a single CID that peers fetch via relay-backed connections that will automatically resume if broken.
 
-# Layers
+## The higher level: Give your users agency back
 
-Iroh is organized into three _layers_. Each higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.
+Iroh bootstraps a new internet: Your user's home computer is as inter-connected as a virtual private server.
+There might not be a need for intermediaries if their powerful smartphone can accept incoming connections like any other service.
 
-<Concepts>
-  <Concept name="Documents" href="/docs/protocols/documents" description="Collaborate on shared key-value tables of blobs with peers." />
-  <Concept name="Blobs" href="/docs/protocols/blobs" description="Fetch and cache byte sequences by their hash." />
-  <Concept name="Gossip" href="/docs/protocols/gossip" description="Broadcast messages to a swarm of peers." />
-  <Concept name="Net" href="/docs/protocols/net" description="Open a connection to any available peer on the network." />
-</Concepts>
-
-Most users can and should be able to build entire applications with only the sync layer. If your use case is complex, iroh lets you remove the batteries, dropping down to lower layers in the stack. You can build trustless systems directly on the blob layer, or build your own networking protocol using the networking layer.
-
-<Note>
-We're focused on stabilizing iroh starting with the sync layer, and working our way down.
-The lower you go, the more prepared you should be for API changes.
-</Note>
-
-As an example, you may be building a standalone chat app. The messages and all attachments in a chat can be stored in a document. Iroh could handle syncing & caching all messages & attachments for you at the document layer, and you could extend a "user is typing" protocol directly on the networking layer.
-
-## Documents
-
-Iroh peers create and join _documents_: mutable key-value stores that multiple users read from, write to, and sync with, subscribing to live updates in real time.
-
-It's important to note that the sync layer of iroh is _trusted_. Your app will need need a mechanism for identifying which peers should be allowed to edit a document. Granting a peer edit access to a document
-
-Each key in a values in document points to a blob, which iroh creates for you when you write to the document. Whenever mutate a document, iroh pushes updates to all subcribed peers via the networking layer.
-
-## Blobs
-
-Every key in a document points to a hash-verified blob of bytes. We say “blobs” because Iroh doesn\'t care about what bytes you need moved, the structure is up to you. Document blobs can be thousands of tiny JSON files, gig-sized movies, or multi-gig machine learning models. Every blob gets a single hash that peers fetch, using the networking layer.
-
-The blob layer is the first "trustless" layer of iroh, you don't need to know the user you're getting content from to verify it is the content you asked for, that's what the hash is for 😁
-
-## Connections
-
-At the core of iroh is the ability to establish a QUIC connection to any peer that is online.
-
+This gives users back power and agency to use their devices the way they want to.\
+No need to fight for static IP addresses from your ISP.\
+No need to buy domain names to participate in the internet.\
+No need to set up complicated TLS certificates to get what should be a *baseline* feature: Encryption.
