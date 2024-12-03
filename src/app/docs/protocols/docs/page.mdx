@@ -2,7 +2,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 
 # Documents
 
-Authors create and join documents: mutable key-value stores that multiple users read from, write to, and sync with, subscribing to live updates in real time. {{className: 'lead'}}
+A protocol for a mutable key-value store. Authors create and join documents, multiple users read from them, write to them, and sync with them, subscribing to live updates in real time. {{className: 'lead'}}
 
 <div className='not-prose mb-5'>
   <ThemeImage
@@ -41,7 +41,7 @@ Read access to a document is granted by sharing the document public key. Write a
 
 ## Document Identifiers
 
-Documents are referred to within iroh by their _document identifier_ or _DocID_. They look like this:
+Documents are referred to within iroh-docs by their _document identifier_ or _DocID_. They look like this:
 
 ```text {{ title: "a document identifier" }}
 ktrygcpxealfdtfmohw66nb2keivu52opk65cyj4j7jy7wior7ea
@@ -59,11 +59,11 @@ When two nodes want to sync, they perform a range-based set reconciliation to fi
 Check out our [youtube video](https://www.youtube.com/watch?v=_D_tbAMqADM) on how range-based set reconciliation works!
 </Note>
 
-After this synchronization step, we know the hashes of all the content the document references. By default iroh documents will fetch all content associated with the document.
+After this synchronization step, we know the hashes of all the content the document references. By default iroh-docs documents will fetch all content associated with the document.
 
 ## Document PubSub
 
-Every document is its own pubsub swarm, keyed by the public key of the document. Iroh pubsub swarms implement techniques described in [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf?ref=bartoszsypytkowski.com) & PlumTree to keep a bounded number of active nodes any one node in the swarm needs to push to.
+Every document is its own pubsub swarm, keyed by the public key of the document using iroh-gossip. These swarms implement techniques described in [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf?ref=bartoszsypytkowski.com) & PlumTree to keep a bounded number of active nodes any one node in the swarm needs to push to.
 
 <Note>
 Bartosz Sypytkowski has a great [blog post](https://www.bartoszsypytkowski.com/hyparview/) on HyParView & Plumtree, well worth reading.
@@ -73,7 +73,7 @@ As authors write to a document, they publish these changes as pubsub messages th
 
 ## Storage
 
-Iroh docs can be used with in-memory or file-system based storage. The store is used to keep track of all relevant metadata necessary for management of documents, authors and keys. The contents associated to keys is managed by [`iroh-blobs`](/docs/layers/blobs), which stores data in a optimized, content-addressed manner. Data can be imported and exported out of Iroh's storage using [`doc import`](/docs/api/docs-import) and [`doc export`](/docs/api/docs-export).
+Iroh-docs can be used with in-memory or file-system based storage. The store is used to keep track of all relevant metadata necessary for management of documents, authors and keys. The contents associated to keys is managed by [`iroh-blobs`](/docs/layers/blobs), which stores data in a optimized, content-addressed manner. Data can be imported and exported out of iroh-docs's storage using [`doc import`](/docs/api/docs-import) and [`doc export`](/docs/api/docs-export).
 
 ## API
 

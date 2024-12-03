@@ -2,11 +2,13 @@ import {ThemeImage} from '@/components/ThemeImage'
 
 export const metadata = {
   title: 'gossip',
-  description: 'iroh\'s message broadcast layer. Send messages to all nodes in a swarm'
+  description: 'iroh-gossip, a message broadcast protocol. Send messages to all nodes in a swarm'
 }
 
 [hyparview]: https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf
 [plumtree]: https://asc.di.fct.unl.pt/~jleitao/pdf/srds07-leitao.pdf
+
+# iroh-gossip
 
 Gossip broadcasts messages to a network of live devices.{{ className: 'lead' }}
 
@@ -14,7 +16,7 @@ Gossip broadcasts messages to a network of live devices.{{ className: 'lead' }}
   <ThemeImage
     lightSrc='/diagrams/gossip_swarm_light.svg'
     darkSrc='/diagrams/gossip_swarm_dark.svg'
-    alt='a diagram of 24 cell phones in an iroh gossip swarm, where each peer is actively connected to 3 peers, and passively connected to 5 peers'
+    alt='a diagram of 24 cell phones in an iroh-gossip swarm, where each peer is actively connected to 3 peers, and passively connected to 5 peers'
     width={800}
     height={600}
   />
@@ -24,7 +26,7 @@ Gossip broadcasts messages to a network of live devices.{{ className: 'lead' }}
 
 ”network” here is as few as 2 devices, and theoretically up to hundreds of thousands. Any node in a gossip network can send a message, and it will be sent to all devices that are online.
 
-Iroh gossip caps the number of active connections to around 5 per device, and routes messages around network, even as some nodes join and leave. With iroh gossip you can build dynamic networks of devices that can communicate with a high-level broadcast-oriented API.
+Iroh-gossip caps the number of active connections to around 5 per device, and routes messages around network, even as some nodes join and leave. With iroh-gossip you can build dynamic networks of devices that can communicate with a high-level broadcast-oriented API.
 
 ## HyParView and PlumTree
 
