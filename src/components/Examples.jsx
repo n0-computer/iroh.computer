@@ -174,7 +174,7 @@ function Example({example}) {
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           {example.description}
         </p>
-        <ul className='flex space-x-2 mt-3'>
+        <ul className='flex space-x-2 mt-3 -ml-7'>
           {example.tags.map((tag, i) => (
             <Tag key={i}>{tag}</Tag>
           ))}
@@ -186,8 +186,8 @@ function Example({example}) {
 
 export function Examples() {
   return (
-    <div className="my-16 xl:max-w-none">
-      <div className="not-prose mt-4 grid grid-cols-1 gap-8 dark:border-white/5 sm:grid-cols-2 xl:grid-cols-2">
+    <div className="my-16">
+      <div className="mt-4 grid grid-cols-1 gap-8 dark:border-white/5 sm:grid-cols-2 xl:grid-cols-2">
         {examples.map((example) => (
           <Example key={example.href} example={example} />
         ))}

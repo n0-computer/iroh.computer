@@ -194,7 +194,6 @@ export function Navigation(props) {
         <TopLevelNavItem href="/proto">Protocols</TopLevelNavItem>
         <TopLevelNavItem href="/roadmap">Roadmap</TopLevelNavItem>
         <TopLevelNavItem href="https://github.com/n0-computer/iroh">GitHub</TopLevelNavItem>
-        <TopLevelNavItem href="https://www.youtube.com/@n0computer">YouTube</TopLevelNavItem>
         {sidebar.map((group, groupIndex) => (
           <NavigationGroup
             key={group.title}

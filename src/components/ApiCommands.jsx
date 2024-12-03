@@ -33,7 +33,7 @@ function ApiCommand({ command }) {
 export default function ApiCommands({ commands }) {
   return (
     <div className="my-16 xl:max-w-none">
-      <div className="not-prose mt-4 grid grid-cols-1 gap-8 dark:border-white/5 sm:grid-cols-3 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-8 dark:border-white/5 sm:grid-cols-3 xl:grid-cols-4">
         {commands.map((command, i) => (
           <ApiCommand key={i} command={command} />
         ))}

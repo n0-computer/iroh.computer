@@ -21,7 +21,6 @@ export const navItems = [
   {content: 'Docs', href: '/docs'},
   {content: 'Protocols', href: '/proto'},
   {content: 'Roadmap', href: '/roadmap'},
-  {content: 'YouTube', href: 'https://www.youtube.com/@n0computer'},
 ];
 
 export function TopLevelNavItem({href, children}) {

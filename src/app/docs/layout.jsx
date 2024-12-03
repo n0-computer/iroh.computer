@@ -15,28 +15,24 @@ export const navItems = [
   {
     title: 'Getting Started',
     links: [
-      {title: 'Install', href: '/docs/install'},
+      {title: 'Overview', href: '/docs/overview'},
       {title: 'Quickstart', href: '/docs/quickstart'},
-      {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Examples', href: '/docs/examples'},
     ],
   },
-  {title: 'Concepts',
+  { title: 'Protocols',
     links: [
-      {title: 'Protocols', href: '/docs/protocols'},
-      {title: 'Net', href: '/docs/protocols/net'},
-      {title: 'Blobs', href: '/docs/protocols/blobs'},
-      {title: 'Gossip', href: '/docs/protocols/gossip' },
-      {title: 'Documents', href: '/docs/protocols/docs'},
-      {title: 'Tickets', href: '/docs/concepts/tickets'},
+      {title: 'What\'s a protocol', href: '/docs/protocols'},
+      {title: 'Protocol Registry', href: '/proto'},
+      {title: 'Writing a protocol', href: '/docs/protocols/writing'},
     ],
   },
-  {
-    title: 'Reference',
+  {title: 'Resources',
     links: [
-      {title: 'API', href: '/docs/api'},
-      {title: 'Config', href: '/docs/reference/config'},
-    ]
+      {title: 'The Ticket Pattern', href: '/docs/concepts/tickets'},
+      {title: 'Language SDKs', href: '/docs/sdks'},
+      {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh'}
+    ],
   }
 ];
 
