@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import {protocols} from '@/app/proto/protocols'
@@ -8,7 +9,6 @@ import iconCarat from '@/images/icons/icon_carat.svg';
 import iconFaster from '@/images/icons/icon_faster.svg';
 import iconOpen from '@/images/icons/icon_open.svg';
 import iconPlatforms from '@/images/icons/icon_platforms.svg';
-import Link from 'next/link';
 
 const icons = {
   iconCarat,
@@ -21,8 +21,8 @@ export const ProtocolHeroList = function ProtocolHeroList() {
   return (
     <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
       {protocols.map((proto, i) => (
-        <Link href={`/docs/protocols/${proto.slug}`} key={i}>
-        <GlowCard key={i} className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
+        <Link href={`/proto/${proto.slug}`} key={i}>
+        <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
           <Image
             src={icons[proto.icon]}
             alt=""
@@ -37,7 +37,7 @@ export const ProtocolHeroList = function ProtocolHeroList() {
         </Link>
       ))}
       <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
-        <Link href='/docs/protocols'>
+        <Link href='/proto'>
           <h1 className='text-2xl mb-2 text-irohGray-500'>Browse all protocols</h1>
           <ArrowRightIcon className='w-10 h-10' />
         </Link>
