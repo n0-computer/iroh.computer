@@ -20,20 +20,28 @@ export const navItems = [
       {title: 'Examples', href: '/docs/examples'},
     ],
   },
-  { title: 'Protocols',
+  { title: 'Concepts',
     links: [
-      {title: 'What\'s a protocol', href: '/docs/protocols'},
-      {title: 'Protocol Registry', href: '/proto'},
-      {title: 'Writing a protocol', href: '/docs/protocols/writing'},
+      {title: 'Endpoint', href: '/docs/concepts/endpoint'},
+      {title: 'Relay', href: '/docs/concepts/relay'},
+      {title: 'Protocol', href: '/docs/concepts/protocol'},
+      {title: 'Router', href: '/docs/concepts/router'},
+      {title: 'Ticket', href: '/docs/concepts/tickets'},
     ],
   },
   {title: 'Resources',
     links: [
-      {title: 'The Ticket Pattern', href: '/docs/concepts/tickets'},
+      {title: 'Protocol Registry', href: '/proto'},
       {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh'}
     ],
-  }
+  },
+  {title: 'Writing a protocol',
+    links: [
+      {title: 'Writing your first protocol', href: '/docs/protocols/writing'},
+      {title: 'Submitting to the registry', href: '/docs/protocols/submitting'},
+    ]
+  },
 ];
 
 export default function DocsLayout({children, sections = {}}) {

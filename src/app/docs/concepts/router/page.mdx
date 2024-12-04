@@ -1,0 +1,48 @@
+
+## Router
+
+To make composing protocols easier, iroh includes a _router_ for composing together multiple protocols. {{className: 'lead'}}
+
+The router implements the [accept loop](/docs/concepts/protocol#the-accept-loop) on your behalf, and routes incoming connections to the correct protocol based on the ALPN. We recommend using the router to compose protocols, as it makes it easier to add new protocols to your application.
+
+We use the term _router_ because it mimics what an HTTP server would do with an URL-based router: It routes incoming connections to the correct protocol based on the ALPN.
+
+```rust
+use anyhow::Result;
+use iroh::protocol::Router;
+use iroh::Endpoint;
+use iroh_blobs::net_protocol::Blobs;
+use iroh_blobs::util::local_pool::LocalPool;
+
+
+#[tokio::main]
+async fn main() -> Result<()> {
+  // Build an endpoint, defaulting to the public n0 relay network
+  let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+  // configure the blobs protocol to run in-memory
+  let lp = LocalPool::default();
+  let blobs = Blobs::mem()
+    .await?
+    .events(ps.new_client().into())
+    .build(lp.handle(), &endpoint);
+
+  // Build our router and add the blobs protocol, 
+  // identified by its ALPN. Spawn the router to start listening.
+  let router = Router::builder(endpoint)
+      .accept(iroh_blobs::ALPN, blobs.clone())
+      .spawn()
+      .await?;
+
+  // get our own address. At this point we have a running router 
+  // that's ready to accept connections.
+  let addr = router.endpoint().node_addr().await?;
+
+  // Wait for exit
+  tokio::signal::ctrl_c().await?;
+
+  Ok(())
+}
+```
+
+You can add whatever protocols you need to the router, multiplexing them all over the same endpoint.

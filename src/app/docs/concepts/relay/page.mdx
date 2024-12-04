@@ -1,0 +1,109 @@
+# Relays
+Relays are servers that help establish connections between devices. {{className: 'lead'}}
+
+Relays temporarily route encrypted traffic until a direct, P2P connection is feasible. Once this direct path is set up, the relay server steps back, and the data flows directly between devices. This approach allows Iroh to maintain a secure, low-latency connection, even in challenging network situations.
+
+<Note>
+Relays are also open source! You can run your own relay server, or use one of the public relays. Code is [here](https://github.com/n0-computer/iroh/tree/main/iroh-relay), and we build relay binaries for most platforms with each iroh [release](https://github.com/n0-computer/iroh/releases)
+</Note>
+
+There are situations where a direct connection _can't_ be established, and in those cases traffic falls back to running through the relay. Relay servers **do not** have have access to the data being transmitted, as it's encrypted end-to-end.
+
+<Note>
+We're working on formally collecting the direct connection rate from production iroh networks. Anecdotal evidence points to the holepunching rate being around 90%, meaning 9 out of 10 times, a direct connection is established.
+</Note>
+
+## Connection Changes
+
+During the lifespan of a connection, networking conditions can change, for example when a user switched from 5G to WiFi, plugs in an ethernet cable, or a sysadmin modifies router configurations. The connection may change from direct to relayed, or even a mixed combination of the two. Iroh will automatically switch between direct and relayed connections as needed, without any action required from the application.
+
+## Home Relay
+
+All iroh nodes will maintain a single home relay server that they're reachable at. On startup iroh will probe its configured relays & choose the one with the lowest latency. 
+
+You can see this in action with [iroh doctor](https://github.com/n0-computer/iroh-doctor):
+
+```shell
+$ iroh-doctor report
+getting report using relay map RelayMap {
+    nodes: {
+        RelayUrl(
+            "https://aps1-1.relay.iroh.network./",
+        ): RelayNode {
+            url: RelayUrl(
+                "https://aps1-1.relay.iroh.network./",
+            ),
+            stun_only: false,
+            stun_port: 3478,
+        },
+        ...
+    },
+}
+Report {
+    udp: true,
+    ipv6: true,
+    ipv4: true,
+    ipv6_can_send: true,
+    ipv4_can_send: true,
+    os_has_ipv6: true,
+    icmpv4: None,
+    icmpv6: None,
+    mapping_varies_by_dest_ip: Some(false),
+    mapping_varies_by_dest_ipv6: Some(false),
+    hair_pinning: Some(false),
+    portmap_probe: Some(
+        ProbeOutput {
+            upnp: false,
+            pcp: false,
+            nat_pmp: false,
+        },
+    ),
+    preferred_relay: Some(
+        RelayUrl(
+            "https://use1-1.relay.iroh.network./",
+        ),
+    ),
+    relay_latency: RelayLatencies(
+        {
+            RelayUrl(
+                "https://aps1-1.relay.iroh.network./",
+            ): 229.446041ms,
+            RelayUrl(
+                "https://euw1-1.relay.iroh.network./",
+            ): 98.979167ms,
+            RelayUrl(
+                "https://use1-1.relay.iroh.network./",
+            ): 10.133208ms,
+        },
+    ),
+    relay_v4_latency: RelayLatencies(
+        {
+            RelayUrl(
+                "https://aps1-1.relay.iroh.network./",
+            ): 229.446041ms,
+            ...
+        },
+    ),
+    relay_v6_latency: RelayLatencies(
+        {
+            RelayUrl(
+                "https://aps1-1.relay.iroh.network./",
+            ): 238.579417ms,
+            ...
+        },
+    ),
+    global_v4: Some(72.**.**.**:54696),
+    global_v6: Some([2600:**:**:***::100b]:53549),
+    captive_portal: None,
+}
+```
+
+The above output shows that the node is using the `use1-1.relay.iroh.network` relay, and that it has a latency of 10ms. This is the relay that the node will use to establish connections with other nodes.
+
+## number 0 public relays
+
+number 0 provides a set of public relays that are free to use, and are configured by default. You're more than welcome to run production systems using the public relays if you find performance acceptable. The public relays do rate-limit traffic that flows through the relay. This is to prevent abuse, and ensure the relays are available to everyone. If you need more capacity, you can run your own relay server, or [contact us about a custom relay setup](https://n0.computer/n0ps/).
+
+## Local Discovery
+
+Relays aren't the only way to find other iroh nodes. Iroh also supports local discovery, where nodes on the same local network can find each other without a relay using mDNS. This is useful for local networks, or for bootstrapping a network before a relay is available. For more info on configuring local discovery, see the [local discovery docs](https://docs.rs/iroh/latest/iroh/discovery/local_swarm_discovery/index.html).

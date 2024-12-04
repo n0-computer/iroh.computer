@@ -1,0 +1,36 @@
+# Endpoints
+
+An _endpoint_ is the main API interface to create connections to, and accept connections from other iroh nodes. The connections are peer-to-peer and encrypted, a [Relay](/docs/concepts/relay) server is used to make the connections reliable. Endpoints have a `NodeID` (the public half of an Ed25519 keypair) and the private key used to sign and decrypt messages.
+
+Generally, an application will have a single endpoint instance. This ensures all the connections made share the same peer-to-peer connections to other iroh nodes, while still remaining independent connections. This will result in more optimal network behaviour.
+
+Somewhere in a program that uses iroh for direct connections, you'll see code like this:
+
+```rust
+use iroh::Endpoint;
+
+#[tokio::main]
+async fn main() {
+    let endpoint = Endpoint::builder().bind().await.unwrap();
+    // ...
+}
+```
+
+Breaking that down the `builder` sets up configuration for the endpoint, and `bind` creates the endpoint and starts listening for incoming connections. The `await` keyword is used to wait for the endpoint to be created in an asynchronous context.
+
+Once you have an endpoint, you can use it to create connections to other nodes, or accept incoming connections from other nodes.
+
+## Connections
+
+Because we're in a peer-2-peer context, either node might be operating as the "server", so we use `connect` and `accept` to distinguish between the two. The `connect` method is used to create a new connection to a remote node, while `accept` is used to accept incoming connections from a remote node.
+
+Connections are full-fledged QUIC connections, giving you access to most features of QUIC / HTTP3, including bidirectional and unidirectional streams.
+
+<Note>
+Due to the light-weight properties of QUIC streams a stream can only be accepted once the initiating peer has sent some data on it.
+</Note>
+
+## Building on Endpoints
+
+Endpoints are a low-level primitive that iroh exposes on purpose. For some projects like [dumbpipe](https://dumbpipe.dev), endpoints are 95% of what you need to connect any two devices on the planet. For others, like [iroh-blobs](/proto/iroh-blobs), endpoints are the foundation that higher-level protocols are built on. Most projects will not work with endpoints beyond constructing one and feeding it to one or more [protocols](/docs/concepts/protocol).
+
