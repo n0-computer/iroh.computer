@@ -16,7 +16,7 @@ async fn main() {
 }
 ```
 
-Breaking that down the `builder` sets up configuration for the endpoint, and `bind` creates the endpoint and starts listening for incoming connections. The `await` keyword is used to wait for the endpoint to be created in an asyncronous context.
+Breaking that down the `builder` sets up configuration for the endpoint, and `bind` creates the endpoint and starts listening for incoming connections. The `await` keyword is used to wait for the endpoint to be created in an asynchronous context.
 
 Once you have an endpoint, you can use it to create connections to other nodes, or accept incoming connections from other nodes.
 
@@ -27,7 +27,7 @@ Because we're in a peer-2-peer context, either node might be operating as the "s
 Connections are full-fledged QUIC connections, giving you access to most features of QUIC / HTTP3, including bidirectional and unidirectional streams.
 
 <Note>
-QUIC streams are due to the light-weight properties of streams a stream will only be accepted once the initiating peer has sent some data on it.
+Due to the light-weight properties of QUIC streams a stream can only be accepted once the initiating peer has sent some data on it.
 </Note>
 
 ## Building on Endpoints

@@ -5,7 +5,7 @@ To make composing protocols easier, iroh includes a _router_ for composing toget
 
 The router implements the [accept loop](/docs/concepts/protocol#the-accept-loop) on your behalf, and routes incoming connections to the correct protocol based on the ALPN. We recommend using the router to compose protocols, as it makes it easier to add new protocols to your application.
 
-We use the term _router_ because it mimics what an HTTP server would do with a URL-based router: It routes incoming connections to the correct protocol based on the ALPN.
+We use the term _router_ because it mimics what an HTTP server would do with an URL-based router: It routes incoming connections to the correct protocol based on the ALPN.
 
 ```rust
 use anyhow::Result;

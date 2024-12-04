@@ -15,11 +15,11 @@ We're working on formally collecting the direct connection rate from production 
 
 ## Connection Changes
 
-During the lifespan of a connection, networking conditions can change, for exmaple when a user switched from 5G to WiFi, plugs in an ethernet cable, or a sysadmin modifies router configurations. The connection may change from direct to relayed, or even a mixed combinatino of the two. Iroh will automatically switch between direct and relayed connections as needed, without any action required from the application. This is part of the internal
+During the lifespan of a connection, networking conditions can change, for example when a user switched from 5G to WiFi, plugs in an ethernet cable, or a sysadmin modifies router configurations. The connection may change from direct to relayed, or even a mixed combination of the two. Iroh will automatically switch between direct and relayed connections as needed, without any action required from the application.
 
 ## Home Relay
 
-All iroh nodes will maintain a single home relay server that they're reachable at. On startup iroh will probe it's configured relays & choose the one with the lowest latency. 
+All iroh nodes will maintain a single home relay server that they're reachable at. On startup iroh will probe its configured relays & choose the one with the lowest latency. 
 
 You can see this in action with [iroh doctor](https://github.com/n0-computer/iroh-doctor):
 
@@ -102,7 +102,7 @@ The above output shows that the node is using the `use1-1.relay.iroh.network` re
 
 ## number 0 public relays
 
-number 0 provides a set of public relays that are free to use, and are configured by default. You're more than welcome to run production systems using the public relays if you find performance acceptable. The public relays do rate-limit traffic that flows through the relay. This is to prevent abuse, and ensure the relays are available to everyone. If you need more capacity, you can run your own relay server, or contact us about a custom relay setup.
+number 0 provides a set of public relays that are free to use, and are configured by default. You're more than welcome to run production systems using the public relays if you find performance acceptable. The public relays do rate-limit traffic that flows through the relay. This is to prevent abuse, and ensure the relays are available to everyone. If you need more capacity, you can run your own relay server, or [contact us about a custom relay setup](https://n0.computer/n0ps/).
 
 ## Local Discovery
 
