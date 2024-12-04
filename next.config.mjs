@@ -26,6 +26,9 @@ const redirects = async () => {
 
     { source: '/docs/api', destination: '/docs/sdks', permanent: true, },
     { source: '/docs/api/:slug', destination: '/docs/sdks', permanent: true, },
+
+    // there's no more CLI to install. Instead, lead people towards general iroh docs
+    { source: '/docs/install', destination: '/docs', permanent: true, },
   ]
 }
 
