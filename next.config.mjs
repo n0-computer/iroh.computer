@@ -18,13 +18,11 @@ const redirects = async () => {
     // LETS GO DISCORD WAHOO
     { source: '/discord', destination: 'https://discord.gg/DpmJgtU7cW', basePath: false, permanent: false, },
 
-    // transition from "components" to "protocols"
-    // we'll likely want to use `/docs/layers` to explain the layers thing, so no redirect for the root:
-    // { source: '/docs/layers', destination: '/docs/components', permanent: true, },
-    { source: '/docs/components/documents', destination: '/docs/protocols/docs', permanent: true, },
-    { source: '/docs/components/blobs', destination: '/docs/protocols/blobs', permanent: true, },
-    { source: '/docs/components/gossip', destination: '/docs/protocols/gossip', permanent: true, },
-    { source: '/docs/components/networking', destination: '/docs/protocols/net', permanent: true, },
+    // transition from protocols in docs section to protocols registry
+    { source: '/docs/protocols/docs', destination: '/proto/iroh-docs', permanent: true, },
+    { source: '/docs/protocols/blobs', destination: '/proto/iroh-blobs', permanent: true, },
+    { source: '/docs/protocols/gossip', destination: '/proto/iroh-gossip', permanent: true, },
+    { source: '/docs/protocols/net', destination: '/docs/overview', permanent: true, },
 
     { source: '/docs/api', destination: '/docs/sdks', permanent: true, },
     { source: '/docs/api/:slug', destination: '/docs/sdks', permanent: true, },
