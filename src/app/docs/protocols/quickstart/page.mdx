@@ -1,0 +1,432 @@
+
+# Exercise 1: Direct 1:1 connections
+
+We will write a tool similar to https://www.dumbpipe.dev/ that connects two devices anywhere in the world.
+
+## Project setup
+
+Clone https://github.com/n0-computer/iroh-workshop-web3summit.
+
+This will give you the code for all steps.
+
+## Connect
+
+Creating an endpoint:
+
+```rust
+let endpoint = Endpoint::builder()
+    .bind(0)
+    .await?;
+```
+
+Connecting
+
+```rust
+const WEB3_ALPN: &[u8] = b"WEB3_2024";
+let connection = endpoint.connect(addr, WEB3_ALPN).await?;
+```
+
+(Works only if the remote accepts WEB3_ALPN)
+
+Opening a stream
+
+```rust
+let (send, recv) = connection.open_bi().await?;
+```
+
+Copy stdin to send and recv to stdout
+
+```rust
+    tokio::spawn(copy_to_stdout(remote, recv));
+    copy_stdin_to(send).await?;
+```
+
+## Accept
+
+Creating an endpoint:
+
+For accept we must provide the set of ALPNs
+
+```rust
+const WEB3_ALPN: &[u8] = b"WEB3_2024";
+let endpoint = Endpoint::builder()
+    .alpns(vec![WEB3_ALPN.to_vec()])
+    .bind(0)
+    .await?;
+```
+
+Print ticket:
+
+```rust
+let addr = endpoint.node_addr().await?;
+println!("I am {}", addr.node_id);
+println!("Listening on {:#?}", addr.info);
+println!("ticket: {}", NodeTicket::new(addr)?);
+```
+
+Accept loop:
+```rust
+while let Some(connecting) = endpoint.accept().await {
+    // handle each incoming connection in separate tasks.
+}
+```
+
+For each accept:
+
+```rust
+let alpn = connecting.alpn().await?;
+let connection = connecting.await?;
+let remote_node_id = endpoint::get_remote_node_id(&connection)?;
+let (send, recv) = connection.accept_bi().await?;
+let author = remote_node_id.to_string();
+// Send a greeting to the remote node.
+send.write_all("hello\n".as_bytes()).await?;
+// Spawn two tasks to copy data in both directions.
+tokio::spawn(copy_stdin_to(send));
+tokio::spawn(copy_to_stdout(author, recv));
+```
+
+## Polish
+
+```rust
+let secret_key = get_or_create_secret()?;
+```
+
+Allows to specify the secret via an environment variable, to have a stable node id over multiple runs.
+
+```rust
+wait_for_relay(&endpoint).await?;
+```
+
+Wait for the node to figure out it's own relay URL
+
+## Let's try it out
+
+One terminal
+```
+cargo run -p pipe1
+```
+
+```
+cargo run -p pipe1 <ticket>
+```
+
+## Use iroh DNS node discovery
+
+https://www.iroh.computer/blog/iroh-dns
+
+on the connect side, I want to *look up* node ids using the default iroh dns server
+
+```rust
+let discovery = DnsDiscovery::n0_dns();
+let endpoint = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    ...
+```
+
+on the accept side, I want to *publish* node ids to the default iroh dns server
+
+```rust
+let discovery = PkarrPublisher::n0_dns(secret_key.clone());
+let endpoint = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    ...
+```
+
+cargo run -p pipe2
+```
+
+https://www.diggui.com
+
+## Use pkarr node discovery
+
+both use `PkarrNodeDiscovery`.
+
+on the connect side, we don't want to publish, so we don't need the secret key.
+
+```rust
+let discovery = PkarrNodeDiscovery::default();
+let endpoint = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    ...
+```
+
+on the accept side, we do want to publish, so we do need the secret key
+
+```rust
+let discovery = PkarrNodeDiscovery::builder()
+    .secret_key(secret_key.clone())
+    .build()?;
+let endpoint = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    ...
+```
+
+```
+cargo run -p pipe3
+```
+
+## Publish full addresses, not just relay URL
+
+```rust
+let discovery = PkarrNodeDiscovery::builder()
+    .secret_key(secret_key.clone())
+    .include_direct_addresses(true)
+    .build()?;
+let endpoint = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    ...
+```
+
+```
+cargo run -p pipe4
+```
+
+# Exercise 2: Group chat
+
+We will write a command line group chat.
+
+## Project setup
+
+We need an additional dependency
+```toml
+# iroh crate
+iroh = { version = "0.22" }
+```
+
+## Create the iroh node
+
+We use an in-memory node for the example
+```rust
+// create a new Iroh node, giving it the secret key
+let iroh = iroh::node::Node::memory()
+    .secret_key(secret_key)
+    .spawn()
+    .await?;
+```
+
+## Add the info from the addresses
+
+```rust
+    let mut bootstrap = Vec::new();
+    for ticket in &args.tickets {
+        let addr = ticket.node_addr();
+        iroh.endpoint().add_node_addr(addr.clone()).ok();
+        bootstrap.push(addr.node_id);
+    }
+```
+
+## Subscribe to a hardcoded topic with the collected bootstrap nodes
+
+```rust
+    // hardcoded topic
+    let topic = [0u8; 32];
+    // subscribe to the topic, giving the bootstrap nodes
+    // if the tickets contained additional info, this is available in the address book of the endpoint
+    let (mut sink, mut stream) = iroh.gossip().subscribe(topic, bootstrap).await?;
+```
+
+## Send stdin to gossip
+
+```rust
+    line = stdin.next_line() => {
+        if let Ok(Some(line)) = line {
+            // got a line from stdin
+            match parse_as_command(line).await {
+                Ok(cmd) => {
+                    if let Some(cmd) = cmd {
+                        sink.send(cmd).await?;
+                    }
+                }
+                Err(cause) => {
+                    tracing::warn!("error parsing command: {}", cause);
+                }
+            }
+        }
+    }
+}
+```
+
+```rust
+async fn parse_as_command(text: String) -> anyhow::Result<Option<Command>> {
+    let cmd = Command::Broadcast(text.as_bytes().to_vec().into());
+    Ok(Some(cmd))
+}
+```
+
+## Print incoming messages to stdout
+
+```rust
+select! {
+    message = stream.next() => {
+        // got a message from the gossip network
+        if let Some(Ok(event)) = message {
+            if let Err(cause) = handle_event(event).await {
+                tracing::warn!("error handling message: {}", cause);
+            }
+        } else {
+            break;
+        }
+    }
+```
+
+```rust
+async fn handle_event(event: Event) -> anyhow::Result<()> {
+    if let Event::Gossip(GossipEvent::Received(msg)) = event {
+        println!(
+            "Received message from node {}: {:?}",
+            msg.delivered_from, msg.content
+        );
+    } else {
+        tracing::info!("Got other event: {:?}", event);
+    }
+    Ok(())
+}
+```
+
+We got a working chat!
+
+```
+cargo run -p chat1
+```
+
+## A proper protocol
+
+We send around signed messages, so we know whom they are from!
+
+```rust
+#[derive(Debug, Serialize, Deserialize)]
+enum Message {
+    Message { text: String },
+    // more message types will be added later
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct SignedMessage {
+    from: PublicKey,
+    data: Vec<u8>,
+    signature: Signature,
+}
+
+impl SignedMessage {
+
+    pub fn sign_and_encode(secret_key: &SecretKey, message: &Message) -> anyhow::Result<Vec<u8>> {
+        let data = postcard::to_stdvec(&message)?;
+        let signature = secret_key.sign(&data);
+        let from = secret_key.public();
+        let signed_message = Self {
+            from,
+            data,
+            signature,
+        };
+        let encoded = postcard::to_stdvec(&signed_message)?;
+        Ok(encoded)
+    }
+
+    pub fn verify_and_decode(bytes: &[u8]) -> anyhow::Result<(PublicKey, Message)> {
+        let signed_message: Self = postcard::from_bytes(bytes)?;
+        let key = signed_message.from;
+        key.verify(&signed_message.data, &signed_message.signature)?;
+        let message: Message = postcard::from_bytes(&signed_message.data)?;
+        Ok((signed_message.from, message))
+    }
+}
+```
+
+## Wiring it up
+
+Verify and decode incoming messages. Silently ignore non-verified messages
+```rust
+    let msg = Message::Message { text };
+    let signed = SignedMessage::sign_and_encode(secret_key, &msg)?;
+    let cmd = Command::Broadcast(signed.into());
+}
+```
+
+Handle the incoming messages (only one message type for now):
+```rust
+        let Ok((from, msg)) = SignedMessage::verify_and_decode(&msg.content) else {
+            tracing::warn!("Failed to verify message: {:?}", msg.content);
+            return Ok(());
+        };
+```
+
+```
+cargo run -p chat2
+```
+
+## Encrypted direct messages
+
+Extend the Message enum
+```rust
+enum Message {
+    Message { text: String },
+    Direct { to: PublicKey, encrypted: Vec<u8> },
+    // more message types will be added later
+}
+```
+
+Encryption:
+
+Support `/for <publickey> <message>` syntax
+
+```rust
+let msg = if let Some(private) = text.strip_prefix("/for ") {
+    // yeah yeah, there are nicer ways to do this, sue me...
+    let mut parts = private.splitn(2, ' ');
+    let Some(to) = parts.next() else {
+        anyhow::bail!("missing recipient");
+    };
+    let Some(msg) = parts.next() else {
+        anyhow::bail!("missing message");
+    };
+    let Ok(to) = PublicKey::from_str(to) else {
+        anyhow::bail!("invalid recipient");
+    };
+    let mut encrypted = msg.as_bytes().to_vec();
+    // encrypt the data in place
+    secret_key.shared(&to).seal(&mut encrypted);
+    Message::Direct { to, encrypted }
+} else ...
+```
+
+Decryption:
+```rust
+if to != secret_key.public() {
+    // not for us
+    return Ok(());
+}
+let mut buffer = encrypted;
+secret_key.shared(&from).open(&mut buffer)?;
+let message = std::str::from_utf8(&buffer)?;
+println!("got encrypted message from {}: {}", from, message);
+```
+
+```
+cargo run -p chat3
+```
+
+## Homework: support sending files
+
+Syntax:
+
+`/share <file>`
+
+This involves using iroh-bytes and handling two different ALPNs, [GOSSIP_ALPN](https://docs.rs/iroh-gossip/latest/iroh_gossip/net/constant.GOSSIP_ALPN.html) and [iroh_bytes::protocol::ALPN](https://docs.rs/iroh-bytes/latest/iroh_bytes/protocol/constant.ALPN.html)
+
+Depending on the incoming ALPN you have to dispatch to gossip or bytes.
+
+## Homework: aliases
+
+Syntax:
+
+`/alias <alias>`
+
+User can define an alias. All receivers of this alias from then on refer to the user just as `<alias>` instead of by node id.
+
+This requires changing the code to have common mutable state between send and receive.

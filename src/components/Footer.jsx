@@ -1,65 +1,7 @@
-'use client';
-
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
 
-import {Button} from '@/components/Button';
-import {navigation} from '@/components/Navigation';
+import { PageNavigation } from '@/components/PageNavigation';
 
-function PageLink({label, page, previous = false}) {
-  return (
-    <>
-      <Button
-        href={page.href}
-        aria-label={`${label}: ${page.title}`}
-        variant="secondary"
-        arrow={previous ? 'left' : 'right'}
-      >
-        {label}
-      </Button>
-      <Link
-        href={page.href}
-        tabIndex={-1}
-        aria-hidden="true"
-        className="text-base font-semibold text-zinc-900 transition hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
-      >
-        {page.title}
-      </Link>
-    </>
-  );
-}
-
-function PageNavigation() {
-  const pathname = usePathname();
-  const allPages = navigation.flatMap((group) => group.links);
-  const currentPageIndex = allPages.findIndex((page) => page.href === pathname);
-
-  if (currentPageIndex === -1) {
-    return null;
-  }
-
-  const previousPage = allPages[currentPageIndex - 1];
-  const nextPage = allPages[currentPageIndex + 1];
-
-  if (!previousPage && !nextPage) {
-    return null;
-  }
-
-  return (
-    <div className="flex">
-      {previousPage && (
-        <div className="flex flex-col items-start gap-3">
-          <PageLink label="Previous" page={previousPage} previous />
-        </div>
-      )}
-      {nextPage && (
-        <div className="ml-auto flex flex-col items-end gap-3">
-          <PageLink label="Next" page={nextPage} />
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function TwitterIcon(props) {
   return (
@@ -71,10 +13,9 @@ export function TwitterIcon(props) {
 
 export function BlueskyIcon(props) {
   return (
-    <svg viewBox="-30 -30 660 590" {...props}>
+    <svg viewBox="-30 -30 660 590" fill="currentColor" {...props}>
       <path
         d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"
-        fill="currentColor"
       />
     </svg>
   );
@@ -139,8 +80,11 @@ function SmallPrint() {
         &copy; Copyright {new Date().getFullYear()} N0, inc. All rights reserved.
       </p>
       <div className="flex gap-4">
-        <SocialLink href="https://twitter.com/n0computer" icon={TwitterIcon}>
-          Follow us on Twitter
+        <SocialLink href="https://github.com/n0-computer" icon={GitHubIcon}>
+          Follow us on GitHub
+        </SocialLink>
+        <SocialLink href="#" icon={DiscordIcon}>
+          Join our Discord server
         </SocialLink>
         <SocialLink href="https://bsky.app/profile/iroh.computer" icon={BlueskyIcon}>
           Follow us on Bluesky
@@ -148,21 +92,19 @@ function SmallPrint() {
         <SocialLink href="https://mastodon.social/@n0iroh" icon={MastodonIcon}>
           Follow us on Mastodon
         </SocialLink>
-        <SocialLink href="https://github.com/n0-computer" icon={GitHubIcon}>
-          Follow us on GitHub
-        </SocialLink>
-        <SocialLink href="#" icon={DiscordIcon}>
-          Join our Discord server
+        <SocialLink href="https://twitter.com/n0computer" icon={TwitterIcon}>
+          Follow us on Twitter
         </SocialLink>
       </div>
     </div>
   );
 }
 
-export function Footer() {
+export function Footer(props) {
+  const { navItems } = props;
   return (
     <footer className="mx-auto w-full max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
-      <PageNavigation />
+      <PageNavigation navItems={navItems} />
       <SmallPrint />
     </footer>
   );

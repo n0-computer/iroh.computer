@@ -13,14 +13,23 @@ This gives you fast, reliable connections that are authenticated and encrypted e
 
 ## Iroh is "dial by public key"
 
-In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 public key.
-Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself.
-It also doesn't change when you change networks.
+In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 public key. Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself. It also doesn't change when you change networks.
 You won't have to think about NATs getting in your way, iroh traverses them for you.
 Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 
+## How it works
+
+It's built on peer-to-peer QUIC using both relays and holepunching.
+
+Peer to peer connectivity is established with the help of a relay server. The relay server provides Session Traversal Utilities for NAT (STUN) for the peers. If no direct connection can be established, the connection is relayed via the server.
+
+Peers must know and do verify the PeerID of each other before they can connect. When using a relay server to aid the connection establishment they will register with a home relay server using their PublicKey. Other peers which can not establish a direct connection can then establish connection via this relay server. This will try to assist establishing a direct connection using STUN and holepunching but continue relaying if not possible.
+
+Peers can also connect directly without using a relay server. For this, however the listening peer must be directly reachable by the connecting peer via one of it's addresses.
+
 
 ## Iroh is built on QUIC
+
 
 This gives iroh super-powers:
 - encryption & authentication
@@ -35,11 +44,6 @@ A single QUIC connection can power all of your protocol's complex interactions:
 - Stream both video and audio without video packet loss affecting audio. Prioritize audio by increasing its stream's priority.
 - Use the unreliable datagram transport for your game's state and input networking. Also re-use the same connection for streaming assets or real-time audio or video.
 - Avoid unnecessary network round-trips when your phone comes back from suspension with zero round trip time connection establishment.
-
-
-## Protocols
-
-(talk about ALPNs, existing protocols & link to how to build custom protocols)
 
 
 ## The higher level: Give your users agency back

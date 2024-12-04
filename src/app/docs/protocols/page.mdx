@@ -1,11 +1,25 @@
 
 # Protocols
 
-Iroh is organized into _protocols_: Pluggable higher layer depends on functionality in the layer below it. Documents rely on blobs, and blobs rely on connections.{{className: 'lead'}}
+Iroh is organized into _protocols_: Composable networking software built on iroh connections. {{className: 'lead'}}
 
-<Concepts>
-  <Concept name="Documents" href="/docs/protocols/docs" description="Realtime, multiwriter key-value sync" />
-  <Concept name="Blobs" href="/docs/protocols/blobs" description="Verifiable data transfer" />
-  <Concept name="Gossip" href="/docs/protocols/gossip" description="Broadcast messages to nodes by topic" />
-  <Concept name="Networking" href="/docs/protocols/networking" description="Connect any set of devices, no matter where they are" />
-</Concepts>
+
+The foundation of iroh is direct connections, which protocols use to extend up to higher-level functionality. When integrating iroh into an application you can use protocols to quickly add functionality, or write your own protocol(s) to maintain total control over how your application communicates.
+
+## ALPNs
+
+All iroh protocols build on QUIC connections, and use [application level protocol negotiation](https://datatracker.ietf.org/doc/html/rfc7301) (ALPNs) to run multiple protocols on the same QUIC endpoint. ALPNs are part of the QUIC spec, which we take advantage of to build iroh protocols. Each protocol registerted The ALPN is a string that identifies the protocol. For example, the [iroh-blobs](/proto/iroh-blobs) protocol ALPN is [`/iroh-bytes/4`](https://github.com/n0-computer/iroh-blobs/blob/124820698cd85691e0d72aeed6e1ac028886b34a/src/protocol.rs#L353).
+
+
+## The Accept Loop
+
+The accept loop is the main loop of an iroh server. It listens for incoming connections, and then processes them. The accept loop is the entry point for all iroh protocols, and is where you can add your own protocol to the iroh stack.
+
+Coming from the world of HTTP servers, the accept loop is similar to the main loop of an HTTP server. The main difference is that the accept loop is more flexible, as it can run multiple protocols on the same endpoint. Normally HTTP servers hide the raw accept loop from you, and instead routing to the correct handler based on the URL. In iroh, the accept loop is exposed to you, and you can use it to route to the correct protocol based on the ALPN.
+
+
+## Router
+
+To make composing protocols easier, iroh includes a "router" for composing togetner multiple protocols. The router implements the accept loop on your behalf, and routes incoming connections to the correct protocol based on the ALPN. We recommend using the router to compose protocols, as it makes it easier to add new protocols to your application.
+
+We use the term "router" here because it mimics what an HTTP server would do with a URL-based router: It routes incoming connections to the correct protocol based on the ALPN.

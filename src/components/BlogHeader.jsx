@@ -5,9 +5,6 @@ import clsx from 'clsx';
 
 import {Button} from '@/components/Button';
 import {Logotype} from '@/components/Logotype';
-import {
-  MobileNavigation,
-} from '@/components/MobileNavigation';
 import {MobileSearch} from '@/components/Search';
 import {ThemeToggle} from '@/components/ThemeToggle';
 import {TopLevelNavItem, navItems} from '@/components/Header';
