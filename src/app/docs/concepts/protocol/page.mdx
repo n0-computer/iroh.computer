@@ -16,10 +16,3 @@ All iroh protocols build on QUIC connections, and use [application level protoco
 The accept loop is the main loop of an iroh server. It listens for incoming connections, and then processes them. The accept loop is the entry point for all iroh protocols, and is where you can add your own protocol to the iroh stack.
 
 Coming from the world of HTTP servers, the accept loop is similar to the main loop of an HTTP server. The main difference is that the accept loop is more flexible, as it can run multiple protocols on the same endpoint. Normally HTTP servers hide the raw accept loop from you, and instead routing to the correct handler based on the URL. In iroh, the accept loop is exposed to you, and you can use it to route to the correct protocol based on the ALPN.
-
-
-## Router
-
-To make composing protocols easier, iroh includes a "router" for composing togetner multiple protocols. The router implements the accept loop on your behalf, and routes incoming connections to the correct protocol based on the ALPN. We recommend using the router to compose protocols, as it makes it easier to add new protocols to your application.
-
-We use the term "router" here because it mimics what an HTTP server would do with a URL-based router: It routes incoming connections to the correct protocol based on the ALPN.
