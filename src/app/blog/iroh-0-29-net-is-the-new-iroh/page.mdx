@@ -53,17 +53,17 @@ We now have a short list of the protocols we've factored out of iroh at [https:/
 
 ## No more `Node` in iroh
 
-Iroh v0.27.0 provided you with a Node that came bundled with the `iroh-docs`, `iroh-blobs`, and `iroh-gossip` protocols enabled. This also meant that iroh was not only a networking library, but also responsible for storage for these different protocols. Now, we've shifted our thinking. The iroh library provides you with an endpoint, a light framework for implementing your own protocols, and a router that combines that endpoint and those protocols (including the protocols we've also developed at number0).
+Iroh v0.27.0 provided you with a Node that came bundled with the `iroh-docs`, `iroh-blobs`, and `iroh-gossip` protocols enabled. This also meant that iroh was not only a networking library, but also responsible for storage for these different protocols. Now, we've shifted our thinking. The iroh library provides you with an endpoint, a light framework for implementing your own protocols, and a router that combines that endpoint and those protocols (as well as the n0-developed protocols).
 
-That means we have no more `Node`  in iroh. If you rely on the node, we've added migration instructions for how to get the number 0 developed protocols into iroh, as well as custom protocols that you have developed yourself.
+That means we have no more `Node`  in iroh. If you rely on the node, we've added migration instructions for how to get the n0-developed protocols into iroh, as well as custom protocols that you have developed yourself.
 
 ### `iroh::Endpoint`
 
 No matter what protocol(s) you use, you will start with building an `iroh::Endpoint`. This is what creates, drives, and hole-punches the connections that undergird the protocols.
 
-Note that, by default, we will bind to `0.0.0.0:0` and not enable any discovery, so please check out the build options for the `endpoint::Builder` in the [docs](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html) for more in-depth ways to configure the endpoint.
+Note that, by default, the `endpoint::Builder` will bind to `0.0.0.0:0` and disable discovery, so please check out [the build options](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html) for more in-depth ways to configure the endpoint.
 
-If you are converting straight from a default `iroh::Node` , make sure to include the `Builder::discovery_n0` option, which will enable the discovery mechanisms we had on by default.
+If you are converting straight from a default `iroh::Node`, make sure to include the `Builder::discovery_n0` option, which will enable the discovery mechanisms it had on by default.
 
 ```rust
 use iroh::Endpoint;
@@ -79,12 +79,11 @@ async fn main() -> Result<()> {
 
 ### `iroh-blobs`
 
-Three important parts are needed when building a `Blobs` protocol handler to use with the `Router`: a local pool, a store, and a downloader.
+Two important parts are needed when building a `Blobs` protocol handler to use with the `Router`: a local pool and a store.
 
-The local pool manages all tasks spawned when working with `iroh-blobs`. It makes sure they are completed and closed once dropped. When building a `Downloader` and the `Blobs` handler, you will pass a handle to the `LocalPool`. Make sure you don’t accidentally drop the local pool early, as that will close all the tasks before you mean to.
+The local pool manages all tasks spawned when working with `iroh-blobs`. It makes sure they are completed and closed once dropped. When building a the `Blobs` handler (or if you also need to build a `Downloader` or the `iroh-docs` protocol), you will pass a handle to the `LocalPool`. Make sure you don’t accidentally drop the local pool early, as that will close all the tasks before you mean to.
 
 The store is where the blobs are kept, this can be loaded from a file or be an in-memory store.
-The downloader handles downloading blobs and connections concurrently from other nodes using the `iroh-blobs` protocol.
 
 ```rust
 use anyhow::Result;
@@ -155,15 +154,13 @@ async fn main() -> Result<()> {
         .accept(iroh_gossip::ALPN, gossip)
         .spawn().await?;
     
-
-    
     Ok(())
 }
 ```
 
 ### `iroh-docs`
 
-Setting up the docs protocol is a funny little beast. It’s a “meta protocol” that includes both the `iroh-blobs` and `iroh-docs` protocols and so requires some involved set up. To make this a little bit cleaner, we’ll create an `Iroh` struct that looks a bit like what the `iroh::Node` looked like.
+Setting up the docs protocol is a funny little beast. It’s a “meta protocol” that includes both the `iroh-blobs` and `iroh-gossip` protocols and so requires some involved set up. To make this a little bit cleaner, we’ll create an `Iroh` struct that looks a bit like what the `iroh::Node` looked like.
 
 This example also shows how to load files from persistent storage for the blobs and docs stores, as well as the secret key and any default author.
 
@@ -240,8 +237,6 @@ async fn main() -> Result<()> {
 
 It’s straightforward to add a custom protocol to the iroh `Router`. 
 
-If you are looking for examples of how to create a client for your protocol using [quic-rpc](https://docs.rs/quic-rpc/0.17.0/quic_rpc), take a look at the [iroh-gossip repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a simple example and the [iroh-blobs repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a more complex one that includes streaming rpc (server side & bidirectional).
-
 ```rust
 use iroh::{Endpoint, protocols::Router};
 
@@ -267,6 +262,9 @@ let router = Router::builder(endpoint)
 // from here, you can use iroh.endpoint().connect() to connect via a NodeId
 // or use your protocol to handle incoming connections
 ```
+
+If you are looking for examples of how to create a client for your protocol using [quic-rpc](https://docs.rs/quic-rpc/0.17.0/quic_rpc), take a look at the [iroh-gossip repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a simple example and the [iroh-blobs repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a more complex one that includes streaming rpc (server side & bidirectional).
+
 
 And that’s it! Full list of breaking changes follows. This is a big release the n0 team has been working toward on our road to 1.0, and can’t wait for you to try it out!
 
