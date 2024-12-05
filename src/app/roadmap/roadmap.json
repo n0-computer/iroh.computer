@@ -1,5 +1,5 @@
 {
-  "last_updated": "2024-11-11",
+  "last_updated": "2024-12-04",
   "milestones": [
     {
       "done": true,
@@ -17,9 +17,14 @@
       "subtasks": {
         "iroh-blobs": true,
         "iroh-docs": true,
-        "iroh-gossip": true,
-        "iroh-router": true
+        "iroh-gossip": true
       }
+    },
+    {
+      "done": true,
+      "title": "blobs, docs, and gossip are disabled by default",
+      "description": "protocols remain in the codebase but must be explicitly enabled",
+      "tracking_issue": null
     },
     {
       "done": true,
@@ -41,11 +46,40 @@
     },
     { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates", "expected": "" },
     {
-      "done": false,
-      "title": "Add QUIC Address Discovery to iroh-relay and netwatcher",
-      "description": "have QUIC Address Discovery as another probe option in netwatcher",
+      "done": true,
+      "title": "net-tools repo",
+      "description": "factor a number of networking tools out of iroh-net and into a separate repo",
+      "doc": "",
+      "subtasks": {
+        "netcheck": true,
+        "portmapper": true
+      }
+    },
+    {
+      "done": true,
+      "title": "Add QUIC Address Discovery to iroh-relay",
+      "description": "serve QUIC Address Discovery on the relay",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
     },
+    {
+      "done": true,
+      "title": "blobs, docs, and gossip are removed from iroh",
+      "description": "protocols exist in their own repos and are published separately from iroh",
+      "tracking_issue": null
+    },
+    {
+      "done": true,
+      "title": "CLI is removed from iroh",
+      "description": "there is no more CLI or Node in iroh, look at the specific protocols to play with a CLI centered around that protocol",
+      "tracking_issue": null
+    },
+    {
+      "done": true,
+      "title": "iroh-net is now just iroh",
+      "description": "we no longer publish `iroh-net`, `iroh` contains all of `iroh-net`",
+      "tracking_issue": null
+    },
+    { "version": "v0.29.0", "done": true, "released": "", "doc": "", "expected": "Dec 02, 2024" },
     {
       "done": false,
       "title": "FFI bindings move to protocols",
@@ -60,18 +94,25 @@
     },
     {
       "done": false,
-      "title": "blobs and gossip are disabled by default",
-      "description": "protocols remain in the codebase but must be explicitly enabled",
-      "tracking_issue": null
+      "title": "Add QUIC Address Discovery to `iroh-net-report`",
+      "description": "net-report has QUIC Address Discovery probes",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
     },
+    {
+      "done": false,
+      "title": "use Raw Public Keys (RFC 7250) in TLS",
+      "description": "use Raw Public Keys instead of self-signed certificates in TLS",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
+      "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
+    },
+    { "version": "v0.30.0", "done": false, "released": "", "doc": "", "expected": "Dec 16, 2024" },
+    { "ellipsis": true },
     {
       "done": false,
       "title": "Iroh Doctor CLI v0.1",
       "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
       "tracking_issue": null
     },
-    { "version": "v0.29.0", "done": false, "released": "", "doc": "", "expected": "Dec 2, 2024" },
-    { "ellipsis": true },
     {
       "done": false,
       "title": "draft specification",
@@ -91,19 +132,6 @@
     },
     {
       "done": false,
-      "title": "net-tools repo",
-      "description": "factor a number of networking tools out of iroh-net and into a separate repo",
-      "doc": "",
-      "subtasks": {
-        "netcheck": false,
-        "portmapper": false,
-        "netmon": false,
-        "iroh-relay": false,
-        "stun over quic": false
-      }
-    },
-    {
-      "done": false,
       "title": "QUIC Multipath support",
       "description": "implement QUIC multipath",
       "tracking_issue": "",
@@ -115,9 +143,9 @@
     },
     {
       "done": false,
-      "title": "ICE over QUIC",
-      "description": "implement ICE over QUIC",
-      "tracking_issue": ""
+      "title": "QUIC NAT traversal",
+      "description": "Using Quic to traverse NATs",
+      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
     },
     {
       "done": false,
@@ -131,6 +159,11 @@
       "description": "iroh-net compiles to web assembly and runs in the browser",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
       "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
+    },
+    {
+      "done": false,
+      "title": "discovery refinements",
+      "description": "adjust and refine APIs for discovery, refactor and rename subsystems"
     },
     {
       "done": false,
