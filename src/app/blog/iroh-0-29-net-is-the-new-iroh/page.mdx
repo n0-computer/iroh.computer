@@ -79,7 +79,7 @@ async fn main() -> Result<()> {
 
 Two important parts are needed when building a `Blobs` protocol handler to use with the `Router`: a local pool and a store.
 
-The local pool manages all tasks spawned when working with `iroh-blobs`. It makes sure they are completed and closed once dropped. When building a the `Blobs` handler (or if you also need to build a `Downloader` or the `iroh-docs` protocol), you will pass a handle to the `LocalPool`. Make sure you don’t accidentally drop the local pool early, as that will close all the tasks before you mean to.
+The local pool manages all tasks spawned when working with `iroh-blobs`. It makes sure they are completed and closed once dropped. When building a `Blobs` handler (or if you also need to build a `Downloader` or the `iroh-docs` protocol), you will pass a handle to the `LocalPool`. Make sure you don’t accidentally drop the local pool early, as that will close all the tasks before you mean to.
 
 The store is where the blobs are kept, this can be loaded from a file or be an in-memory store.
 
