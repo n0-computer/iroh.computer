@@ -28,8 +28,6 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-# iroh@0.29.0
-
 Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
 
 We're excited to announce that the iroh crate has been streamlined, fulfilling the goal we outlined in our blog post, [*"Smaller is Better."*](/blog/smaller-is-better) Iroh is now leaner and more focused, serving as a core library for building direct connections between devices.
@@ -39,23 +37,23 @@ The protocols we've developed on top of iroh have been split into their own dedi
 Additionally, iroh is no longer a CLI. We've also updated our terminology to better reflect its purpose: what we previously referred to as the iroh "Node" is now called the iroh "Router"—a more accurate name for its role in stacking protocols on top of iroh's peer-to-peer connections. All terminology is updated on our [docs site](/docs) to reflect these changes.
 
 
-### Upgrade Guide
+## ♻️ Upgrade Guide
 
 With a smaller iroh, you get way more flexibility. You can still recreate the setups that were once required-bundled into iroh, and this blog will guide you through upgrading your code! We've swept out a bunch of code from the main iroh codebase. Here is an upgrade guide to the biggest changes in this new release, you can find a full list of breaking changes [below](#breaking-changes).
 
-## `iroh-net` is now just `iroh`
+### `iroh-net` is now just `iroh`
 
-This is a pretty straightforward migration that’s more spiritual than a change in functionality. If your code depends on `iroh-net`, change that dependency to `iroh@v0.29.0`, and change any instance where you import from `iroh_net` to `iroh`. 
+This is a pretty straightforward migration that’s more spiritual than a change in functionality. If your code depends on `iroh-net`, change that dependency to `iroh@v0.29.0`, and change any instance where you import from `iroh_net` to `iroh`.
 
-### protocol registry
+### Protocol Registry
 
 We now have a short list of the protocols we've factored out of iroh at [https://iroh.computer/proto](https://iroh.computer/registry). We've moved blobs, docs, and gossip here, while also making room for some new protocols in the works from the number 0 team & others!
 
-## No more `Node` in iroh
+### No more `Node` in iroh
 
-Iroh v0.27.0 provided you with a Node that came bundled with the `iroh-docs`, `iroh-blobs`, and `iroh-gossip` protocols enabled. This also meant that iroh was not only a networking library, but also responsible for storage for these different protocols. Now, we've shifted our thinking. The iroh library provides you with an endpoint, a light framework for implementing your own protocols, and a router that combines that endpoint and those protocols (as well as the n0-developed protocols).
+Iroh previously provided you with a Node that came bundled with the `iroh-docs`, `iroh-blobs`, and `iroh-gossip` protocols enabled. This also meant that iroh was not only a networking library, but also responsible for storage for these different protocols. Now, we've shifted our thinking. The iroh library provides you with an endpoint, a light framework for implementing your own protocols, and a router that combines that endpoint and those protocols (as well as the n0-developed protocols).
 
-That means we have no more `Node`  in iroh. If you rely on the node, we've added migration instructions for how to get the n0-developed protocols into iroh, as well as custom protocols that you have developed yourself.
+That means we have no more `Node` in iroh. If you rely on the node, we've added migration instructions for how to get the n0-developed protocols into iroh, as well as custom protocols that you have developed yourself.
 
 ### `iroh::Endpoint`
 
@@ -101,8 +99,8 @@ async fn main() -> Result<()> {
     let local_pool = LocalPool::default();
 
     // create an in-memory blob store
-    // use [`iroh_blobs::net_protocol::Blobs::persistent`](https://docs.rs/iroh-blobs/latest/iroh_blobs/net_protocol/struct.Blobs.html#method.persistent) to load or create a persistent
-    // blob store from a path
+    // use `iroh_blobs::net_protocol::Blobs::persistent` to load or create a
+    // persistent blob store from a path
     let blobs = Blobs::memory().build(local_pool.handle(), &endpoint);
 
     // turn on the "rpc" feature if you need to create blobs and tags clients
@@ -139,7 +137,7 @@ async fn main() -> Result<()> {
     let node_addr = endpoint.node_addr().await?;
     let addr_info = node_addr.info;
 
-    // look at [`iroh_gossip::proto::topic::Config`](https://docs.rs/iroh-gossip/0.29.0/iroh_gossip/proto/topic/struct.Config.html)
+    // look at `iroh_gossip::proto::topic::Config`
     // for more configuration details.
     let config = Config::default();
 
@@ -153,18 +151,15 @@ async fn main() -> Result<()> {
     let router = Router::builder(endpoint)
         .accept(iroh_gossip::ALPN, gossip)
         .spawn().await?;
-    
+
     Ok(())
 }
 ```
 
 ### `iroh-docs`
 
-Setting up the docs protocol is a funny little beast. It’s a “meta protocol” that includes both the `iroh-blobs` and `iroh-gossip` protocols and so requires some involved set up. To make this a little bit cleaner, we’ll create an `Iroh` struct that looks a bit like what the `iroh::Node` looked like.
+Setting up the docs protocol is a funny little beast. It’s a “meta protocol” that includes both the `iroh-blobs` and `iroh-gossip` protocols and so requires some involved set up.
 
-This example also shows how to load files from persistent storage for the blobs and docs stores, as well as the secret key and any default author.
-
-Besides the protocols, you must also have `iroh-node-util`, for loading the secret key, and `quic-rpc`  for the rpc clients.
 
 ```rust
 use std::{path::PathBuf, sync::Arc};
@@ -198,18 +193,18 @@ async fn main() -> Result<()> {
         Default::default(),
         &addr.info,
     );
-    builder = builder.accept(iroh_gossip::net::GOSSIP_ALPN, Arc::new(gossip.clone()));
+    builder = builder.accept(iroh_gossip::ALPN, Arc::new(gossip.clone()));
 
     // add iroh-blobs
     let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint())?;
-    builder = builder.accept(iroh_blobs::protocol::ALPN, blobs.clone());
+    builder = builder.accept(iroh_blobs::ALPN, blobs.clone());
 
     // add iroh-docs
-    
+
     // setup docs storage
     let docs_store = iroh_docs::store::Store::memory();
     let author_store = iroh_docs::engine::DefaultAuthorStorage::Memory;
-    
+
     let docs = Arc::new(Docs::spawn(
         builder.endpoint().clone(),
         gossip,
@@ -222,26 +217,44 @@ async fn main() -> Result<()> {
     .await?);
     builder = builder.accept(iroh_docs::ALPN, docs.clone());
 
-		// spawn the router
+    // spawn the router
     let router = builder.spawn().await?;
 
-		// enable the `rpc` feature to get the memory rpc client
+    // enable the `rpc` feature to get the memory rpc client
     let docs_client = docs.client().clone();
     let authors_client = docs_client.authors();
 
-		Ok(())
+    Ok(())
 }
 ```
 
-### Your custom protocol
+### Your very own protocol
 
-It’s straightforward to add a custom protocol to the iroh `Router`. 
+It’s straightforward to add your own protocol to the iroh `Router`.
 
 ```rust
 use iroh::{Endpoint, protocols::Router};
 
-// build your protocol
-let my_cool_protocol = MyCoolProtocol::new();
+mod cool_protocol {
+    /// The ALPN
+    pub const ALPN: &[u8] = b"/my/cool/protocol/1";
+
+    pub struct Protocol;
+
+    /// Implement ProtocolHandler
+    impl iroh::protocol::ProtocolHandler {
+        /// Needs to at least implement the `accept` function
+        fn accept(self: Arc<Self>, conn: iroh::endpoint::Connecting) -> BoxedFuture<anyhow::Result<()>> {
+            Box::pin(async move {
+                // Here you implement what your protocol does when a new connection is attempted
+                println!("got a new incoming connection");
+            })
+        }
+    }
+}
+
+// create your protocol
+let my_cool_protocol = Arc::new(cool_protocol::Protocol::new());
 
 // build an endpoint
 let endpoint = Endpoint::builder()
@@ -251,11 +264,7 @@ let endpoint = Endpoint::builder()
 
 // build a router that connects the endpoint to the protocol
 let router = Router::builder(endpoint)
-    .accept(
-        MyCoolProtocol::ALPN,
-        // let the router know that your protocol is an iroh ProtocolHandler
-        Arc::clone(&my_cool_protocol)
-    )
+    .accept(cool_protocol::ALPN, my_cool_protocol.clone())
     .spawn()
     .await?;
 
@@ -263,12 +272,15 @@ let router = Router::builder(endpoint)
 // or use your protocol to handle incoming connections
 ```
 
-If you are looking for examples of how to create a client for your protocol using [quic-rpc](https://docs.rs/quic-rpc/0.17.0/quic_rpc), take a look at the [iroh-gossip repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a simple example and the [iroh-blobs repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a more complex one that includes streaming rpc (server side & bidirectional).
+For a full example of a custom protocol take a look at the [`echo` protocol](https://github.com/n0-computer/iroh/blob/main/iroh/examples/echo.rs).
+
+
+If you are looking for examples of how to create an RPC client for your protocol using [quic-rpc](https://docs.rs/quic-rpc), take a look at the [iroh-gossip repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a simple example and the [iroh-blobs repo](https://github.com/n0-computer/iroh-gossip/tree/main/src/rpc) for a more complex one that includes streaming rpc (server side & bidirectional).
 
 
 And that’s it! Full list of breaking changes follows. This is a big release the n0 team has been working toward on our road to 1.0, and can’t wait for you to try it out!
 
-## ⚠️ Breaking Changes
+## ⚠️ Breaking Changes
 
 - `net-tools` now has it's own repo, which includes `portmapper` and `netwatch`
 
@@ -335,14 +347,14 @@ And that’s it! Full list of breaking changes follows. This is a big release th
         - `util::progress::ProgressReaderUpdate`
     - added
         - added `iroh::Endpoint::is_closed`
-    
+
 - `iroh-node-util`
     - module `iroh-cli::commands::net` moved to `iroh-node-util::cli::net`
     - logic in `iroh-cli::commands::rpc` moved to `iroh-node-util::cli::node`
     - module `iroh_cli::logging` has moved to `iroh-node-util` to make it available for other people building nodes
     - `iroh_config_root`, `iroh_data_root` and `iroh_cache_root` in `iroh-cli` have been replaced with generic `config_root`, `data_root` and `cache_root` in `iroh-node-util::config`
     - `load_secret_key` moved to `iroh_node_utils` to preserve it
-    
+
 - `iroh-relay`
     - changed
     The URLs served by the relay changed:
@@ -364,7 +376,7 @@ And that’s it! Full list of breaking changes follows. This is a big release th
         - `iroh_relay::server::TlsConfig.server_config` is a new field that takes a `rustls::ServerConfig`
         - variant `iroh_relay::server::CertConfig::LetsEncrypt` has a new field `state` that takes a `tokio_rustls_acme::AcmeState<EC, EA>`
 
-### But wait, there's more!
+## But wait, there's more!
 
 Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: https://github.com/n0-computer/iroh/releases/tag/v0.29.0.
 
