@@ -247,7 +247,7 @@ mod cool_protocol {
         fn accept(self: Arc<Self>, conn: iroh::endpoint::Connecting) -> BoxedFuture<anyhow::Result<()>> {
             Box::pin(async move {
                 // Here you implement what your protocol does when a new connection is attempted
-                println!("got a new incoming connection);
+                println!("got a new incoming connection");
             })
         }
     }
