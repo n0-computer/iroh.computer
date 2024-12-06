@@ -16,7 +16,7 @@ At the end we should be able to transfer a file from one device that has it by r
 
 ```sh
 $ cargo run -- send ./file.txt
-Analyzing file.
+Indexing file.
 File analyzed. Fetch this file by running:
 cargo run -- receive blobabvojvy[...] file.txt
 ```
@@ -37,7 +37,7 @@ If you're ever confused about what to import, take a look at the imports in the 
 
 ## Get set up
 
-We'll assume you've set up rust and cargo on your machine.
+We'll assume you've set up [rust](https://www.rust-lang.org/) and [cargo](https://doc.rust-lang.org/cargo/) on your machine.
 
 Initialize a new project by running `cargo init file-transfer`, then `cd file-transfer` and install all the packages we're going to use: `cargo add iroh iroh-blobs iroh-base tokio anyhow`.
 
@@ -47,7 +47,7 @@ From here on we'll be working inside the `src/main.rs` file.
 ## Create an `iroh::Endpoint`
 
 To start interacting with other iroh nodes, we need to build an `iroh::Endpoint`.
-This is what manages the possibly changing network underneath, maintains a connection to the closest relay (by default), and finds ways to address devices by `NodeId`.
+This is what manages the possibly changing network underneath, maintains a connection to the closest relay, and finds ways to address devices by `NodeId`.
 
 ```rust
 #[tokio::main]
@@ -123,16 +123,16 @@ async fn main() -> anyhow::Result<()> {
 
     // Now we build a router that accepts blobs connections & routes them
     // to the blobs protocol.
-    let node = Router::builder(endpoint)
+    let router = Router::builder(endpoint)
         .accept(iroh_blobs::ALPN, blobs.clone())
         .spawn()
         .await?;
 
     // do *something*
 
-    // Gracefully shut down the node
+    // Gracefully shut down the router
     println!("Shutting down.");
-    node.shutdown().await?;
+    router.shutdown().await?;
     local_pool.shutdown().await;
 
     Ok(())
@@ -189,12 +189,12 @@ Now all we need to do is fill in the `todo!()`s one-by-one:
 
 ### Getting ready to send
 
-TODO
+
 
 ```rust
 let abs_path = PathBuf::from_str(path)?.canonicalize()?;
 
-println!("Analyzing file.");
+println!("Indexing file.");
 
 let blob = blobs
     .add_from_path(abs_path, true, SetTagOption::Auto, WrapOption::NoWrap)
@@ -202,7 +202,7 @@ let blob = blobs
     .finish()
     .await?;
 
-let node_id = node.endpoint().node_id();
+let node_id = router.endpoint().node_id();
 let ticket = BlobTicket::new(node_id.into(), blob.hash, blob.format)?;
 
 println!("File analyzed. Fetch this file by running:");
