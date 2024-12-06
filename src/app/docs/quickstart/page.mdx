@@ -7,121 +7,279 @@ export const metadata = {
 
 # Quickstart
 
-The best way to experience the magic of iroh first hand is to try out one of the example projects.
-This guide will walk you through usage of the [`sendme`](https://www.iroh.computer/sendme) tool. {{ className: 'lead' }}
+Let's dive into iroh by building a simple peer-to-peer file transfer tool in rust! {{ className: 'lead' }}
 
 
-## About `sendme`
+## What we'll build
 
-The `sendme` tool is a CLI wrapper around the main [iroh networking library](https://docs.rs/iroh) and the [iroh-blobs](https://github.com/n0-computer/iroh-blobs/) protocol implementation.
+At the end we should be able to transfer a file from one device by running this:
 
-Its implementation is a single, 700 LoC file, mostly handling file paths and progress bars.
-You could have easily implemented something like `sendme` in 20 minutes using iroh!
-
-This makes it a great demonstration of what iroh can do for you.
-
-
-## Install `sendme`
-
-You can download binaries for `sendme` on Unix systems by running `curl -fsSL https://iroh.computer/sendme.sh | sh`.
-This will put the `sendme` executable into your current directory.
-Run it using `./sendme`, or move it somewhere into your `PATH`.
-
-Alternatively you can compile it from source using `cargo install sendme`.
-This will put `sendme` into `$HOME/.cargo/bin/sendme` on Unix systems and similar places on other platforms.
-Running `sendme` on your command line should work, otherwise make sure that this directory is configured in your `PATH`.
-
-
-## Transfer a File
-
-By running `sendme help` you can see how `sendme` works.
-
-Find some file you want to transfer.
-In this example, we'll use a 6.8GB Windows iso image for this, and run `sendme send <path-to-file>`.
-
-Depending on how big this file is, `sendme` will first "injest" this file:
-
-```
-$ sendme send ~/Downloads/Win11.iso
-⠁ [00:00:00] [1/2] Ingesting 1 files, 6.33 GiB
-
-[2/2] /home/user/Downloads/Win11.iso⠲ [00:00:02] [#######>---------------------] 1.37 GiB/6.33 GiB
+```sh
+$ cargo run -- send ./file.txt
+Indexing file.
+File analyzed. Fetch this file by running:
+cargo run -- receive blobabvojvy[...] file.txt
 ```
 
-And finally print a so-called "ticket" together with a command to run on another machine allowing you to retrieve this file there:
-
-```
-imported file /home/user/Downloads/Win11.iso, 6.33 GiB, hash 4022bfc57b48dad[...]
-to get this data, use
-sendme receive blobabp7qggx4vk[...]
-```
-
-Now, possibly on any other machine, try receiving this file by copying the command that was printed above (with the whole ticket).
-Make sure to keep the previous command running.
-
-```
-$ sendme receive blobabp7qggx4vk[...]
-getting collection 4022bfc57b48dad[...] 1 files, 6.33 GiB
-[3/3] Downloading 3 blob(s)
-⠒ [00:00:05] [###>-----------------------------------------------] 387.48 MiB/6.33 GiB 74.70 MiB/s
+And then fetch it on any other device like so:
+```sh
+$ cargo run -- receive blobabvojvy[...] file.txt
+Starting download.
+Finished download.
+Copying to destination.
+Finished copying.
+Shutting down.
 ```
 
-Once this command finishes, your file will be present in your current directory.
-
-Feel free to try experimenting with this a bit.
-Here are some things to try:
-- Run a file transfer within the local network, but without internet access.
-  If possible, iroh will still find a way to connect these devices.
-- Try connecting one device to mobile cellular using tethering/a hotspot.
-  It might be slower, but it should find a way for these devices to talk to each other either way.
-  (Make sure not to burn your cellular data!)
-- Try interrupting the download and re-starting it.
-  Partial downloads will resume from where they last left off.
+In this guide we'll be omitting the import statements required to get this working.
+If you're ever confused about what to import, take a look at the imports in the [complete example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
 
 
-## Under the Hood
+## Get set up
 
-`sendme` is a fairly small (single file!) CLI wrapper around the iroh-blobs protocol and the iroh networking library.
-If you want to check out how to build something like it, we recommend taking a look at [the `transfer.rs` example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
-It is in essence `sendme`, but even more simplified.
+We'll assume you've set up [rust](https://www.rust-lang.org/) and [cargo](https://doc.rust-lang.org/cargo/) on your machine.
 
-### What does iroh do for `sendme`?
+Initialize a new project by running `cargo init file-transfer`, then `cd file-transfer` and install all the packages we're going to use: `cargo add iroh iroh-blobs iroh-base tokio anyhow`.
 
-`sendme` uses iroh to establish connections between devices.
-Because iroh uses the [QUIC protocol](https://en.wikipedia.org/wiki/QUIC) underneath, it encrypts and authenticates these connections end-to-end.
-It also uses [hole-punching](https://en.wikipedia.org/wiki/Hole_punching_(networking)) to try to establish a *direct* connection, even if the devices are behind NATs.
-And if everything fails, as long as you can open a website on both devices, iroh will be able to connect them using relay servers.
+From here on we'll be working inside the `src/main.rs` file.
+
+
+## Create an `iroh::Endpoint`
+
+To start interacting with other iroh nodes, we need to build an `iroh::Endpoint`.
+This is what manages the possibly changing network underneath, maintains a connection to the closest relay, and finds ways to address devices by `NodeId`.
+
+```rust
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create an endpoint, it allows creating and accepting
+    // connections in the iroh p2p world
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+    // ...
+
+    Ok(())
+}
+```
+
+There we go, this is all we need to [open connections](https://docs.rs/iroh/latest/iroh/endpoint/struct.Endpoint.html#method.connect) or [accept them](https://docs.rs/iroh/latest/iroh/endpoint/struct.Endpoint.html#method.accept).
 
 <Note>
-[number 0](https://n0.computer), the company behind iroh runs some public relay servers that iroh uses by default.
-If you want, it's very easy to switch to your custom relay servers though:
-All you need is a machine with a stable, public IP address and a domain name pointed at that IP address.
-The `iroh-relay` server code that we run for the public servers is [open source](https://github.com/n0-computer/iroh/tree/main/iroh-relay) and permissively licensed.
+Here, we're specifically configuring the `Endpoint`'s builder to include "number 0 discovery".
+This makes it connect to DNS servers that [number 0](https://n0.computer) runs to find which relay to talk to for specific `NodeId`s.
+It's a great default!
+But if you want to, you can add other discovery types like [`discovery_local_network`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) based on mDNS, or [`discovery_dht`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_dht) for discovery based on the bittorrent mainline DHT.
+
+If all of this is too much magic for your taste, it's possible for the endpoint to work entirely without any discovery services.
+In that case, you'll need to make sure you're not only dialing by `NodeId`, but also help the `Endpoint` out with giving it the whole [`NodeAddr`](https://docs.rs/iroh/latest/iroh/struct.NodeAddr.html) when connecting.
 </Note>
 
-Oh, and one more thing:
-Should your device change its network (e.g. switch Wifi or move to cellular or back), iroh will migrate the connection in the background without `sendme`'s involvement.
 
-Read more about iroh's features on the [overview page](/docs/overview).
+## Using an existing protocol: [iroh-blobs](/proto/iroh-blobs)
 
-### What is the iroh-blobs protocol?
+Instead of writing our own protocol from scratch, let's use iroh-blobs, which already does what we want:
+It loads files from your file system and provides a protocol for seekable, resumable downloads of these files.
 
-In addition to iroh, `sendme` uses iroh-blobs for injesting the files from the local file system and streaming them via the iroh protocol.
+```rust
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create an endpoint, it allows creating and accepting
+    // connections in the iroh p2p world
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
-This powers the resumption feature, allowing you to resume interrupted downloads.
+    // We initialize the Blobs protocol in-memory
+    let local_pool = LocalPool::default();
+    let blobs = Blobs::memory().build(&local_pool, &endpoint);
 
-In the first step when `sendme` is "injesting" a file, iroh-blobs runs the [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) hashing function over the whole file.
-Internally, BLAKE3 arranges the hashing in a tree structure, allowing you to resume a download and verify that the bytes from the resumption are exactly the data you wanted to have initially.
+    // ...
 
-The argument you're passing to `sendme receive` is a so-called "blob ticket".
-It contains information about the node identifier to connect to, that node's potential IP addresses and home relay as well as the BLAKE3 hash of what to fetch.
-Try pasting this ticket into the [iroh ticket inspector](https://ticket.iroh.computer) (or see [this example ticket](https://ticket.iroh.computer/?ticket=blobabp7qggx4vklzxiztbjcflhdd6fdaahmcnssufpvqxixn5v4hf2rsajdnb2hi4dthixs6zlvo4ys2mjoojswyylzfzuxe33ifzxgk5dxn5zgwlrpa4akyeiaagsmqayavqjaaanezabqbmgh2hljryabadakqadduteagajkakahcdmfdhaaaaaaaaaaainfuxeagajkakahcdmfdhaajgh3xlxbmgbbuxeagajkakahcdmfdhak5tjs256ftancuxeagakaek74k62i3lmdeqsybdsaovkuovzbimt3ql57fgsysi5nntxyn4)).
+    Ok(())
+}
+```
 
-There's additional iroh-blobs features that `sendme` doesn't make use of yet, like queueing or deduplicating downloads and even multi-provider fan-in in the future.
+<Note>
+Learn more about what we mean by "protocol" on the [protocol documentation page](/docs/concepts/protocol).
+</Note>
+
+With these two lines, we've initialized iroh-blobs and gave it access to our `Endpoint`.
+
+This is not quite enough to make it answer requests from the network, for that we need to configure a so-called `Router` for protocols.
+Similar to routers in webserver libraries, it runs a loop accepting incoming connections and routes them to the specific handler.
+However, instead of handlers being organized by HTTP paths, it routes based on "ALPNs".
+Read more about ALPNs and the router on the [protocol](/docs/concepts/protocol#alpns) and [router](/docs/concepts/router) documentation pages.
+
+Now, using the `Router` we can finish the skeleton of our application integrating iroh and iroh-blobs:
+
+```rust
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create an endpoint, it allows creating and accepting
+    // connections in the iroh p2p world
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+    // We initialize the Blobs protocol in-memory
+    let local_pool = LocalPool::default();
+    let blobs = Blobs::memory().build(&local_pool, &endpoint);
+
+    // Now we build a router that accepts blobs connections & routes them
+    // to the blobs protocol.
+    let router = Router::builder(endpoint)
+        .accept(iroh_blobs::ALPN, blobs.clone())
+        .spawn()
+        .await?;
+
+    // do *something*
+
+    // Gracefully shut down the router
+    println!("Shutting down.");
+    router.shutdown().await?;
+    local_pool.shutdown().await;
+
+    Ok(())
+}
+```
+
+I've also taken the liberty to make sure that we're gracefully shutting down the `Router` and all its protocols with it, as well as the `LocalPool` that the iroh-blobs library needs to operate.
 
 
-## Next Steps
+## Doing something
 
-- Understand how `sendme` works by looking at a similar, [simpler example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
-- Have a look at the [`iroh` rust API](https:://docs.rs/iroh)
-- Check out Python, Swift, Kotlin and JavaScript bindings for iroh in the [`iroh-ffi` repository](https://github.com/n0-computer/iroh-ffi/)
+So far, this code works, but doesn't actually do anything besides spinning up a node and immediately shutting down.
+Even if we put in a `tokio::time::timeout` or `tokio::signal::ctrl_c().await` in there, it *would* actually respond to network requests for the blobs protocol, but even that is practically useless as we've stored no blobs to respond with.
+
+Here's our plan for turning this into a CLI that actually does what we set out to build:
+1. We'll grab a [`Blobs::client`](https://docs.rs/iroh-blobs/latest/iroh_blobs/net_protocol/struct.Blobs.html#method.client) to interact with the iroh-blobs node we're running locally.
+2. We check the CLI arguments to find out whether you ran `cargo run -- send [PATH]` or `cargo run -- receive [TICKET] [PATH]`.
+3. If we're supposed to send data:
+  - we'll use [`add_from_path`](https://docs.rs/iroh-blobs/latest/iroh_blobs/rpc/client/blobs/struct.Client.html#method.add_from_path) to index local data and make it available,
+  - print instructions for fetching said file,
+  - and then wait for Ctrl+C.
+4. If we're supposed to receive data:
+  - we'll parse the ticket out of the CLI arguments,
+  - download the file using [`download`](https://docs.rs/iroh-blobs/latest/iroh_blobs/rpc/client/blobs/struct.Client.html#method.download),
+  - and copy the result the local file system. 
+
+Phew okay! Here's how we'll grab an iroh-blobs client and look at the CLI arguments:
+
+```rust
+let blobs = blobs.client();
+
+let args = std::env::args().collect::<Vec<_>>();
+match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
+    [_cmd, "send", path] => {
+        todo!();
+    }
+    [_cmd, "receive", ticket, path] => {
+        todo!();
+    }
+    _ => {
+        println!("Couldn't parse command line arguments.");
+        println!("Usage:");
+        println!("    # to send:");
+        println!("    cargo run --example transfer -- send [FILE]");
+        println!("    # this will print a ticket.");
+        println!();
+        println!("    # to receive:");
+        println!("    cargo run --example transfer -- receive [TICKET] [FILE]");
+    }
+}
+```
+
+Now all we need to do is fill in the `todo!()`s one-by-one:
+
+### Getting ready to send
+
+If we want to make a file available over the network with iroh-blobs, we first need to index this file.
+
+<Note>
+What does this step do?
+
+It hashes the file using BLAKE3 and stores a so-called "outboard" for that file.
+This outboard file contains information about hashes for parts of this file.
+All of this enables some extra features with iroh-blobs like automatically verifying the integrity of the file *during* streaming, verified range downloads and download resumption.
+</Note>
+
+```rust
+let abs_path = PathBuf::from_str(path)?.canonicalize()?;
+
+println!("Indexing file.");
+
+let blob = blobs
+    .add_from_path(abs_path, true, SetTagOption::Auto, WrapOption::NoWrap)
+    .await?
+    .finish()
+    .await?;
+```
+
+The `WrapOption::NoWrap` is just an indicator that we don't want to wrap the file with some metadata information about its file name.
+We keep it simple here for now!
+
+Now, we'll print a `BlobTicket`.
+This ticket contains the `NodeId` of our `Endpoint` as well as the file's BLAKE3 hash.
+
+```rust
+let node_id = router.endpoint().node_id();
+let ticket = BlobTicket::new(node_id.into(), blob.hash, blob.format)?;
+
+println!("File analyzed. Fetch this file by running:");
+println!("cargo run --example transfer -- receive {ticket} {path}");
+
+tokio::signal::ctrl_c().await?;
+```
+
+And as you can see, as a final step we wait for the user to stop the file providing side by hitting `Ctrl+C` in the console.
+
+### Connecting to the other side to receive
+
+On the connection side, we got the `ticket` and the `path` from the CLI arguments and we can parse them into their `struct` versions.
+
+With them parsed, we can call `blobs.download` with the information contained in the ticket and wait for the download to finish:
+
+```rust
+let path_buf = PathBuf::from_str(path)?;
+let ticket = BlobTicket::from_str(ticket)?;
+
+println!("Starting download.");
+
+blobs
+    .download(ticket.hash(), ticket.node_addr().clone())
+    .await?
+    .finish()
+    .await?;
+
+println!("Finished download.");
+```
+
+As a final step, we'll copy the file we just downloaded to the desired file path:
+
+```rust
+println!("Copying to destination.");
+
+let mut file = tokio::fs::File::create(path_buf).await?;
+let mut reader = blobs.read_at(ticket.hash(), 0, ReadAtLen::All).await?;
+tokio::io::copy(&mut reader, &mut file).await?;
+
+println!("Finished copying.");
+```
+
+<Note>
+This first download the file completely into memory, then copy that memory into a file in two steps.
+
+There's ways to make this work without having to store the whole file in memory, but that involves setting up `Blobs::persistent` instead of `Blobs::memory` and using `blobs.export` with `EntryMode::TryReference`.
+We'll leave these changes as an exercise to the reader 😉
+</Note>
+
+
+## That's it!
+
+You've now successfully built a small tool for peer-to-peer file transfers! 🎉
+
+The full example with the very latest version of iroh and iroh-blobs can be [viewed on github](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
+
+If you're hungry for more, check out
+- the [iroh rust documentation](https://docs.rs/iroh),
+- [other examples](/docs/examples),
+- other available [protocols](/proto) or
+- a longer guide on [how to write your own protocol](/docs/protocols/writing).
+
+If rust is not actually your jam, make sure to check out the [language bindings](/docs/sdks)!
