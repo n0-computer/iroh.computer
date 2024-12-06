@@ -20,7 +20,7 @@ export default function Page() {
       </Prose>
       <div className="mb-16 mt-6 flex gap-3">
         <Button href="/docs/protocols" arrow="right">Protocols Overview</Button>
-        <Button href="/docs/protocols/quickstart" variant="outline">Write a protocol</Button>
+        <Button href="/docs/protocols/writing" variant="outline">Write a protocol</Button>
       </div>
       <div>
         {protocols.map((proto, i) => <ProtocolCard key={proto.slug} data={proto} />)}
