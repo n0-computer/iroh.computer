@@ -7,12 +7,12 @@ export const metadata = {
 
 # Quickstart
 
-Let's dive into iroh by building a simple peer-to-peer file transfer tool in rust. {{ className: 'lead' }}
+Let's dive into iroh by building a simple peer-to-peer file transfer tool in rust! {{ className: 'lead' }}
 
 
 ## What we'll build
 
-At the end we should be able to transfer a file from one device that has it by running this:
+At the end we should be able to transfer a file from one device by running this:
 
 ```sh
 $ cargo run -- send ./file.txt
@@ -21,7 +21,7 @@ File analyzed. Fetch this file by running:
 cargo run -- receive blobabvojvy[...] file.txt
 ```
 
-And then on any other device running this:
+And then fetch it on any other device like so:
 ```sh
 $ cargo run -- receive blobabvojvy[...] file.txt
 Starting download.
@@ -31,7 +31,7 @@ Finished copying.
 Shutting down.
 ```
 
-In this guide we'll be omitting the imports statements required to get this working.
+In this guide we'll be omitting the import statements required to get this working.
 If you're ever confused about what to import, take a look at the imports in the [complete example](https://github.com/n0-computer/iroh-blobs/blob/main/examples/transfer.rs).
 
 
@@ -66,9 +66,9 @@ There we go, this is all we need to [open connections](https://docs.rs/iroh/late
 
 <Note>
 Here, we're specifically configuring the `Endpoint`'s builder to include "number 0 discovery".
-This makes it connect to DNS servers that number 0 runs to find which relay to talk to for specific `NodeId`s.
+This makes it connect to DNS servers that [number 0](https://n0.computer) runs to find which relay to talk to for specific `NodeId`s.
 It's a great default!
-But if you want to, you can add other discovery types like [`discovery_local_network`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) based on mDNS, or [`discovery_dht`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_dht) for discovery based on the bit-torrent mainline DHT.
+But if you want to, you can add other discovery types like [`discovery_local_network`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) based on mDNS, or [`discovery_dht`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_dht) for discovery based on the bittorrent mainline DHT.
 
 If all of this is too much magic for your taste, it's possible for the endpoint to work entirely without any discovery services.
 In that case, you'll need to make sure you're not only dialing by `NodeId`, but also help the `Endpoint` out with giving it the whole [`NodeAddr`](https://docs.rs/iroh/latest/iroh/struct.NodeAddr.html) when connecting.
@@ -189,7 +189,15 @@ Now all we need to do is fill in the `todo!()`s one-by-one:
 
 ### Getting ready to send
 
+If we want to make a file available over the network with iroh-blobs, we first need to index this file.
 
+<Note>
+What does this step do?
+
+It hashes the file using BLAKE3 and stores a so-called "outboard" for that file.
+This outboard file contains information about hashes for parts of this file.
+All of this enables some extra features with iroh-blobs like automatically verifying the integrity of the file *during* streaming, verified range downloads and download resumption.
+</Note>
 
 ```rust
 let abs_path = PathBuf::from_str(path)?.canonicalize()?;
@@ -201,7 +209,15 @@ let blob = blobs
     .await?
     .finish()
     .await?;
+```
 
+The `WrapOption::NoWrap` is just an indicator that we don't want to wrap the file with some metadata information about its file name.
+We keep it simple here for now!
+
+Now, we'll print a `BlobTicket`.
+This ticket contains the `NodeId` of our `Endpoint` as well as the file's BLAKE3 hash.
+
+```rust
 let node_id = router.endpoint().node_id();
 let ticket = BlobTicket::new(node_id.into(), blob.hash, blob.format)?;
 
@@ -211,9 +227,13 @@ println!("cargo run --example transfer -- receive {ticket} {path}");
 tokio::signal::ctrl_c().await?;
 ```
 
+And as you can see, as a final step we wait for the user to stop the file providing side by hitting `Ctrl+C` in the console.
+
 ### Connecting to the other side to receive
 
-TODO
+On the connection side, we got the `ticket` and the `path` from the CLI arguments and we can parse them into their `struct` versions.
+
+With them parsed, we can call `blobs.download` with the information contained in the ticket and wait for the download to finish:
 
 ```rust
 let path_buf = PathBuf::from_str(path)?;
@@ -228,6 +248,11 @@ blobs
     .await?;
 
 println!("Finished download.");
+```
+
+As a final step, we'll copy the file we just downloaded to the desired file path:
+
+```rust
 println!("Copying to destination.");
 
 let mut file = tokio::fs::File::create(path_buf).await?;
@@ -236,6 +261,13 @@ tokio::io::copy(&mut reader, &mut file).await?;
 
 println!("Finished copying.");
 ```
+
+<Note>
+This first download the file completely into memory, then copy that memory into a file in two steps.
+
+There's ways to make this work without having to store the whole file in memory, but that involves setting up `Blobs::persistent` instead of `Blobs::memory` and using `blobs.export` with `EntryMode::TryReference`.
+We'll leave these changes as an excercise to the reader 😉
+</Note>
 
 
 ## That's it!
