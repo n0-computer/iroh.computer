@@ -196,14 +196,14 @@ async fn main() -> Result<()> {
     builder = builder.accept(iroh_gossip::ALPN, Arc::new(gossip.clone()));
 
     // add iroh-blobs
-    let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint())?;
+    let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint());
     builder = builder.accept(iroh_blobs::ALPN, blobs.clone());
 
     // add iroh-docs
 
     // setup docs storage
     let docs_store = iroh_docs::store::Store::memory();
-    let author_store = iroh_docs::engine::DefaultAuthorStorage::Memory;
+    let author_store = iroh_docs::engine::DefaultAuthorStorage::Mem;
 
     let docs = Arc::new(Docs::spawn(
         builder.endpoint().clone(),
