@@ -16,7 +16,7 @@ export const protocols = [
     "tagline": "Broadcast messages to groups of nodes by topic.",
     "slug": "iroh-gossip",
     "repository": "https://github.com/n0-computer/iroh-gossip",
-    "documentation": "https://docs.rs/iroh-blobs/latest/iroh_gossip/",
+    "documentation": "https://docs.rs/iroh-gossip/latest/iroh_gossip/",
     "version": "v0.28.1" // TODO - pull version from github
   },
   {
@@ -25,7 +25,7 @@ export const protocols = [
     "title": "Documents",
     "tagline": "Realtime, multiwriter, key-value sync",
     "slug": "iroh-docs",
-    "documentation": "https://docs.rs/iroh-blobs/latest/iroh_docs/",
+    "documentation": "https://docs.rs/iroh-docs/latest/iroh_docs/",
     "repository": "https://github.com/n0-computer/iroh-docs",
     "version": "v0.28.0" // TODO - pull version from github
   }
