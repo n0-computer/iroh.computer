@@ -17,31 +17,29 @@ use iroh_blobs::util::local_pool::LocalPool;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-  // Build an endpoint, defaulting to the public n0 relay network
-  let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    // Build an endpoint, defaulting to the public n0 relay network
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
-  // configure the blobs protocol to run in-memory
-  let lp = LocalPool::default();
-  let blobs = Blobs::mem()
-    .await?
-    .events(ps.new_client().into())
-    .build(lp.handle(), &endpoint);
+    // configure the blobs protocol to run in-memory
+    let lp = LocalPool::default();
+    let blobs = Blobs::memory()
+        .build(lp.handle(), &endpoint);
 
-  // Build our router and add the blobs protocol, 
-  // identified by its ALPN. Spawn the router to start listening.
-  let router = Router::builder(endpoint)
-      .accept(iroh_blobs::ALPN, blobs.clone())
-      .spawn()
-      .await?;
+    // Build our router and add the blobs protocol, 
+    // identified by its ALPN. Spawn the router to start listening.
+    let router = Router::builder(endpoint)
+        .accept(iroh_blobs::ALPN, blobs.clone())
+        .spawn()
+        .await?;
 
-  // get our own address. At this point we have a running router 
-  // that's ready to accept connections.
-  let addr = router.endpoint().node_addr().await?;
+    // get our own address. At this point we have a running router 
+    // that's ready to accept connections.
+    let addr = router.endpoint().node_addr().await?;
 
-  // Wait for exit
-  tokio::signal::ctrl_c().await?;
+    // Wait for exit
+    tokio::signal::ctrl_c().await?;
 
-  Ok(())
+    Ok(())
 }
 ```
 
