@@ -79,12 +79,21 @@
       "description": "we no longer publish `iroh-net`, `iroh` contains all of `iroh-net`",
       "tracking_issue": null
     },
-    { "version": "v0.29.0", "done": true, "released": "", "doc": "", "expected": "Dec 02, 2024" },
+    { "version": "v0.29.0", "done": true, "released": "2024-12-02", "doc": "" },
+    {
+      "done": true,
+      "title": "Add QUIC Address Discovery to `iroh-net-report`",
+      "description": "net-report has QUIC Address Discovery probes",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+    },
+    { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "" },
+    { "ellipsis": true },
     {
       "done": false,
-      "title": "FFI bindings move to protocols",
-      "description": "move FFI bindings to each protocol, demonstrating how to ship custom protocols with language bindings",
-      "tracking_issue": null
+      "title": "use Raw Public Keys (RFC 7250) in TLS",
+      "description": "use Raw Public Keys instead of self-signed certificates in TLS",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
+      "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
     },
     {
       "done": false,
@@ -94,19 +103,10 @@
     },
     {
       "done": false,
-      "title": "Add QUIC Address Discovery to `iroh-net-report`",
-      "description": "net-report has QUIC Address Discovery probes",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+      "title": "FFI bindings move to protocols",
+      "description": "move FFI bindings to each protocol, demonstrating how to ship custom protocols with language bindings",
+      "tracking_issue": null
     },
-    {
-      "done": false,
-      "title": "use Raw Public Keys (RFC 7250) in TLS",
-      "description": "use Raw Public Keys instead of self-signed certificates in TLS",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
-      "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
-    },
-    { "version": "v0.30.0", "done": false, "released": "", "doc": "", "expected": "Dec 16, 2024" },
-    { "ellipsis": true },
     {
       "done": false,
       "title": "Iroh Doctor CLI v0.1",

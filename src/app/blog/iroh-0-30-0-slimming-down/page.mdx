@@ -1,0 +1,247 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2024-12-17',
+  title: 'iroh 0.30.0 - Slimming Down',
+  description: 'Iroh 0.30 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+Less is more, simpler is better. This release we focused on cleaning up iroh APIs, streamlining the protocol APIs, and reducing our dependency load!
+
+## 🚚 Movin’ structs into their new homes
+
+A few crucial exports have changed locations. We’ve added many of our most-used structs to become top-line exports, such as `PublicKey` ,`SecretKey` and `NodeAddr`. Some exports were moved from `iroh` into `iroh_blobs` or `iroh_base`. Notably, `NodeTicket` is now `iroh_base::ticket::NodeTicket` and `BlobTicket` can now be found under `iroh_blobs::ticket::BlobTicket`
+
+For a full list of those changes, check out the [breaking changes](https://www.notion.so/iroh-v0-30-0-Less-is-more-15f5df1306fb8032a8bce05ec03adfd2?pvs=21) below.
+
+## ⌚️ New `Watchable` APIs
+
+We have a few elements in the iroh `Endpoint` that can only be updated or created once the `Endpoint` does a bit of work. For example, we can’t know the `home_relay` or the `direct_addresses` that our `Endpoint` can be dialed on, until we do at least one run of the `net-reporter`. There are also elements, like `conn_type`, that continuously update us on the *type* of connection (e.g. are we talking to them through the *relay* or do we have a *direct* connection) that we have with a remote node.
+
+To streamline and unify these APIs, we have a new `Watchable` type, that allows you do things like wait for a value to exist or create a stream of changes more simply.
+
+The method `iroh::Endpoint::conn_type_stream` is replaced by `iroh::Endpoint::conn_type` and returns a `Result<Watchable<ConnectionType>>`. To get a stream of `ConnectionType`  changes, use `iroh::Endpoint::conn_type()?.stream()` .
+
+`iroh::Endpoint::home_relay()` now returns a `Watcher<Option<RelayUrl>>`, rather than an `Option<RelayUrl>`
+
+The method `iroh::Endpoint::watch_home_relay` is removed and replaced by `Watchable` functionality in`iroh::Endpoint::home_relay()`. To get a stream of changes, use `iroh::Endpoint::home_relay().stream()`, and to wait until a home relay is established, use `iroh::Endpoint::home_relay().initialized().await?`.
+
+Checkout PR[#2806](https://github.com/n0-computer/iroh/pull/2806) for more details.
+
+## 🧹 Cleaning up protocol setup
+
+The setup process was still quite complicated for our main protocols, so we worked on streamlining this process. Below you can see the now-required code for the different protocols.
+
+### `iroh-gossip`
+
+```rust
+use iroh::{protocol::Router, Endpoint};
+use iroh_gossip::net::Gossip;
+
+// create an iroh endpoint that includes the standard discovery mechanisms
+// we've built at number0
+let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+// build gossip protocol
+let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
+
+// setup router
+let router = Router::builder(endpoint.clone())
+    .accept(iroh_gossip::ALPN, gossip.clone())
+    .spawn()
+    .await?;
+```
+
+### `iroh-blobs`
+
+```rust
+use iroh::{protocol::Router, Endpoint};
+use iroh_blobs::{net_protocol::Blobs, util::local_pool::LocalPool};
+
+// create an iroh endpoint that includes the standard discovery mechanisms
+// we've built at number0
+let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+// spawn a local pool with one thread per CPU
+// for a single threaded pool use `LocalPool::single`
+let local_pool = LocalPool::default();
+
+// create an in-memory blob store
+// use `iroh_blobs::net_protocol::Blobs::persistent` to load or create a
+// persistent blob store from a path
+let blobs = Blobs::memory().build(local_pool.handle(), &endpoint);
+
+// turn on the "rpc" feature if you need to create blobs and tags clients
+let blobs_client = blobs.client();
+let tags_client = blobs_client.tags();
+
+// build the router
+let router = Router::builder(endpoint)
+    .accept(iroh_blobs::ALPN, blobs.clone())
+    .spawn()
+    .await?;
+```
+
+### `iroh-docs`
+
+```rust
+use iroh::{protocol::Router, Endpoint};
+use iroh_blobs::{
+		net_protocol::Blobs, 
+		util::local_pool::LocalPool, 
+		ALPN as BLOBS_ALPN
+};
+use iroh_docs::{protocol::Docs, ALPN as DOCS_ALPN};
+use iroh_gossip::{net::Gossip, ALPN as GOSSIP_ALPN};
+
+// create an iroh endpoint that includes the standard discovery mechanisms
+// we've built at number0
+let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+// create a router builder, we will add the
+// protocols to this builder and then spawn the router
+let builder = Router::builder(endpoint);
+
+// build the blobs protocol
+let local_pool = LocalPool::default();
+let blobs = Blobs::memory().build(local_pool.handle(), builder.endpoint());
+
+// build the gossip protocol
+let gossip = Gossip::builder().spawn(builder.endpoint().clone()).await?;
+
+// build the docs protocol
+let docs = Docs::memory().spawn(&blobs, &gossip).await?;
+
+// setup router
+let router = builder
+    .accept(BLOBS_ALPN, blobs)
+    .accept(GOSSIP_ALPN, gossip)
+    .accept(DOCS_ALPN, docs)
+    .spawn()
+    .await?;
+```
+
+## 📦 Reducing dependencies
+
+Irohs dependency load is not the smallest, so while preparing the API for 1.0, we are also trying to reduce the number of required dependencies. 
+
+This work work was spread over a lot of smaller PRs and should reduce the dependencies quite a bit when adding `iroh` to your project.
+
+Check out these PRs for more details:
+
+- [https://github.com/n0-computer/iroh/pull/3005](https://github.com/n0-computer/iroh/pull/3005)
+- [https://github.com/n0-computer/iroh/pull/3034](https://github.com/n0-computer/iroh/pull/3034)
+- [https://github.com/n0-computer/iroh/pull/3042](https://github.com/n0-computer/iroh/pull/3042)
+- [https://github.com/n0-computer/iroh/pull/3047](https://github.com/n0-computer/iroh/pull/3047)
+- [https://github.com/n0-computer/iroh/pull/3046](https://github.com/n0-computer/iroh/pull/3046)
+- [https://github.com/n0-computer/iroh/pull/3048](https://github.com/n0-computer/iroh/pull/3048)
+- [https://github.com/n0-computer/iroh/pull/3051](https://github.com/n0-computer/iroh/pull/3051)
+
+## ⌨ Simpler `ProtocolHandler` API
+
+Previously the `ProtocolHandler` trait required using explicit `Arc`s, but this is no longer required, allowing for a more flexible structure in defining protocols.
+
+Checkout PR#[3010](https://github.com/n0-computer/iroh/pull/3010) for more details.
+
+## ⚠️ Breaking Changes
+
+MSRV has been increased from `1.76` to `1.81` for all crates.
+
+- `iroh-base`
+    - removed
+        - `iroh_base::SharedSecret`
+        - `iroh_base::DecryptionError`, `iroh::DecryptionError`
+        - `iroh_base::SecretKey::shared`
+        - `iroh_base::SecretKey::generate_with_rng`, use `generate` directly
+        - `iroh_base::SecretKey::to_openssh`
+        - `iroh_base::SecretKey::from_openssh`
+        - `iroh_base::base32`
+        - `iroh_base::node_addr::AddrInfo`
+        - `iroh_base::node_addr::AddrInfoOptions`
+        - `iroh_base::relay_map`, use `iroh_relay::relay_map`
+    - changed
+        - `iroh_base::node_addr::NodeAddr` -> `iroh_base::NodeAddr`
+        - `iroh_base::relay_url::RelayUrl` -> `iroh_base::RelayUrl`
+        - `iroh_base::SecretKey::generate` now takes an rng
+        - `anyhow::Error` is replaced with explicit errors for `RelayUrl::from_str`
+        - `anyhow::Error` is replaced with explicit errors for `SharedSecret::open`
+        - `iroh_base::PUBLIC_KEY_LENGTH` is moved from a top level constant to `iroh_base::PublicKey::LENGTH`
+        - keys are now formatted using `hex` lowercase by default
+        - keys still parse base32 encoded, for better backwards compatibility
+        - introduce `ticket` feature for `iroh_base`, to use `iroh_base::ticket`
+        - `iroh_base::key` exports moved to `iroh_base`: `iroh_base::{KeyParsingError, NodeId, PublicKey, SecretKey, SharedSecret, Signature, PUBLIC_KEY_LENGTH}`
+- `iroh-net-report`
+    - changed
+        - `net_report::Client::get_report_channel` now takes an `opts: net_report::Options`
+        - `net_report::Client` will no longer bind `UdpSocket`s when one is not provided for both STUN over IPv4 or STUN over IPv6.
+        - `iroh_net_report::Client::get_report` takes new parameter `quic_config: net_report::QuicConfig`
+        - `iroh_net_report::Client::get_report_channel` takes new parameter `quic_config: net_report::QuicConfig`
+    - added
+        - `net_report::Client::get_report_with_options`
+
+`iroh-relay`
+
+- changed
+    - `iroh_relay::HttpClientBuilder::address_family_selector` signature changed
+    - `server` is not a default feature in `iroh-relay` anymore
+- `ClientError` has a number of unused variants removed.
+
+`iroh`
+
+- removed
+    - `iroh::protocol::Router::get_protocol`
+    - `iroh::protocol::RouterBuilder::get_protocol`
+    - `iroh::protocol::ProtocolMap::get_typed`
+    - `iroh::protocol::IntoArcAny`
+    - `iroh::dialer::Dialer` and `iroh::dialer`
+    - `iroh::tls`
+    - `iroh::Endpoint::connect_by_node_id`, use `iroh::Endpoint::connect` with a `NodeId` instead.
+    - `iroh::hash::{BlobFormat, Hash, HashAndFormat}`, use `iroh_blobs::{BlobFormat, Hash, HashAndFormat}`
+    - `iroh::ticket::BlobTicket`, use `iroh_blobs::ticket::BlobTicket`
+    - `iroh::endpoint::Bytes`, use `bytes::Bytes`
+    - `iroh::Endpoint::watch_home_relay`
+    To migrate, use `endpoint.home_relay().initialized().await?` instead of `endpoint.watch_home_relay().next().await` and use `endpoint.home_relay().stream()` instead of `endpoint.watch_home_relay().next().await`.
+    - `DirectAddrsStream` and `ConnTypeStream`, use `iroh::watchable::WatcherStream` for as named types instead.
+- changed
+    - `iroh::endpoint::NodeAddr` moved to `iroh::NodeAddr`
+    - `iroh::Endpoint::conn_type_stream` is renamed to `iroh::Endpoint::conn_type` and returns `Result<Watcher<ConnectionType>>` instead of `Result<ConnectionTypeStream>`
+    To migrate, use `endpoint.conn_type()?.stream()` instead of `endpoint.conn_type_stream()?`.
+    - `iroh::Endpoint::home_relay` now returns `Watcher<Option<RelayUrl>>` instead of `Option<RelayUrl>`.
+    To migrate, use `endpoint.home_relay().get()?` instead of `endpoint.home_relay()`.
+    - `iroh::protocol::ProtocolHandler::accept` now takes `&self` instead of `Arc<Self>`
+    - `iroh::protocol::ProtocolHandler::shutdown` now takes `&self` instead of `Arc<Self>`
+    - `iroh::protocol::RouterBuilder::accept` now takes `T: ProtocolHandler` instead of `Arc<dyn ProtocolHandler>`
+    - `iroh::protocol::ProtocolMap` is now private
+    - struct `iroh::config::Config` has a new field `zone_store`
+    - struct `iroh::metrics::Metrics` has a new field `store_packets_expired`
+    - `iroh::key` exports are now top-line exports
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.30.0](https://github.com/n0-computer/iroh/releases/tag/v0.30.0).
+
+If you want to know what is coming up, check out the [v0.31.0 milestone](https://github.com/n0-computer/iroh/milestone/38), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
