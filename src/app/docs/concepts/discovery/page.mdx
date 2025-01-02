@@ -1,0 +1,94 @@
+# Discovery
+
+Discovery is the glue that connects a [Node Identifier](/docs/concepts/endpoint#node-identifiers) to something we can dial. Discovery services resolve NodeIds to either a home Relay URL or direct-dialing information. {{className: 'lead'}}
+
+<Note>
+  More details on discovery in the discovery module [documentation](https://docs.rs/iroh/latest/iroh/discovery/index.html)
+</Note>
+
+Node discovery is an automated system for an [Endpoint](/docs/concepts/endpoint) to retrieve addressing information. Each iroh node will automatically publish their own addressing information with configured discovery services. Usually this means publishing which [Home Relay](/docs/concepts/relay#home-relay) a node is findable at, but they could also publish their direct addresses.
+
+## Discovery Services
+
+There are four different implementations of the discovery service in iroh, all of which map NodeIds to addresses:
+
+| | Discovery Implementation | Description |
+| --- | --- | --- |
+| 1 | [DNS](#dns-discovery) | uses a custom Domain Name System server |
+| 2 | [Local](#local-discovery) | uses an mDNS-like system to find nodes on the local network |
+| 3 |  [Pkarr](#pkarr-discovery) | uses Pkarr Servers over HTTP |
+| 4 | [DHT](#dht-discovery) | uses the BitTorrent Mainline DHT |
+
+By Default, iroh uses the DNS discovery system to resolve NodeIds to addresses. And can be configured to use any of the other discovery systems.
+
+## DNS Discovery
+DNS performs node lookups via the standard DNS systems. To publish to this DNS server a PkarrPublisher is needed. Number 0 runs a public instance of the DNS discovery system
+
+<Note>
+    DNS Discovery has has it's own [blog post](/blog/iroh-dns)!
+</Note>
+
+## Local Discovery
+Local discovery adds the ability to scan local networks for other iroh nodes, using Local Swarm Discovery. This is useful for local networks, or for bootstrapping a network before a relay is available.
+
+Local Discovery is _not_ enabled by default, and must be enabled by the user. You'll need to add the `discovery-local-network` feature flag to your `Cargo.toml` to use it.
+
+```toml
+[dependencies]
+iroh = { version = "0.1", features = ["discovery-local-network"] }
+```
+
+Then configure your endpoint to use local discovery concurrently with DNS discovery:
+
+```rust
+use iroh::{
+    discovery::{dns::DnsDiscovery, LocalSwarmDiscovery, pkarr::PkarrPublisher, ConcurrentDiscovery},
+    Endpoint, SecretKey,
+};
+
+let secret_key = SecretKey::generate(rand::rngs::OsRng);
+let discovery = ConcurrentDiscovery::from_services(vec![
+    Box::new(DnsDiscovery::n0_dns()),
+    Box::new(LocalSwarmDiscovery::new(secret_key.public())?),
+]);
+
+let ep = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    .bind()
+    .await?;
+```
+
+## Pkarr Discovery
+The Pkarr resolver can perform lookups from designated [pkarr relay servers](https://github.com/Pubky/pkarr#servers) using HTTP. Read more about the pkarr project [here](https://github.com/Pubky/pkarr?tab=readme-ov-file#pkarr).
+
+## DHT Discovery
+DHT discovery uses the [BitTorrent Mainline](https://en.wikipedia.org/wiki/Mainline_DHT) distributed hash table (DHT) to publish & resolve NodeIds.
+
+DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'll need to add the `discovery-pkarr-dht` feature flag to your `Cargo.toml` to use it.
+
+```toml
+[dependencies]
+iroh = { version = "0.1", features = ["discovery-pkarr-dht"] }
+```
+
+Then configure your endpoint to use DHT discovery concurrently with DNS discovery:
+
+```rust
+use iroh::{
+    discovery::{dns::DnsDiscovery, pkarr::dht::DhtDiscovery, ConcurrentDiscovery},
+    Endpoint, SecretKey,
+};
+
+let secret_key = SecretKey::generate(rand::rngs::OsRng);
+let discovery = ConcurrentDiscovery::from_services(vec![
+    Box::new(DnsDiscovery::n0_dns()),
+    Box::new(DhtDiscvoery::new(secret_key.public())?),
+]);
+
+let ep = Endpoint::builder()
+    .secret_key(secret_key)
+    .discovery(Box::new(discovery))
+    .bind()
+    .await?;
+```

@@ -24,6 +24,7 @@ export const navItems = [
     links: [
       {title: 'Endpoint', href: '/docs/concepts/endpoint'},
       {title: 'Relay', href: '/docs/concepts/relay'},
+      {title: 'Discovery', href: '/docs/concepts/discovery'},
       {title: 'Protocol', href: '/docs/concepts/protocol'},
       {title: 'Router', href: '/docs/concepts/router'},
       {title: 'Ticket', href: '/docs/concepts/tickets'},
