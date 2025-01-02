@@ -20,6 +20,12 @@ Breaking that down the `builder` sets up configuration for the endpoint, and `bi
 
 Once you have an endpoint, you can use it to create connections to other nodes, or accept incoming connections from other nodes.
 
+## Node Identifiers
+
+Each endpoint in iroh has a unique identifier (`NodeID`) created as a cryptographic key. This can be used to globally identify a node. Because `NodeIDs` are cryptographic keys, they are also the mechanism by which all traffic is always encrypted for a specific node only.
+
+See the [NodeID](https://docs.rs/iroh/latest/iroh/type.NodeId.html) documentation for more info.
+
 ## Connections
 
 Because we're in a peer-2-peer context, either node might be operating as the "server", so we use `connect` and `accept` to distinguish between the two. The `connect` method is used to create a new connection to a remote node, while `accept` is used to accept incoming connections from a remote node.
@@ -33,4 +39,3 @@ Due to the light-weight properties of QUIC streams a stream can only be accepted
 ## Building on Endpoints
 
 Endpoints are a low-level primitive that iroh exposes on purpose. For some projects like [dumbpipe](https://dumbpipe.dev), endpoints are 95% of what you need to connect any two devices on the planet. For others, like [iroh-blobs](/proto/iroh-blobs), endpoints are the foundation that higher-level protocols are built on. Most projects will not work with endpoints beyond constructing one and feeding it to one or more [protocols](/docs/concepts/protocol).
-
