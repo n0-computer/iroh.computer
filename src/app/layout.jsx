@@ -38,6 +38,7 @@ export default async function RootLayout({children}) {
     <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
         <link rel="me" href="https://mastodon.social/@n0iroh" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
       </head>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
