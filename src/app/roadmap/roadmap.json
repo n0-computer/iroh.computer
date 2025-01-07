@@ -44,7 +44,7 @@
       "description": "warn users that the iroh client is deprecated and will be converted to an example in the next release",
       "tracking_issue": null
     },
-    { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates", "expected": "" },
+    { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates" },
     {
       "done": true,
       "title": "net-tools repo",
@@ -79,14 +79,14 @@
       "description": "we no longer publish `iroh-net`, `iroh` contains all of `iroh-net`",
       "tracking_issue": null
     },
-    { "version": "v0.29.0", "done": true, "released": "2024-12-02", "doc": "" },
+    { "version": "v0.29.0", "done": true, "released": "2024-12-02", "doc": "https://www.iroh.computer/blog/iroh-0-29-net-is-the-new-iroh" },
     {
       "done": true,
       "title": "Add QUIC Address Discovery to `iroh-net-report`",
       "description": "net-report has QUIC Address Discovery probes",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
     },
-    { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "" },
+    { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "https://www.iroh.computer/blog/iroh-0-30-0-slimming-down" },
     { "ellipsis": true },
     {
       "done": false,
