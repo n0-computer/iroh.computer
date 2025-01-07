@@ -139,7 +139,7 @@ export default function SendmePage() {
 
           <div className='border-t border-b bg-iroh-kv-1 p-5 py-20'>
             <h2 className='text-2xl font-bold font-spaceMono'>Sendme is built on <a href="/" className='text-irohPurple-500'>iroh</a></h2>
-            <p className='md:max-w-lg mt-5'>Just like <a className='text-irohPurple-500' href="https://dumbpipe.dev">dumbpipe</a>, sendme is built on iroh. Sendme uses iroh <a className='text-irohPurple-700' href="/docs/layers/blobs">blobs</a> to send and verify your files, and <a className='text-irohPurple-700' href='/docs/layers/connections'>connections</a> to establish direct links between devices for data transfer</p>
+            <p className='md:max-w-lg mt-5'>Just like <a className='text-irohPurple-500' href="https://dumbpipe.dev">dumbpipe</a>, sendme is built on iroh. Sendme uses <a className='text-irohPurple-700' href='/docs/overview'>iroh</a> to establish direct links between devices for data transfer, and <a className='text-irohPurple-700' href="/proto/iroh-blobs">iroh-blobs</a> to send and verify your files</p>
             <Button href='/' variant='filled' className='mt-5 plausible-event-name=Sendme+Iroh+CTA+Click'>BUILD ON IROH</Button>
           </div>
         </div>
