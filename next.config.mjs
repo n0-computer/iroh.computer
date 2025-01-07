@@ -29,6 +29,14 @@ const redirects = async () => {
 
     // there's no more CLI to install. Instead, lead people towards general iroh docs
     { source: '/docs/install', destination: '/docs', permanent: true, },
+
+    // Reported at https://github.com/n0-computer/iroh.computer/issues/222
+    // Some redirects 
+    { source: '/docs/components/networking', destination: '/docs/overview', permanent: true },
+    { source: '/docs/components/net', destination: '/docs/overview', permanent: true },
+    { source: '/docs/layers/blobs', destination: '/proto/iroh-blobs', permanent: true },
+    { source: '/docs/layers/gossip', destination: '/proto/iroh-gossip', permanent: true },
+    { source: '/docs/layers/documents', destination: '/proto/iroh-docs', permanent: true },
   ]
 }
 
