@@ -83,7 +83,7 @@ function SmallPrint() {
         <SocialLink href="https://github.com/n0-computer" icon={GitHubIcon}>
           Follow us on GitHub
         </SocialLink>
-        <SocialLink href="#" icon={DiscordIcon}>
+        <SocialLink href="https://iroh.computer/discord" icon={DiscordIcon}>
           Join our Discord server
         </SocialLink>
         <SocialLink href="https://bsky.app/profile/iroh.computer" icon={BlueskyIcon}>
