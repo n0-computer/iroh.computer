@@ -60,7 +60,7 @@ access.denyList = [
 ]
 ```
 
-The default is `everyone` and parsing your  toml config file will error if you include more than one of these options in it.
+The default is `everyone` and parsing your toml config file will error if you include more than one of these options in it.
 
 Check out PR [#3086](https://github.com/n0-computer/iroh/pull/3086) for more information.
 
@@ -82,9 +82,9 @@ Checkout PR [#3056](https://github.com/n0-computer/iroh/pull/3056) for more info
 
 ### 😅 Connection Flop
 
-If you noticed iroh’s connection establishment to suddenly fail in some cases after version `0.30.0` you are not insane. We’ve fixed the bug and are back to our reliable connections in `0.31.0`!
+If you noticed iroh’s connection establishment suddenly failed in some cases after version `0.30.0` you are not insane. We’ve fixed the bug and are back to our reliable connections in `0.31.0`!
 
-To understand the issue, you need some background information. Discovery in `iroh` is relates a `NodeId` to (mainly) a **relay url**. We use that **relay url** to attempt to communicate with that `NodeId` and ask it about its direct addresses to holepunch with.
+To understand the issue, you need some background information. Discovery in `iroh` relates a `NodeId` to (mainly) a **relay url**. We use that **relay url** to attempt to communicate with that `NodeId` and ask it about its direct addresses to holepunch with.
 
 If you were not connected to a relay url, but did have a publicly available direct address you wanted to be discovered by, you could publish your direct addresses instead.
 
@@ -106,7 +106,7 @@ Checkout out [this PR](https://github.com/balliegojr/simple-dns/pull/40) for mor
 
 We did a TON of work refactoring the `iroh-relay` story this release. One of those pieces was to refactor the *server* side of the connection to help simplify the code and not have so many layers between the connection and the structures the server uses to manage those connections. We did this by removing an unnecessary actor and using some higher-order data structures to ease some of the burden of reading through locks and mutexes. Unfortunately, we foot-gunned a bit there, and needed to do a follow up PR to un-footgun.
 
-So, if you, brave fool that you are, are following along on `main`, your `iroh-relay` server may have seen an hiccup in there. The issue is fixed and was never released, so most of you will not even know what we are writing about here.
+So, if you were following along on `main`, your `iroh-relay` server may have seen an hiccup in there. The issue was fixed and was never in a released version of the `iroh-relay`, so most of you will not even know what we are writing about here.
 
 Checkout PR [#3099](https://github.com/n0-computer/iroh/pull/3099) for more information.
 
