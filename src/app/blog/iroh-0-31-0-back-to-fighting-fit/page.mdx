@@ -1,0 +1,136 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox, matheus23',
+  date: '2025-01-15',
+  title: 'iroh 0.31.0 - Back At Fighting Fit',
+  description: 'Iroh 0.31 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+For the holidays, we gifted you some regressions; in the new year, we fixed them 😅. We also refactored some code paths, added authentication to the relay servers, and made using `relay-only` mode for testing more programmatically sound!
+
+## 🎉 Features!
+
+### 🔰 Auth on relays!
+
+This will be fun news for those of you who run your own relays! Not only do you have rate-limiting, but now you have tools to restrict access to your relays. Whether you are narrowing it down to your customers or your friends, or if you need to blacklist a bad actor, you can now restrict access to your relay server.
+
+There is now a field `access` on `iroh_relay::server::RelayConfig` , that takes a `fn` you can supply. If it returns `Access::Accept`, the connection to the relay will be accepted, otherwise it will be rejected.
+
+If you are just starting to spin up a project using `iroh` and don’t need a sophisticated function for allowing or denying connections, you can also provide an `allowList` or `denyList` list with your relay server configuration:
+
+```toml
+access.allowList = [
+  "NODEID1",
+  "NODEID2",
+  "NODEID3",
+]
+```
+
+or
+
+```toml
+access.denyList = [
+  "NODEID1",
+  "NODEID2",
+  "NODEID3",
+]
+```
+
+The default is `everyone` and parsing your toml config file will error if you include more than one of these options in it.
+
+Check out PR [#3086](https://github.com/n0-computer/iroh/pull/3086) for more information.
+
+### ☎️ `relay-only` mode for testing!
+
+The `DEV_RELAY_ONLY` compile time environment variable has been completely dropped and a `PathSelection::RelayOnly` option has been threaded through the entire stack when `test-utils` is enabled.
+
+So, if you have `test-util` enabled, you can do the following to build an endpoint to force all data to be sent and received via the relay:
+
+```rust
+let endpoint = Endpoint::builder().path_selection(PathSelection::RelayOnly).bind().await?
+```
+
+We plan on improving this even more, so that it is easier to understand what might happen in your application if holepunching is unable to occur and all traffic is routed through the relay servers!
+
+Checkout PR [#3056](https://github.com/n0-computer/iroh/pull/3056) for more information.
+
+## 🪲 Bug Fixes
+
+### 😅 Connection Flop
+
+If you noticed iroh’s connection establishment suddenly failed in some cases after version `0.30.0` you are not insane. We’ve fixed the bug and are back to our reliable connections in `0.31.0`!
+
+To understand the issue, you need some background information. Discovery in `iroh` relates a `NodeId` to (mainly) a **relay url**. We use that **relay url** to attempt to communicate with that `NodeId` and ask it about its direct addresses to holepunch with.
+
+If you were not connected to a relay url, but did have a publicly available direct address you wanted to be discovered by, you could publish your direct addresses instead.
+
+In a refactor, we accidentally combined the two, publishing both the relay url and any known direct addresses. Unfortunately, because our discovery system was designed to expect a single relay URL, rather than a whole list of records that also include direct addresses, what ended up happening was that we only parsed the first DNS entry for the record, essentially grabbing either the relay url or one direct address by chance, and discarding the rest. Because we did not have a relay url in many of these cases, we could not coordinate holepunching!
+
+There’s a couple of things we’ve done to address this issue:
+
+1. We rolled back the change to publish direct addresses in the `PkarrPublisher`: [#3082](https://github.com/n0-computer/iroh/pull/3082) 
+2. We’ve identified and fixed the bug that ignored all DNS record entries besides the first one: [#3104](https://github.com/n0-computer/iroh/pull/3104)
+3. We’ve added better testing infrastructure to make sure we’ll identify these issues earlier the next time: [#3121](https://github.com/n0-computer/iroh/pull/3121)
+
+### 💔 DNS / Pkarr segfault
+
+If you have been using your own relay servers, you may have noticed some suspect behavior. Unfortunately, one of our DNS dependencies had an out-of-bounds parsing error. Some CPUs and OSs handled this error gracefully, others…did not. So if you were running this on a linux machine or on MacOS with an intel chip, you may have run across this. Good news is, the bug is fixed, the dependency released, and there are some nice fuzz tests ensuring it won’t happen again!
+
+Checkout out [this PR](https://github.com/balliegojr/simple-dns/pull/40) for more information.
+
+### 🔒 Deadlock on the relay (not released)
+
+We did a TON of work refactoring the `iroh-relay` story this release. One of those pieces was to refactor the *server* side of the connection to help simplify the code and not have so many layers between the connection and the structures the server uses to manage those connections. We did this by removing an unnecessary actor and using some higher-order data structures to ease some of the burden of reading through locks and mutexes. Unfortunately, we foot-gunned a bit there, and needed to do a follow up PR to un-footgun.
+
+So, if you were following along on `main`, your `iroh-relay` server may have seen an hiccup in there. The issue was fixed and was never in a released version of the `iroh-relay`, so most of you will not even know what we are writing about here.
+
+Checkout PR [#3099](https://github.com/n0-computer/iroh/pull/3099) for more information.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - changed
+        - `iroh::Endpoint::close`'s future is now infallible, instead of returning a `Result`.
+    - removed
+        - `regex` feature (as the dependency is not used anymore)
+    - added
+        - `relay-only` mode for testing
+- `iroh-relay`
+    - added
+        - added: field `access` to `iroh_relay::server::RelayConfig`
+    - changed
+        - renamed `iroh_relay::server::ClientConnRateLimit` to `ClientRateLimit`
+        - `iroh_relay::client::Client` has completely changed, see the new docs.
+    - removed
+        - `iroh_relay::server::MaybeTlsStreamServer` from the public API
+        - `iroh_relay::client::SendMessage::NotePreferred`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.31.0](https://github.com/n0-computer/iroh/releases/tag/v0.29.0).
+
+If you want to know what is coming up, check out the [v0.32.0 milestone](https://github.com/n0-computer/iroh/milestone/39), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
