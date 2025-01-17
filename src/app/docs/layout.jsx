@@ -17,6 +17,7 @@ export const navItems = [
     links: [
       {title: 'Overview', href: '/docs/overview'},
       {title: 'Quickstart', href: '/docs/quickstart'},
+      {title: 'Tour', href: '/docs/tour' },
       {title: 'Examples', href: '/docs/examples'},
     ],
   },

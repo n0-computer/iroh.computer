@@ -1,0 +1,45 @@
+import { PageLink } from '@/components/PageNavigation';
+
+# A Tour of iroh
+
+Let's take a tour of iroh! This tutorial will touch on 5 core concepts and a few supporting ideas that will get you familiar with what iroh does and how it works.
+
+We're going to do this tutorial in rust, so the first thing we'll need to do is confirm you have a working rust environment. If you don't, you can install it by following the instructions at https://www.rust-lang.org/tools/install for your operating system.
+
+Once you're up & running, let's create a new rust project by running the following command in your terminal:
+
+```bash
+cargo new iroh-tour
+```
+
+This will create an empty rust project in a new directory called `iroh-tour`. Change into that directory and open it in your favorite code editor. You should be able to run it from the project root, run it with `cargo run` and see something like this:
+
+```bash
+$ cargo run
+   Compiling iroh-tour v0.1.0 (/Users/b5/code/iroh-tour)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.69s
+     Running `/Users/b5/.cargo/build/debug/iroh-tour`
+Hello, world!
+```
+
+## Overview
+
+Here's a high level overview of how everything fits together:
+
+Iroh is a library for establishing the most direct QUIC connection possible between two devices. Every _endpoint_ uses the public half of a cryptographic keypair to identify itself. Assuming at least one configured _relay server_ is reachable, an endpoint keeps exactly one TCP connection to a “home relay” that other nodes use for connection establishment, and as a fallback transport. Iroh uses a suite of _discovery services_ to resolve home relays & endpoint IDs. Connections between endpoints use QUIC ALPNs to distinguish between _protocols_, while _routers_ automate the endpoint accept loop for protocol multiplexing.{{ className: 'lead' }}
+
+This paragraph touches on five key points worth understanding in iroh:
+
+* [Endpoints](/docs/tour/1-endpoints)
+* [Relays](/docs/tour/2-relays)
+* [Discovery](/docs/tour/3-discovery)
+* [Protocols](/docs/tour/4-protocols)
+* [Routers](/docs/tour/5-routers)
+
+We'll touch on each of these on the tour, and by the end you should have a good understanding of how they all fit together. The code we'll be writing here will build & execute, but it won't _do_ much. We'll link to examples and other resources along the way so you can explore further.
+
+<div className='flex'>
+  <div className="ml-auto flex flex-col items-end gap-3">
+    <PageLink label="Next" page={{ href: "/docs/tour/1-endpoints", title: "Endpoints" }} />
+  </div>
+</div>

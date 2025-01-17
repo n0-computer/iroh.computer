@@ -1,0 +1,86 @@
+import { PageLink } from '@/components/PageNavigation';
+
+# 2. Endpoints
+
+The journey of a connection starts with an endpoint. An endpoint is one of the two termination points for a connection. It’s one of the tin cans that the wire is connected to. Because this is peer-2-peer, endpoints both _initiate_ *and* _accept_ connections. The endpoint handles both.
+
+Let's first add iroh to our project. From the project root run `cargo add iroh` to install the latest version:
+
+```bash
+$ cargo add iroh
+    Updating crates.io index
+      Adding iroh v0.31.0 to dependencies
+             Features:
+             + discovery-pkarr-dht
+             + metrics
+             - discovery-local-network
+             - examples
+             - test-utils
+    Updating crates.io index
+     Locking 432 packages to latest compatible versions
+```
+
+We're also going to need a few supporting libraries so let's add those as well:
+
+```bash
+cargo add tokio anyhow rand
+```
+
+In the end your `Cargo.toml` file's `[dependencies]` section should look something like this. It's ok if the version numbers are slightly different:
+
+```toml
+[dependencies]
+anyhow = "1.0.95"
+iroh = "0.31.0"
+rand = "0.8.5"
+tokio = "1.43.0"
+```
+
+## Starting an Endpoint
+
+With our dependencies added, open up `src/main.rs` and add the following code:
+
+```rust
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // Create an endpoint
+    let builder = iroh::Endpoint::builder();
+
+    // bind it to a socket
+    let endpoint = builder.bind().await?;
+
+    // print this endpoint's node id
+    println!("node id: {:?}", endpoint.node_id());
+
+    // exit the program
+    Ok(())
+}
+```
+
+
+Then save and run your program with `cargo run`. You should see output similar to this:
+
+```bash
+b5 at number-0 in ~/code/iroh-tour (main●)
+$ cargo run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.80s
+     Running `/Users/b5/.cargo/build/debug/iroh-tour`
+node id: PublicKey(95224c92856163add8a9cb68a81183aa5d9881c4def58625a9f4266a0743b479)
+```
+
+<Note>
+  This code just prints it's ID & exits. For a more complete example, check out the [connect example](https://github.com/n0-computer/iroh/blob/main/iroh/examples/connect.rs)
+</Note>
+
+The non-setup part of this program adds up to 3 lines of code, and one of them is a print statement! The first line constructs an endpoint. 99% of apps will have a single endpoint in the entire app, so you’ll build the endpoint once, and refer to it a bunch. Then we call *bind* to ask the operating system for a networking port. This calling bind will kick off work in the background that we’ll talk about in a bit.
+
+Those three lines are the beating heart of adding iroh to an app. Once the node ID prints we have an active endpoint that's ready to connect & (if configured to) accept connections. Everything else builds up from here.
+
+<div className='flex'>
+  <div className="flex flex-col items-start gap-3">
+    <PageLink label="Previous" page={{ href: "/docs/tour", title: "Overview" }} previous />
+  </div>
+  <div className="ml-auto flex flex-col items-end gap-3">
+    <PageLink label="Next" page={{ href: "/docs/tour/2-relays", title: "Relays" }} />
+  </div>
+</div>
