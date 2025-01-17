@@ -1,0 +1,66 @@
+import { PageLink } from '@/components/PageNavigation';
+
+# Protocols
+
+At this point, we’re connected, yay! Now we just have to… do something… with that connection. That’s where protocols come in.
+
+Protocols are modules you compose together to add functionality to connections. Protocols exist for file transfer, game server sync, message broadcasting, document collaboration, all kinds of stuff. You can use off-the-shelf protocols to quickly add functionality, work directly with QUIC streams & build a fully custom protocol that does exactly what you want, or fork an existing protocol to get what you need.
+
+Coming from the world of HTTP client/server models, protocols are kinda like request handlers, but they can go beyond request/response creating multiple streams of data  and usually code up both initiating & accepting protocol connections in the same.
+
+Protocols are an ever-growing topic, but to give you a quick smattering, here’s some psudocode to set up the blobs protocol:
+
+Protocols are an ever-growing topic, but to give you a quick smattering, here’s some psudocode to set up the blobs protocol:
+
+```rust
+// create an endpoint
+let endpoint = Endpoint({ discovery: [local, dns] })
+
+// initialize the blobs protocol, passing the endpoint
+// so it can make connections
+let blobs = Blobs(endpoint)
+
+// set the accept loop, blobs will handle when the ALPN matches:
+endpoint.accept(function (conn) {
+  if (conn.ALPN === blobs.ALPN) {
+    blobs.handle(conn)
+  }
+})
+
+// start the node
+endpoint.bind()
+
+// request a blob from suzie
+let photo = blobs.download({ node: "suzieNodeID", blob: "hashOfCatPhoto" })
+
+```
+
+This is the “additional configuration before starting” we were alluding to earlier.
+
+This code sets up everything we need to both provide data we have locally when others request it, and ask other nodes that run the blobs protocol for data. Starting at the top, we first construct the endpoint, then we construct an instance of the blobs protocol, then configure our endpoint’s accept loop to wire incoming requests for blobs to the blobs handler.
+
+With our endpoint configured, we bind it to a socket to run it in the background, then use the blobs protocol to initiate a request for a blob called “hashOfCatPhoto” from “suzieNodeID”.
+
+### The Accept Loop
+
+This is the first time we’re seeing the accept loop in our psudocode. The accept loop is the “server” part of the endpoint, where we handle incoming requests. For every new connection, we’ll get a call to the accept loop. In earlier examples we hadn’t provided a function to the accept loop, which meant it would not accept any incoming requests.
+
+When we get a request, we need to figure out what to do with it. You can go full manual & just start handling all connections as if they’re the same in here, but the common pattern is to use a feature of QUIC called application level protocol names or ALPNs to route connections to different protocols. This is called multiplexing.
+
+A big shift you might nites here here is to looking at client & server code right next to each other, often in the same file. It can feel strange coming from the usual client/server coding paradigm, but this is your “there is no spoon” moment. “client” and “server” are arbitrary roles. It’s all networking under the hood. Instead of thinking about clients & servers, just smush them both together in our head. Thinking about every node in the network as having the same or similar roles is the source of all the good bits of p2p, including putting literal server-side capabilities in your user’s hands.
+
+Getting back to the example, there are some general patterns this example shows. We’ll do a deep dive on the specifics of the blobs protocol later, and Rüdiger from our team has a great video on the topic, but these patterns are true of most protocols:
+
+1. We configure protocols on the endpoint *before* calling bind.
+2. We give a reference to the endpoint to protocols when we construct them, so that protocols can use the endpoint to create connections.
+3. When we want to initiate connections, we call that
+4. We delegate to protocols to handle incoming requests by wiring them up in the accept loop.
+
+<div className='flex'>
+  <div className="flex flex-col items-start gap-3">
+    <PageLink label="Previous" page={{ href: "/docs/tour/2-relays", title: "Relays" }} previous />
+  </div>
+  <div className="ml-auto flex flex-col items-end gap-3">
+    <PageLink label="Next" page={{ href: "/docs/tour/4-protocols", title: "Protocols" }} />
+  </div>
+</div>

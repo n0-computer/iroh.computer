@@ -1,0 +1,43 @@
+import { PageLink } from '@/components/PageNavigation';
+
+# 2. Relays
+
+Ok let’s talk about that work that happens in the background when the endpoint bind. The first thing an endpoint will do after bind is called is probe the network to get a sense of what is & isn’t possible. One of the most important parts of that network status report is figuring out a home relay.
+
+Relays are servers that help establish connections between devices. They’re the backbone of an iroh network. When your endpoint starts, it sends pings to all of the configured relays & measures how long the PONGs take to come back, also known as a measure of round trip latency. Relay servers are spread around the world, and the one with the lowest latency us usually the relay server you are physically closest to, but all we really care about is which one answers the fastest. Your endpoint will pick the relay with the lowest latency (the one that answered first) & use that as a *home relay.* With a home relay picked our endpoint opens a single WebSocket connection & work with the relay to figure out the details like our endpoint’s public IP address. At this point our endpoint is ready to dial & be dialed. This entire process happens in 0-3 seconds.
+
+Aside from being a public-facing home-base on the internet, relays have a second crucial role, which is to… relay. Meaning: when one node *doesn’t* have a direct connection to another node, it’ll use the relay to send data to that node. This means that even if we *can’t* establish a direct connection, data will still flow between the two devices. This is the part that let’s us say it’s “peer 2 peer that works”: sometimes peer-2-peer isn’t possible, so we have a seamless fallback baked in.
+
+Remember, connections are end-2-end encrypted, that means that relays can’t read traffic, only pass along encrypted packets intended for the other side of the connection. Relays *do* know the list of node identifiers that are connected to it, and which nodes are connected to whom, but not what they are saying.
+
+Coming back to our program, let’s add support for relays:
+
+```rust
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let builder = iroh::Endpoint::builder()
+        .relay_mode(iroh::RelayMode::Default);
+
+    let endpoint = builder.bind().await?;
+    println!("node id: {:?}", endpoint.node_id());
+
+    Ok(())
+}
+```
+
+Here we've set the relay mode to `Default`, but this hasn't actually changed anything. Our prior code had `relay_mode` implicitly set to `Default`, and this workef because iroh comes with a set of free-to-use public relays by default. They’re run by the number 0 team. You’re more than welcome to run your own relays, using our hosted solution iroh.network, run your own, or, ideally all of the above! The code for relay servers is in the main iroh repo, and we release compiled binaries for relays on each release of iroh.
+
+And we’ll encounter our first surprise: the initial bytes of our connection will almost *always* flow over the relay, while the direct connection is established *in parallel.* Then once the direct connection is established, we switch to it. The reason for this is simple: keep initial connection times fast.
+
+It also leverages a critical feature of iroh: as network conditions change, iroh adapts. This always happening in the beginning as a connection transitions from flowing through the relay to being direct, but this is the same thing that happens when your phone switches from 5G to WiFi. Iroh monitors changes to network conditions, and reacts to them, all without configuration or intervention.
+
+
+<div className='flex'>
+  <div className="flex flex-col items-start gap-3">
+    <PageLink label="Previous" page={{ href: "/docs/tour/1-endpoints", title: "Endpoints" }} previous />
+  </div>
+  <div className="ml-auto flex flex-col items-end gap-3">
+    <PageLink label="Next" page={{ href: "/docs/tour/3-discovery", title: "Relays" }} />
+  </div>
+</div>
