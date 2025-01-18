@@ -4,50 +4,48 @@ import { PageLink } from '@/components/PageNavigation';
 
 Most apps will use more than one protocol. A router let’s you stack protocols on top of iroh's peer-to-peer connections. Routers handle the *accept* side of an iroh endpoint, but the connection initiation side is still handled by the protocol instance itself.
 
-```rust
-// create an endpoint
-let endpoint = Endpoint({ discovery: [local, dns] })
-// create a router, wrapping the endpoint
-let router = Router(endpoint)
+Since we've already set up a router when adding iroh blobs, we can add another protocol to the router with a few lines of code. Let's add iroh gossip, first by installing the dependency:
 
-// initialize the blobs protocol
-let blobs = Blobs(endpoint)
-// initialize the echo protocol
-let echo = Echo(endpoint)
-
-// register protocols with the router
-router.accept(blobs.ALPN, blobs)
-router.accept(echo.ALPN, echo)
-
-// now the router is in charge of spawing:
-router.bind()
-
-// request a blob from suzie
-let photo = blobs.download({ node: "suzieNodeID", blob: "cat_photo.png" })
-// send an echo request to suzie
-let hello = echo.send({ node: "suzieNodeId", message: "hello" })
+```
+cargo add iroh-gossip
 ```
 
-Here we’re adding an “echo” protocol, mainly for the purpose of seeing what multiple protocols look like. Under the hood this is really just adding branch handlers under the hood to route to the right protocol based on ALPN:
+Then we can setup gossip & add it to our router:
 
 ```rust
-// set the accept loop
-endpoint.accept(function (conn) {
-  if (conn.ALPN === blobs.ALPN) {
-    blobs.handle(conn)
-  } else if (conn.ALPN === echo.ALPN) {
-    echo.handle(conn)
-  }
-})
+use iroh::{protocol::Router, Endpoint};
+use iroh_blobs::{net_protocol::Blobs, util::local_pool::LocalPool};
+use iroh_gossip::{net::Gossip, ALPN};
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+    let local_pool = LocalPool::default();
+    let blobs = Blobs::memory().build(local_pool.handle(), &endpoint);
+
+    let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
+
+    // build the router
+    let router = Router::builder(endpoint)
+        .accept(iroh_blobs::ALPN, blobs.clone())
+        .accept(iroh_gossip::ALPN, gossip.clone())
+        .spawn()
+        .await?;
+
+    router.shutdown().await?;
+    drop(local_pool);
+    Ok(())
+}
 ```
 
 The amount of code is small, but the conceptual shift is a nice-to-have, wrapping an endpoint in a router makes the design intent of iroh clear: set up an endpoint, pull in protocols, feed them to the router, and bind your way to glory.
 
 <div className='flex'>
   <div className="flex flex-col items-start gap-3">
-    <PageLink label="Previous" page={{ href: "/docs/tour/4-relays", title: "Protocols" }} previous />
+    <PageLink label="Previous" page={{ href: "/docs/tour/4-protocols", title: "Protocols" }} previous />
   </div>
   <div className="ml-auto flex flex-col items-end gap-3">
-    <PageLink label="Next" page={{ href: "/docs/tour/6-protocols", title: "Things Iroh Doesn't do" }} />
+    <PageLink label="Next" page={{ href: "/docs/tour/6-conclusion", title: "Conclusion" }} />
   </div>
 </div>
