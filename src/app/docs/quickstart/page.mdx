@@ -39,7 +39,7 @@ If you're ever confused about what to import, take a look at the imports in the 
 
 We'll assume you've set up [rust](https://www.rust-lang.org/) and [cargo](https://doc.rust-lang.org/cargo/) on your machine.
 
-Initialize a new project by running `cargo init file-transfer`, then `cd file-transfer` and install all the packages we're going to use: `cargo add iroh iroh-blobs iroh-base tokio anyhow`.
+Initialize a new project by running `cargo init file-transfer`, then `cd file-transfer` and install all the packages we're going to use: `cargo add iroh iroh-base tokio anyhow && cargo add iroh-blobs --features rpc`.
 
 From here on we'll be working inside the `src/main.rs` file.
 
