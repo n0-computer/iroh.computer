@@ -69,7 +69,8 @@ DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'
 
 ```toml
 [dependencies]
-iroh = { version = "0.1", features = ["discovery-pkarr-dht"] }
+# Make sure to use the most recent version here instead of nn.
+iroh = { version = "0.nn", features = ["discovery-pkarr-dht"] }
 ```
 
 Then configure your endpoint to use DHT discovery concurrently with DNS discovery:
