@@ -1,5 +1,4 @@
 import RSS from "rss";
-
 import { getAllPosts } from "@/lib/blog";
 
 export const dynamic  = 'force-static';
@@ -14,9 +13,9 @@ export async function GET() {
 
   const feedOptions = {
     title: "Blog posts | RSS Feed",
-    description: "Welcome to this blog posts!",
+    description: "Welcome to Iroh!",
     site_url: site_url,
-    feed_url: `${site_url}/rss`,
+    feed_url: `${site_url}/rss.xml`,
     image_url: `${site_url}/img/logo/iroh-wordmark-purple.svg`,
     pubDate: new Date(),
     copyright: `All rights reserved ${new Date().getFullYear()}`,
