@@ -1,0 +1,279 @@
+import { YouTube } from '@/components/youtube'
+
+# Building a Peer-to-Peer Chat Application in Rust
+
+<YouTube src="https://www.youtube.com/embed/ogN_mBkWu7o?si=uFjeg1doPtZ0m50c" />
+
+# Building a P2P Chat Application with Rust and Iroh
+
+This tutorial demonstrates how to build a peer-to-peer chat application from scratch using Rust and the Iroh library. While this implementation is simplified, it illustrates core concepts of P2P networking and the Iroh gossip protocol.
+
+## Prerequisites
+
+The tutorial assumes basic programming knowledge but no prior Rust experience. To begin, install Rust by following the instructions at [rust-lang.org](https://rust-lang.org).
+
+## Project Setup
+
+First, initialize a new Rust project:
+
+```bash
+cargo init iroh-gossip-chat
+cd iroh-gossip-chat
+cargo run
+```
+
+Install the required dependencies:
+
+```bash
+cargo add iroh tokio anyhow rand
+```
+
+## Basic Endpoint Configuration
+
+The first step is creating a basic endpoint configuration:
+
+```rust
+use anyhow::Result;
+use iroh::{SecretKey, Endpoint};
+use iroh::protocol::Router;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let secret_key = SecretKey::generate(rand::rngs::OsRng);
+    println!("> our secret key: {secret_key}");
+
+    let endpoint = Endpoint::builder()
+        .discovery_n0()
+        .bind()
+        .await?;
+
+    println!("> our node id: {}", endpoint.node_id());
+
+    Ok(())
+}
+```
+
+## Adding Gossip Protocol Support
+
+Install the gossip protocol:
+
+```bash
+cargo add iroh-gossip
+```
+
+Then update the code to implement basic gossip functionality:
+
+```rust
+use anyhow::Result;
+use iroh::protocol::Router;
+use iroh::{Endpoint, SecretKey};
+use iroh_gossip::net::Gossip;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let secret_key = SecretKey::generate(rand::rngs::OsRng);
+    println!("> our secret key: {secret_key}");
+
+    let endpoint = Endpoint::builder()
+        .secret_key(secret_key)
+        .discovery_n0()
+        .bind()
+        .await?;
+
+    println!("> our node id: {}", endpoint.node_id());
+    let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
+
+    let router = Router::builder(endpoint.clone())
+        .accept(iroh_gossip::ALPN, gossip.clone())
+        .spawn()
+        .await?;
+
+    router.shutdown().await?;
+
+    Ok(())
+}
+```
+
+## Creating and Broadcasting to a Topic
+
+Topics are the fundamental unit of communication in the gossip protocol. Here's how to create a topic and broadcast a message:
+
+```rust
+use anyhow::Result;
+use iroh::protocol::Router;
+use iroh::{Endpoint, SecretKey};
+use iroh_gossip::net::Gossip;
+use iroh_gossip::proto::TopicId;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let secret_key = SecretKey::generate(rand::rngs::OsRng);
+    println!("> our secret key: {secret_key}");
+
+    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+
+    println!("> our node id: {}", endpoint.node_id());
+    let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
+
+    let router = Router::builder(endpoint.clone())
+        .accept(iroh_gossip::ALPN, gossip.clone())
+        .spawn()
+        .await?;
+
+    let id = TopicId::from_bytes(rand::random());
+    let peer_ids = vec![];
+    let (sender, _receiver) = gossip.subscribe(id, peer_ids)?.split();
+    sender.broadcast("sup".into()).await?;
+
+    router.shutdown().await?;
+
+    Ok(())
+}
+```
+
+## Implementing Message Reception
+
+Install the futures-lite crate to handle async streams:
+
+```bash
+cargo add futures-lite
+```
+
+Then implement message reception:
+
+```rust
+use anyhow::Result;
+use iroh::{SecretKey, Endpoint};
+use iroh::protocol::Router;
+use futures_lite::StreamExt;
+use iroh_gossip::{Gossip, Event, TopicId};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // Previous endpoint setup code...
+
+    let (sender, mut receiver) = gossip.subscribe_and_join(id, peer_ids).await?.split();
+
+    tokio::spawn(async move || {
+        while let Some(event) = receiver.try_next().await? {
+            if let Event::Gossip(gossip_event) = event {
+                match gossip_event {
+                    GossipEvent::Received(message) => println!("got message: {:?}", &message),
+                    _ => {}
+                }
+            }
+        }
+    });
+
+    sender.broadcast(b"sup").await?;
+
+    router.shutdown().await?;
+
+    Ok(())
+}
+```
+
+## Implementing Signaling with Tickets
+
+To enable nodes to discover and join each other, implement ticket-based signaling:
+
+```bash
+cargo add serde data_encoding
+```
+
+Add the ticket implementation:
+
+```rust
+#[derive(Debug, Serialize, Deserialize)]
+struct Ticket {
+    topic: TopicId,
+    peers: Vec<NodeAddr>,
+}
+
+impl Ticket {
+    fn from_bytes(bytes: &[u8]) -> Result<Self> {
+        serde_json::from_slice(bytes).map_err(Into::into)
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        serde_json::to_vec(self).expect("serde_json::to_vec is infallible")
+    }
+}
+
+impl fmt::Display for Ticket {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut text = data_encoding::BASE32_NOPAD.encode(&self.to_bytes()[..]);
+        text.make_ascii_lowercase();
+        write!(f, "{}", text)
+    }
+}
+
+impl FromStr for Ticket {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let bytes = data_encoding::BASE32_NOPAD.decode(s.to_ascii_uppercase().as_bytes())?;
+        Self::from_bytes(&bytes)
+    }
+}
+```
+
+## Creating a Command-Line Interface
+
+Install the clap crate for CLI argument parsing:
+
+```bash
+cargo add clap --features derive
+```
+
+The final implementation includes a full command-line interface with commands for creating and joining chat rooms:
+
+```rust
+use std::{
+    collections::HashMap,
+    fmt,
+    net::{Ipv4Addr, SocketAddrV4},
+    str::FromStr,
+};
+
+#[derive(Parser, Debug)]
+struct Args {
+    #[clap(long)]
+    no_relay: bool,
+    #[clap(short, long)]
+    name: Option<String>,
+    #[clap(subcommand)]
+    command: Command,
+}
+
+#[derive(Parser, Debug)]
+enum Command {
+    Open,
+    Join {
+        ticket: String,
+    },
+}
+
+// Main function implementation with CLI command handling...
+```
+
+## Running the Application
+
+To create a new chat room:
+
+```bash
+cargo run -- --name user1 open
+```
+
+To join an existing chat room:
+
+```bash
+cargo run -- --name user2 join <ticket>
+```
+
+The application will now support basic chat functionality between connected peers, with messages broadcast to all participants in the room.
+
+## Notes on Security
+
+While this implementation demonstrates the basic concepts, a production system would need additional security measures. For example, the example in the Iroh gossip protocol repository includes message signing to prevent impersonation attacks.
+
+For more sophisticated implementations and security features, refer to the examples in the Iroh gossip protocol repository.
