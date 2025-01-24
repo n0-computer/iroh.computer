@@ -11,6 +11,20 @@ import { Tag } from './Tag';
 
 const examples = [
   {
+    href: '/docs/examples/gossip-chat',
+    name: 'Gossip Chat',
+    description:
+      'A simple chat app using iroh-net gossip connections.',
+      tags: ["gossip", "CLI"],
+      pattern: {
+        y: 16,
+        squares: [
+          [0, 1],
+          [1, 3],
+        ],
+      },
+  },
+  {
     // TODO: finish TODOs docs page, switch this href for "/docs/examples/todos"
     href: 'https://github.com/n0-computer/iroh-examples/tree/main/tauri-todos',
     name: 'Todos',
