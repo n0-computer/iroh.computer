@@ -490,7 +490,7 @@ Now, when you run your code, you should see something like this:
 
 ## Creating a Command-Line Interface
 
-Here is where things get fun. We know how to create, join, and send and receive on a `Topic`. We also know how to get other to join that `Topic`. This has now created two different "roles" a node can have: a topic "creater" and a topic "joiner". One side "creates" the topic and the ticket, and the other side takes the ticket and uses it to join the topic and connect to the ticket creater.
+Here is where things get fun. We know how to create, join, and send and receive on a `Topic`. We also know how to get other to join that `Topic`. This has now created two different "roles" a node can have: a topic "creator" and a topic "joiner". One side "creates" the topic and the ticket, and the other side takes the ticket and uses it to join the topic and connect to the ticket creator.
 
 To "join", we will need to pass in a `Ticket` as a command line argument. There is a great rust crate called `clap` that takes care of much  of the CLI boiler plate for you.
 
