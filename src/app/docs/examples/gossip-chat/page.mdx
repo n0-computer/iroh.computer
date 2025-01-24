@@ -173,7 +173,6 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-
 ```
 
 ## Messages
@@ -197,10 +196,12 @@ cargo add serde serde-json
 
 Then add the following to your main file:
 
-```
-// add this use statement to the top
+```rust
+// add these use statements to the top
 use iroh::NodeId;
 use serde::{Deserialize, Serialize};
+
+...
 
 // add the message code to the bottom
 #[derive(Debug, Serialize, Deserialize)]
@@ -222,7 +223,7 @@ impl Message {
 
 Now, rather than broadcasting "sup", let's broadcast a message that let's others in the chat know our name:
 
-```
+```rust
 // replace:
 sender.broadcast("sup".into()).await?;
 
@@ -234,8 +235,7 @@ let message = Message::AboutMe {
 };
 // Turn the message into a `Vec`, and then use
 // `into` to coerse the `Vec` into `Bytes`
-sender.broadcast(message.to_vec().into()).await?;
-    
+sender.broadcast(message.to_vec().into()).await?; 
 ```
 
 ## Implementing Message Reception
@@ -254,11 +254,12 @@ cargo add futures-lite
 
 Then implement message reception. We are going to use a separate `subscribe_loop` function to keep the code more simple:
 
-```
+```rust
 // at the top of the file add these imports:
 use iroh_gossip::net::{Event, GossipEvent, GossipReceiver};
 use future_lite::StreamExt;
 
+... 
 // at the bottom of the file add this function:
    
 /// Handle incoming events
@@ -300,7 +301,6 @@ Let's call this `subscribe_loop` function in our main function. Eventually, when
 To do that, we are going to call the `subscribe_loop` function inside a `tokio::spawn`. That will spawn a task so that the subscribe loop is listening concurrently with our writing loop.
 
 Here are the imports and the main function so far:
-```
 
 ```rust
 
@@ -386,7 +386,7 @@ std::thread::spawn(move || input_loop(line_tx));
 
 Okay, so we can read off of stdin. Now we need to broadcast what we are typing to the Topic (and also print our messages to ourselves so that we can read through the chat logically):
 
-```
+```rust
 // right after the above code:
 
 // broadcast each line we type
@@ -419,6 +419,8 @@ Let's implement ticket-based signaling! This means we will turn the topic and ou
 use iroh::NodeAddr;
 use std::fmt;
 use std::str::FromStr;
+
+...
 
 // add the `Ticket` code to the bottom of the main file
 #[derive(Debug, Serialize, Deserialize)]
@@ -464,7 +466,7 @@ impl FromStr for Ticket {
 
 Let's update our main file to include printing a `Ticket` and broadcasting our name on the topic.
 
-```
+```rust
 // in our main file, after we create a topic `id`:
 // print a ticket that includes our own node id and endpoint addresses
 let ticket = {
@@ -480,7 +482,7 @@ println!("> ticket to join us: {ticket}");
 
 Now, when you run your code, you should see something like this:
 
-```sh
+```bash
 > our node id: 03ce2e2f55af140d0b18395fff054d3f3ab6a30aa680e4a2a3ab4526838151a5
 > ticket to join us: pmrhi33qnfrseos3ge4tslbthawdcojvfq3tolbrgq4symjufqytinbmg4wdemzzfqzdinjmgiztmlbshewdonbmgiztglbrgi4cynzzfqzdslbxgqwdsnrmgizdmlbsgazsymjzgewdemzzfqytqmjmgiytalbsguysyobzfqytclbvgiwdenbwfq2cymjygbosyiton5sgk4zchjnxwiton5sgkx3jmqrduirqgnrwkmtfgjtdknlbmyytimdegbrdcobthe2wmztgga2tizbtmyzwcyrwmeztaylbgy4dazjumezgcm3bmi2dkmrwhaztqmjvgfqtkirmejzgk3dbpfpxk4tmei5ce2duoryhgorpf52xgzjrfuys44tfnrqxsltjojxwqltomv2ho33snmxc6irmejsgs4tfmn2f6ylemrzgk43tmvzseos3ei3tilrxgmxdkmroge2dqorvguzdomzcfqrdcojsfyytmobogexdemr2gu2tenzteiwcewzsgyydgorxgaydaoryg4zwcotdmjsdmorrmnsgiorwge2dqorxmnrgcoteha4wgxj2gu2tenzueiwcewzsgyydgorxgaydaoryg4zwcotdmjsdmotggu4teorshfrtaotbgzqtgotbha4tsxj2gu2tenzuejox2xl5
 > type a message and hit enter to broadcast...
