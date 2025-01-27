@@ -257,7 +257,7 @@ Then implement message reception. We are going to use a separate `subscribe_loop
 ```rust
 // at the top of the file add these imports:
 use iroh_gossip::net::{Event, GossipEvent, GossipReceiver};
-use future_lite::StreamExt;
+use futures_lite::StreamExt;
 
 ... 
 // at the bottom of the file add this function:
