@@ -191,7 +191,7 @@ We need to add crates that will allow us to serialize our new message types as b
 `bytes` is a utility library for working with bytes. 
 
 ```bash
-cargo add serde serde-json
+cargo add serde --features serde/derive serde-json data_encoding
 ```
 
 Then add the following to your main file:
