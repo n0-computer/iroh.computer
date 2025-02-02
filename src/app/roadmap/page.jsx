@@ -19,7 +19,7 @@ export default function Component() {
     <BlankLayout>
         <header className="max-w-lg px-4 sm:px-0">
           <h1 className="text-2xl sm:text-4xl font-space font-bold tracking-tight text-zinc-800 dark:text-zinc-100">iroh 1.0 roadmap</h1>
-          <p className="my-3 text-base text-zinc-600 dark:text-irohGray-400">Here&apos;s where we&apos;re headed, and progress we made against our goal to date. For more details see the <Link className='text-irohPurple-500 underline decoration-dotted' href="/blog/road-to-1.0">iroh 1.0 roadmap post</Link></p>
+          <p className="my-3 text-base text-zinc-600 dark:text-irohGray-400">Here&apos;s where we&apos;re headed, and progress we made against our goal to date. For more details see the <Link className='text-irohPurple-500 underline decoration-dotted' href="/blog/road-to-1-0">iroh 1.0 roadmap post</Link></p>
           <p className='font-space tracking-tight text-zinc-800 dark:text-zinc-100'>Last Updated {formatDate(last_updated)}</p>
         </header>
         <div className='max-w-2xl mb-20'>
