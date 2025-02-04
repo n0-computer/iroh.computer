@@ -5,7 +5,7 @@ export const post = {
   draft: false,
   author: 'ramfox, matheus23',
   date: '2025-02-04',
-  title: 'iroh 0.32.0 - Browsers, QAD, and `n0-future`',
+  title: 'iroh 0.32.0 - Browser Beta, QAD, and "n0-future"',
   description: 'Iroh 0.32 release',
 }
 
@@ -28,29 +28,11 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
+Welcome to a new release of `iroh`, a p2p library that just works, putting more control in the hands of your users. This release brings you some cool new features that we can't wait to get into your dependency tree.
 
-This release brings you some cool new features that we are excited for you to try out. To start: join us in testing out `iroh` that compiles to WASM and can work in the browser! Next, `iroh` can work in higher latency environments with larger packet loss due to QUIC address discovery. Finally, take a look at the `n0-future` crate for a single, sane, curated crate for working with a smattering of `futures-*` crates, as well `tokio::{spawn,task,time}` alternatives that can compile to WASM.
+To start: join us in testing out `iroh` that compiles to WASM and can work in the browser! Next, `iroh` can work in higher latency environments with larger packet loss due to QUIC address discovery. Finally, take a look at the `n0-future` crate for a single, sane, curated crate for working with a smattering of `futures-*` crates, as well `tokio::{spawn,task,time}` alternatives that can compile to WASM.
 
-## 🌍 Quic Address Discovery on the iroh-relays
-
-Finding out your node’s public address is one of the big steps necessary for hold punching. Without knowing your public IP address, you have no way to let anyone else know what it is either. It’d be like wanting a friend to mail you a package, but not being able to tell them what your address is. We use a few different protocols speak to the `iroh` relay servers to learn about your public IP address (and a few other pieces of information).
-
-Previously, we relied solely protocols that communicated over UDP. UDP is great when you want to fire and forget, but if you need reliability or the ability to retransmit data, to ensure the other side of the connection definitely received the data, you can’t rely on UDP.
-
-In high latency, noise-y areas across the world, where traffic and packet loss might get too overwhelming for UDP, we were unable to always relay on STUN and ICMP. One solution we had to deal with the quirks of UDP, was to ensure we had relays all over the world, so that a user’s node has a better chance of reaching and getting a response from a relay server.
-
-The other way we could solve this was by using a protocol for learning your public IP address, that was based on a reliable transport. QUIC is already an enormous part of our codebase, we thought we could use QUIC to solve this problem for us.
-
-We implemented the [Quic Address Discovery RFC](https://datatracker.ietf.org/doc/draft-seemann-quic-address-discovery/) to do just that.
-
-Now, in `iroh-net-report`, we race STUN and QUIC address discovery probes to see which will get us our public IP address as soon as possible.
-
-Our relays are all equipped with a QUIC endpoint that has QUIC Address Discovery enabled. Now, in our worst case scenario, very high latency and packet loss may result in a probe that takes a bit to respond, but the protocol will 
-
-Check out [PR #3049](https://github.com/n0-computer/iroh/pull/3049) for more details.
-
-## 🖥️ iroh in the Browser!
+## 🖥️ iroh in the browser alpha release!
 
 We've got preliminary iroh support for browsers via WebAssembly!
 During this preliminary support phase, you'll need to depend on a branch to be able to use it, but we'll release it properly soon.
@@ -71,15 +53,36 @@ Some caveats:
 
 Remember, this is specifically support for iroh *in browsers*, which we expect to be the biggest use case for compiling iroh to WebAssembly. We don't support other related things such as running `wasm32-unknown-unknown` Wasm files without `wasm-bindgen` nor compiling to `wasm32-wasi` or similar.
 
+Check out [PR #2799](https://github.com/n0-computer/iroh/issues/2799) for more details.
+
+
+## 🌍 Quic Address Discovery (QAD) on the iroh-relays
+
+Finding out your node’s public address is one of the big steps necessary for hold punching. Without knowing your public IP address, you have no way to let anyone else know what it is either. It’d be like wanting a friend to mail you a package, but not being able to tell them what your address is. We use a few different protocols speak to the `iroh` relay servers to learn about your public IP address (and a few other pieces of information).
+
+Previously, we relied solely protocols that communicated over UDP. UDP is great when you want to fire and forget, but if you need reliability or the ability to retransmit data, to ensure the other side of the connection definitely received the data, you can’t rely on UDP.
+
+In high latency, noise-y areas across the world, where traffic and packet loss might get too overwhelming for UDP, **we were unable to always relay on STUN and ICMP**. One solution we had to deal with the quirks of UDP, was to ensure we had relays all over the world, so that a user’s node has a better chance of reaching and getting a response from a relay server.
+
+The other way we could solve this was by using a protocol for learning your public IP address, that was based on a reliable transport. QUIC is already an enormous part of our codebase, we thought we could use QUIC to solve this problem for us.
+
+We implemented the [Quic Address Discovery RFC](https://datatracker.ietf.org/doc/draft-seemann-quic-address-discovery/) to do just that.
+
+Now, in `iroh-net-report`, we race STUN and QUIC address discovery probes to see which will get us our public IP address as soon as possible.
+
+Our relays are all equipped with a QUIC endpoint that has QUIC Address Discovery enabled. Now, in our worst case scenario, very high latency and packet loss may result in a probe that takes a bit to respond, but this change takes us from no response at all to a response that is just delayed.
+
+Check out [PR #3049](https://github.com/n0-computer/iroh/pull/3049) for more details.
+
 ## 💫 n0-future
 
 Another `future` crate?! Aren’t there enough of them?
 
-First, none of them have as a dramatic name as our new crate: `n0-future` .
+First, none of them have as a dramatic name as our new crate: `n0-future` 😎.
 
-Second, this crate acts as a single place where we expose the most useful `futures-*` and tokio traits and structs that work well with `iroh`, and that, in our experience, have the fewest “footguns”.
+Second, this crate acts as a single place where we expose the most useful `futures-*` and tokio traits and structs that work well with `iroh`, and that, in our experience, have the fewest “footguns”. **If you want to have the same codebase compile to Wasm and native simultaneously, `n0-future` is for you.**
 
-Third, this does the major lift of co-locating a large amount of code that is very common in async programming, but does not work in the browser. `n0-future` takes care of the ugly `cfg`s for you.
+Third, this does the major lift of co-locating a large amount of code that is very common in async programming, but does not work in the browser. `n0-future` takes care of the ugly `cfg`s for you. But with that said you should **not** need to import `n0-future` yourself if you are using `iroh` as a dependency. `n0-future` is an implementation detail of `iroh`, unless you start running into async headaches, especially if you're targeting WASM.
 
 The major goal here is to make our (and your) coding lives easier. Rather than having to import multiple crates that all cover slightly different `futures`-like topics or stress about what can and cannot compile to WASM, just  import `n0-future` and be good to go.
 
