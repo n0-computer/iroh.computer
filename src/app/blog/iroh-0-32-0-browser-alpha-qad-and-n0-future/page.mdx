@@ -58,7 +58,7 @@ Check out [PR #2799](https://github.com/n0-computer/iroh/issues/2799) for more d
 
 ## 🌍 Quic Address Discovery (QAD) on the iroh-relays
 
-Finding out your node’s public address is one of the big steps necessary for hold punching. Without knowing your public IP address, you have no way to let anyone else know what it is either. It’d be like wanting a friend to mail you a package, but not being able to tell them what your address is. We use a few different protocols speak to the `iroh` relay servers to learn about your public IP address (and a few other pieces of information).
+Finding out your node’s public address is one of the big steps necessary for hole-punching. Without knowing your public IP address, you have no way to let anyone else know what it is either. It’d be like wanting a friend to mail you a package, but not being able to tell them what your address is. We use a few different protocols speak to the `iroh` relay servers to learn about your public IP address (and a few other pieces of information).
 
 Previously, we relied solely protocols that communicated over UDP. UDP is great when you want to fire and forget, but if you need reliability or the ability to retransmit data, to ensure the other side of the connection definitely received the data, you can’t rely on UDP.
 
