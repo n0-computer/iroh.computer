@@ -36,7 +36,7 @@ export function TopLevelNavItem({href, children}) {
   );
 }
 
-export const Header = forwardRef(function Header({className}, ref) {
+export const Header = forwardRef(function Header({className, sidebar = []}, ref) {
   const {isOpen: mobileNavIsOpen} = useMobileNavigationStore();
   const isInsideMobileNavigation = useIsInsideMobileNavigation();
 
@@ -70,13 +70,13 @@ export const Header = forwardRef(function Header({className}, ref) {
       />
       <Search />
       <div className="flex items-center gap-5 lg:hidden">
-        <MobileNavigation />
+        <MobileNavigation sidebar={sidebar}  />
         <Link href="/" aria-label="Home">
           <Logotype className="h-6" />
         </Link>
       </div>
       <div className="flex items-center gap-5">
-        <nav className="hidden md:block">
+        <nav className="hidden lg:block">
           <ul role="list" className="flex items-center gap-8">
             {navItems.map((item, i ) => {
               return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
@@ -86,7 +86,7 @@ export const Header = forwardRef(function Header({className}, ref) {
             </li>
           </ul>
         </nav>
-        <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
+        {/* <div className="hidden lg:block lg:h-5 lg:w-px lg:bg-zinc-900/10 lg:dark:bg-white/15" /> */}
         <div className="flex gap-4">
           <MobileSearch />
           <ThemeToggle />

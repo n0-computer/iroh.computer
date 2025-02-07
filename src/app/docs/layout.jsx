@@ -63,7 +63,7 @@ export default function DocsLayout({children, sections = {}}) {
                 <Logotype className="h-6" />
               </Link>
             </div>
-            <Header />
+            <Header sidebar={navItems} />
             <Navigation className="hidden lg:mt-10 lg:block" sidebar={navItems} />
           </div>
         </motion.header>
