@@ -6,9 +6,11 @@ Iroh is organized into _protocols_: Composable networking software built on iroh
 
 The foundation of iroh is direct connections, which protocols use to extend up to higher-level functionality. When integrating iroh into an application you can use protocols to quickly add functionality, or write your own protocol(s) to maintain total control over how your application communicates.
 
-## ALPNs
+## ALPN identifiers
 
-All iroh protocols build on QUIC connections, and use [application level protocol negotiation](https://datatracker.ietf.org/doc/html/rfc7301) (ALPNs) to run multiple protocols on the same QUIC endpoint. ALPNs are part of the QUIC spec, which we take advantage of to build iroh protocols. Each protocol registerted The ALPN is a string that identifies the protocol. For example, the [iroh-blobs](/proto/iroh-blobs) protocol ALPN is [`/iroh-bytes/4`](https://github.com/n0-computer/iroh-blobs/blob/124820698cd85691e0d72aeed6e1ac028886b34a/src/protocol.rs#L353).
+Iroh builds on QUIC connections, and uses [application level protocol negotiation](https://datatracker.ietf.org/doc/html/rfc7301) (ALPN, a widely used and well specified TLS extension) to run multiple protocols on the same QUIC endpoint. An ALPN identifier is the string that identifies the protocol and is used for protocol negotiation between endpoints. For example, the [iroh-blobs](/proto/iroh-blobs) protocol ALPN is [`/iroh-bytes/4`](https://github.com/n0-computer/iroh-blobs/blob/124820698cd85691e0d72aeed6e1ac028886b34a/src/protocol.rs#L353).
+This makes sure that an endpoint that accepts a connection can gracefully indicate whether it supports the requested protocol.
+[In the future](https://github.com/n0-computer/iroh/issues/2949) you'll be able to use multiple ALPN identifiers when connecting as a way to negotiate e.g. protocol versions. For example, you would connect using `/iroh-bytes/5` as well as `/iroh-bytes/4`, and the other side could respond with `/iroh-bytes/4` to indicating it doesn't have support for `/iroh-bytes/5`.
 
 
 ## The Accept Loop
