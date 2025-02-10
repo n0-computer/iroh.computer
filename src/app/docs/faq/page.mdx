@@ -20,7 +20,7 @@ Still, to prevent abuse, we rate-limit throughput through our public relays.
 
 ## Can relays read the traffic they route?
 
-No, all connections in iroh are end-to-end encrypted.
+**No, all connections in iroh are end-to-end encrypted.**
 We use QUIC which is based on TLS 1.3.
 From the perspective of our QUIC implementation, the relay is "just another UDP socket" for sending encrypted packets around.
 Because the relays are relaying traffic, they theoretically know that Node ID X talks to Node ID Y and how many bytes are sent this way, but only for as long as these nodes haven't established a direct connection yet.
@@ -79,7 +79,7 @@ We think it's particularly helpful to write application-specific discovery mecha
 The company behind iroh is number 0.
 It is partly venture capital and partly founder backed (as in: founders have invested their own money).
 Number 0 is healthy and has investors we actually think are a value-add.
-We earn revenue from customers today through https://n0.computer/n0ps, and are re-launching an “AWS for iroh  protocols” in the next few weeks.
+We earn revenue from customers today through https://n0.computer/n0ps, and are re-launching an “AWS for iroh  protocols” in 2025.
 While it will be a service you can pay for, it won’t have special treatment beyond being convenient.
 We rely on iroh remaining open source, and are committed to keeping it that way, including server-side code for relays and DNS discovery.
 
@@ -91,7 +91,7 @@ This means we've kept the scope small: There's no DHT, swarm, or gossipsub.
 Instead, what you get are reliable direct [QUIC](https://en.wikipedia.org/wiki/QUIC) connections between iroh endpoints.
 On top of these, some of said libp2p features can be implemented as *protocols* on top, see for example [iroh-gossip](https://github.com/n0-computer/iroh-gossip/) which provides gossipsub-like functionality.
 While there are some features in libp2p like a DHT implementation based on kademlia that don't exist in the iroh ecosystem yet, we believe the features iorh *does* have work better.
-The iroh project was founded by developers who were deeply involved with libp2p, frustrated with its shortcomings and complexity and wanted to build something better.
+The iroh project was founded by developers who were deeply involved with libp2p, and wanted to build a more focused library with less configuration that would be easier to deploy and use with high reliability.
 
 
 ## Is iroh post-quantum-secure?
