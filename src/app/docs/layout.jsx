@@ -36,7 +36,7 @@ export const navItems = [
       {title: 'Protocol Registry', href: '/proto'},
       {title: 'Language SDKs', href: '/docs/sdks'},
       {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh'},
-      {title: 'Frequently Asked Questions', href: '/faq' },
+      {title: 'Frequently Asked Questions', href: '/docs/faq' },
     ],
   },
   {title: 'Writing a protocol',
