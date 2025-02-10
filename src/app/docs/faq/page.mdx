@@ -84,7 +84,8 @@ We rely on iroh remaining open source, and are committed to keeping it that way,
 
 Generally, we've put a lot of effort into making iroh "peer to peer connections that *just work*".
 This means we've kept the scope small: There's no DHT, swarm, or gossipsub.
-At least none of that is in iroh directly, but they're implemented as protocols on top, see e.g. [iroh-gossip](https://github.com/n0-computer/iroh-gossip/) which provides gossipsub-like functionality.
+Instead, what you get are reliable direct [QUIC](https://en.wikipedia.org/wiki/QUIC) connections between iroh endpoints.
+On top of these, some of said libp2p features can be implemented as *protocols* on top, see for example [iroh-gossip](https://github.com/n0-computer/iroh-gossip/) which provides gossipsub-like functionality.
 While there are some features in libp2p like a DHT implementation based on kademlia that don't exist in the iroh ecosystem yet, we believe the features iorh *does* have work better.
 The iroh project was founded by developers who were deeply involved with libp2p, frustrated with its shortcomings and complexity and wanted to build something better.
 
