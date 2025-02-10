@@ -1,0 +1,110 @@
+export const metadata = {
+  title: 'Frequently Asked Questions',
+  description:
+    "A curated set of answers to frequent questions we've gotten over time",
+};
+
+# Frequently Asked Questions
+
+You asked and we answer! This is a curated collection of answers to some of the most frequent questions we get. {{className: 'lead'}}
+
+
+## Does iroh use relay servers?
+
+Iroh uses relay servers to support establishing direct connections, to speed up initial connection times, and to provide a fallback should direct connections between two endpoints fail or be impossible otherwise.
+By default iroh is configured with three relay servers run by number 0.
+One in the US, one in Europe and one in Asia.
+We can afford to run these servers for free, because [hole-punching](https://en.wikipedia.org/wiki/Hole_punching_(networking)) rates with iroh are really high.
+Still, to prevent abuse, we rate-limit throughput through our public relays.
+
+
+## Can relays read the traffic they route?
+
+No, all connections in iroh are end-to-end encrypted.
+We use QUIC which is based on TLS 1.3.
+From the perspective of our QUIC implementation, the relay is "just another UDP socket" for sending encrypted packets around.
+Because the relays are relaying traffic, they theoretically know that Node ID X talks to Node ID Y and how many bytes are sent this way, but only for as long as these nodes haven't established a direct connection yet.
+However, we don't record this data on our relays.
+
+
+## How secure is iroh's end-to-end encryption?
+
+Iroh provides a secure, encrypted, forward and backward-secret, authenticated data channel between you and the recipient and protects you both from eavesdroppers.
+This assumes the Node ID you're connecting to was exchanged securely, e.g. via scanning a QR code, sharing a link with the Node ID in an encrypted chat app or using a trusted server and the corresponding secret keys haven't been compromised.
+The established connection is a QUIC connection, which together with TLS 1.3 specifies how it's encrypted.
+This specification is widely used, for example as part of the latest generation of HTTP, HTTP3.
+Instead of PKI-based certificates, at the moment iroh uses self-signed certificates with Node IDs to authenticate both ends of the connection, borrowing [the libp2p handshake specification](https://github.com/libp2p/specs/blob/master/tls/tls.md).
+In the future, we plan on switching to the [raw public key TLS certificate type](https://datatracker.ietf.org/doc/html/rfc7250) instead.
+To make use of this end-to-end encryption, no additional setup in iroh is required, it is always enabled.
+Be aware of security caveats to forward secrecy when using the [opt-in 0-RTT feature](https://docs.rs/iroh/latest/iroh/endpoint/struct.Connecting.html#method.into_0rtt).
+
+
+## What if number 0 stops running relay servers?
+
+The relay servers we run in production [are open-source](https://github.com/n0-computer/iroh/tree/main/iroh-relay), and we highly encourage you to run your own!
+You need a server with a public IP address and a DNS name that points to that IP address.
+Automatic TLS setup via [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) is built into the iroh-relay code.
+Use the configured DNS name to add your relay to the [`RelayMap`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.relay_mode) you configure your iroh node with.
+Running a custom relay server doesn't prevent you from connecting to others connected to other relay servers.
+
+
+## Is establishing a connection without relays or when offline possible?
+
+Yes.
+When you share a `NodeAddr`s with "direct addresses", then iroh will try to use these addresses to establish a connection with or without a relay.
+If you're in a local network together you can enable [local network discovery](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) to help establish connections in LANs even when the `NodeAddr` doesn't contain direct addresses.
+
+
+## How can I control which relay servers iroh connects to?
+
+Iroh will only talk to relay servers that it knows URLs for.
+By default iroh is configured with 3 relay servers from the [default `RelayMap`](https://docs.rs/iroh/latest/iroh/defaults/prod/index.html).
+If you enable `discovery_n0` or other discovery services, then iroh might connect to relay servers discovered that way.
+By changing iroh's relay mode or relay map you can control the home relay the endpoint connects to, and by wrapping or writing your own `Discovery` service, you gain control over the relay URLs iroh can discover.
+
+
+## What is "Discovery" in iroh and which one should I enable?
+
+For most usage, using [`discovery_n0`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_n0) is the best default.
+Discovery helps iroh find ways to connect to a specific Node ID.
+The Node ID on its own can only be used to identify if you're talking to the right recipient, but doesn't tell how to address the recipient on its own.
+Via configured discovery mechanisms, iroh resolves a Node ID to IP addresses and relay URLs that help to actually attempt a connection.
+For more information on available discovery mechanisms, take a look at the [discovery functions](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_n0) in the `EndpointBuilder`.
+It's also possible to combine multiple discovery mechanisms at once, or write your own.
+We think it's particularly helpful to write application-specific discovery mechanisms that are tailored to an application's need.
+
+
+## How is iroh development funded?
+
+The company behind iroh is number 0.
+It is partly venture capital and partly founder backed (as in: founders have invested their own money).
+Number 0 is healthy and has investors we actually think are a value-add.
+We earn revenue from customers today through https://n0.computer/n0ps, and are re-launching an “AWS for iroh  protocols” in the next few weeks.
+While it will be a service you can pay for, it won’t have special treatment beyond being convenient.
+We rely on iroh remaining open source, and are committed to keeping it that way, including server-side code for relays and DNS discovery.
+
+
+## How do iroh and libp2p compare?
+
+Generally, we've put a lot of effort into making iroh "peer to peer connections that *just work*".
+This means we've kept the scope small: There's no DHT, swarm, or gossipsub.
+Instead, what you get are reliable direct [QUIC](https://en.wikipedia.org/wiki/QUIC) connections between iroh endpoints.
+On top of these, some of said libp2p features can be implemented as *protocols* on top, see for example [iroh-gossip](https://github.com/n0-computer/iroh-gossip/) which provides gossipsub-like functionality.
+While there are some features in libp2p like a DHT implementation based on kademlia that don't exist in the iroh ecosystem yet, we believe the features iorh *does* have work better.
+The iroh project was founded by developers who were deeply involved with libp2p, frustrated with its shortcomings and complexity and wanted to build something better.
+
+
+## Is iroh post-quantum-secure?
+
+No.
+Iroh uses Ed25519 for signing and X25519/P-256 for ECDH.
+These algorithms are not post-quantum-secure.
+Adopting the current best post-quantum-secure algorithm, for example Xyber, would incur a very significant network overhead:
+A Xyber public key is 37x larger than an Ed25519 public key.
+This has implications for connection establishment speed:
+For example, the initial handshake for a connection wouldn't fit into a normal UDP packet anymore.
+It also means DNS packets used for DNS discovery at the moment might get fragmented, etc.
+It would also mean Node IDs would be exactly 37x as big.
+To support post-quantum-cryptography, we would need to trade off usability with the risk should a sufficiently powerful quantum computers would become real.
+We believe it is much more important to serve existing use cases efficiently, so they have encryption *today*.
+We fully believe the work on post-quantum-cryptography is good and important and follow developments closely.
