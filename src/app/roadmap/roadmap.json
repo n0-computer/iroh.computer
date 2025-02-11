@@ -48,7 +48,7 @@
     {
       "done": true,
       "title": "net-tools repo",
-      "description": "factor a number of networking tools out of iroh-net and into a separate repo",
+      "description": "factor a number of networking tools out of iroh and into a separate repo",
       "doc": "",
       "subtasks": {
         "netcheck": true,
@@ -87,7 +87,40 @@
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
     },
     { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "https://www.iroh.computer/blog/iroh-0-30-0-slimming-down" },
+    {
+      "done": true,
+      "title": "Auth on Relays",
+      "description": "Blacklist or whitelist `NodeId`s on the relay",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3086"
+    },
+    {
+      "done": true,
+      "title": "Iroh Doctor CLI v0.1",
+      "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
+      "tracking_issue": null
+    },
+    { "version": "v0.31.0", "done": true, "released": "2024-01-14", "doc": "https://www.iroh.computer/blog/iroh-0-31-0-back-to-fighting-fit" },
+    {
+      "done": true,
+      "title": "Add QUIC Address Discovery to `iroh`",
+      "description": "iroh can launch QUIC Address Discovery probes",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3049"
+    },
+    { "version": "v0.32.0", "done": true, "released": "2024-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
     { "ellipsis": true },
+    {
+      "done": false,
+      "title": "browser support",
+      "description": "iroh compiles to web assembly and runs in the browser",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
+      "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
+    },
+    {
+      "done": false,
+      "title": "discovery refinements",
+      "description": "adjust and refine APIs for discovery, refactor and rename subsystems"
+    },
+    { "version": "v0.33.0", "done": false, "released": "2024-02-17", "doc": null },
     {
       "done": false,
       "title": "use Raw Public Keys (RFC 7250) in TLS",
@@ -97,22 +130,43 @@
     },
     {
       "done": false,
-      "title": "custom protocol template repo",
-      "description": "create a template repo for custom protocols with examples for shipping RPC interfaces and FFI bindings",
+      "title": "iroh-blobs: multiprovider fan-in",
+      "description": "Download data from multiple providers",
+      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
+    },
+    {
+      "done": false,
+      "title": "QUIC connections: graceful shutdown",
+      "description": "finalize our APIs for graceful shutdown of QUIC connections",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.34.0", "done": false, "released": "2024-03-10", "doc": null },
+    {
+      "done": false,
+      "title": "QUIC Multipath support",
+      "description": "implement QUIC multipath",
+      "tracking_issue": "",
+      "subtasks": {
+        "quinn iroh fork": false,
+        "plumb into iroh": false,
+        "upstream to quinn": false
+      }
+    },
+    {
+      "done": false,
+      "title": "blobs 1.0 API",
+      "description": "overhaul blobs API",
       "tracking_issue": null
     },
     {
       "done": false,
-      "title": "FFI bindings move to protocols",
-      "description": "move FFI bindings to each protocol, demonstrating how to ship custom protocols with language bindings",
-      "tracking_issue": null
+      "title": "relay connections over websockets",
+      "description": "Connections to the relay happen over websockets",
+      "tracking_issue": null,
+      "doc": null
     },
-    {
-      "done": false,
-      "title": "Iroh Doctor CLI v0.1",
-      "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
-      "tracking_issue": null
-    },
+    { "version": "v0.35.0", "done": false, "released": "2024-03-31", "doc": null },
     {
       "done": false,
       "title": "draft specification",
@@ -132,21 +186,11 @@
     },
     {
       "done": false,
-      "title": "QUIC Multipath support",
-      "description": "implement QUIC multipath",
-      "tracking_issue": "",
-      "subtasks": {
-        "quinn iroh fork": false,
-        "plumb into iroh-net": false,
-        "upstream to quinn": false
-      }
-    },
-    {
-      "done": false,
       "title": "QUIC NAT traversal",
       "description": "Using Quic to traverse NATs",
       "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
     },
+    { "version": "v0.36.0", "done": false, "released": "2024-04-21", "doc": null },
     {
       "done": false,
       "title": "Formalize Error Responses",
@@ -155,26 +199,23 @@
     },
     {
       "done": false,
-      "title": "browser support",
-      "description": "iroh-net compiles to web assembly and runs in the browser",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
-      "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
-    },
-    {
-      "done": false,
-      "title": "discovery refinements",
-      "description": "adjust and refine APIs for discovery, refactor and rename subsystems"
-    },
-    {
-      "done": false,
       "title": "finalize 1.0 spec",
       "description": "ratify the iroh 1.0 wire protocol",
       "tracking_issue": ""
     },
+    { "version": "v0.37.0", "done": false, "released": "2024-05-12", "doc": null },
     {
       "done": false,
       "title": "release candidate",
       "description": "publish a release candidate, seeking feedback from the community",
+      "tracking_issue": "",
+      "doc": ""
+    },
+    { "version": "v0.38.0", "done": false, "released": "2024-06-02", "doc": null },
+    {
+      "done": false,
+      "title": "documentation refinement",
+      "description": "ensure documentation is accurate and robust",
       "tracking_issue": "",
       "doc": ""
     },
