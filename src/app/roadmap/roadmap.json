@@ -111,7 +111,7 @@
     {
       "done": false,
       "title": "browser support",
-      // "description": "iroh compiles to web assembly and runs in the browser",
+      "description": "iroh compiles to web assembly and runs in the browser",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
       "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
     },
