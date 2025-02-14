@@ -16,7 +16,7 @@ There are four different implementations of the discovery service in iroh, all o
 | --- | --- | --- |
 | 1 | [DNS](#dns-discovery) | uses a custom Domain Name System server |
 | 2 | [Local](#local-discovery) | uses an mDNS-like system to find nodes on the local network |
-| 3 |  [Pkarr](#pkarr-discovery) | uses Pkarr Servers over HTTP |
+| 3 | [Pkarr](#pkarr-discovery) | uses Pkarr Servers over HTTP |
 | 4 | [DHT](#dht-discovery) | uses the BitTorrent Mainline DHT |
 
 By Default, iroh uses the DNS discovery system to resolve NodeIds to addresses. And can be configured to use any of the other discovery systems.
@@ -35,26 +35,18 @@ Local Discovery is _not_ enabled by default, and must be enabled by the user. Yo
 
 ```toml
 [dependencies]
-iroh = { version = "0.1", features = ["discovery-local-network"] }
+# Make sure to use the most recent version here instead of nn. (at the time of writing: 0.32)
+iroh = { version = "0.nn", features = ["discovery-local-network"] }
 ```
 
 Then configure your endpoint to use local discovery concurrently with DNS discovery:
 
 ```rust
-use iroh::{
-    discovery::{dns::DnsDiscovery, LocalSwarmDiscovery, pkarr::PkarrPublisher, ConcurrentDiscovery},
-    Endpoint, SecretKey,
-};
-
-let secret_key = SecretKey::generate(rand::rngs::OsRng);
-let discovery = ConcurrentDiscovery::from_services(vec![
-    Box::new(DnsDiscovery::n0_dns()),
-    Box::new(LocalSwarmDiscovery::new(secret_key.public())?),
-]);
+use iroh::Endpoint;
 
 let ep = Endpoint::builder()
-    .secret_key(secret_key)
-    .discovery(Box::new(discovery))
+    .discovery_n0()
+    .discovery_local_network()
     .bind()
     .await?;
 ```
@@ -69,27 +61,18 @@ DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'
 
 ```toml
 [dependencies]
-# Make sure to use the most recent version here instead of nn.
+# Make sure to use the most recent version here instead of nn. (at the time of writing: 0.32)
 iroh = { version = "0.nn", features = ["discovery-pkarr-dht"] }
 ```
 
 Then configure your endpoint to use DHT discovery concurrently with DNS discovery:
 
 ```rust
-use iroh::{
-    discovery::{dns::DnsDiscovery, pkarr::dht::DhtDiscovery, ConcurrentDiscovery},
-    Endpoint, SecretKey,
-};
-
-let secret_key = SecretKey::generate(rand::rngs::OsRng);
-let discovery = ConcurrentDiscovery::from_services(vec![
-    Box::new(DnsDiscovery::n0_dns()),
-    Box::new(DhtDiscvoery::new(secret_key.public())?),
-]);
+use iroh::Endpoint;
 
 let ep = Endpoint::builder()
-    .secret_key(secret_key)
-    .discovery(Box::new(discovery))
+    .discovery_n0()
+    .discovery_dht()
     .bind()
     .await?;
 ```

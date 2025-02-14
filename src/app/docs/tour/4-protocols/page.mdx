@@ -1,6 +1,6 @@
 import { PageLink } from '@/components/PageNavigation';
 
-# Protocols
+# 4. Protocols
 
 At this point, we’re connected, yay! Now we just have to… do something… with that connection. That’s where protocols come in.
 
@@ -11,21 +11,20 @@ Coming from the world of HTTP client/server models, protocols are kinda like req
 Protocols are an ever-growing topic, but to give you a basic let's add the [blobs](/proto/iroh-blobs) protocol. First we need to add it to our depdendencies:
 
 ```
-cargo add iroh-blobs
+cargo add iroh-blobs --features=rpc
 ```
 
 then adjust our code:
 
 ```rust
 use iroh::{protocol::Router, Endpoint};
-use iroh_blobs::{net_protocol::Blobs, util::local_pool::LocalPool};
+use iroh_blobs::net_protocol::Blobs;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
-    let local_pool = LocalPool::default();
-    let blobs = Blobs::memory().build(local_pool.handle(), &endpoint);
+    let blobs = Blobs::memory().build(&endpoint);
 
     // build the router
     let router = Router::builder(endpoint)
@@ -34,8 +33,7 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     router.shutdown().await?;
-    drop(local_pool);
-    drop(tags_client);
+
     Ok(())
 }
 ```

@@ -75,9 +75,9 @@ In that case, you'll need to make sure you're not only dialing by `NodeId`, but 
 </Note>
 
 
-## Using an existing protocol: [iroh-blobs](/proto/iroh-blobs)
+## Using an existing protocol: iroh-blobs
 
-Instead of writing our own protocol from scratch, let's use iroh-blobs, which already does what we want:
+Instead of writing our own protocol from scratch, let's use [iroh-blobs](/proto/iroh-blobs), which already does what we want:
 It loads files from your file system and provides a protocol for seekable, resumable downloads of these files.
 
 ```rust
@@ -88,8 +88,7 @@ async fn main() -> anyhow::Result<()> {
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
     // We initialize the Blobs protocol in-memory
-    let local_pool = LocalPool::default();
-    let blobs = Blobs::memory().build(&local_pool, &endpoint);
+    let blobs = Blobs::memory().build(&endpoint);
 
     // ...
 
@@ -118,8 +117,7 @@ async fn main() -> anyhow::Result<()> {
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
     // We initialize the Blobs protocol in-memory
-    let local_pool = LocalPool::default();
-    let blobs = Blobs::memory().build(&local_pool, &endpoint);
+    let blobs = Blobs::memory().build(&endpoint);
 
     // Now we build a router that accepts blobs connections & routes them
     // to the blobs protocol.
@@ -133,19 +131,18 @@ async fn main() -> anyhow::Result<()> {
     // Gracefully shut down the router
     println!("Shutting down.");
     router.shutdown().await?;
-    local_pool.shutdown().await;
 
     Ok(())
 }
 ```
 
-I've also taken the liberty to make sure that we're gracefully shutting down the `Router` and all its protocols with it, as well as the `LocalPool` that the iroh-blobs library needs to operate.
+I've also taken the liberty to make sure that we're gracefully shutting down the `Router` and all its protocols with it, in this case that's only iroh-blobs.
 
 
 ## Doing something
 
 So far, this code works, but doesn't actually do anything besides spinning up a node and immediately shutting down.
-Even if we put in a `tokio::time::timeout` or `tokio::signal::ctrl_c().await` in there, it *would* actually respond to network requests for the blobs protocol, but even that is practically useless as we've stored no blobs to respond with.
+If we put in a `tokio::time::timeout` or `tokio::signal::ctrl_c().await` in there, although it *would* actually respond to network requests for the blobs protocol, these responses are practically useless as we've stored no blobs to respond with.
 
 Here's our plan for turning this into a CLI that actually does what we set out to build:
 1. We'll grab a [`Blobs::client`](https://docs.rs/iroh-blobs/latest/iroh_blobs/net_protocol/struct.Blobs.html#method.client) to interact with the iroh-blobs node we're running locally.
@@ -162,18 +159,23 @@ Here's our plan for turning this into a CLI that actually does what we set out t
 Phew okay! Here's how we'll grab an iroh-blobs client and look at the CLI arguments:
 
 ```rust
-let blobs = blobs.client();
+// We use a blobs client to interact with the blobs protocol we're running locally:
+let blobs_client = blobs.client();
 
-let args = std::env::args().collect::<Vec<_>>();
-match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
-    [_cmd, "send", path] => {
+// Grab all passed in arguments, the first one is the binary itself, so we skip it.
+let args: Vec<String> = std::env::args().skip(1).collect();
+// Convert to &str, so we can pattern-match easily:
+let arg_refs: Vec<&str> = args.iter().map(String::as_str).collect();
+
+match arg_refs.as_slice() {
+    ["send", filename] => {
         todo!();
     }
-    [_cmd, "receive", ticket, path] => {
+    ["receive", ticket, filename] => {
         todo!();
     }
     _ => {
-        println!("Couldn't parse command line arguments.");
+        println!("Couldn't parse command line arguments: {args:?}");
         println!("Usage:");
         println!("    # to send:");
         println!("    cargo run --example transfer -- send [FILE]");
@@ -189,23 +191,26 @@ Now all we need to do is fill in the `todo!()`s one-by-one:
 
 ### Getting ready to send
 
-If we want to make a file available over the network with iroh-blobs, we first need to index this file.
+If we want to make a file available over the network with iroh-blobs, we first need to hash this file.
 
 <Note>
 What does this step do?
 
-It hashes the file using BLAKE3 and stores a so-called "outboard" for that file.
-This outboard file contains information about hashes for parts of this file.
+It hashes the file using [BLAKE3](https://en.wikipedia.org/wiki/BLAKE_(hash_function)) and stores a so-called ["outboard"](https://github.com/oconnor663/bao?tab=readme-ov-file#outboard-mode) for that file.
+This outboard file contains information about hashes of parts of this file.
 All of this enables some extra features with iroh-blobs like automatically verifying the integrity of the file *during* streaming, verified range downloads and download resumption.
 </Note>
 
 ```rust
-let abs_path = PathBuf::from_str(path)?.canonicalize()?;
+let filename: PathBuf = filename.parse()?;
+let abs_path = std::path::absolute(&filename)?;
 
-println!("Indexing file.");
+println!("Hashing file.");
 
-let blob = blobs
-    .add_from_path(abs_path, true, SetTagOption::Auto, WrapOption::NoWrap)
+// keep the file in place and link it, instead of copying it into the in-memory blobs database
+let in_place = true;
+let blob = blobs_client
+    .add_from_path(abs_path, in_place, SetTagOption::Auto, WrapOption::NoWrap)
     .await?
     .finish()
     .await?;
@@ -221,7 +226,7 @@ This ticket contains the `NodeId` of our `Endpoint` as well as the file's BLAKE3
 let node_id = router.endpoint().node_id();
 let ticket = BlobTicket::new(node_id.into(), blob.hash, blob.format)?;
 
-println!("File analyzed. Fetch this file by running:");
+println!("File hashed. Fetch this file by running:");
 println!("cargo run --example transfer -- receive {ticket} {path}");
 
 tokio::signal::ctrl_c().await?;
@@ -236,12 +241,13 @@ On the connection side, we got the `ticket` and the `path` from the CLI argument
 With them parsed, we can call `blobs.download` with the information contained in the ticket and wait for the download to finish:
 
 ```rust
-let path_buf = PathBuf::from_str(path)?;
-let ticket = BlobTicket::from_str(ticket)?;
+let filename: PathBuf = filename.parse()?;
+let abs_path = std::path::absolute(filename)?;
+let ticket: BlobTicket = ticket.parse()?;
 
 println!("Starting download.");
 
-blobs
+blobs_client
     .download(ticket.hash(), ticket.node_addr().clone())
     .await?
     .finish()
@@ -250,22 +256,29 @@ blobs
 println!("Finished download.");
 ```
 
-As a final step, we'll copy the file we just downloaded to the desired file path:
+As a final step, we'll export the file we just downloaded into our blobs database to the desired file path:
 
 ```rust
 println!("Copying to destination.");
 
-let mut file = tokio::fs::File::create(path_buf).await?;
-let mut reader = blobs.read_at(ticket.hash(), 0, ReadAtLen::All).await?;
-tokio::io::copy(&mut reader, &mut file).await?;
+blobs_client
+    .export(
+        ticket.hash(),
+        abs_path,
+        ExportFormat::Blob,
+        ExportMode::Copy,
+    )
+    .await?
+    .finish()
+    .await?;
 
 println!("Finished copying.");
 ```
 
 <Note>
-This first download the file completely into memory, then copy that memory into a file in two steps.
+This first downloads the file completely into memory, then copies it from memory to file in a second step.
 
-There's ways to make this work without having to store the whole file in memory, but that involves setting up `Blobs::persistent` instead of `Blobs::memory` and using `blobs.export` with `EntryMode::TryReference`.
+There's ways to make this work without having to store the whole file in memory, but those involve setting up `Blobs::persistent` instead of `Blobs::memory` and using `blobs.export` with `EntryMode::TryReference`.
 We'll leave these changes as an exercise to the reader 😉
 </Note>
 
@@ -278,7 +291,5 @@ The full example with the very latest version of iroh and iroh-blobs can be [vie
 
 If you're hungry for more, check out
 - the [iroh rust documentation](https://docs.rs/iroh),
-- [other examples](/docs/examples),
-- other available [protocols](/proto)
-
-If rust is not actually your jam, make sure to check out the [language bindings](/docs/sdks)!
+- [other examples](/docs/examples), or
+- other available [protocols](/proto).
