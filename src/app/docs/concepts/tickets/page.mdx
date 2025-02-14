@@ -40,16 +40,6 @@ It's worth point out this setup is considerably better than full peer-2-peer sys
 
 When you create a document ticket, you're creating a secret that allows someone to read or write to a document. This means that you should be careful about sharing document tickets with people you don't trust. What's more, someone who has a document ticket can use it to create new tickets for the same document. This means that if you share a document ticket with someone, they can use it to create new tickets for the same document, and share those tickets with others.
 
-## Creating Tickets
-
-| Type | Command |
-| --- | --- |
-| `node` | [`dumbpipe listen`](https://dumbpipe.dev) |
-| `blob` | `iroh blob share` |
-| `doc` | [`iroh doc share`](/docs/api/doc-share) |
-
-by default, tickets only include the nodeID If you still want to add relay and direct addresses to the ticket, you can pass `--addr-options RelayAndAddresses` to the ticket generation commands.
-
 ## Tickets in Apps
 Using tickets in your app comes down to what you're trying to accomplish. For short-lived sessions where both devices are online at the same time, tickets are an incredibly powerful way to bootstrap connections, and require no additinonal servers for coordination.
 
