@@ -1,6 +1,6 @@
 import { PageLink } from '@/components/PageNavigation';
 
-# Routers
+# 5. Routers
 
 Most apps will use more than one protocol. A router let’s you stack protocols on top of iroh's peer-to-peer connections. Routers handle the *accept* side of an iroh endpoint, but the connection initiation side is still handled by the protocol instance itself.
 
@@ -14,15 +14,14 @@ Then we can setup gossip & add it to our router:
 
 ```rust
 use iroh::{protocol::Router, Endpoint};
-use iroh_blobs::{net_protocol::Blobs, util::local_pool::LocalPool};
+use iroh_blobs::net_protocol::Blobs;
 use iroh_gossip::{net::Gossip, ALPN};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
-    let local_pool = LocalPool::default();
-    let blobs = Blobs::memory().build(local_pool.handle(), &endpoint);
+    let blobs = Blobs::memory().build(&endpoint);
 
     let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
 
@@ -34,7 +33,6 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     router.shutdown().await?;
-    drop(local_pool);
     Ok(())
 }
 ```
