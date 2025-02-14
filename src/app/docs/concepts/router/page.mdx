@@ -21,14 +21,12 @@ async fn main() -> Result<()> {
     let endpoint = Endpoint::builder().discovery_n0().bind().await?;
 
     // configure the blobs protocol to run in-memory
-    let lp = LocalPool::default();
-    let blobs = Blobs::memory()
-        .build(lp.handle(), &endpoint);
+    let blobs = Blobs::memory().build(&endpoint);
 
     // Build our router and add the blobs protocol, 
     // identified by its ALPN. Spawn the router to start listening.
     let router = Router::builder(endpoint)
-        .accept(iroh_blobs::ALPN, blobs.clone())
+        .accept(iroh_blobs::ALPN, blobs)
         .spawn()
         .await?;
 
@@ -38,6 +36,11 @@ async fn main() -> Result<()> {
 
     // Wait for exit
     tokio::signal::ctrl_c().await?;
+
+    // Gracefully close the endpoint & protocols.
+    // This makes sure that remote nodes are notified about possibly still open connections
+    // and any data is written to disk fully (or any other shutdown procedure for protocols).
+    router.shutdown().await?;
 
     Ok(())
 }
