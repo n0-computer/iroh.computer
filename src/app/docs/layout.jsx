@@ -39,12 +39,6 @@ export const navItems = [
       {title: 'FAQ', href: '/docs/faq' },
     ],
   },
-  {title: 'Writing a protocol',
-    links: [
-      {title: 'Writing your first protocol', href: '/docs/protocols/writing'},
-      {title: 'Submitting to the registry', href: '/docs/protocols/submitting'},
-    ]
-  },
 ];
 
 export default function DocsLayout({children, sections = {}}) {
