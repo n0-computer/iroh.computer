@@ -9,10 +9,10 @@ Let's first add iroh to our project. From the project root run `cargo add iroh` 
 ```bash
 $ cargo add iroh
     Updating crates.io index
-      Adding iroh v0.31.0 to dependencies
+      Adding iroh v0.32.1 to dependencies
              Features:
-             + discovery-pkarr-dht
              + metrics
+             - discovery-pkarr-dht
              - discovery-local-network
              - examples
              - test-utils
@@ -31,7 +31,7 @@ In the end your `Cargo.toml` file's `[dependencies]` section should look somethi
 ```toml
 [dependencies]
 anyhow = "1.0.95"
-iroh = "0.31.0"
+iroh = "0.32.1"
 rand = "0.8.5"
 tokio = "1.43.0"
 ```

@@ -41,27 +41,22 @@ This will change our `Cargo.toml` file `[dependencies]` section to look like thi
 ```toml
 [dependencies]
 anyhow = "1.0.95"
-iroh = { version = "0.31.0", features = ["discovery-local-network"] }
+iroh = { version = "0.32.1", features = ["discovery-local-network"] }
 rand = "0.8.5"
 tokio = "1.43.0"
 ```
 
-And with that we can set up local discovery. It does add some complexity to the endpoint setup:
+And with that we can set up local discovery:
 
 ```rust
-use iroh::discovery::local_swarm_discovery::LocalSwarmDiscovery;
 use iroh::{Endpoint, RelayMode, SecretKey};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let key = SecretKey::generate(rand::rngs::OsRng);
-    let id = key.public();
-
     let builder = Endpoint::builder()
-        .secret_key(key)
         .relay_mode(RelayMode::Default)
         .discovery_n0()
-        .discovery(Box::new(LocalSwarmDiscovery::new(id)?));
+        .discovery_local_network()
 
     let endpoint = builder.bind().await?;
     println!("node id: {:?}", endpoint.node_id());
