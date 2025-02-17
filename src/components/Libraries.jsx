@@ -22,44 +22,6 @@ const libraries = [
       { title: "github", href: "https://github.com/n0-computer/iroh", external: true }
     ]
   },
-  {
-    name: 'node.js',
-    description: 'Iroh\'s node.js SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of javascript syntax.',
-    logo: logoNodeJs,
-    links: [
-      { title: "npm", href: "https://www.npmjs.com/package/@number0/iroh", external: true },
-      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/tree/main/iroh-js", external: true }
-    ]
-  },
-  {
-    name: 'Python',
-    description:
-      'Iroh\'s python SDK uses the rust runtime via c-bindings, maximizing performance from the comfort of python syntax.',
-    logo: logoPython,
-    links: [
-      { title: "pypi", href: "https://pypi.org/project/iroh/", external: true },
-      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.python.md", external: true }
-    ]
-  },
-  {
-    name: 'Swift',
-    description:
-      'Build native iOS apps with iroh\'s swift SDK, tested with SwiftUI, works with uikit.',
-    logo: logoSwift,
-    links: [
-      { title: "cocoapods", href: "https://cocoapods.org/pods/IrohLib", external: true },
-      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.swift.md", external: true }
-    ]
-  },
-  {
-    name: 'Kotlin',
-    description:
-      'Iroh\'s Kotlin SDK uses the rust implementation via c-bindings.',
-    logo: logoKotlin,
-    links: [
-      { title: "github", href: "https://github.com/n0-computer/iroh-ffi/blob/main/README.kotlin.md", external: true }
-    ]
-  }
 ];
 
 export function Libraries() {

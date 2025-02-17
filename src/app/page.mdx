@@ -14,16 +14,7 @@ import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 
-import logoGo from '@/images/logos/go.svg';
-import logoPython from '@/images/logos/python.svg';
 import logoRust from '@/images/logos/rust.svg';
-import logoSwift from '@/images/logos/swift.svg';
-import logoNode from '@/images/logos/node.svg';
-import logoKotlin from '@/images/logos/kotlin.svg';
-import iconCarat from '@/images/icons/icon_carat.svg';
-import iconFaster from '@/images/icons/icon_faster.svg';
-import iconOpen from '@/images/icons/icon_open.svg';
-import iconPlatforms from '@/images/icons/icon_platforms.svg';
 
 export const metadata = {
   title: 'Iroh',
@@ -136,90 +127,14 @@ export const metadata = {
                 unoptimized
                 />
             </div>
-            <div className=''>
-              <Image
-                src={logoPython}
-                alt=""
-                className="h-12 w-12"
-                unoptimized
-                />
-            </div>
-            <div className=''>
-              <Image
-                src={logoSwift}
-                alt=""
-                className="h-12 w-12"
-                unoptimized
-                />
-            </div>
-            <div className=''>
-              <Image
-                src={logoKotlin}
-                alt=""
-                className="mt-2.5 ml-3 h-9 w-9"
-                unoptimized
-                />
-            </div>
-            <div className=''>
-              <Image
-                src={logoNode}
-                alt=""
-                className="h-14 w-14"
-                unoptimized
-                />
-            </div>
           </div>
-          <h1 className='text-3xl font-bold mb-2'>Build in your language</h1>
-          <p>Iroh supports a growing set of languages, embedding nodes directly in your project without any need to call out to an external API</p>
+          <h1 className='text-3xl font-bold mb-2'>Build something amazing, today.</h1>
           <Link href='/docs/examples' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
             Start Building
           </Link>
         </div>
         <div className='lg:w-2/3 lg:mt-28'>
-        <CodeGroup title="hello">
-
-```js {{ title: 'nodejs' }}
-import { argv } from 'process'
-import { Iroh, BlobTicket } from '@number0/iroh'
-
-// serve & fetch data with iroh, from any two devices in the world
-// run this example from any two computers, and iroh will connect them!
-(async () => {
-  // create a new node with default protocols
-  const node = await Iroh.memory();
-
-  // Choose between client & server roles based on the presence of a download CLI argument
-  if (argv.length > 2) {
-    
-    // we have a download argument. Fetch some data!
-    let ticket = BlobTicket.fromString(argv[2]);
-    console.log(`fetching hash '${ticket.hash}' from node: '${ticket.nodeAddr.nodeId.toString()};`);
-
-    // download the data
-    await node.blobs.download(ticket.hash, ticket.asDownloadOptions(), (_err) => {});
-
-    // read the data
-    const data = await node.blobs.readToBytes(ticket.hash);
-    console.log("data:", new TextDecoder().decode(new Uint8Array(data)));
-
-  } else {
-
-    // no download argument. Serve some data that says "Hello, world!"
-    const data = Array.from(new TextEncoder().encode('Hello, World!'));
-    const result = await node.blobs.addBytes(data);
-    // create a "ticket" for sharing data with another node
-    const ticket = await node.blobs.share(result.hash, result.format, 'RelayAndAddresses');
-
-    console.log(`server running. in another terminal run:\n\nnode hello.js ${ticket.toString()}`);
-    // wait for ctrl+c
-    await new Promise((resolve) => {
-      process.on('SIGINT', () => { resolve() });
-      setInterval(() => {}, 1000);
-    });
-    process.exit();
-  }
-})();
-```
+        <CodeGroup title="main.rs">
 
 ```rust {{ title: 'rust' }}
 use std::{env, str::FromStr};
@@ -274,18 +189,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-
-```
-
-```swift {{ title: 'swift' }}
-import IrohLib
-
-let node = try! IroneNode()
-let author = try! node.createAuthor()
-let doc = try! Iroh.createDoc()
-
-let hash = try! doc.setBytes(author: author, key: "foo".data(using: .utf8)!, value: "bar".data(using: .utf8)!)
-let value = try! doc.getContentBytes(hash: hash)
 
 ```
 

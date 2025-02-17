@@ -19,7 +19,7 @@ export default function Component() {
     <BlankLayout>
         <header className="max-w-lg px-4 sm:px-0">
           <h1 className="text-2xl sm:text-4xl font-space font-bold tracking-tight text-zinc-800 dark:text-zinc-100">iroh 1.0 roadmap</h1>
-          <p className="my-3 text-base text-zinc-600 dark:text-irohGray-400">Here&apos;s where we&apos;re headed, and progress we made against our goal to date. For more details see the <Link className='text-irohPurple-500 underline decoration-dotted' href="/blog/road-to-1-0">iroh 1.0 roadmap post</Link></p>
+          <p className="my-3 text-base text-zinc-600 dark:text-irohGray-400">Here&apos;s where we&apos;re headed, and progress we made against our goal to date. For more details see the <Link className='text-irohPurple-500 underline decoration-dotted' href="/blog/road-to-1-0">iroh 1.0 roadmap post</Link>, and check past releases in the <Link className='text-irohPurple-500 underline decoration-dotted' href="/changelog">changelog</Link></p>
           <p className='font-space tracking-tight text-zinc-800 dark:text-zinc-100'>Last Updated {formatDate(last_updated)}</p>
         </header>
         <div className='max-w-2xl mb-20'>
@@ -44,7 +44,7 @@ function Release({ data }) {
   const { version, done, doc, released, expected } = data;
   return (
     <div className={clsx(
-      'pr-5 ml-calc pt-9 pb-2 relative w-32 border-r dark:border-irohGray-700 text-right', 
+      'pr-5 ml-calc pt-9 pb-2 relative w-32 border-r dark:border-irohGray-700 text-right',
       done && 'border-irohPurple-500 dark:border-irohPurple-500')}>
       <div className='absolute -right-3.5 top-8 w-7 h-7 rounded-full bg-white dark:bg-irohGray-900'>
         {done
@@ -68,7 +68,7 @@ function Milestone({ data }) {
   const issueNunber = tracking_issue?.split("/").slice(-1)[0]
   return (
     <div style={{ marginLeft: '7.95rem' }} className={clsx(
-      'border-l relative pb-5 max-w-md dark:border-irohGray-700', 
+      'border-l relative pb-5 max-w-md dark:border-irohGray-700',
       done && 'border-irohPurple-500 dark:border-irohPurple-500'
     )}>
       <div className='absolute -left-2.5 rounded-full bg-white dark:bg-irohGray-900'>
@@ -121,7 +121,7 @@ function AllDone({ data }) {
   const { title, description, link, all_done } = data;
   return (
     <div style={{ marginLeft: '7.95rem' }} className={clsx(
-      'relative pb-5 max-w-md dark:border-irohGray-700', 
+      'relative pb-5 max-w-md dark:border-irohGray-700',
       all_done && 'border-irohPurple-500 dark:border-irohPurple-500'
     )}>
       <div className='absolute -left-2.5 rounded-full bg-white dark:bg-irohGray-900'>

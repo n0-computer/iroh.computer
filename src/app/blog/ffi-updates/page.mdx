@@ -1,0 +1,73 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { EmailSubscribe } from '@/components/EmailSubscribe'
+
+export const post = {
+  draft: false,
+  author: 'b5',
+  date: '2025-02-12',
+  title: 'Update On FFI Bindings',
+  description: 'We are pausing FFI releases until we figure out a better solution',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+We wanted to share an important update about the Kotlin, Python, Swift, and JavaScript FFI bindings for iroh. After a lot of thought, we’ve decided that **we won’t be updating these bindings with iroh releases until we can improve the experience of using FFI.**
+
+## Why?
+
+Two reasons:
+
+1. **Because we don’t think our FFI story is good enough right now.** Our promise is to ship “P2P that works”, and we’re not hitting that “just works” experience in languages that aren’t rust.
+2. **We’re concerned about ecosystem fragmentation**. If one person writes an iroh protocol but does it in python via FFI bindings, _that will only work for Iroh in python_. This is likely what will happen in the long run regardless of what we do, but we want to see if we can make things easier.
+
+## What’s the plan?
+
+We have three possible solutions we’re actively chasing, and will update you as we make progress on which we think will work the best.
+
+1. **Move language integration up a level:** community members are having success with projects like [flutter rust bridge](https://github.com/fzyzcjy/flutter_rust_bridge) & [react native UniFFI](https://github.com/jhugman/uniffi-bindgen-react-native). We’ll likely lean into this either way, the only question is is this the *only FFI* solution, or do we need more?
+2. **Ship composable FFI across iroh protocols.** This would give tooling to iroh protocol developers for automatically generating FFI APIs that can compose together in the host language. dignifiedquire has been hacking on a prototype, but it doesn’t yet work, and we don’t know if it will. For more information on the current blockers we are facing, take a look at these issues:
+    - [https://github.com/mozilla/uniffi-rs/pull/2423](https://github.com/mozilla/uniffi-rs/pull/2423)/
+    - [https://github.com/PyO3/maturin/issues/2459](https://github.com/PyO3/maturin/issues/2459)
+3. **Ship 1.0, do native implementations of iroh in each language.** After 1.0 we will have a proper spec to work from. There’s no way we could pull this off without community support, and we’re not going to ask people to do that until *after* we ship 1.0, and know that iroh has a solid spec to build on.
+
+## So, You’re just giving up on other languages?
+
+No! We’re still shipping iroh in browsers. We’re still working on running these plans to ground, all futures for iroh pass through robust support for javascript, kotlin, swift, and python *at a minimum*, we just want to get it right and don’t want to waste your time until we’re confident our support for each language matches the experience we’re currently providing in rust.
+
+## When can I expect an update?
+
+Deciding on a path forward is part of our [1.0 roadmap](/release), which is slated to come out in the 2nd half of 2025, you can subscribe for updates here, or keep an eye on the [changelog](/changelog).
+
+<EmailSubscribe />
+
+## Want to Keep Using iroh-ffi?
+
+We know some of you are using the existing FFI bindings, and if you’d like to keep them updated, we’d love to see **community contributions!** If you’re interested, you’re more than welcome to submit **pull requests**:
+
+- **Current iroh-ffi repository:** https://github.com/n0-computer/iroh-ffi
+
+If you’d rather build your own FFI bindings and focus only on the parts you need, here are a couple of great resources to help you get started:
+
+- **UniFFI** (for Rust-to-FFI generation): https://mozilla.github.io/uniffi-rs/latest/
+- **NAPI** (for Node.js FFI): [https://napi.rs/](https://napi.rs/)
+
+We really appreciate all of your support, and we’re excited for what’s ahead! If you have any thoughts or ideas, feel free to share them with us on [GitHub](https://github.com/n0-computer/iroh/discussions) or join us on [discord](https://discord.gg/raGSbNC3fG).
+
+Thanks for being part of the journey!
