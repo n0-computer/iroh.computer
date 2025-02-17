@@ -8,9 +8,9 @@ import { formatDate } from '@/lib/formatDate'
 import releases from './releases.json';
 
 export const metadata = {
-  title: 'Roadmap',
+  title: 'Changelog',
   description:
-    'Iroh 1.0 roadmap. Here\'s where we\'re headed, and progress we made against our goal to date.',
+    'Iroh Release History',
 };
 
 export default function Component() {
