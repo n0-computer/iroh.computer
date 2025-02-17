@@ -1,5 +1,5 @@
 {
-  "last_updated": "2024-12-04",
+  "last_updated": "2025-02-11",
   "milestones": [
     {
       "done": true,
@@ -9,7 +9,7 @@
     },
     { "version": "v0.26.0", "done": true, "released": "2024-09-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
     { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "https://www.iroh.computer/blog/iroh-0-27-0-Squashing-Bugs-And-Taking-Names" },
-    { 
+    {
       "done": true,
       "title": "pull custom protocols out of iroh",
       "description": "pull custom protocols out of iroh and into separate repositories",
@@ -107,7 +107,6 @@
       "tracking_issue": "https://github.com/n0-computer/iroh/pull/3049"
     },
     { "version": "v0.32.0", "done": true, "released": "2024-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
-    { "ellipsis": true },
     {
       "done": false,
       "title": "browser support",
@@ -190,6 +189,14 @@
       "description": "Using Quic to traverse NATs",
       "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
     },
+    {
+      "done": false,
+      "title": "Finalize FFI integration",
+      "description": "protocol developers have a clear path for integrating rust protocols into other languages",
+      "tracking_issue": "",
+      "doc": ""
+    },
+    { "ellipsis": true },
     { "version": "v0.36.0", "done": false, "released": "2024-04-21", "doc": null },
     {
       "done": false,

@@ -44,7 +44,7 @@ export function HeaderSparse() {
       if (window.scrollY > 0) {
         navbar.classList.add('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
       } else {
-        navbar.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+        navbar?.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
       }
     }
 
