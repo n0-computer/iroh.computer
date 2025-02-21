@@ -8,7 +8,7 @@ export const metadata = {
 # Overview
 
 Iroh lets you establish direct peer-to-peer connections whenever possible, falling back to relay servers if necessary.
-This gives you fast, reliable connections that are authenticated and encrypted end-to-end using QUIC. {{className: 'lead'}}
+This gives you fast, reliable QUIC connections that are authenticated and encrypted end-to-end. {{className: 'lead'}}
 
 
 ## Iroh is "dial by public key"
@@ -17,15 +17,25 @@ In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 publ
 You won't have to think about NATs getting in your way, iroh traverses them for you.
 Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 
-## How it works
 
-It's built on peer-to-peer QUIC using both relays and holepunching.
+## Peer to peer
 
-Peer to peer connectivity is established with the help of a relay server. The relay server provides Session Traversal Utilities for NAT (STUN) for the peers. If no direct connection can be established, the connection is relayed via the server.
+Iroh is built on peer-to-peer QUIC using both relays and holepunching.
 
-Peers must know and do verify the PeerID of each other before they can connect. When using a relay server to aid the connection establishment they will register with a home relay server using their PublicKey. Other peers which can not establish a direct connection can then establish connection via this relay server. This will try to assist establishing a direct connection using STUN and holepunching but continue relaying if not possible.
+Peers must know the NodeId of a peer before connecting to it.
+They verify this NodeId during the connection handshake to provide end-to-end encryption and authentication.
 
-Peers can also connect directly without using a relay server. For this, however the listening peer must be directly reachable by the connecting peer via one of it's addresses.
+Peer to peer connectivity is established with the help of a relay server.
+On startup peers register their NodeId with a home relay server.
+The relay server provides assistance to traverse firewalls,
+NATs or others alike.
+If no direct connection can be established,
+the connection is relayed via the server.
+
+Peers can also connect directly without using a relay server.
+For this,
+however,
+the listening peer must be directly reachable by the connecting peer via one of it's addresses.
 
 
 ## Iroh is built on QUIC
