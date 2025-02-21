@@ -23,7 +23,7 @@ Basing connections on asymmetric public keys is what allows iroh to *always* end
 Iroh is built on peer-to-peer QUIC using both relays and holepunching.
 
 Peers must know the NodeId of a peer before connecting to it.
-They verify this NodeId during the connection handshake to provide end-to-end encryption.
+They verify this NodeId during the connection handshake to provide end-to-end encryption and authentication.
 
 Peer to peer connectivity is established with the help of a relay server.
 On startup peers register their NodeId with a home relay server.
