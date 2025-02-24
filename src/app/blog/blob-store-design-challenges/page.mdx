@@ -17,13 +17,14 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-# Blob store trade offs
+We've been hard at work with one of our protocols that you can pick off the shelf with iroh: [iroh-blobs]
+You might've used iroh-blobs before if you tried out [`sendme`](https://www.iroh.computer/sendme), which is just a small CLI wrapper over iroh with iroh-blobs.
 
-Iroh is a library for building on direct connections between devices. It comes with a variety of custom protocols. One of the oldest and most general protocols is [iroh-blobs].
+Put briefly, iroh-blobs helps transfer arbitrary data ("blobs") from one device to another via iroh in a way that allows these transfers to be interrupted, resumed and verified by content-addressing blobs using the BLAKE3 hashing function.
 
-Iroh-blobs provides a way to sync content-addressed data between devices. We use the [BLAKE3] hash function to identify data, and a modified version of BLAKE3 verified streaming to transfer data.
+Iroh-blobs also allows you to exchange the backing storage it uses via *blob store* abstraction, so the actual hashes and blobs might be stored as files on disk, stored fully in-memory or even fully remote by utilizing some cloud storage.
 
-BLAKE3 hashed data and BLAKE3 verified streaming/bao are fully deterministic.
+Now, BLAKE3 hashed data and BLAKE3 verified streaming/bao are fully deterministic.
 
 The iroh blobs protocol is implemented in this spirit. Even for complex requests like requests that involve multiple ranges or entire hash sequences, for every request, there is exactly one sequence of bytes that is the correct answer. And the requester will notice if *data* is incorrect after at most 16 KiB of data.
 
