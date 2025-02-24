@@ -36,6 +36,7 @@ export const navItems = [
       {title: 'Protocol Registry', href: '/proto'},
       {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh'},
       {title: 'FAQ', href: '/docs/faq' },
+      {title: 'Wasm/Browser Support', href: '/docs/wasm-browser-support' },
     ],
   },
 ];
