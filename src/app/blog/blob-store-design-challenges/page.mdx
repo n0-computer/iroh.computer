@@ -19,6 +19,10 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # Blob store trade offs
 
+Iroh is a library for building on direct connections between devices. It comes with a variety of custom protocols. One of the oldest and most general protocols is [iroh-blobs].
+
+Iroh-blobs provides a way to sync content-addressed data between devices. We use the [BLAKE3] hash function to identify data, and a modified version of BLAKE3 verified streaming to transfer data.
+
 BLAKE3 hashed data and BLAKE3 verified streaming/bao are fully deterministic.
 
 The iroh blobs protocol is implemented in this spirit. Even for complex requests like requests that involve multiple ranges or entire hash sequences, for every request, there is exactly one sequence of bytes that is the correct answer. And the requester will notice if *data* is incorrect after at most 16 KiB of data.
@@ -29,11 +33,11 @@ So why is designing a blob store for BLAKE3 hashed data so complex? What are the
 
 The job of a blob store is to store two pieces of data per BLAKE3 `hash`, the actual data itself and an `outboard` containing the flattened hash tree that connects each `chunk` of data to the root hash. Data and outboard are kept separate so that the data can be used as-is.
 
-While the [bao] crate stores tree hashes all the way down to &le; 1024 byte BLAKE3 `chunks`, we store the outboard only down to 16 KiB `chunk groups` to reduce the outboad size. 
+While the [bao] crate stores tree hashes all the way down to &le; 1024 byte BLAKE3 `chunks`, we store the outboard only down to 16 KiB `chunk groups` to reduce the outboard size. 
 
 ## In memory store
 
-In the simplest case, you store data in memory. If you want to serve complete blobs, you just need a map from `hash` to `data` and `outboard` stored in a cheaply cloneable container like [bytes::Bytes]. Even if you want to also handle incomplete blobs, you use a map from hash and chunk number to (&le; 1024 byte) data block, and that's it. Such a store is relatively easy to implement using a crate like [bao-tree] and a simple [BTreeMap] wrapped in a [Mutex].
+In the simplest case, you store data in memory. If you want to serve complete blobs, you just need a map from `hash` to `data` and `outboard` stored in a cheaply cloneable container like [bytes::Bytes]. Even if you want to also handle incomplete blobs, you use a map from `hash` and `chunk number` to (&le; 1024 byte) data block, and that's it. Such a store is relatively easy to implement using a crate like [bao-tree] and a simple [BTreeMap] wrapped in a [Mutex].
 
 But the whole point of a blob store - in particular for iroh-blobs, where we don't have an upper size limit for blobs - is to store *a lot* of data persistently. So while an in memory store implementation is included in iroh-blobs, an in memory store won't do for all use cases.
 
@@ -53,9 +57,9 @@ This is a perfectly valid approach when dealing exclusively with complete, large
 
 First of all, it is very inefficient if you deal with a large number of tiny blobs, like we frequently do when working with [iroh-docs] or [iroh-willow] documents. Just the file system metadata for a tiny file will vastly exceed the storage needed for the data itself.
 
-Also, now we are very much dependant on the quirks of whatever file system our target operating system has. Many older file systems like [FAT32] or EXT2 are notoriously bad in handling directories with millions of files. And we can't just limit ourselves to e.g. linux servers with modern file systems, since we also want to support mobile platforms and windows PCs.
+Also, now we are very much dependent on the quirks of whatever file system our target operating system has. Many older file systems like [FAT32] or EXT2 are notoriously bad in handling directories with millions of files. And we can't just limit ourselves to e.g. linux servers with modern file systems, since we also want to support mobile platforms and windows PCs.
 
-And last but not least, creating a the metadata for a file is very expensive compared to writing a few bytes. We would be limited to a pathetically low download speed when bulk downloading millions of blobs, like for example an iroh collection containing the linux source code. For very small files embedded databases are [frequently faster](https://www.sqlite.org/fasterthanfs.html) than the file system.
+And last but not least, creating the metadata for a file is very expensive compared to writing a few bytes. We would be limited to a pathetically low download speed when bulk downloading millions of blobs, like for example an iroh collection containing the linux source code. For very small files embedded databases are [frequently faster](https://www.sqlite.org/fasterthanfs.html) than the file system.
 
 There are additional problems when dealing with large incomplete files. Enough to fill a book. More on that later.
 
@@ -141,7 +145,7 @@ Alternatively we can rely on a bitfield to make sure that all requested data is 
 
 ## Blob deletion
 
-On creation, blobs are tagged with a temporary tag that prevents them from being deleted for as long as the process lives. They can then be tagged with a persisten tag that prevents them from being deleted even after a restart. And last but not least, large groups of blobs can be protected from deletion in bulk by putting a sequence of hashes into a blob and tagging that blob as a hash sequence.
+On creation, blobs are tagged with a temporary tag that prevents them from being deleted for as long as the process lives. They can then be tagged with a persistent tag that prevents them from being deleted even after a restart. And last but not least, large groups of blobs can be protected from deletion in bulk by putting a sequence of hashes into a blob and tagging that blob as a hash sequence.
 
 We also provide a way to explicitly delete blobs by hash, but that is meant to be used only in case of an emergency. You have some data that you want **gone** no matter how dire the consequences are.
 
@@ -149,9 +153,23 @@ Deletion is always *complete*. There is currently no mechanism to protect or del
 
 Deletion runs in the background, and conceptually you should think of it as always being on. Currently there is a small delay between a blob being untagged and it being deleted, but in the future blobs will be immediately deleted as soon as they are no longer tagged.
 
+# Directories and files
+
+As mentioned above, files that exceed the inline threshold and are owned by the store are stored in the `data` directory of the blob store. Data files have a `.data` extension, outboard files an `.obao4` extension.
+
+There is a `temp` directory where large files are staged and the outboard is computed while they are being added to the store. This directory is configurable, but **must** be on the same device the data directory so that files can be atomically moved into the data directory when ready.
+
+The metadata database itself is called `blobs.db`. This is currently a [redb] database file.
+
 # Even more detail
 
 By now we know in pretty high detail where the data is stored, what metadata we keep, and how blobs enter and leave the store. But let's go one level deeper. This is the point where this turns into a bit of a rant.
+
+## Metadata write batching.
+
+Relational databases as well as most key value stores have strong durability guarantees. Unless you change the default config, after a transaction commit you have a guarantee that the modifications in the transaction will be permanent and will be visible even if the process or the entire computer crashes immediately afterwards.
+
+The downside of this is that data needs to be synced to disk on commit. Even on a computer with SSD disks, a sync will take on the order of milliseconds. 
 
 ## Incomplete files and the file system
 
@@ -179,9 +197,9 @@ Most operating systems have platform dependent ways to finely control syncing fo
 
 While it provides fine grained control over syncing individual ranges of memory mapped files, it does not provide a way to guarantee that *no* sync happens unless you explicitly call it. So if you map the three files in memory and then update them, even if you don't call `msync` at all there is no guarantee in which order the data makes it to disk. The operating system page cache does not know about files or about write order, it will persist pages to disk in whatever order is most convenient for its internal data structures.
 
-So what's the solution? We can write to the data and outboard file in any order and without any sync calls as often as we want. These changes will be invisible after a crash provided that the bitmap file is not updated. In regular intervals 
+So what's the solution? We can write to the data and outboard file in any order and without any sync calls as often as we want. These changes will be invisible after a crash provided that the bitmap file is not updated.
 
-
+We keep changes to the bitfield file fully in memory, in a separate data structure. In regular intervals we sync the data and outboard file to make sure the data is present on disk, and *then* write the changed bitfield ranges to disk and sync the bitfield file.
 
 [bao]: https://docs.rs/bao/latest/bao/
 [bytes::Bytes]: https://docs.rs/bytes/latest/bytes/
@@ -192,3 +210,5 @@ So what's the solution? We can write to the data and outboard file in any order 
 [iroh-willow]: https://docs.rs/iroh-willow/latest/iroh_willow/
 [FAT32]: https://en.wikipedia.org/wiki/File_Allocation_Table
 [bao-tree]: https://docs.rs/bao-tree/latest/bao_tree/
+[iroh-blobs]: https://github.com/n0-computer/iroh-blobs
+[BLAKE3]: https://en.wikipedia.org/wiki/BLAKE_(hash_function)
