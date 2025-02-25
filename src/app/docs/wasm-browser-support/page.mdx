@@ -1,0 +1,75 @@
+export const metadata = {
+  title: 'Wasm/Browser Support',
+  description: "What to know about browser and WebAssembly support in Iroh: Limitations, Troubleshooting and Future Plans",
+};
+
+# WebAssembly and Browser support in Iroh
+
+Iroh can be complied to WebAssembly for use in browsers! {{className: 'lead'}}
+
+We first announced work on iroh in browsers via WebAssembly in a [blog post](/blog/iroh-and-the-web).
+As of the iroh 0.33 release, iroh can be used in projects that compile to WebAssembly.
+Add `iroh` to your browser project's dependencies and keep building it using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/).
+
+For end-to-end examples of integrating iroh into a browser page, see these examples on our [iroh-examples repository](https://github.com/n0-computer/iroh-examples):
+- An [iroh echo server in the browser](https://github.com/n0-computer/iroh-examples/tree/main/browser-echo). Check it out [in action](https://n0-computer.github.io/iroh-examples/main/browser-echo/index.html)
+- An [browser chat room UI](https://github.com/n0-computer/iroh-examples/tree/main/browser-chat) based on the [iroh gossip chat example](/docs/examples/gossip-chat). Check it out [in action](https://n0-computer.github.io/iroh-examples/main/browser-chat/index.html)
+
+
+## Limitations
+
+When you're in a browser context - as opposed to in a native app or on desktop, you're in a strict "sandbox" that disallows a few things iroh relies upon, e.g. sending UDP packets directly.
+Thus, we need to work around these limitations and can't provide you with the full magic of iroh just yet.
+
+We envision that most applications will use iroh browser support as an additional feature to complement existing deployments to desktops, native apps or servers, where they'll be able to make use of everything that iroh offers.
+
+### No direct connections
+
+**All connections from browsers to somewhere else need to flow via a relay server**.
+This is because we can't port our hole-punching logic in iroh to browsers: They don't support sending UDP packets to IP addresses from inside the browser sandbox.
+
+Keep in mind that *connections are end-to-end encrypted*, as always with iroh.
+So even though traffic from browsers is always relayed, it can't be decrypted by the relay.
+
+There are other ways of getting peer-to-peer connections going, such as WebTransport with `serverCertificateHashes`, or WebRTC.
+We may expand iroh's browser support to make use of these to try to generate fully peer-to-peer connections even when a browser node is involved in the connection.
+
+### `iroh` crate features
+
+As of iroh version 0.33, you need to disable all optional features on iroh for the Wasm build to succeed.
+To do so, depend on iroh via `iroh = { version = "0.33", default-features = false }`.
+This will install a version of iroh with default features, except it doesn't track `metrics` locally.
+We'll get rid of this limitation very soon (likely with iroh version 0.34).
+Non-default features like `discovery-local-network` or `discovery-dht` will likely never be available in browsers, unless browser APIs making them possible are added.
+
+### npm package
+
+Currently we don't bundle iroh's Wasm build as an NPM package.
+There is no technical limitiation for this: You could build this today!
+Should you need javascript APIs, we recommend that you take write an application-specific rust wrapper crate that depends on iroh and exposes whatever the javascript side needs via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/).
+
+### Use in node.js/bun.js/deno
+
+We check that the browser version of iroh works in node.js regularly.
+And it's likely that Deno will work out of the box, too, given it closely resembles the browser's Web APIs.
+We haven't checked if bun.js works right now, and don't have plans to check that continually.
+
+As these runtimes are outside the browser sandbox, it would technically be possible to ship bigger parts of iroh to these environments, such as all hole-punching related functionality.
+However, we currently don't plan to expand the browser-related WebAssembly work to integrate with that.
+In the future, it's more likely we'll use [NAPI](https://napi.rs) or [WASI](https://wasi.dev/) to make these integrations possible.
+If you want to try this today, take a look at our existing code at [iroh-ffi](https://github.com/n0-computer/iroh-ffi/) and feel free to adapt it to your needs or newer iroh versions.
+
+
+## Troubleshooting
+
+Getting rust code to successfully build for browsers can be tricky.
+We've started a [discussion on github](https://github.com/n0-computer/iroh/discussions/3200) to collect common issues hit when trying to compile iroh or projects using iroh to WebAssembly.
+Take a look at answers in that discussion for any clues if you're encountering build issues.
+Otherwise feel free to open a discussion or a thread on that discussion with your specific issue.
+
+
+## Future Plans
+
+We're expanding browser support from the iroh crate to our off-the-shelf protocols.
+[iroh-gossip](https://www.iroh.computer/proto/iroh-gossip) already supports being built for browsers starting with version 0.33.
+
