@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
 
-We’ve got some exciting features for you this round! Iroh `v0.33` compiles to wasm and can be used in the browser! `Discovery` now includes a way to pass in user-defined data! `iroh::Endpoint` ’s now allow you to subscribe to a stream that updates with every newly discovered node! And we’ve enabled 0-RTT QUIC connections!
+We’ve got some exciting features for you this round! Iroh `v0.33` compiles to Wasm and can be used in the browser, `Discovery` now includes a way to pass in user-defined data, `iroh::Endpoint` ’s now allow you to subscribe to a stream that updates with every newly discovered node, and we’ve enabled 0-RTT QUIC connections.
 
 ## 🖥️ Browsers, now in `iroh`
 
@@ -38,12 +38,12 @@ Iroh `v0.33` compiles to Wasm and can be used in the browser!
 
 Not only that, but [`iroh-gossip`](https://github.com/n0-computer/iroh-gossip), too!
 
-Can’t believe it? See these two examples we’ve been cooking up:
+Can’t believe it? See these two examples we’ve cooked up:
 
 - An [iroh echo server in the browser](https://github.com/n0-computer/iroh-examples/tree/main/browser-echo). Check it out [in action](https://n0-computer.github.io/iroh-examples/main/browser-echo/index.html)!
 - An [browser chat room UI](https://github.com/n0-computer/iroh-examples/tree/main/browser-chat) based on the [iroh gossip chat example](https://iroh.computer/docs/examples/gossip-chat). Check it out [in action](https://n0-computer.github.io/iroh-examples/main/browser-chat/index.html)!
 
-We’ve had this on the roadmap for some time and are extremely excited to have reached this milestone. Keep in mind there are some **limitations** for iroh in the browser, such as not being able to establish direct connections right now.
+We’ve had this on the roadmap for some time and are extremely excited to have reached this milestone. Keep in mind there are **some limitations** for `iroh` in the browser, such as not being able to establish direct connections right now.
 
 There is a lot to cover here, so for further info [take a look at the new page on our website](https://iroh.computer/docs/wasm-browser-support) that describes the features, limitations, and future plans for browser/Wasm work in `iroh`. Also, take a [look at the troubleshooting discussion](https://github.com/n0-computer/iroh/discussions/3200) on our github for fixes to typical issues that come up when compiling `iroh` to WebAssembly.
 
@@ -73,7 +73,7 @@ Check out PR https://github.com/n0-computer/iroh/pull/3181 for more details!
 
 0-RTT allows you to skip a round-trip if you have connected to the given endpoint before and and stored the TLS session ticket from the previous session.
 
-Iroh`v0.33`, by default, will cache up to 8 session tickets per endpoint you connect to, and remember up to 32 endpoints maximum.
+Iroh `v0.33`, by default, will cache up to 8 session tickets per endpoint you connect to, and remember up to 32 endpoints maximum.
 
 This cache only lives in-memory. We might add customization to the `EndpointBuilder` in the future to allow for customizing this cache (allowing you to persist it), but that obviously has security implications, so will need careful consideration.
 
