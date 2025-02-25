@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-02-11",
+  "last_updated": "2025-02-25",
   "milestones": [
     {
       "done": true,
@@ -99,27 +99,46 @@
       "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
       "tracking_issue": null
     },
-    { "version": "v0.31.0", "done": true, "released": "2024-01-14", "doc": "https://www.iroh.computer/blog/iroh-0-31-0-back-to-fighting-fit" },
+    { "version": "v0.31.0", "done": true, "released": "2025-01-14", "doc": "https://www.iroh.computer/blog/iroh-0-31-0-back-to-fighting-fit" },
     {
       "done": true,
       "title": "Add QUIC Address Discovery to `iroh`",
       "description": "iroh can launch QUIC Address Discovery probes",
       "tracking_issue": "https://github.com/n0-computer/iroh/pull/3049"
     },
-    { "version": "v0.32.0", "done": true, "released": "2024-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
+    { "version": "v0.32.0", "done": true, "released": "2025-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
     {
-      "done": false,
+      "done": true,
       "title": "browser support",
       "description": "iroh compiles to web assembly and runs in the browser",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
       "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
     },
     {
-      "done": false,
-      "title": "discovery refinements",
-      "description": "adjust and refine APIs for discovery, refactor and rename subsystems"
+      "done": true,
+      "title": "User-defined data in Discovery",
+      "description": "Allow users to publish and resolve a user-defined data.",
+      "tracing_issue": "https://github.com/n0-computer/iroh/pull/3176"
     },
-    { "version": "v0.33.0", "done": false, "released": "2024-02-17", "doc": null },
+    {
+      "done": true,
+      "title": "Discovery stream subscription",
+      "description": "Add simple API to allow users to subscribe to a stream of discoveries.",
+      "tracing_issue": "https://github.com/n0-computer/iroh/pull/3181"
+    },
+    {
+      "done": true,
+      "title": "QUIC connections: graceful shutdown",
+      "description": "finalize our APIs for graceful shutdown of QUIC connections",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3170"
+    },
+    {
+      "done": true,
+      "title": "0-RTT",
+      "description": "iroh QUIC connections can now leverage 0-RTT",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3163",
+    },
+    { "version": "v0.33.0", "done": true, "released": "2025-02-24", "doc": "https://iroh.computer/blog/iroh-0-33-0-browsers-and-discovery-and-0-RTT-oh-my" },
     {
       "done": false,
       "title": "use Raw Public Keys (RFC 7250) in TLS",
@@ -132,13 +151,6 @@
       "title": "iroh-blobs: multiprovider fan-in",
       "description": "Download data from multiple providers",
       "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
-    },
-    {
-      "done": false,
-      "title": "QUIC connections: graceful shutdown",
-      "description": "finalize our APIs for graceful shutdown of QUIC connections",
-      "tracking_issue": null,
-      "doc": null
     },
     { "version": "v0.34.0", "done": false, "released": "2024-03-10", "doc": null },
     {
