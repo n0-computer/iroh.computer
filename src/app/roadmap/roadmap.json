@@ -136,7 +136,7 @@
       "done": true,
       "title": "0-RTT",
       "description": "iroh QUIC connections can now leverage 0-RTT",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3163",
+      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3163"
     },
     { "version": "v0.33.0", "done": true, "released": "2025-02-24", "doc": "https://iroh.computer/blog/iroh-0-33-0-browsers-and-discovery-and-0-RTT-oh-my" },
     {
@@ -148,9 +148,9 @@
     },
     {
       "done": false,
-      "title": "iroh-blobs: multiprovider fan-in",
-      "description": "Download data from multiple providers",
-      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
+      "title": "blobs 1.0 API",
+      "description": "overhaul blobs API",
+      "tracking_issue": null
     },
     { "version": "v0.34.0", "done": false, "released": "2024-03-10", "doc": null },
     {
@@ -166,9 +166,9 @@
     },
     {
       "done": false,
-      "title": "blobs 1.0 API",
-      "description": "overhaul blobs API",
-      "tracking_issue": null
+      "title": "iroh-blobs: multiprovider fan-in",
+      "description": "Download data from multiple providers",
+      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
     },
     {
       "done": false,
