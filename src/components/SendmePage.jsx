@@ -20,14 +20,23 @@ const koulen = localFont({
 
 export default function SendmePage() {
   const install = `curl -fsSL https://iroh.computer/sendme.sh | sh`
+  const install_win = `iwr https://iroh.computer/sendme.ps1 -useb | iex`
   const [copied, setCopied] = React.useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(install);
+  const _handleCopy = (ins) => {
+    navigator.clipboard.writeText(ins);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
     }, 1300);
+  }
+
+  const handleCopy = () => {
+    _handleCopy(install);
+  }
+
+  const handleCopyWin = () => {
+    _handleCopy(install_win);
   }
 
   return (
@@ -53,6 +62,16 @@ export default function SendmePage() {
               <p className='mt-1 text-sm/6 text-gray-500'>Add sendme to your machine using shell:</p>
               <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopy}>
                 <div className='grow mr-10 font-spaceMono'>$ {install}</div>
+                {copied
+                  ? <span className='w-10 mr-1'>copied!</span>
+                  : <span className='w-10 mr-1'></span> }
+                {copied
+                  ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
+                  : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
+              </button>
+              <p className='mt-1 text-sm/6 text-gray-500'>On windows:</p>
+              <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopyWin}>
+                <div className='grow mr-10 font-spaceMono'>$ {install_win}</div>
                 {copied
                   ? <span className='w-10 mr-1'>copied!</span>
                   : <span className='w-10 mr-1'></span> }
