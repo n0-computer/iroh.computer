@@ -22,21 +22,26 @@ export default function SendmePage() {
   const install = `curl -fsSL https://iroh.computer/sendme.sh | sh`
   const install_win = `iwr https://iroh.computer/sendme.ps1 -useb | iex`
   const [copied, setCopied] = React.useState(false)
+  const [copiedWin, setCopiedWin] = React.useState(false)
 
   const _handleCopy = (ins) => {
     navigator.clipboard.writeText(ins);
+  }
+
+  const handleCopy = () => {
+    _handleCopy(install);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
     }, 1300);
   }
 
-  const handleCopy = () => {
-    _handleCopy(install);
-  }
-
   const handleCopyWin = () => {
     _handleCopy(install_win);
+    setCopiedWin(true);
+    setTimeout(() => {
+      setCopiedWin(false);
+    }, 1300);
   }
 
   return (
@@ -72,10 +77,10 @@ export default function SendmePage() {
               <p className='mt-1 text-sm/6 text-gray-500'>On windows:</p>
               <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopyWin}>
                 <div className='grow mr-10 font-spaceMono'>$ {install_win}</div>
-                {copied
+                {copiedWin
                   ? <span className='w-10 mr-1'>copied!</span>
                   : <span className='w-10 mr-1'></span> }
-                {copied
+                {copiedWin
                   ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
                   : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
               </button>
