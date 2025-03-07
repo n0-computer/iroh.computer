@@ -158,7 +158,7 @@ Deletion runs in the background, and conceptually you should think of it as alwa
 
 As mentioned above, files that exceed the inline threshold and are owned by the store are stored in the `data` directory of the blob store. Data files have a `.data` extension, outboard files an `.obao4` extension.
 
-There is a `temp` directory where large files are staged and the outboard is computed while they are being added to the store. This directory is configurable, but **must** be on the same device the data directory so that files can be atomically moved into the data directory when ready.
+There is a `temp` directory where large files are staged and the outboard is computed while they are being added to the store. This directory is configurable, but **must** be on the same device the data directory is on so that files can be atomically moved into the data directory when ready.
 
 The metadata database itself is called `blobs.db`. This is currently a [redb] database file.
 
