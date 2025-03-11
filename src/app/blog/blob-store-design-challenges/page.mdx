@@ -24,9 +24,9 @@ Put briefly, this protocol helps you transfer arbitrary data ("blobs") from one 
 
 It also allows you to exchange the backing storage it uses via a *blob store* abstraction. The actual hashes and blobs might be stored as files on disk, stored fully in-memory or even fully remotely by utilizing some cloud storage.
 
-Now, BLAKE3 hashed data and BLAKE3 verified streaming/bao are fully deterministic.
+BLAKE3 hashed data and BLAKE3 verified streaming/bao are fully deterministic and the `iroh-blobs` protocol is implemented in this spirit.
 
-The iroh blobs protocol is implemented in this spirit. Even for complex requests like requests that involve multiple ranges or entire hash sequences, for every request, there is exactly one sequence of bytes that is the correct answer. And the requester will notice if *data* is incorrect after at most 16 KiB of data.
+Even for complex requests like requests that involve multiple ranges or entire hash sequences, for every request, there is exactly one sequence of bytes that is the correct answer. And the requester will notice if *data* is incorrect after at most 16 KiB of data.
 
 So why is designing a blob store for BLAKE3 hashed data so complex? What are the challenges?
 
