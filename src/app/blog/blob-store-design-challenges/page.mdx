@@ -60,7 +60,7 @@ First of all, it is very inefficient if you deal with a large number of tiny blo
 
 Also, now we are very much dependent on the quirks of whatever file system our target operating system has. Many older file systems like [FAT32] or EXT2 are notoriously bad in handling directories with millions of files. And we can't just limit ourselves to e.g. linux servers with modern file systems, since we also want to support mobile platforms and windows PCs.
 
-And last but not least, creating the metadata for a file is very expensive compared to writing a few bytes. We would be limited to a pathetically low download speed when bulk downloading millions of blobs, like for example an iroh collection containing the linux source code. For very small files embedded databases are [frequently faster](https://www.sqlite.org/fasterthanfs.html) than the file system.
+And last but not least, creating the metadata for a file is very expensive compared to writing a few bytes. We would be limited to a pathetically low download speed when bulk downloading millions of blobs, like for example an `iroh` collection containing the linux source code. For very small files embedded databases are [frequently faster](https://www.sqlite.org/fasterthanfs.html) than the file system.
 
 There are additional problems when dealing with large incomplete files. Enough to fill a book. More on that later.
 
