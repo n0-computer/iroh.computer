@@ -50,7 +50,7 @@ A naive implementation of a block store using a relational or key value database
 
 But this approach has multiple problems. While it would work very well for small blobs, it would be very slow for large blobs. First of all, the database will have significant storage overhead for each chunk. Second, operating systems are very efficient in quickly accessing large files. Whenever you do disk IO on a computer, you will always go through the file system. So anything you add on top will only slow things down.
 
-E.g. playing back videos from this database would be orders of magnitude slower than playing back from disk. And any interaction with the data would have to go through the iroh node, while with a file system we could directly use the file on disk.
+E.g. playing back videos from this database would be orders of magnitude slower than playing back from disk. And any interaction with the data would have to go through the `iroh` node, while with a file system we could directly use the file on disk.
 
 ## So, no database?
 
