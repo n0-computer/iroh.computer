@@ -70,7 +70,7 @@ It seems that databases are good for small blobs, and the file system works grea
 
 We won't ever have a directory with millions of files, since tiny files never make it to the file system in the first place. And we won't need to read giant files through the bottleneck of a database, so access to large files will be as fast and as concurrent as the hardware allows.
 
-This is exactly the approach that we currently take in the iroh-blobs file based store. For both data files and outboards, there is a configurable threshold below which the data will be stored inline in the database. The configuration can be useful for debugging and testing, e.g. you can force all data on disk by setting both thresholds to 0. But the defaults of 16 KiB for inline outboard and data size make a lot of sense and will rarely have to be changed in production.
+This is exactly the approach that we currently take in the `iroh-blobs` file based store. For both data files and outboards, there is a configurable threshold below which the data will be stored inline in the database. The configuration can be useful for debugging and testing, e.g. you can force all data on disk by setting both thresholds to 0. But the defaults of 16 KiB for inline outboard and data size make a lot of sense and will rarely have to be changed in production.
 
 While this is the most complex approach, there is really no alternative if you want good performance both for a large number of tiny blobs and a small number of giant blobs.
 
