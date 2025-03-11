@@ -40,7 +40,7 @@ While the [bao] crate stores tree hashes all the way down to &le; 1024 byte BLAK
 
 In the simplest case, you store data in memory. If you want to serve complete blobs, you just need a map from `hash` to `data` and `outboard` stored in a cheaply cloneable container like [bytes::Bytes]. Even if you want to also handle incomplete blobs, you use a map from `hash` and `chunk number` to (&le; 1024 byte) data block, and that's it. Such a store is relatively easy to implement using a crate like [bao-tree] and a simple [BTreeMap] wrapped in a [Mutex].
 
-But the whole point of a blob store - in particular for iroh-blobs, where we don't have an upper size limit for blobs - is to store *a lot* of data persistently. So while an in memory store implementation is included in iroh-blobs, an in memory store won't do for all use cases.
+But the whole point of a blob store - in particular for `iroh-blobs`, where we don't have an upper size limit for blobs - is to store *a lot* of data persistently. So while an in memory store implementation is included in `iroh-blobs`, an in memory store won't do for all use cases.
 
 ## Ok, fine. Let's use a database
 
