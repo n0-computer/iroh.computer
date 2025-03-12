@@ -4,15 +4,27 @@ import {ThemeImage} from '@/components/ThemeImage'
 export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2025-03-25',
+  date: '2025-03-12',
   title: 'Blob store design challenges',
   description:
     "It's just hashed data, what's so complex about a blob store anyway?",
 }
 
 export const metadata = {
-  title: post.title,
-  description: post.description,
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
@@ -34,7 +46,7 @@ So why is designing a blob store for BLAKE3 hashed data so complex? What are the
 
 The job of a blob store is to store two pieces of data per BLAKE3 `hash`, the actual data itself and an `outboard` containing the flattened hash tree that connects each `chunk` of data to the root hash. Data and outboard are kept separate so that the data can be used as-is.
 
-While the [bao] crate stores tree hashes all the way down to &le; 1024 byte BLAKE3 `chunks`, we store the outboard only down to 16 KiB `chunk groups` to reduce the outboard size. 
+While the [bao] crate stores tree hashes all the way down to &le; 1024 byte BLAKE3 `chunks`, we store the outboard only down to 16 KiB `chunk groups` to reduce the outboard size.
 
 ## In memory store
 
@@ -126,7 +138,7 @@ This is not the end of the world, but it does mean that we need to keep the data
 
 # Blob lifecycle
 
-There are two fundamentally different ways how data can be added to a blob store. 
+There are two fundamentally different ways how data can be added to a blob store.
 
 ## Adding local files by name
 
