@@ -79,7 +79,7 @@ But what about bulk deletion?
 
 # Use case: expiring tags
 
-Let's say you got some sort of storage service. Customers can upload data, and it will be automatically assigned a tag. You want to delete data for non-paying customers after some time, and only preserve data for paying customers. With expiring tags this would be easy. Data gets an expiring tag on upload, and you assign an *additonal* non-expiring tag on payment.
+Let's say you got some sort of storage service. Customers can upload data, and it will be automatically assigned a tag. You want to delete data for non-paying customers after some time, and only preserve data for paying customers. With expiring tags this would be easy. Data gets an expiring tag on upload, and you assign an *additional* non-expiring tag on payment.
 
 Expiring tags are not natively supported, but with the new API they can be easily implemented. You just encode the expiry date in the tag, either as a human readable form that properly sorts, such as [ISO8601] UTC timestamps, or in a more compact form as the number of seconds since the UNIX epoch, as a big endian encoded 64 bit integer.
 
