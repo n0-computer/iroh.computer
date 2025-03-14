@@ -126,6 +126,10 @@ However please keep in mind that entries below the `chunk group` size, which sho
 
 The inline data table is kept separate from the metadata table since it will tend to be much bigger. Mixing inline data with metadata would make iterating over metadata entries slower. For the same reason, the outboard table is separate. You could argue that the inline outboard and data should be combined in a single table, but I decided against it to keep a simple table structure. Also, for the default settings if the data is inline, no outboard will be needed at all. Likewise when an outboard is needed, the data won't be inline.
 
+<Note>
+For the inline data and outboard table, you will have small keys stored together with up to 16 KiB values. This will lead to suboptimal performance. Here a database with key value separation such as [fjall] might be an option in the future.
+</Note>
+
 ## Tags table
 
 The tags table is just a simple CRUD table that is completely independent of the other tables. It is just kept together with the other tables for simplicity.
@@ -142,11 +146,11 @@ There are two fundamentally different ways how data can be added to a blob store
 
 ## Adding local files by name
 
-If we add data locally, e.g. from a file, we have the data but don't know the hash. We have to compute the complete outboard, the root hash, and then atomically move the file into the store under the root hash. Depending on the size of the file, data and outboard will end up in the file system or in the database. If there was partial data there before, we can just replace it with the new complete data and outboard. Once the data is stored under the hash, neither the data nor the outboard will be changed.
+If we add data locally, e.g. from a file, we have the *data* but don't know the *hash*. We have to compute the complete outboard, the root hash, and then atomically move the file into the store under the root hash. Depending on the size of the file, data and outboard will end up in the file system or in the database. If there was partial data there before, we can just replace it with the new complete data and outboard. Once the data is stored under the hash, neither the data nor the outboard will be changed.
 
 ## Syncing remote blobs by hash
 
-If we sync data from a remote node, we do know the hash but don't have the data. In case the blob is small, we can request and atomically write the data, so we have a similar situation as above. But as soon as the data is larger than a chunk group size (16 KiB), we will have a situation where the data has to be written incrementally. This is much more complex than adding local files. We now have to keep track of which chunks of the blob we have locally, and which chunks of the blob we can *prove* to have locally (not the same thing if you have a chunk group size > 1).
+If we sync data from a remote node, we do know the *hash* but don't have the *data*. In case the blob is small, we can request and atomically write the data, so we have a similar situation as above. But as soon as the data is larger than a chunk group size (16 KiB), we will have a situation where the data has to be written incrementally. This is much more complex than adding local files. We now have to keep track of which chunks of the blob we *have* locally, and which chunks of the blob we can *prove* to have locally (not the same thing if you have a chunk group size > 1).
 
 ## Using the data
 
@@ -184,7 +188,7 @@ Relational databases as well as most key value stores usually have strong durabi
 
 The downside of this is that data needs to be synced to disk on commit. Even on a computer with SSD disks, a sync will take on the order of milliseconds, no matter how tiny the update is. So creating a write transaction for each metadata update would reduce the number of updates to at most a few 1000 per second even on very fast computers. This is independent of the database used. Two very different embedded databases, redb and sqlite, have very similar performance limitations for small write transactions. When using sqlite as a blob store for small blobs, which I did for a [previous project](https://docs.rs/ipfs-sqlite-block-store/latest), you would have to disable syncing the write ahead log to get acceptable performance.
 
-Redb does not use a write ahead log and for very good reasons does not allow you to tweak durability settings. So to get around this limitation, we combine multiple metadata updates in a single transaction up to some number and time limit. The downside of this approach is that it reduces durability guarantees - if you have a crash a few milliseconds after adding a blob, after the crash the blob will be gone. In most cases this is acceptable, and if you want guaranteed durability you can explicitly call sync. Since we are still using transactions with full durability guarantees, we can at least be sure that the database will be in a consistent state after a crash.
+Redb does not use a write ahead log and for very good reasons does not allow you to tweak durability settings. So to get around this limitation, we combine multiple metadata updates in a single transaction up to some number and time limit. The downside of this approach is that it reduces durability guarantees - if you have a crash a few milliseconds after adding a blob, after the crash the blob will be gone. In most cases this is acceptable, and if you want guaranteed durability you can explicitly call sync. Since we are still using transactions with full durability guarantees, we can at least be sure that the database will be in a *consistent* state after a crash.
 
 ## Incomplete files and the file system
 
@@ -227,3 +231,4 @@ We keep changes to the bitfield file fully in memory, in a separate data structu
 [bao-tree]: https://docs.rs/bao-tree/latest/bao_tree/
 [iroh-blobs]: https://github.com/n0-computer/iroh-blobs
 [BLAKE3]: https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+[fjall]: https://github.com/fjall-rs/fjall
