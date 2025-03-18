@@ -4,7 +4,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2025-03-12',
+  date: '2025-03-18',
   title: 'A richer tags api',
   description:
     "Tags",
@@ -29,16 +29,17 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-We are working on a big refactor of the iroh-blobs code base to better support multiprovider downloads, and to provide a long term stable API for blobs 1.0.
+We are working on a big refactor of the `iroh-blobs` code base to better support multiprovider downloads, and to provide a long-term stable API for blobs 1.0.
 
-Before that, with the current version of blobs we are shipping a richer API for manipulating tags. This seems like a good opportunity to explain again what tags are and what they are useful for.
+Before that lands, however, we've shipped a richer API for manipulating tags! This seems like a good opportunity to explain again what tags are and why they are useful.
 
 # So what is a tag, anyway?
 
 A tag is a name you can give to content to mark it as important.
 
-The tag name can be any byte string. Usually, you will use an UTF8 string. But there are [use cases](#binarytags) where it is very useful to store arbitrary bytes.
-The tag value is a tuple consisting of the [BLAKE3] hash of the data, and a blob format which can currently only be `Raw` or `HashSeq`.
+The tag *name* can be any byte string. Usually, you will use an UTF-8 string. But there are [use cases](#binarytags) where it is very useful to store arbitrary bytes.
+
+The tag *value* is a tuple consisting of the [BLAKE3] hash of the data, and a blob format which can currently only be `Raw` or `HashSeq`.
 
 There are two main purposes of tags.
 
@@ -49,7 +50,7 @@ Second, tagging data is the *only* thing that prevents it from being freed by th
 <Note>
 If you are familiar with other content-addressed storage systems such as [IPFS], this will remind you of the concept of [pins]. A tag can be thought of as a named pin. But there are some important differences.
 - the tag name makes associating content to data more convenient.
-- where the IPFS api usually involves first *getting* or *adding* some data and then pinning it, in iroh-blobs it is perfectly fine to add a tag for data you don't have yet.
+- where the IPFS API usually involves first *getting* or *adding* some data and then pinning it, in `iroh-blobs` it is perfectly fine to add a tag for data you don't have yet.
 - you can have multiple tags pointing to the same data.
 </Note>
 
@@ -57,9 +58,9 @@ Tagging a hash expresses that if you *had* that data, you would like to *keep* i
 
 # Hash sequences
 
-Let's say you have a large number of files that belong together. A folder of pictures from a family vacation, for example. You could of course tag them all individually. An alternative is to put all the `BLAKE3` hashes into a blob (the blob will have a size that is a multiple of 32 bytes) and tag *just that blob* with the blob format `HashSeq`. All the pictures are now indirectly tagged via the hash sequence and therefore protected.
+Let's say you have a large number of files that belong together — a folder of pictures from a family vacation, for example. You could of course tag them all individually. An alternative is to put all the `BLAKE3` hashes into a blob (the blob will have a size that is a multiple of 32 bytes) and tag *just that blob* with the blob format `HashSeq`. All the pictures are now indirectly tagged via the hash sequence and therefore protected.
 
-Again, there is a similarity to IPFS. This is similar to recursively tagging a [Dag-CBOR] [CID]. But in iroh-blobs we only support one level of indirection, not arbitrary DAGs. If you have to store DAGs, we have [a way to do this](https://www.iroh.computer/blog/iroh-dag-sync).
+Again, there is a similarity to IPFS. This is similar to recursively tagging a [Dag-CBOR] [CID]. But in `iroh-blobs` we only support one level of indirection, not arbitrary DAGs. If you have to store DAGs, we have [a way to do this](https://www.iroh.computer/blog/iroh-dag-sync).
 
 But we have found that in most cases a single level of indirection is enough, and we like to keep things simple. Below is a section about how to deal with [metadata](#metadata) in hash sequences.
 
@@ -67,19 +68,19 @@ But we have found that in most cases a single level of indirection is enough, an
 
 Tags are being added automatically when you add content locally or download content from a remote node. So the [previous API](https://docs.rs/iroh-blobs/0.33.1/iroh_blobs/rpc/client/tags/struct.Client.html) for tags is pretty minimal. You just have the ability to list all tags and delete individual tags. While this is fine for simple use cases where you have a small number of tags to e.g. manage some manually added data, it is insufficient for more complex use cases.
 
-So the current API has been extended to give the full capability of a key-value store for tags. You can get the value of individual tags, list them by range or prefix, and even bulk delete them by range or prefix. In addition we added the ability to atomically rename a tag.
+So the current API has been extended to give the full capability of a key-value store for tags. You can get the value of individual tags, list them by range or prefix, and even bulk delete them by range or prefix. In addition, we added the ability to atomically rename a tag.
 
 <Note>
 Be really careful with bulk deletion of tags. If you delete all tags, all your data will soon be gone.
 </Note>
 
-Why do you need such a complex API? For listing tags, this seems clear. As soon as you have a very large number of tags, list by range allows you to page through the tags instead of getting them all. List by prefix allows you to organize the tags in something like a directory structure.
+Why do you need such a complex API? Once you start working with lists of tags, this becomes more obvious. As soon as you have a very large number of tags, list-by-range allows you to page through the tags instead of getting them all. List-by-prefix allows you to organize the tags in something like a directory structure.
 
 But what about bulk deletion?
 
 # Use case: expiring tags
 
-Let's say you got some sort of storage service. Customers can upload data, and it will be automatically assigned a tag. You want to delete data for non-paying customers after some time, and only preserve data for paying customers. With expiring tags this would be easy. Data gets an expiring tag on upload, and you assign an *additional* non-expiring tag on payment.
+Let's say you've got some sort of storage service. Customers can upload data and it will be automatically assigned a tag. You want to delete data for non-paying customers after some time and only preserve data for paying customers. With expiring tags this would be easy. Data gets an expiring tag on upload, and you assign an *additional* non-expiring tag on payment.
 
 Expiring tags are not natively supported, but with the new API they can be easily implemented. You just encode the expiry date in the tag, either as a human readable form that properly sorts, such as [ISO8601] UTC timestamps, or in a more compact form as the number of seconds since the UNIX epoch, as a big endian encoded 64 bit integer.
 
@@ -114,15 +115,15 @@ To a javascript developer this feels very natural, but it is inefficient (tags a
 
 `<node id (32 bytes)><big-endian u64 (8 bytes)>`
 
-Tags are half as long, and encoding (node id, entity id) tuples to tags becomes simpler and faster. In most use cases this won't matter. But iroh and iroh-blobs are meant to be used as embedded components for demanding applications, so sometimes it *will* matter. Also, we want to provide a friendly API to developers like myself that have a strong dislike for needlessly stringifying things.
+Tags are half as long, and encoding `(node_id, entity_id)` tuples to tags becomes simpler and faster. In most use cases this won't matter. But `iroh` and `iroh-blobs` are meant to be used as embedded components for demanding applications, so sometimes it *will* matter. Also, we want to provide a friendly API to developers like myself that have a strong dislike for needlessly stringifying things.
 
 <Note>
-If it does not matter for your use case, and you favour human readable tag names, it is perfectly fine to still encode to UTF8!
+If it does not matter for your use case, and you favour human readable tag names, it is perfectly fine to still encode to UTF-8!
 </Note>
 
 # Rust API
 
-Currently, the tags API is available as an in-memory RPC client to the Blobs protocol handler. To get the API, you need to enable the `rpc` feature flag.
+Currently, the tags API is available as an in-memory RPC client to the `Blobs` protocol handler. To get the API, you need to enable the `rpc` feature flag.
 
 The API is done in the following way: for complex operations such as list or delete, there are functions `list_with_opts` and `delete_with_opts` that allow you to pass in an options struct that contains all the various options such as start and end tag.
 
@@ -159,13 +160,13 @@ In 99.9% of all cases this is completely fine, but if you have a very demanding 
    let res = tags.list_with_opts(ListOptions { from, to, raw: true, hash_seq: true })?;
 ```
 
-Tags are usually very small, so the allocation won't be even measurable. This distinction between the convenience fns and the options API becomes more relevant when you deal with large in-memory blobs that you already have as [bytes::Bytes].
+Tags are usually very small, so the allocation won't be very measurable. This distinction between the convenience fns and the options API becomes more relevant when you deal with large in-memory blobs that you already have as [bytes::Bytes].
 
 # Temp tags
 
 Sometimes you have a situation where you perform a complex operation and want to only assign a permanent tag once the operation is complete. E.g. you are adding a large number of files from a local directory. You do not want to assign permanent tags yet, either for performance reasons or because they would point to incomplete data and you want to assign a permanent tag only once the operation is complete.
 
-For such cases, iroh-blobs has anonymous temporary tags that only live in memory and are therefore extremely lightweight. A temp tag protects the content it points to until it goes out of scope and gets dropped.
+For such cases, `iroh-blobs` has anonymous temporary tags that only live in memory and are therefore extremely lightweight. A temp tag protects the content it points to until it goes out of scope and gets dropped.
 
 <Note>
 A temp tag is basically telling the store that you are currently working with the data and want to be left alone.
@@ -182,23 +183,23 @@ If you want progress for the operation to be preserved even after an interruptio
 <a name="metadata"></a>
 # How to deal with metadata in hash sequences
 
-A hash sequence is just a sequence of BLAKE3 hashes. So what if you want to add some kind of metadata to the entries, like file names?
+A hash sequence is just a sequence of `BLAKE3` hashes. So what if you want to add some kind of metadata to the entries, like file names?
 
-More complex formats such as DAG-CBOR allow you to freely mix data and hashes/links. But that is not without downsides. Every time you want to traverse a DAG-CBOR blob, you need to parse the DAG-CBOR haystack and look for CID needles. This is not a big problem for small blobs, but for iroh-blobs we treasure the ability to deal with arbitrary large blobs, and we want to extend this to blobs that contain links. For hash sequences, parsing is not needed, and you can easily access a link at an offset even without loading the entire hash sequence into memory.
+More complex formats such as `DAG-CBOR` allow you to freely mix data and hashes/links. But that is not without downsides. Every time you want to traverse a `DAG-CBOR` blob, you need to parse the `DAG-CBOR` haystack and look for `CID` needles. This is not a big problem for small blobs, but for `iroh-blobs` we treasure the ability to deal with arbitrary large blobs, and we want to extend this to blobs that contain links. For hash sequences, parsing is not needed, and you can easily access a link at an offset even without loading the entire hash sequence into memory.
 
 <Note>
 While the [DAG-CBOR] format allows for freely mixing links and content, the older [DAG-PB] format has a very similar approach to our collections. Links and content are stored in separate sections.
 </Note>
 
-But still, how do you deal with metadata? We have come up with a convention for this that works for many cases. We store the metadata as the first child of the HashSeq. E.g. to represent a directory in [sendme], the first child of the hash sequence contains a blob with a header followed by a sequence of file paths in a simple format - just the concatenated UTF8 strings. A hash sequence with this kind of metadata is called a collection.
+But still, how do you deal with metadata? We have come up with a convention for this that works for many cases. We store the metadata as the first child of the `HashSeq`. E.g. to represent a directory in [sendme], the first child of the hash sequence contains a blob with a header followed by a sequence of file paths in a simple format — just the concatenated UTF-8 strings. A hash sequence with this kind of metadata is called a collection.
 
 Depending on your use case, you might follow the convention of having the metadata in the first child, but have a different metadata format. Or you might come up with an entirely different convention. E.g. if you have a lot of metadata and require random access for the metadata, you might have 2 `hashseq` entries per content blob. Or you might have fixed size metadata in the metadata blob to allow random access for the metadata.
 
-There is no one size fits all solution, but whatever you do, iroh-blobs does not have to know about any of this. It only knows raw blobs and hash sequences.
+There is no one size fits all solution, but whatever you do, `iroh-blobs` does not have to know about any of this. It only knows raw blobs and hash sequences.
 
 # History of the iroh-blobs tagging concept
 
-Most of the concepts in this blog post date back to my work on [ipfs-embed] in 2020. I did a [talk] about this at IPFS camp 2022. Compared to ipfs-embed, iroh-blobs simplifies things by focusing exclusively on BLAKE3 hashed blobs of arbitrary size, and taking away the ability to traverse arbitrary DAGs in favour of the extremely simple concept of hash sequences.
+Most of the concepts in this blog post date back to my work on [ipfs-embed] in 2020. I did a [talk] about this at IPFS camp 2022. Compared to `ipfs-embed`, `iroh-blobs` simplifies things by focusing exclusively on `BLAKE3` hashed blobs of arbitrary size, and taking away the ability to traverse arbitrary DAGs in favour of the extremely simple concept of hash sequences.
 
 [pins]: https://docs.ipfs.tech/how-to/pin-files/
 [ISO8601]: https://en.wikipedia.org/wiki/ISO_8601
