@@ -140,19 +140,39 @@
     },
     { "version": "v0.33.0", "done": true, "released": "2025-02-24", "doc": "https://iroh.computer/blog/iroh-0-33-0-browsers-and-discovery-and-0-RTT-oh-my" },
     {
-      "done": false,
+      "done": true,
       "title": "use Raw Public Keys (RFC 7250) in TLS",
       "description": "use Raw Public Keys instead of self-signed certificates in TLS",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
       "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
     },
     {
+      "done": true,
+      "title": "improved tags API for `iroh-blobs`",
+      "description": "expand tags API",
+      "tracking_issue": null
+    },
+    { "version": "v0.34.0", "done": true, "released": "2025-03-18", "doc": null },
+    {
       "done": false,
       "title": "blobs 1.0 API",
       "description": "overhaul blobs API",
       "tracking_issue": null
     },
-    { "version": "v0.34.0", "done": false, "released": "2024-03-10", "doc": null },
+    {
+      "done": false,
+      "title": "relay connections over websockets",
+      "description": "Connections to the relay happen over websockets",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.35.0", "done": false, "released": "2025-04-07", "doc": null },
+    {
+      "done": false,
+      "title": "iroh-blobs: multiprovider fan-in",
+      "description": "Download data from multiple providers",
+      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
+    },
     {
       "done": false,
       "title": "QUIC Multipath support",
@@ -164,20 +184,6 @@
         "upstream to quinn": false
       }
     },
-    {
-      "done": false,
-      "title": "iroh-blobs: multiprovider fan-in",
-      "description": "Download data from multiple providers",
-      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
-    },
-    {
-      "done": false,
-      "title": "relay connections over websockets",
-      "description": "Connections to the relay happen over websockets",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.35.0", "done": false, "released": "2024-03-31", "doc": null },
     {
       "done": false,
       "title": "draft specification",
@@ -209,7 +215,7 @@
       "doc": ""
     },
     { "ellipsis": true },
-    { "version": "v0.36.0", "done": false, "released": "2024-04-21", "doc": null },
+    { "version": "v0.36.0", "done": false, "released": "2025-04-21", "doc": null },
     {
       "done": false,
       "title": "Formalize Error Responses",
@@ -222,7 +228,7 @@
       "description": "ratify the iroh 1.0 wire protocol",
       "tracking_issue": ""
     },
-    { "version": "v0.37.0", "done": false, "released": "2024-05-12", "doc": null },
+    { "version": "v0.37.0", "done": false, "released": "2025-05-12", "doc": null },
     {
       "done": false,
       "title": "release candidate",
@@ -230,7 +236,7 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "version": "v0.38.0", "done": false, "released": "2024-06-02", "doc": null },
+    { "version": "v0.38.0", "done": false, "released": "2025-06-02", "doc": null },
     {
       "done": false,
       "title": "documentation refinement",

@@ -1,0 +1,119 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2025-03-18',
+  title: 'iroh v0.34 - Raw Public Keys in TLS',
+  description: 'Iroh 0.34 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+We have one major addition in `iroh` and one major addition in `iroh-blobs` this release: the ability to use Raw Public Keys in TLS certificates in `iroh` and an expanded `Tags` API in `iroh-blobs`. Also, for folks who relay on `Discovery` to find locally discovered nodes in your network, we’ve done a major rename, from `LocalSwarmDiscover` to `MdnsDiscovery`.
+
+## 🔑 Raw Public Keys in TLS Certificates
+
+Before implementing this change, we were required to carry around a lot of custom code and make adjustments to the way that TLS certificates were verified. With the addition of [raw public keys](https://datatracker.ietf.org/doc/html/rfc7250) in `iroh`, we can follow TLS specifications more closely.
+
+However, switching over to raw public keys in your code is a major breaking change: nodes that use the “old” version, `iroh` at `v0.33.0` or earlier, will not be able to talk to nodes using raw public keys in TLS.
+
+To ease the transition, we’ve made raw public keys **default** in `iroh`, but have added a simple API to keep the old `X.509` certificates in TLS possible.
+
+### Let’s talk about breaking changes…
+
+There are a few wire-level breaking changes that will eventually pop up in `iroh` for the 1.0 release, and this is one of them. We are doing our best to hold onto all of the legacy code for as long as possible, and only remove the old legacy *once* before the `iroh` 1.0 release. This will likely occur for our first release candidate, though it’s possible it will happen before.
+
+Either way,  please note: there *will* be a major breaking change coming. We will make sure to sign-post it well, so you have plenty of warning!
+
+### Back to Raw Public Keys!
+
+We’ve added the ability to use raw public keys in TLS certificates, by default.
+
+To make the transition smooth, however, we you can keep your endpoint on `X.509` certificates easily:
+
+```rust
+let endpoint = Endpoint::builder()
+   .tls_x509() // <--- this enables the old style TLS authentication
+   // ...
+   .bind();
+```
+
+Eventually, before 1.0, this option will be removed, but you will get fair warning!
+
+Checkout [PR #2937](https://github.com/n0-computer/iroh/pull/2937) for more details.
+
+## 🏷️ Expanded Tag API in `iroh-blobs`
+
+A `Tag` in `iroh-blobs` is a name you can give to content to mark it as important. It also functions as a way to tell the `iroh-blobs` garbage collector “keep this around, I want it.”
+
+We previously had a relatively limited API around tags, but it’s been largely expanded for this most recent release of `iroh-blobs`. They are a very useful concept, and can allow you to associated arbitrary data with a hash inside your node. For more on tags, check out the [tags blog post](https://iroh.computer/blog/a-richer-tags-api), that goes into detail about the API and gives examples on how it can be used.
+
+For an overview on the API changes, I’ll leave you with an excerpt from the blog:
+
+> The current API has been extended to give the full capability of a key-value store for tags. You can get the value of individual tags, list them by range or prefix, and even bulk delete them by range or prefix. In addition we added the ability to atomically rename a tag.
+> 
+
+> Be really careful with bulk deletion of tags. If you delete all tags, all your data will soon be gone.
+> 
+
+Check out [PR #69](https://github.com/n0-computer/iroh-blobs/pull/69) and the [tags blog post](https://iroh.computer/blog/a-richer-tags-api) for more details.
+
+## 🗺️ Rename `LocalSwarmDiscovery` to `MdnsDiscovery`
+
+We were being too pedantic when naming `LocalSwarmDiscovery`. The crate we rely on, `swarm-discovery`, is an opinionated implementation of `mDNS`. Naming the discovery system `LocalSwarm` is confusing, when networking folks likely already understand the purpose of `mDNS`. It’s changed now. `iroh::discovery::local_swarm_discovery` is now `iroh::discovery::mdns`, and `iroh::discovery::local_swarm_discovery::LocalSwarmDiscovery` is now `iroh::discovery::mdns::MdnsDiscovery` .
+
+Checkout [PR #3215](https://github.com/n0-computer/iroh/pull/3215) for more details.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - added:
+        - `endpoint::Builder::tls_x509` to enable using X.509 TLS certificates.
+        By default iroh endpoints will now use the new `RawPublicKey` TLS configuration. This means they will not be able to talk to older iroh nodes. If needed, the old mechanism can still be used by configuring the endpoint like this:
+
+```rust
+let endpoint = Endpoint::builder()
+   .tls_x509() // <--- this enables the old style TLS authentication
+   // ...
+   .bind();
+
+```
+
+- changed:
+    - renamed `iroh::discovery::local_swarm_discovery` to `iroh::discovery::mdns`
+    - renamed `iroh::discovery::local_swarm_discovery::LocalSwarmDiscovery` to `iroh::discovery::mdns::MdnsDiscovery`
+    - changed the default cert format for `Reloading` certificate mode from `DER` to `PEM`
+    - trait method `ProtocolHandler::accept(&self, connection: iroh::endpoint::Connection)` used to take an `iroh::endpoint::Connecting`, now takes a `iroh::endpoint::Connection`.
+- `iroh-net-report`
+    - removed:
+        - `iroh-base`: We removed the unused `getrandom` optional dependency. As such, there doesn't exist a `getrandom` feature flag in `iroh-base` anymore.
+        - `MAPPED_ADDR_PORT` is removed.
+    - changed:
+        - `IpMappedAddr::socket_addr` -> `IpMappedAddr::private_socket_addr`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.34.0](https://github.com/n0-computer/iroh/releases/tag/v0.34.0).
+
+If you want to know what is coming up, check out the [v0.35.0 milestone](https://github.com/n0-computer/iroh/milestone/42), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
