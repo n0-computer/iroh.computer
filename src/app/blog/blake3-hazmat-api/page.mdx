@@ -71,7 +71,7 @@ Most uses are only interested in the root hash, and won't *ever* have to deal wi
 
 At a minimum, we need the ability to hash individual chunks, as well as the ability to combine chunks to build the binary tree up to the root.
 
-Previously, the BLAKE3 provided exactly this functionality in an undocumented and unstable *guts* API that was also used by the [bao] crate.
+Previously, the BLAKE3 crate provided exactly this functionality in an undocumented and unstable *guts* API that was also used by the [bao] crate.
 
 A function `parent_cv` provided the ability to combine two non-root hashes (also called continuation values) to another continuation value or root hash.
 
