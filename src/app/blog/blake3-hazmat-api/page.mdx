@@ -29,7 +29,7 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-In [iroh-blobs], we are using the [BLAKE3] hash function for content-addressing. To allow verified streaming, we need to access some internals of the hash function. For the last 18 months we have maintaned a [fork] of the BLAKE3 crate to allow us to access some internals of the hash function. With the latest release of BLAKE3, there is a new hazmat API that allows us to retire this fork.
+In [iroh-blobs], we are using the [BLAKE3] hash function for content-addressing. To allow verified streaming, we need to access some internals of the hash function. For the last 18 months we have maintaned a [fork] of the BLAKE3 crate to allow us to access some internals of the hash function. With the latest release of BLAKE3, there is a new *hazmat* API that allows us to retire this fork.
 
 This blog post goes into a lot of detail on the previous *guts* API, the new *hazmat* API, and how we use these APIs in blobs. It will be of interest to other advanced users of the BLAKE3 hash function.
 
