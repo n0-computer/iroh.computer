@@ -89,7 +89,7 @@ When computing a hash from a large blob, the [Hasher](https://docs.rs/blake3/lat
 
 But if you only ever ask the poor thing for hashes of *individual* chunks, there is nothing it can do!
 
-So to get the benefit of this aweomesness, we need to give the hash function multiple chunks to work with even when computing subtree hashes.
+So to get the benefit of this awesomeness, we need to give the hash function multiple chunks to work with, even when computing subtree hashes.
 
 `iroh-blobs` works with *chunk groups* of 16 chunks. When sending or receiving data, the most expensive hashing related computation going on in `iroh-blobs` is computing the hash of a subtree consisting of 16 chunks.
 
