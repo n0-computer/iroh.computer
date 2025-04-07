@@ -91,7 +91,7 @@ But if you only ever ask the poor thing for hashes of *individual* chunks, there
 
 So to get the benefit of this aweomesness, we need to give the hash function multiple chunks to work with even when computing subtree hashes.
 
-Iroh-blobs is working with *chunk groups* of 16 chunks, so the most expensive hashing related computation going on in iroh-blobs when sending or receiving data is to compute the hash of a subtree consisting of 16 chunks.
+`iroh-blobs` works with *chunk groups* of 16 chunks. When sending or receiving data, the most expensive hashing related computation going on in `iroh-blobs` is computing the hash of a subtree consisting of 16 chunks.
 
 You can of course compute this sequentially using the primitives exposed by the guts API. But you only benefit from the parallelism of BLAKE3 if you give all chunks to the hasher all at once. This is exactly what our fork does. it added a fn to the guts api to hash an entire subtree:
 
