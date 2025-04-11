@@ -64,7 +64,7 @@ export default function SendmePage() {
 
             <div className='px-5 py-10 border-b flex-1 md:w-7/12'>
               <h3 className='text-3xl font-koulen'>Install</h3>
-              <p className='mt-1 text-sm/6 text-gray-500'>Add sendme to your machine using shell:</p>
+              <p className='mt-1 text-sm/6 text-gray-500'>Add sendme to your machine using bash:</p>
               <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopy}>
                 <div className='grow mr-10 font-spaceMono'>$ {install}</div>
                 {copied
@@ -74,7 +74,7 @@ export default function SendmePage() {
                   ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
                   : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
               </button>
-              <p className='mt-1 text-sm/6 text-gray-500'>On windows:</p>
+              <p className='mt-1 text-sm/6 text-gray-500'>On windows with PowerShell:</p>
               <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopyWin}>
                 <div className='grow mr-10 font-spaceMono'>$ {install_win}</div>
                 {copiedWin
