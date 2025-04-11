@@ -20,13 +20,27 @@ const koulen = localFont({
 
 export default function SendmePage() {
   const install = `curl -fsSL https://iroh.computer/sendme.sh | sh`
+  const install_win = `iwr https://iroh.computer/sendme.ps1 -useb | iex`
   const [copied, setCopied] = React.useState(false)
+  const [copiedWin, setCopiedWin] = React.useState(false)
+
+  const _handleCopy = (ins) => {
+    navigator.clipboard.writeText(ins);
+  }
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(install);
+    _handleCopy(install);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
+    }, 1300);
+  }
+
+  const handleCopyWin = () => {
+    _handleCopy(install_win);
+    setCopiedWin(true);
+    setTimeout(() => {
+      setCopiedWin(false);
     }, 1300);
   }
 
@@ -50,13 +64,23 @@ export default function SendmePage() {
 
             <div className='px-5 py-10 border-b flex-1 md:w-7/12'>
               <h3 className='text-3xl font-koulen'>Install</h3>
-              <p className='mt-1 text-sm/6 text-gray-500'>Add sendme to your machine using shell:</p>
+              <p className='mt-1 text-sm/6 text-gray-500'>Add sendme to your machine using bash:</p>
               <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopy}>
                 <div className='grow mr-10 font-spaceMono'>$ {install}</div>
                 {copied
                   ? <span className='w-10 mr-1'>copied!</span>
                   : <span className='w-10 mr-1'></span> }
                 {copied
+                  ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
+                  : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
+              </button>
+              <p className='mt-1 text-sm/6 text-gray-500'>On windows with PowerShell:</p>
+              <button className='text-xs md:text rounded bg-zinc-100 p-2 mt-2 flex plausible-event-name=Sendme+Copy+Install+Script+Click' onClick={handleCopyWin}>
+                <div className='grow mr-10 font-spaceMono'>$ {install_win}</div>
+                {copiedWin
+                  ? <span className='w-10 mr-1'>copied!</span>
+                  : <span className='w-10 mr-1'></span> }
+                {copiedWin
                   ? <ClipboardDocumentCheckIcon className="h-5 w-5 text-zinc-500" />
                   : <ClipboardDocumentIcon className="h-5 w-5 text-zinc-500" />}
               </button>
