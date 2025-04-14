@@ -23,6 +23,7 @@ export const navItems = [
   },
   { title: 'Concepts',
     links: [
+      {title: 'Architecture', href: '/docs/concepts/architecture'},
       {title: 'Endpoint', href: '/docs/concepts/endpoint'},
       {title: 'Relay', href: '/docs/concepts/relay'},
       {title: 'Discovery', href: '/docs/concepts/discovery'},
