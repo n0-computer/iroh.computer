@@ -318,7 +318,7 @@ Here's some advice that might be useful if you write your own protocol:
   Opening a QUIC stream is *really* cheap, as it doesn't need extra round-trips for the stream to get established, which is not the case for connections (unless in special circumstances when you're using the QUIC 0-RTT feature).
 - **Beware: QUIC streams are lazy**: Make sure that when you call `connection.open_bi()`, you *always send first* before you receive data.
   This is because the other side doesn't even know about a stream unless you *send* data on the stream first.
-  This property is called "lazyness" - as opposed to being "eager".
+  This property is called "laziness" - as opposed to being "eager".
   The other side that accepts the stream will know about it at the same time that it gets the first bits of data.
 - **Closing QUIC connections can be hard**: This was already mentioned above, but it's worth re-iterating.
   As a general rule of thumb: The side to last read data should be the side to close a connection.
