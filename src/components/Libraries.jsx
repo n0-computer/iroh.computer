@@ -3,11 +3,7 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 
 import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
-import logoKotlin from '@/images/logos/kotlin.svg';
-import logoPython from '@/images/logos/python.svg';
-import logoRust from '@/images/logos/rust.svg';
-import logoSwift from '@/images/logos/swift.svg';
-import logoNodeJs from '@/images/logos/node.svg';
+import logoRust from '@/images/language-logos/rust.svg';
 import { Tag } from '@/components/Tag';
 
 const libraries = [
