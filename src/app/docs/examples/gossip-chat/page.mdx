@@ -184,7 +184,7 @@ And let's write a `Message::Message` that has a `String` with the actual chat me
 
 Also, we want each of those messages to include the `NodeId` of the sender. In an actual application, we would encode and decode the messages with keypairs to ensure that everyone who sends a message is actually who they say they are. For more on that, check out our more robust chat example that exists in the [`iroh-gossip`](https://github.com/n0-computer/iroh-gossip/blob/main/examples/chat.rs) repo.
 
-In addition, the nature of the gossip protocol could potentially cause messages to be sent multiple times. This is done intentially, to ensure at-least-once delivery of each message to all nodes. This behavior is unexpected in most app contexts, so iroh will internally deduplicate messages based on the hash of their contents.
+In addition, the nature of the gossip protocol could potentially cause messages to be sent multiple times. This is done intentionally, to ensure at-least-once delivery of each message to all nodes. This behavior is unexpected in most app contexts, so iroh will internally deduplicate messages based on the hash of their contents.
 In this case, if someone sends re-sends a message they already sent, it will be ignored by the other peeres. To circumvent this, each message should include a piece of unique data to prevent this deduplication. This can be done in a number of ways - we will use a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce).
 
 We need to add crates that will allow us to serialize our new message types as bytes and deserialize bytes as our message type.
