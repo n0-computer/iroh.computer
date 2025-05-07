@@ -184,6 +184,9 @@ And let's write a `Message::Message` that has a `String` with the actual chat me
 
 Also, we want each of those messages to include the `NodeId` of the sender. In an actual application, we would encode and decode the messages with keypairs to ensure that everyone who sends a message is actually who they say they are. For more on that, check out our more robust chat example that exists in the [`iroh-gossip`](https://github.com/n0-computer/iroh-gossip/blob/main/examples/chat.rs) repo.
 
+In addition, the nature of the gossip protocol could potentially cause messages to be sent multiple times. This is done intentionally, to ensure at-least-once delivery of each message to all nodes. This behavior is unexpected in most app contexts, so iroh will internally deduplicate messages based on the hash of their contents.
+In this case, if someone sends re-sends a message they already sent, it will be ignored by the other peeres. To circumvent this, each message should include a piece of unique data to prevent this deduplication. This can be done in a number of ways - we will use a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce).
+
 We need to add crates that will allow us to serialize our new message types as bytes and deserialize bytes as our message type.
 
 `serde` stands for `Serialize/Deserialize`. `serde-json` lets us easily encode and decode to the json format, but we can choose other formats. E.g., in the `iroh-gossip` example, we use `postcard`.
@@ -205,7 +208,13 @@ use serde::{Deserialize, Serialize};
 
 // add the message code to the bottom
 #[derive(Debug, Serialize, Deserialize)]
-enum Message {
+struct Message {
+    body: MessageBody,
+    nonce: [u8; 16],
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+enum MessageBody {
     AboutMe { from: NodeId, name: String },
     Message { from: NodeId, text: String },
 }
@@ -213,6 +222,13 @@ enum Message {
 impl Message {
     fn from_bytes(bytes: &[u8]) -> Result<Self> {
         serde_json::from_slice(bytes).map_err(Into::into)
+    }
+
+    pub fn new(body: MessageBody) -> Self {
+        Self {
+            body,
+            nonce: rand::random(),
+        }
     }
 
     pub fn to_vec(&self) -> Vec<u8> {
@@ -229,10 +245,10 @@ sender.broadcast("sup".into()).await?;
 
 // with:
 // Create an "about me" message
-let message = Message::AboutMe {
+let message = Message::new(MessageBody::AboutMe {
     from: endpoint.node_id(),
     name: String::from("alice"),
-};
+});
 // Turn the message into a `Vec`, and then use
 // `into` to coerse the `Vec` into `Bytes`
 sender.broadcast(message.to_vec().into()).await?; 
@@ -273,15 +289,15 @@ async fn subscribe_loop(mut receiver: GossipReceiver) -> Result<()> {
         if let Event::Gossip(GossipEvent::Received(msg)) = event {
             // deserialize the message and match on the
             // message type:
-            match Message::from_bytes(&msg.content)? {
-                Message::AboutMe { from, name } => {
+            match Message::from_bytes(&msg.content)?.body {
+                MessageBody::AboutMe { from, name } => {
                     // if it's an `AboutMe` message
                     // add and entry into the map
                     // and print the name
                     names.insert(from, name.clone());
                     println!("> {} is now known as {}", from.fmt_short(), name);
                 }
-                Message::Message { from, text } => {
+                MessageBody::Message { from, text } => {
                     // if it's a `Message` message,
                     // get the name from the map
                     // and print the message
@@ -334,10 +350,10 @@ async fn main() -> Result<()> {
 
     let (sender, receiver) = gossip.subscribe(id, node_ids)?.split();
 
-    let message = Message::AboutMe {
+    let message = Message::new(MessageBody::AboutMe {
         from: endpoint.node_id(),
         name: String::from("alice"),
-    };
+    });
     sender.broadcast(message.to_vec().into()).await?;
 
     // subscribe and print loop
@@ -395,10 +411,10 @@ println!("> type a message and hit enter to broadcast...");
 // listen for lines that we have typed to be sent from `stdin`
 while let Some(text) = line_rx.recv().await {
     // create a message from the text
-    let message = Message::Message {
+    let message = Message::new(MessageBody::Message {
         from: endpoint.node_id(),
         text: text.clone(),
-    };
+    });
     // broadcast the encoded message
     sender.broadcast(message.to_vec().into()).await?;
     // print to ourselves the text that we sent
@@ -614,10 +630,10 @@ async fn main() -> Result<()> {
 
     // broadcast our name, if set
     if let Some(name) = args.name {
-        let message = Message::AboutMe {
+        let message = Message::new(MessageBody::AboutMe {
             from: endpoint.node_id(),
             name,
-        };
+        });
         sender.broadcast(message.to_vec().into()).await?;
     }
 
@@ -635,10 +651,10 @@ async fn main() -> Result<()> {
     // listen for lines that we have typed to be sent from `stdin`
     while let Some(text) = line_rx.recv().await {
         // create a message from the text
-        let message = Message::Message {
+        let message = Message::new(MessageBody::Message {
             from: endpoint.node_id(),
             text: text.clone(),
-        };
+        });
         // broadcast the encoded message
         sender.broadcast(message.to_vec().into()).await?;
         // print to ourselves the text that we sent
@@ -650,7 +666,13 @@ async fn main() -> Result<()> {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-enum Message {
+struct Message {
+    body: MessageBody,
+    nonce: [u8; 16],
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+enum MessageBody {
     AboutMe { from: NodeId, name: String },
     Message { from: NodeId, text: String },
 }
@@ -658,6 +680,13 @@ enum Message {
 impl Message {
     fn from_bytes(bytes: &[u8]) -> Result<Self> {
         serde_json::from_slice(bytes).map_err(Into::into)
+    }
+
+    pub fn new(body: MessageBody) -> Self {
+        Self {
+            body,
+            nonce: rand::random(),
+        }
     }
 
     pub fn to_vec(&self) -> Vec<u8> {
@@ -675,15 +704,15 @@ async fn subscribe_loop(mut receiver: GossipReceiver) -> Result<()> {
         if let Event::Gossip(GossipEvent::Received(msg)) = event {
             // deserialize the message and match on the
             // message type:
-            match Message::from_bytes(&msg.content)? {
-                Message::AboutMe { from, name } => {
+            match Message::from_bytes(&msg.content)?.body {
+                MessageBody::AboutMe { from, name } => {
                     // if it's an `AboutMe` message
                     // add and entry into the map
                     // and print the name
                     names.insert(from, name.clone());
                     println!("> {} is now known as {}", from.fmt_short(), name);
                 }
-                Message::Message { from, text } => {
+                MessageBody::Message { from, text } => {
                     // if it's a `Message` message,
                     // get the name from the map
                     // and print the message
