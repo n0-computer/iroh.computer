@@ -1,0 +1,103 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2025-05-13',
+  title: 'iroh v0.35 - Prepping for 1.0',
+  description: 'Iroh 0.35 release',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+The number0 team has been hard at work to get a 1.0 release of `iroh` out the door this year. As we’ve gotten closer to achieving our goal, we’ve also developed a clearer understanding of what that actually looks like. We’ve mentioned in previous blog posts that a wire-protocol and network-level breaking change is coming in the near future.
+
+**This release, `0.35`, will be the last release before that protocol- and network-level breaking change.**
+
+We will continue to maintain `0.35` and will release patches if any bugs are found and fixed. Our next release—unless a bug fix between now and then requires a breaking change—will be a release candidate, which we’ll refer to as `0.99`.
+
+The `0.35` release contains minor API changes and a major update to our metrics collection.
+
+## 🧚 v0.35 Changes
+
+### **Metrics**
+
+For those of you using the “metrics” feature in `iroh`: we’ve updated how metrics collection works. Previously, we had a global metrics collector, which meant we couldn’t separate metrics when multiple instances of `iroh` were running in the same process. This was most noticeable during testing, but it could also affect users running more than one endpoint in their code.
+
+Now, metrics are collected by the `iroh::Endpoint`, so each instance can track its own metrics independently.
+
+For many users, this change will go unnoticed, as it primarily involved internal refactoring.
+
+### **Router**
+
+One API change you’ll likely notice is that the `iroh::Router::spawn()` method is now synchronous and infallible. Say goodbye to that extra `.await?`.
+
+## 🔧 Release Candidate Logistics
+
+A few key changes are coming in the upcoming `0.99-rc-alpha` release:
+
+1. **Removal of x.509 TLS certificates:** These will be removed in `0.99`.
+2. **Relay connection simplification:** Previously, connecting to the relay servers via Websockets was only available when using the "wasm" feature. Now, it is available regardless of what features you have enabled. This means we currently support two methods of connecting to relays: the old relay codec and WebSockets. The old relay codec will be removed in `0.99`. You can get ahead of the game and switch to using Websockets by using the `iroh::endpoint::Builder::relay_conn_protocol` method.
+3. **Error handling overhaul:** We currently use `anyhow` for errors. In `0.99`, we’ll move to concrete error types for our APIs.
+4. **QUIC multipath and NAT traversal:** The most significant change is our adoption of the [QUIC multipath extension](https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/14/) and [QUIC NAT traversal](https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html). This is a substantial undertaking and will form the bulk of our work as we move from a release candidate to a well-tested and trusted `1.0`.
+
+## How Does This Affect the `iroh`Maintained Protocols?
+
+`iroh-gossip` and `iroh-blobs` will follow `iroh` in moving to the `0.99` release candidate pattern after `0.35`.
+
+`iroh-gossip` will largely remain unchanged, apart from any necessary bug fixes.
+
+We’ve been working on a major `iroh-blobs` API update that will make it easier to use in general, and more specifically, will dramatically simplify tracking progress updates. Although these changes are substantial, we’re confident the new API will be more intuitive and satisfying for users.
+
+`iroh-docs` is not yet ready for a `1.0`, so we’ll continue releasing minor and patch updates as needed.
+
+## Other Crates That Will No Longer Be Maintained
+
+We will no longer update `quic-rpc` and `iroh-node-utils`.
+
+None of the `0.99` crates will depend on `quic-rpc`. Instead, we’re developing `irpc`, a new crate with fewer bells and whistles than `quic-rpc` but a much simpler and more straightforward design.
+
+To ensure the success of the `1.0` release, we’ve narrowed the scope of what `iroh` is responsible for and removed any CLI components from our roadmap. As a result, we won’t be updating `iroh-node-utils` after `0.35`, since its primary purpose was to support CLI development around `iroh` and its protocols.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - remove
+        - `pub fn default_from_node(url: RelayUrl, stun_port: u16) -> RelayMap`
+    - change
+        - `pub fn from_url(url: RelayUrl) -> RelayMap`, use `From<RelayUrl>` instead
+        - `Router::spawn` is now a plain function instead of an `async fn`
+        - `Router::spawn` is now infallible, instead of returning `anyhow::Result<()>`
+        - All metrics structs (`iroh::metrics::{MagicsockMetrics, PortmapMetrics, NetReportMetrics}`) now implement `MetricsGroup` from the new version `0.34` of `iroh-metrics` and no longer implement traits from `iroh-metrics@0.32`.
+        - Metrics are no longer registered onto the static superglobal `Core`. `iroh` does not use `static_core` feature of `iroh-metrics`. Metrics are now exposed from the subsystems that track them, see e.g. `Endpoint::metrics`.
+        - Several methods now take a `Metrics` argument. You can always pass `Default::default` if you don't want to unify metrics tracking with other sections.
+        - `pkarr::SignedPacket`, as used as a parameter in `iroh::dns::node_info::NodeInfo::to_pkarr_signed_packet` and `iroh::dns::node_info::NodeInfo::from_pkarr_signed_packet` is now expecting `pkarr` at major version `3` instead of `2`
+- `iroh-relay`
+    - change
+        - Minor change in the `From` impls for `ConnSendError` due to changing the underlying library
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.35.0](https://github.com/n0-computer/iroh/releases/tag/v0.35.0).
+
+If you want to know what is coming up, check out the [v0.99 milestone](https://github.com/n0-computer/iroh/milestone/34), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0).
