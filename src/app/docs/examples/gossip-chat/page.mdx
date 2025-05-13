@@ -118,8 +118,7 @@ async fn main() -> Result<()> {
     // protocol.
     let router = Router::builder(endpoint.clone())
         .accept(iroh_gossip::ALPN, gossip.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     // Cleanly shutdown the router.
     router.shutdown().await?;
@@ -147,8 +146,7 @@ async fn main() -> Result<()> {
 
     let router = Router::builder(endpoint.clone())
         .accept(iroh_gossip::ALPN, gossip.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     // Create a new topic.
     let id = TopicId::from_bytes(rand::random());
@@ -342,8 +340,7 @@ async fn main() -> Result<()> {
 
     let router = Router::builder(endpoint.clone())
         .accept(iroh_gossip::ALPN, gossip.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     let id = TopicId::from_bytes(rand::random());
     let node_ids = vec![];
@@ -599,8 +596,7 @@ async fn main() -> Result<()> {
 
     let router = Router::builder(endpoint.clone())
         .accept(iroh_gossip::ALPN, gossip.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     // in our main file, after we create a topic `id`:
     // print a ticket that includes our own node id and endpoint addresses

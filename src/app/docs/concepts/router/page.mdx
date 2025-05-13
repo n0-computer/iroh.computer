@@ -27,8 +27,7 @@ async fn main() -> Result<()> {
     // identified by its ALPN. Spawn the router to start listening.
     let router = Router::builder(endpoint)
         .accept(iroh_blobs::ALPN, blobs)
-        .spawn()
-        .await?;
+        .spawn();
 
     // get our own address. At this point we have a running router 
     // that's ready to accept connections.

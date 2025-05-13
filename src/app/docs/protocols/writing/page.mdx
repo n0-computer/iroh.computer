@@ -39,8 +39,7 @@ async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
     let endpoint = iroh::Endpoint::builder().discovery_n0().bind().await?;
 
     let router = iroh::protocol::Router::builder(endpoint)
-        .spawn()
-        .await?;
+        .spawn();
 
     Ok(router)
 }
@@ -102,8 +101,7 @@ async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
 
     let router = iroh::protocol::Router::builder(endpoint)
         .accept(ALPN, Echo) // This makes the router handle incoming connections with our ALPN via Echo::accept!
-        .spawn()
-        .await?;
+        .spawn();
 
     Ok(router)
 }

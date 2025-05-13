@@ -123,8 +123,7 @@ async fn main() -> anyhow::Result<()> {
     // to the blobs protocol.
     let router = Router::builder(endpoint)
         .accept(iroh_blobs::ALPN, blobs.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     // do *something*
 

@@ -29,8 +29,7 @@ async fn main() -> anyhow::Result<()> {
     let router = Router::builder(endpoint)
         .accept(iroh_blobs::ALPN, blobs.clone())
         .accept(iroh_gossip::ALPN, gossip.clone())
-        .spawn()
-        .await?;
+        .spawn();
 
     router.shutdown().await?;
     Ok(())

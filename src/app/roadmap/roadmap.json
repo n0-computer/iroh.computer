@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-02-25",
+  "last_updated": "2025-05-13",
   "milestones": [
     {
       "done": true,
@@ -152,21 +152,28 @@
       "description": "expand tags API",
       "tracking_issue": null
     },
-    { "version": "v0.34.0", "done": true, "released": "2025-03-18", "doc": null },
+    { "version": "v0.34.1", "done": true, "released": "2025-03-18", "doc": "https://www.iroh.computer/blog/iroh-0-34-0-raw-public-keys" },
+    {
+      "done": true,
+      "title": "relay connections over websockets",
+      "description": "Connections to the relay happen over websockets",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "metrics are collected per-endpoint",
+      "description": "Previously, metrics were collected globably. Now, each `iroh` endpoint collects metrics for itself.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.35.0", "done": true, "released": "2025-05-12", "doc": "https://www.iroh.computer/blog/iroh-0-35-prepping-for-1-0" },
     {
       "done": false,
       "title": "blobs 1.0 API",
       "description": "overhaul blobs API",
       "tracking_issue": null
     },
-    {
-      "done": false,
-      "title": "relay connections over websockets",
-      "description": "Connections to the relay happen over websockets",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.35.0", "done": false, "released": "2025-04-07", "doc": null },
     {
       "done": false,
       "title": "iroh-blobs: multiprovider fan-in",
@@ -186,6 +193,27 @@
     },
     {
       "done": false,
+      "title": "QUIC NAT traversal",
+      "description": "Using Quic to traverse NATs",
+      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
+    },
+    {
+      "done": false,
+      "title": "Formalize Error Responses",
+      "description": "transition from anyhow to thiserror in all critical code paths",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
+    },
+    {
+      "done": false,
+      "title": "release candidate",
+      "description": "publish a release candidate, seeking feedback from the community",
+      "tracking_issue": "",
+      "doc": ""
+    },
+    { "version": "v0.99-rc", "done": false, "released": "", "link": "", "expected": "H2 2025" },
+    { "ellipsis": true },
+    {
+      "done": false,
       "title": "draft specification",
       "description": "draft a specification for the iroh protocol, outlining all open standards iroh uses, noting any deviations",
       "tracking_issue": null,
@@ -203,9 +231,9 @@
     },
     {
       "done": false,
-      "title": "QUIC NAT traversal",
-      "description": "Using Quic to traverse NATs",
-      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
+      "title": "finalize 1.0 spec",
+      "description": "ratify the iroh 1.0 wire protocol",
+      "tracking_issue": ""
     },
     {
       "done": false,
@@ -214,29 +242,6 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "ellipsis": true },
-    { "version": "v0.36.0", "done": false, "released": "2025-04-21", "doc": null },
-    {
-      "done": false,
-      "title": "Formalize Error Responses",
-      "description": "transition from anyhow to thiserror in all critical code paths",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
-    },
-    {
-      "done": false,
-      "title": "finalize 1.0 spec",
-      "description": "ratify the iroh 1.0 wire protocol",
-      "tracking_issue": ""
-    },
-    { "version": "v0.37.0", "done": false, "released": "2025-05-12", "doc": null },
-    {
-      "done": false,
-      "title": "release candidate",
-      "description": "publish a release candidate, seeking feedback from the community",
-      "tracking_issue": "",
-      "doc": ""
-    },
-    { "version": "v0.38.0", "done": false, "released": "2025-06-02", "doc": null },
     {
       "done": false,
       "title": "documentation refinement",
@@ -244,7 +249,7 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "version": "v1.0", "done": false, "released": "", "link": "", "expected": "H2 2025" },
+    { "version": "v1.0", "done": false, "released": "", "link": "", "expected": "H3 2025" },
     { "all_done": false, "title": "Party", "description": "That's it. All done. no more work left to do, ever. :)", "link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
   ]
 }
