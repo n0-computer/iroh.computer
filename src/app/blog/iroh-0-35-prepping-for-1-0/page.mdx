@@ -57,11 +57,11 @@ One API change you’ll likely notice is that the `iroh::Router::spawn()` method
 A few key changes are coming in the upcoming `0.99-rc-alpha` release:
 
 1. **Removal of x.509 TLS certificates:** These will be removed in `0.99`.
-2. **Relay connection simplification:** Previously, connecting to the relay servers via Websockets was only available when using the "wasm" feature. Now, it is available regardless of what features you have enabled. This means we currently support two methods of connecting to relays: the old relay codec and WebSockets. The old relay codec will be removed in `0.99`. You can get ahead of the game and switch to using Websockets by using the `iroh::endpoint::Builder::relay_conn_protocol` method.
+2. **Relay connection simplification:** Previously, connecting to the relay servers via Websockets was only available when using the "wasm" feature. Now, it is available regardless of what features you have enabled. This means we currently support two methods of connecting to relays: the old relay codec and WebSockets. The old relay codec will be removed in `0.99`. You can get ahead of the game and switch to using Websockets by using the `iroh::endpoint::Builder::relay_conn_protocol` method. That said, in 0.35 this will still be an experimental preview, and we already know there will be at least one more breaking change in the Websocket relay protocol coming with 0.99.
 3. **Error handling overhaul:** We currently use `anyhow` for errors. In `0.99`, we’ll move to concrete error types for our APIs.
 4. **QUIC multipath and NAT traversal:** The most significant change is our adoption of the [QUIC multipath extension](https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/14/) and [QUIC NAT traversal](https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html). This is a substantial undertaking and will form the bulk of our work as we move from a release candidate to a well-tested and trusted `1.0`.
 
-## How Does This Affect the `iroh`Maintained Protocols?
+## How Does This Affect the `iroh` Maintained Protocols?
 
 `iroh-gossip` and `iroh-blobs` will follow `iroh` in moving to the `0.99` release candidate pattern after `0.35`.
 
