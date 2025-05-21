@@ -1,0 +1,134 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2025-05-21',
+  title: '0-RTT',
+  description:
+    "When to use and when not to use 0-RTT with iroh connections",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Despite all the complexity required to enable dial by node id and direct connections, iroh has a very simple API. You create an endpoint, create connections, create streams, and then send data.
+
+There is some complexity involved in properly [closing QUIC connections](https://www.iroh.computer/blog/closing-a-quic-connection), but
+other than that everything is pretty straightforward.
+
+One aspect of iroh connections that is a bit more complex is 0-RTT. This blog post explains what 0-RTT is, when to use it, when **not** to use it, and will show a small example.
+
+# What is 0-RTT
+
+Iroh connections are just peer to peer QUIC connections, using a fork of the quinn rust crate. QUIC is using TLS for encryption.
+
+So to explain what 0-RTT is, it is helpful to explain how a normal TLS handshake works in detail.
+
+<Note>
+We refer to logical messages as just messages. Messages can be split into multiple QUIC frames, and multiple QUIC frames will be combined in QUIC packets, which will then be sent over the network. But for the purpose of explaining the handshake these details don't matter.
+</Note>
+
+## Normal TLS handshake
+
+### ClientHello
+
+The connection is initiated from the client by sending a `ClientHello`. This message contains the TLS protocol version, random data to protect against replay attacks, and the set of supported cipher suites. In addition it contains a set of ALPN strings that identify the application level protocols that the client wishes to speak. It also contains a set of identifiers for pre shared keys that could be used, if the client has talked to the server recently.
+
+When receiving the `ClientHello`, the server has information to narrow down the set of cryptographic primitives to use. The server endpoint also has a set of ALPNs it supports and a set of previously used pre shared keys, so it can downselect those as well.
+
+<Note>
+If the intersection of the ALPNs requested by the client and the ALPNs supported by the server is empty, the handshake will nevertheless continue.
+
+If the intersection of *cipher suites* between client and server is empty however, the handshake will *definitely* fail. The server will not send a `ServerHello`, but just a TLS alert indicating a handshake failure.
+</Note>
+
+### ServerHello
+
+The `ServerHello` message contains a 32 byte random value as well as a *single* cipher suite that is to be used for further communication. It also contains a *single* ALPN selected by the server to select the application level protocol for the rest of the session - or none if there was no overlap. If the `ClientHello` contained a set of pre shared key identifiers, and the server had the corresponding key for some of them, the message will also select the pre shared key to use. This is at the discretion of the server.
+
+So in short, the purpose of the `ServerHello` is to downselect the cipher suite, ALPN and pre shared key, and to contribute randomness for the generation of a unique session specific symmetric key.
+
+The server will send the `ServerHello`, possibly additional encrypted messages for connection setup, and then a `Finished` message.
+
+### Session setup
+
+Once the client has received the `ServerHello`, it has collected all the required information to set up the session for transporting user data. At this point the cipher suite and ALPN are fixed for the rest of the session.
+
+<Note>
+In the case where there is no overlap between client and server ALPNs, in principle it is possible to fall back to a default ALPN, but this is not relevant for iroh connections.
+</Note>
+
+Since the cipher suite is now fixed, the client can now use the client and server random as well as an optionally selected pre shared key to derive symmetric keys for additional handshake messages as well as for user data.
+
+Every message that the client receives after the `ServerHello` is encrypted with the symmetric keys that are now shared knowledge on both sides.
+
+The client processes possible additional packages from the server until it receives the `Finished` message. At that point it validates that it has received all setup messages form the server using a secure checksum contained in the `Finished` message.
+
+### User data
+
+Now the client has ingested and validated all the messages relevant for connection setup, and has derived the keys required for user data encryption. It can finally send a `Finished` message itself, closing the connection setup from its side.
+
+immediately after this, the client can send the first message of user data, encrypted with the derived application keys.
+
+As you can see, the handshake is somewhat expensive in terms of computation, but more importantly requires a roundtrip from client to server and back before the first bit of user data can flow, even in the case where both sides have talked recently.
+
+## 0-RTT handshake
+
+In many cases, in particular for long lived connections, the overhead of the handshake is completely acceptable. But there are many protocols where there is just a very brief information exchange between a client and a server, and latency is critical. In these cases, it would be a big advantage for the client to optimistically send user data immediately after the `ClientHello`.
+
+For latency critical protocols, you simply get your answer faster. But even for non latency critical protocols, the overhead is reduced because the total duration of the interaction is reduced, so there are fewer requests in flight.
+
+As we have seen, the handshake messages already contain optional data referring to previous interactions to speed up the handshake. The idea of 0-RTT is to make use of this information and send user data right after the ClientHello just in case the server has the required information to make sense of it.
+
+### ClientHello
+
+Like before, the client sends a `ClientHello` message. The `ClientHello` for a connection attempt using 0-RTT must contain a set of ids of pre shared keys, otherwise it is not possible for the server to decrypt subsequent user data before the full handshake is complete. In addition it has an `early data` flag set.
+
+Immediately after the `ClientHello`, the client will send a message containing user data. Since a full exchange has not happened yet, the client has to choose one of the previously used PSKs for encryption, typically the most recent one.
+
+### Server side
+
+On the server side, the server receives the special `ClientHello`. In the happy case, it still has the key for one of the identities offered by the client and will choose it to decrypt subsequent messages. It will proceed with sending a `ServerHello` immediately, as before. This message will also have the `early data` flag set to indicate that the server might also send data before the handshake is complete.
+
+Once the server receives the early user data message, and it accepts 0-rtt requests, it will attempt to decrypt the message and forward it to the application space. The application space can then answer with an early data message on its own.
+
+### Handshake completes
+
+Regardless of early data in any direction, the normal handshake continues as before. Once the client receives a `Finished` message from the server, it will compute symmetric encryption keys as before and then switch to this set of keys for all subsequent messages. Likewise, once the server receives a `Finished` message from the client, it will compute keys and switch encryption.
+
+### Replay attacks
+
+By now we should have a pretty good idea what 0-RTT is and why it is useful. Being able to send user data in the first UDP message seems tremendously useful. So why isn't it the default?
+
+The client message uses a previously negotiated pre shared key for encryption. For as long as this PSK is valid on the server, you can just re-send the *exact same packet*, and the user data will be sent to the application on the server side. This could be used to create unwanted changes on the server in case of a non-idempotent request, or to create a large load by sending the same request millions of times.
+
+In addition, due to the fact that the process of computing the session keys from the PSK is - and has to be - fully deterministic, once an attacker has access to the key, they can decrypt all past or future 0-RTT data encrypted using that key. Since the session switches encryption after the handshake completes, data after handshake completion is not affected by this.
+
+So in general you should only use 0-RTT for protocols where all requests are idempotent (so receiving the same message multiple times does not change the outcome) and where receiving and answering the message is not a lot of effort, so processing a message several times does not create a problem.
+
+You should also not use 0-RTT for extremely security critical use cases.
+
+<Note>
+You can make protocols idempotent by adding sequence numbers or random unique message ids in your application level protocol, at the expense of some server side state. The same approach can also be used to reduce the impact of receiving the same message multiple times.
+</Note>
+
+# Usage in iroh
+
