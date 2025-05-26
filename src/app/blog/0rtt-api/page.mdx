@@ -38,7 +38,7 @@ One aspect of iroh connections that is a bit more complex is 0-RTT. This blog po
 
 # What is 0-RTT
 
-Iroh connections are just peer to peer QUIC connections, using a fork of the quinn rust crate. QUIC is using TLS for encryption.
+Iroh connections are just peer to peer QUIC connections, using a fork of the Quinn rust crate. QUIC is using TLS for encryption.
 
 So to explain what 0-RTT is, it is helpful to explain how a normal TLS handshake works in detail.
 
@@ -54,7 +54,7 @@ We refer to logical TLS messages as just messages. Messages can be split into mu
 
 ### ClientHello
 
-The connection is initiated from the client by sending a `ClientHello`. This message contains the TLS protocol version, random data, and the set of supported cipher suites. In addition it contains a set of ALPN strings that identify the application level protocols that the client wishes to speak.
+The connection is initiated from the client by sending a `ClientHello`. This message contains the TLS protocol version, random data, and the set of supported cipher suites. In addition iroh always includes a set of ALPN strings that identify the application level protocols that the client wishes to speak.
 
 When receiving the `ClientHello`, the server has information to narrow down the set of cryptographic primitives to use. The server endpoint also has a set of ALPNs it supports, so it can downselect those as well.
 
@@ -88,9 +88,9 @@ The client processes possible additional packages from the server until it recei
 
 ### User data
 
-Now the client has ingested and validated all the messages relevant for connection setup, and has derived the keys required for user data encryption. It can finally send a `Finished` message itself, closing the connection setup from its side.
+Now the client has ingested and validated all the messages relevant for connection setup, and has derived the keys required for user data encryption. It can finally send a `Finished` message itself, finishing the handshake from its side.
 
-immediately after this, the client can send the first message of user data, encrypted with the derived application keys.
+Immediately after this, the client can send the first message of user data, encrypted with the derived application keys.
 
 After the server receives the `Finished` message from the client, it can forward user data to the application space. Also at this time it will send a number of `NewSessionTicket` messages to the client that contains a pre-shared key for session resumption or 0-RTT in subsequent connections.
 
@@ -295,11 +295,13 @@ pingpong_0rtt(connecting, i).await?
 connection.close(0u8.into(), b"");
 ```
 
+There are three ways to solve this.
+
 ## Waiting for new tickets
 
-There are two ways to solve this. The tickets for 0-RTT connections are single use in quinn, as recommended in the TLS spec: https://datatracker.ietf.org/doc/html/rfc8446#appendix-C.4 . We can get new tickets via a connection that was initiated with 0-RTT, but only if we allow time for the handshake to complete.
+The tickets for 0-RTT connections are single use in Quinn, as recommended in the TLS spec: https://datatracker.ietf.org/doc/html/rfc8446#appendix-C.4 . We can get new tickets via a connection that was initiated with 0-RTT, but only if we allow time for the handshake to complete.
 
-There is currently no quinn API to wait for the handshake to complete or to wait for session tickets. But we can just sleep for two times the current round trip time before closing the connection. This is a crude way to allow for enough time for the two `NewSessionTicket`s to be received.
+There is currently no API to wait for the handshake to complete or to wait for session tickets. But we can just sleep for two times the current round trip time before closing the connection. This is a crude way to allow for enough time for the two `NewSessionTicket`s to be received.
 
 Since we don't want to hold up the user space just because we are waiting for an additional message, we do this in a tokio task.
 
@@ -324,7 +326,7 @@ Another possible solution would be to just reconfigure the server to send more s
 
 The TLS spec says that you *SHOULD NOT* reuse tickets - you should treat them as single use on the client side. But *SHOULD NOT* just *discourages* this, but does not outright forbid it. And due to its stateless nature the server side will not reject multiple 0-RTT connection attempts using the same ticket.
 
-So in theory you could modify the client to just reuse the ticket.
+So in theory you could modify the client to reuse the ticket.
 
 ## So what to do?
 
@@ -360,7 +362,7 @@ Fortunately iroh has a feature to persist the required information for decryptin
 
 ```rust
 let endpoint = iroh::Endpoint::builder()
-    .relay_mode(iroh::RelayMode::Disabled)
+    .keylog(true)
     .bind()
     .await?;
 ```
