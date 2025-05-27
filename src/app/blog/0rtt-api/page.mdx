@@ -29,16 +29,16 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Despite all the complexity required to enable dial by node id and direct connections, iroh has a very simple API. You create an endpoint, create connections, create streams, and then send data.
+Despite all the complexity required to enable dial-by-node-id and direct connections, iroh has a very simple API. You create an endpoint, create connections, create streams, and then send data.
 
 There is some complexity involved in properly [closing QUIC connections](https://www.iroh.computer/blog/closing-a-quic-connection), but
-other than that everything is pretty straightforward.
+other than that, everything is pretty straightforward.
 
 One aspect of iroh connections that is a bit more complex is 0-RTT. This blog post explains what 0-RTT is, when to use it, when **not** to use it, and will show a small example.
 
 # What is 0-RTT
 
-Iroh connections are just peer to peer QUIC connections, using a fork of the Quinn rust crate. QUIC is using TLS for encryption.
+Iroh connections are just peer-to-peer QUIC connections, using a fork of the Quinn rust crate. QUIC uses TLS for encryption.
 
 So to explain what 0-RTT is, it is helpful to explain how a normal TLS handshake works in detail.
 
@@ -54,7 +54,7 @@ We refer to logical TLS messages as just messages. Messages can be split into mu
 
 ### ClientHello
 
-The connection is initiated from the client by sending a `ClientHello`. This message contains the TLS protocol version, random data, and the set of supported cipher suites. In addition iroh always includes a set of ALPN strings that identify the application level protocols that the client wishes to speak.
+The connection is initiated from the client by sending a `ClientHello`. This message contains the TLS protocol version, random data, and the set of supported cipher suites. In addition, iroh always includes a set of ALPN strings that identify the application-level protocols that the client wishes to speak.
 
 When receiving the `ClientHello`, the server has information to narrow down the set of cryptographic primitives to use. The server endpoint also has a set of ALPNs it supports, so it can downselect those as well.
 
@@ -74,35 +74,35 @@ The server will send the `ServerHello`, possibly additional encrypted messages f
 
 ### Session setup
 
-Once the client has received the `ServerHello`, it has collected all the required information to set up the session for transporting user data. At this point the cipher suite and ALPN are fixed for the rest of the session.
+Once the client has received the `ServerHello`, it has collected all the required information to set up the session for transporting user-data. At this point the cipher suite and ALPN are fixed for the rest of the session.
 
 <Note>
 In the case where there is no overlap between client and server ALPNs, in principle it is possible to fall back to a default ALPN, but this is not relevant for iroh connections.
 </Note>
 
-Since the cipher suite is now fixed, the client can now use the client and server random to derive two symmetric keys, one for additional handshake messages and one for application data.
+Since the cipher suite is now fixed, the client can now use the client and server random data to derive two symmetric keys, one for additional handshake messages and one for application data.
 
 Every message that the client receives after the `ServerHello` is encrypted with the symmetric keys that are now shared knowledge on both sides.
 
-The client processes possible additional packages from the server until it receives the `Finished` message. At that point it validates that it has received all setup messages form the server using a secure checksum contained in the server's `Finished` message.
+The client processes possible additional packages from the server until it receives the `Finished` message. At that point it validates that it has received all setup messages from the server using a secure checksum contained in the server's `Finished` message.
 
-### User data
+### User-data
 
-Now the client has ingested and validated all the messages relevant for connection setup, and has derived the keys required for user data encryption. It can finally send a `Finished` message itself, finishing the handshake from its side.
+Now the client has ingested and validated all the messages relevant for connection setup, and has derived the keys required for user-data encryption. It can finally send a `Finished` message itself, finishing the handshake from its side.
 
-Immediately after this, the client can send the first message of user data, encrypted with the derived application keys.
+Immediately after this, the client can send the first message of user-data, encrypted with the derived application keys.
 
-After the server receives the `Finished` message from the client, it can forward user data to the application space. Also at this time it will send a number of `NewSessionTicket` messages to the client that contains a pre-shared key for session resumption or 0-RTT in subsequent connections.
+After the server receives the `Finished` message from the client, it can forward user-data to the application space. Also at this time it will send a number of `NewSessionTicket` messages to the client that contains a pre-shared key for session resumption or 0-RTT in subsequent connections.
 
-As you can see, the handshake is somewhat expensive in terms of computation, but more importantly requires a roundtrip from client to server and back before the first bit of user data can flow, even in the case where both sides have talked recently.
+As you can see, the handshake is somewhat expensive in terms of computation, but more importantly, requires a roundtrip from client to server and back before the first bit of user-data can flow, even in the case where both sides have talked recently.
 
 ## 0-RTT handshake
 
-In many cases, in particular for long lived connections, the overhead of the handshake is completely acceptable. But there are many protocols where there is just a very brief information exchange between a client and a server, and latency is critical. In these cases, it would be a big advantage for the client to optimistically send user data immediately after the `ClientHello`.
+In many cases, in particular for long lived connections, the overhead of the handshake is completely acceptable. But there are many protocols where there is just a very brief information exchange between a client and a server, and latency is critical. In these cases, it would be a big advantage for the client to optimistically send user-data immediately after the `ClientHello`.
 
-For latency critical protocols, you simply get your answer faster. But even for non latency critical protocols, the overhead is reduced because the total duration of the interaction is reduced, so there are fewer requests in flight.
+For latency critical protocols, you simply get your answer faster. But even for non-latency critical protocols, the overhead is reduced because the total duration of the interaction is reduced, so there are fewer requests in flight.
 
-0-RTT is only possible if a client has received pre shared keys from the server via `NewSessionTicket` messages, which is the case if they performed a full handshake in the recent past.
+0-RTT is only possible if a client has received pre-shared keys from the server via `NewSessionTicket` messages, which is the case if they performed a full handshake in the recent past.
 
 <div className="not-prose">
   <img src="/blog/0rtt-api/0rtt-norenew.png" width={1200} height={754} alt="Normal TLS handshake" />
@@ -110,15 +110,15 @@ For latency critical protocols, you simply get your answer faster. But even for 
 
 ### ClientHello
 
-Like before, the client sends a `ClientHello` message. The `ClientHello` for a connection attempt using 0-RTT must contain a set of ids of pre shared keys, otherwise it is not possible for the server to decrypt subsequent user data before the full handshake is complete. In addition it has an `early data` flag set.
+Like before, the client sends a `ClientHello` message. The `ClientHello` for a connection attempt using 0-RTT must contain a set of ids of pre-shared keys, otherwise it is not possible for the server to decrypt subsequent user-data before the full handshake is complete. In addition it has an `early data` flag set.
 
-Immediately after the `ClientHello`, the client will send a message containing user data. Since a full exchange has not happened yet, the client has to choose one of the previously used PSKs for encryption, typically the most recent one.
+Immediately after the `ClientHello`, the client will send a message containing user-data. Since a full exchange has not happened yet, the client has to choose one of the previously used PSKs for encryption, typically the most recent one.
 
 ### Server side
 
-On the server side, the server receives the special `ClientHello`. In the happy case, it still has the key for the pre shared key used by the client and will use it to decrypt subsequent messages. It will proceed with sending a `ServerHello` immediately, as before. This message will also have the `early data` flag set to indicate that the server might also send data before the handshake is complete.
+On the server side, the server receives the special `ClientHello`. In the happy case, it still has the key for the pre-shared key used by the client and will use it to decrypt subsequent messages. It will proceed with sending a `ServerHello` immediately, as before. This message will also have the `early data` flag set to indicate that the server might also send data before the handshake is complete.
 
-Once the server receives the early user data message, if it accepts 0-rtt requests, it will attempt to decrypt the message and forward it to the application space. The application space can then answer with an early data message on its own.
+Once the server receives the early user-data message, if it accepts 0-rtt requests, it will attempt to decrypt the message and forward it to the application space. The application space can then answer with an early data message on its own.
 
 ### Handshake completes
 
@@ -126,9 +126,9 @@ Regardless of early data in any direction, the normal handshake continues as bef
 
 ### Replay attacks
 
-By now we should have a pretty good idea what 0-RTT is and why it is useful. Being able to send user data in the first UDP message seems tremendously useful. So why isn't it the default?
+By now we should have a pretty good idea what 0-RTT is and why it is useful. Being able to send user-data in the first UDP message seems tremendously useful. So why isn't it the default?
 
-The client message uses a previously received pre shared key for encryption. For as long as this PSK is valid on the server, you can just re-send the *exact same packet*, and the user data will be sent to the application on the server side. This could be used to create unwanted changes on the server in case of a non-idempotent request, or to create a large load by sending the same request millions of times.
+The client message uses a previously received pre-shared key for encryption. For as long as this PSK is valid on the server, you can just re-send the *exact same packet*, and the user-data will be sent to the application on the server side. This could be used to create unwanted changes on the server in case of a non-idempotent request, or to create a large load by sending the same request millions of times.
 
 In addition, due to the fact that the process of computing the session keys from the PSK is - and has to be - fully deterministic, once an attacker has access to the key, they can decrypt all past or future 0-RTT data encrypted using that key. Since the session switches encryption after the handshake completes, data after handshake completion is not affected by this.
 
@@ -146,7 +146,7 @@ Now let's implement a simple 0rtt service in iroh. It is going ot be a simple ec
 
 On the accept side, this is relatively easy. We do have to opt in to allowing 0rtt requests, since as we have seen 0rtt has reduced security guarantees compared to normal requests with a full handshake before the data starts to flow.
 
-When we get a `Connecting` by calling `incoming.accept()?`, we try to convert it into a 0rtt connection using `.into_0rtt()`. This will always succeed on the server side, but we have to handle the error anyway because we use the same types on the server and client side. Once that is done, the code is identical to a non 0rtt echo service.
+When we get a `Connecting` by calling `incoming.accept()?`, we try to convert it into a 0rtt connection using `.into_0rtt()`. This will always succeed on the server side, but we have to handle the error anyway because we use the same types on the server and client side. Once that is done, the code is identical to a non-0rtt echo service.
 
 ```rust
 let connecting = incoming.accept()?;
@@ -277,7 +277,7 @@ round 6: 510681 us
 
 Now this is weird.
 
-The initial connection is not 0-RTT, which is expected. The two nodes haven't ever talked, so there is no pre shared secret they can use to communicate.
+The initial connection is not 0-RTT, which is expected. The two nodes haven't ever talked, so there is no pre-shared secret they can use to communicate.
 
 The next two rounds are 0-RTT, as expected, and have roughly the expected roundtrip times.
 
@@ -285,7 +285,7 @@ But then we get a non 0-RTT connection on the 4th round. What's going on?
 
 The issue is that 0-RTT is done using *single-use* tickets. *After* each completed handshake, you get a number of these tickets, by default 2. And as soon as the tickets are used up, the client can not even *attempt* to do a 0-rtt request because it has run out of tickets to use.
 
-In the code so far we close the connection immediately after receiving the user data response. So we don't wait for the full handshake to complete, and also don't get any additional tickets.
+In the code so far we close the connection immediately after receiving the user-data response. So we don't wait for the full handshake to complete, and also don't get any additional tickets.
 
 ```rust
 pingpong_0rtt(connecting, i).await?
@@ -300,7 +300,7 @@ The tickets for 0-RTT connections are single use in Quinn, as recommended in the
 
 There is currently no API to wait for the handshake to complete or to wait for session tickets. But we can just sleep for two times the current round trip time before closing the connection. This is a crude way to allow for enough time for the two `NewSessionTicket`s to be received.
 
-Since we don't want to hold up the user space just because we are waiting for an additional message, we do this in a tokio task.
+Since we don't want to hold up the user-space just because we are waiting for an additional message, we do this in a tokio task.
 
 ```rust
 tokio::spawn(async move {
@@ -329,7 +329,7 @@ So in theory you could modify the client to reuse the ticket. This is nothing we
 
 Let's take a step back and think about when you would use 0-RTT. If you have two nodes that communicate frequently every few seconds or even minutes, it is probably best to just leave the connection open. A normal QUIC connection has very low overhead, and even for a hole-punched iroh QUIC connection the overhead of occasional messages to keep the connection open is very acceptable.
 
-So you would use 0-RTT if communication is in small bursts spaced many minutes to hours apart, but nevertheless latency is important. In this case the most important property of 0-RTT is that the application gets a response after the minimal physically possible delay. Keeping the connection open for another small time period to refresh the pre shared keys is not a big deal.
+So you would use 0-RTT if communication is in small bursts spaced many minutes to hours apart, but nevertheless latency is important. In this case, the most important property of 0-RTT is that the application gets a response after the minimal physically possible delay. Keeping the connection open for another small time period to refresh the pre-shared keys is not a big deal.
 
 So this is the option we ended up implementing. Here is the output after this modification. We now get a 0-rtt connection every time.
 
@@ -434,7 +434,7 @@ cargo run --release --features=examples --example 0rtt
 For the connect side, you have to provide the ticket produced by the accept side.
 
 ```
-cargo run --release --features=examples --example 0rtt <ticket>
+cargo run --release --features=examples --example 0rtt TICKET
 ```
 
 You can also connect to our test node that should be far away from most readers of this blog post:
