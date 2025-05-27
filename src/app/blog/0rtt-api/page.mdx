@@ -134,8 +134,6 @@ In addition, due to the fact that the process of computing the session keys from
 
 So in general you should only use 0-RTT for protocols where all requests are idempotent (so receiving the same message multiple times does not change the outcome) and where receiving and answering the message is not a lot of effort, so processing a message several times does not create a problem.
 
-You should also not use 0-RTT for extremely security critical use cases.
-
 <Note>
 You can make protocols idempotent by adding sequence numbers or random unique message ids in your application level protocol, at the expense of some server side state. The same approach can also be used to reduce the impact of receiving the same message multiple times.
 </Note>
@@ -148,14 +146,11 @@ Now let's implement a simple 0rtt service in iroh. It is going ot be a simple ec
 
 On the accept side, this is relatively easy. We do have to opt in to allowing 0rtt requests, since as we have seen 0rtt has reduced security guarantees compared to normal requests with a full handshake before the data starts to flow.
 
-When we get a `Connecting` by calling `incoming.accept()?`, we try to convert it into a 0rtt connection using `.into_0rtt()`. If this succeeds, we return the connection. If not, we get back the `Connecting` and await it to get a `Connection` like normal. Once that is done, the code is identical to a non 0rtt echo service.
+When we get a `Connecting` by calling `incoming.accept()?`, we try to convert it into a 0rtt connection using `.into_0rtt()`. This will always succeed on the server side, but we have to handle the error anyway because we use the same types on the server and client side. Once that is done, the code is identical to a non 0rtt echo service.
 
 ```rust
 let connecting = incoming.accept()?;
-let connection = match connecting.into_0rtt() {
-    Ok((connection, _)) => connection,
-    Err(connecting) => connecting.await?,
-};
+let connection = connecting.into_0rtt().expect("accept into 0.5 RTT always succeeds");
 let (mut send, mut recv) = connection.accept_bi().await?;
 let data = recv.read_to_end(8).await?;
 send.write_all(&data).await?;
