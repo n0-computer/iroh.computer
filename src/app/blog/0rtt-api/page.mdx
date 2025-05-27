@@ -84,7 +84,7 @@ Since the cipher suite is now fixed, the client can now use the client and serve
 
 Every message that the client receives after the `ServerHello` is encrypted with the symmetric keys that are now shared knowledge on both sides.
 
-The client processes possible additional packages from the server until it receives the `Finished` message. At that point it validates that it has received all setup messages form the server using a secure checksum contained in the `Finished` message.
+The client processes possible additional packages from the server until it receives the `Finished` message. At that point it validates that it has received all setup messages form the server using a secure checksum contained in the server's `Finished` message.
 
 ### User data
 
