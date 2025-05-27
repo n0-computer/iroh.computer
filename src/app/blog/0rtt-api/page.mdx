@@ -80,7 +80,7 @@ Once the client has received the `ServerHello`, it has collected all the require
 In the case where there is no overlap between client and server ALPNs, in principle it is possible to fall back to a default ALPN, but this is not relevant for iroh connections.
 </Note>
 
-Since the cipher suite is now fixed, the client can now use the client and server random to derive symmetric keys for additional handshake messages as well as for user data.
+Since the cipher suite is now fixed, the client can now use the client and server random to derive two symmetric keys, one for additional handshake messages and one for application data.
 
 Every message that the client receives after the `ServerHello` is encrypted with the symmetric keys that are now shared knowledge on both sides.
 
