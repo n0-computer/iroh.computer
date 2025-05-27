@@ -150,7 +150,7 @@ When we get a `Connecting` by calling `incoming.accept()?`, we try to convert it
 
 ```rust
 let connecting = incoming.accept()?;
-let connection = connecting.into_0rtt().expect("accept into 0.5 RTT always succeeds");
+let connection = connecting.into_0rtt().expect("accept into 0.5 RTT always succeeds").0;
 let (mut send, mut recv) = connection.accept_bi().await?;
 let data = recv.read_to_end(8).await?;
 send.write_all(&data).await?;
