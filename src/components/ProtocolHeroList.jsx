@@ -20,7 +20,7 @@ const icons = {
 export const ProtocolHeroList = function ProtocolHeroList() {
   return (
     <div className='md:grid md:grid-cols-4 border-l border-t border-irohGray-300 dark:border-irohGray-800'>
-      {protocols.map((proto, i) => (
+      {protocols.filter((p) => !!p.featured).map((proto, i) => (
         <Link href={`/proto/${proto.slug}`} key={i}>
         <GlowCard className='border-r border-b border-irohGray-300 dark:border-irohGray-800 p-5'>
           <Image
