@@ -169,6 +169,13 @@
     },
     { "version": "v0.35.0", "done": true, "released": "2025-05-12", "doc": "https://www.iroh.computer/blog/iroh-0-35-prepping-for-1-0" },
     {
+      "done": true,
+      "title": "Formalize Error Responses",
+      "description": "transition from anyhow to thiserror in all critical code paths",
+      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
+    },
+    { "version": "v0.90.0", "done": true, "released": "2025-05-12", "doc": "https://www.iroh.computer/blog/iroh-0-90-the-canary-series" },
+    {
       "done": false,
       "title": "blobs 1.0 API",
       "description": "overhaul blobs API",
@@ -196,12 +203,6 @@
       "title": "QUIC NAT traversal",
       "description": "Using Quic to traverse NATs",
       "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
-    },
-    {
-      "done": false,
-      "title": "Formalize Error Responses",
-      "description": "transition from anyhow to thiserror in all critical code paths",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
     },
     {
       "done": false,
