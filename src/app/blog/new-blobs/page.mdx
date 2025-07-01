@@ -99,6 +99,12 @@ To make complex requests easier to build, there are now builders for both `Get` 
 
 Various examples how to use the `Get` and `GetMany` request builders for complex requests are provided in the [`protocol module docs`](https://docs.rs/iroh-blobs/latest/iroh_blobs/protocol/index.html).
 
+<Note>
+If you look at the builder examples, you might wonder where [RangeSpec](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/protocol/struct.RangeSpec.html) and [RangeSpecSeq](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/protocol/struct.RangeSpecSeq.html) went.
+
+They both exist, but are no longer public but just an implementation detail of the wire protocol. What you interact with is [ChunkRanges](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/type.ChunkRanges.html) and [ChunkRangesSeq](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.ChunkRangesSeq.html), which are hopefully less confusing.
+</Note>
+
 ## Errors
 
 Compared to the old blobs, we have vastly reduced the usage of [`anyhow`] for errors. Instead we use the [`snafu`] crate to provide concrete errors, with some additional features like backtraces and span traces.
@@ -109,9 +115,9 @@ Until here we have talked a lot about generic API design. Now let's take a look 
 
 Previously, iroh-blobs supported just a single request type - `Get`. Get allows to stream a blob, ranges of a blob, or an entire sequence of blobs or ranges thereof. It is pretty powerful, but especially the part about streaming hash sequences can also be confusing.
 
-## New request types
+## Protocol additions and changes
 
-Blobs 0.9 adds several new request types. 
+Blobs 0.9 adds several new request types
 
 ### GetMany
 
@@ -125,7 +131,7 @@ An important difference between `GetMany` and multiple `Get` requests is that `G
 
 Here is an example how to create a GetMany request using the builder:
 
-```
+```rust
 let request = GetManyRequest::builder()
     .hash(hash1, ChunkRanges::all())
     .hash(hash2, ChunkRanges::empty()) // will be ignored!
@@ -253,7 +259,7 @@ Where there is a large improvement is when dealing with a large number of tiny b
 
 This version of blobs has been thoroughly tested. Nevertheless, it is not yet fully production ready. Just like with [iroh itself](https://www.iroh.computer/blog/iroh-0-90-the-canary-series), iroh-blobs 0.90 is the start of the canary release series leading to blobs 1.0.
 
-Since the consequences of a bug in a blob store are more permanent than the consequences of a bug in a new iroh connection, I would advise production deployments to wait for another 1 or 2 releases before switching to the new blobs. By that time the API should also have stabilized further.
+Since the consequences of a bug in a blob store are more persistent than the consequences of a bug in a new iroh connection, I would advise production deployments to wait for another 1 or 2 releases before switching to the new blobs. By that time the API should also have stabilized further.
 
 There will be several API changes as we work towards 1.0. In particular the [downloader](#downloader) API will grow and become more robust. The [provider events](#provider-events-and-access-control) API will also be refined.
 
