@@ -241,7 +241,7 @@ This makes it extremely flexible in terms of how its internals can look like. E.
 
 One downside is that it is harder to implement a fully featured store from scratch that behaves like the current store but e.g. stores data on S3. We will probably add a store implementation that leaves the behaviour of an individual entry/blob customizable via traits while implementing all the boilerplate for managing tags and garbage collection.
 
-# Compatibilty
+# Compatibility
 
 The protocol for the `Get` request is unchanged. You can do get requests from a node running the old (0.35) iroh blobs to a node running the new blobs and vice versa.
 
