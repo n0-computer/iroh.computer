@@ -87,15 +87,21 @@ For convenience, there are also variants [`add_bytes`](https://docs.rs/iroh-blob
 
 The latter might have some overhead. E.g. if you add a `Bytes` using add_slice, a copy will be made. So if you have a giant `Bytes` and want to add it to the store without a copy, use `add_bytes` or `add_bytes_with_opts`.
 
+<Note>
+If you don't mind the verbosity and want to avoid overhead, the most direct way to use the API is always the ..._with_opts fns.
+</Note>
+
 ## Builders
 
 Requests such as [`GetRequest`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.GetRequest.html) can be very simple (just give me the blob), but also very complex (Give me this HashSeq and the first and the last chunk of all its children).
 
 To make complex requests easier to build, there are now builders for both `Get` and `GetMany` requests. There are also [extensions](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/index.html#reexport.ChunkRangesExt) to make working with [`ChunkRanges`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/type.ChunkRanges.html) more easy.
 
+Various examples how to use the `Get` and `GetMany` request builders for complex requests are provided in the [`protocol module docs`](https://docs.rs/iroh-blobs/latest/iroh_blobs/protocol/index.html).
+
 ## Errors
 
-Compared to the old blobs, we have vastly reduced the usage of [`anyhow`] for errors. Instead we use the [`snafu`] crate to provide concrete errors, with some additional goodies like backtraces and span traces.
+Compared to the old blobs, we have vastly reduced the usage of [`anyhow`] for errors. Instead we use the [`snafu`] crate to provide concrete errors, with some additional features like backtraces and span traces.
 
 # New features
 
@@ -187,6 +193,8 @@ One important fact about content discovery is that it always works on the level 
 
 `ContentDiscovery` is implemented for any sequence of things that can be converted to iroh `NodeId`. So you can e.g. pass just a `Vec<NodeId>` or a `HashSet<NodeId>`. The order of the elements in the sequence controls the order in which the different nodes will be tried, so it is not arbitrary.
 
+While the `SupportedRequest` trait exists just to make the API more convenient to use, the `ContentDiscovery` trait is intended as a way to extend content discovery to more generic mechanisms. E.g. the content tracker protocol and implementation that exists in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/content-discovery) can be wrapped in a struct that implements `ContentDiscovery` to allow content discovery via a tracker.
+
 ## Provider events and access control
 
 The provider side now has more detailed yet simplified [events](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/provider/enum.Event.html) for informing the provider of ongoing operations. These events - which unlike many other event streams can only be consumed in-process, also contain provisions for access control.
@@ -241,15 +249,15 @@ The old iroh-blobs was already close to optimal for dealing with large files. Sy
 
 Where there is a large improvement is when dealing with a large number of tiny blobs, e.g. if you sync a directory containing lots of small files, such as the linux kernel.
 
-
-
 # Stability
 
 This version of blobs has been thoroughly tested. Nevertheless, it is not yet fully production ready. Just like with [iroh itself](https://www.iroh.computer/blog/iroh-0-90-the-canary-series), iroh-blobs 0.90 is the start of the canary release series leading to blobs 1.0.
 
+Since the consequences of a bug in a blob store are more permanent than the consequences of a bug in a new iroh connection, I would advise production deployments to wait for another 1 or 2 releases before switching to the new blobs. By that time the API should also have stabilized further.
+
 There will be several API changes as we work towards 1.0. In particular the [downloader](#downloader) API will grow and become more robust. The [provider events](#provider-events-and-access-control) API will also be refined.
 
-# 
+Also, we will work on further refining the error types prior to freezing them for 1.0.
 
 [quic-rpc]: https://docs.rs/quic-rpc/latest/quic_rpc/
 [irpc]: https://docs.rs/irpc/latest/irpc/
