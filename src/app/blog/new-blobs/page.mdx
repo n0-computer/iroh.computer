@@ -5,9 +5,9 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2025-07-01',
-  title: 'The new blobs',
+  title: 'iroh-blobs 0.90 - the road to 1.0',
   description:
-    "Rationale and setting expectations for the new blobs API",
+    "Introduction, rationale and setting expectations for the new blobs API",
 }
 
 export const metadata = {
@@ -31,21 +31,27 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 The new iroh-blobs version 0.90 is not just a refactor. It is a complete rewrite of the file system based and in-memory blob store as well as a redesign of the API.
 
+<Note>
+If you enjoy being on the bleeding edge and want to try out some of the new features, use 0.9x. If you prefer stability, use the 0.35.x series until we release 1.0 towards the end of the year.
+</Note>
+
+For some context about our planned 1.0 release of iroh, blobs and gossip, see [iroh v0.90 - The Canary Series 🐥](https://www.iroh.computer/blog/iroh-0-90-the-canary-series)
+
 # API changes
 
 The most notable change for an user of the crate is the API. In the old blobs, there were two levels of API. There was [very low level](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/store/trait.Store.html) layer that was possible to use only in-process and that had the lowest overhead, and a [more friendly API](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/rpc/client/blobs/index.html) that was feature gated with the `rpc` feature and used the [quic-rpc] crate.
 
-Quic-rpc is quite fast when used in process, but it does not have *zero* overhead. For every rpc request, no matter how small, there would be *some* allocations over what you would do in a pure in-process design. This is the reason I still exposed the low level API for extremely performance critical use cases. But this caused quite a bit of confusion, especially since the `rpc` feature was not enabled by default for a long time.
+Quic-rpc is quite fast when used in-process, but it does not have *zero* overhead. For every rpc request, no matter how small, there would be *some* allocations over what you would do in a pure in-process design. This is the reason I still exposed the low level API for extremely performance critical use cases. But this caused quite a bit of confusion, especially since the `rpc` feature was not enabled by default for a long time.
 
 In the new iroh blobs, I am using the [irpc] crate for rpc. Irpc is designed so that the in-process case has *zero* overhead over what you do anyway in rust if you need an async boundary - isolation via tokio oneshot and mpsc channels. This is why I found it justified to have just one API, fast if used in-memory while still able to cover cross-process or cross-machine RPC via quinn connections.
 
-There will be another blog post soon about the design of irpc, but the TLDR is that it is just a thin wrapper around either tokio (oneshot or mpsc) channels or quinn connections. It does not attempt to fully abstract the connection type. At this time it only works for streams from the iroh-quinn crate, so either iroh connections or normal QUIC connections created using an iroh-quinn Endpoint. Dialing down the level of abstraction allowed to optimize away the allocations that quic-rpc had to do, while also getting rid of some quite unergonomic type parameters that poisoned code bases using quic-rpc.
+There will be another blog post soon about the design of irpc, but the TLDR is that it is just a thin wrapper around either tokio (oneshot or mpsc) channels or quinn connections. It does not attempt to fully abstract the connection type. At this time it only works for streams from the [iroh-quinn] crate, so either iroh connections or normal QUIC connections created using an iroh-quinn Endpoint. Dialing down the level of abstraction allowed to optimize away the allocations that quic-rpc had to do, while also getting rid of some quite unergonomic type parameters that infected code bases using quic-rpc.
 
 ## General API design
 
-The iroh-blobs API is quite complex due to the fact that you can interact not just with entire blobs but also with ranges of them. You also need to express which blobs you want to keep permanently, and which you are OK with getting garbage collected, via the tags API.
+The iroh-blobs API is quite complex due to the fact that you can interact not just with entire blobs but also with ranges of them. You also need to express which blobs you want to keep permanently, and which you are OK with getting garbage collected.
 
-In order to make the API non-overwhelming, it is grouped into something similar to namespaces. There is a sub-API dealing with [tags](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/tags/index.html), with [remote](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/index.html) operations, with complex [downloads](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/index.html) from multiple peers, with individual [blobs](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/index.html), and with the [blob store](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/struct.Store.html) as a whole.
+In order to make the API easy to use, it is grouped into something similar to namespaces. There is a sub-API dealing with [tags](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/tags/index.html), with [remote](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/index.html) operations, with complex [downloads](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/index.html) from multiple peers, with individual [blobs](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/index.html), and with the [blob store](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/struct.Store.html) as a whole.
 
 These different namespaces are all basically newtype wrappers around an irpc client. They exist solely as a way to structure the API so we don't have to have a giant api with lots of fns with prefixes.
 
@@ -53,11 +59,11 @@ These different namespaces are all basically newtype wrappers around an irpc cli
 
 In many cases the API dealing with blobs has the following problem: Any operation on blobs will take significant time if you are dealing with large (GiB) blobs, but will be basically instantaneous when dealing with tiny (KiB) blobs. So we want the API to be pleasant to use if you just want to e.g. add some data and see the hash, but also expressive enough to provide detailed progress for the operation in case you are adding a 100 GiB disk image or ML model.
 
-To cover both use cases, every operation that isn't guaranteed to be constant time synchronously returns a `OpProgress` struct which is a wrapper around a stream of progress events.
+To cover both use cases, every operation that isn't guaranteed to be constant time synchronously returns a `...Progress` struct which is a wrapper around a stream of progress events.
 
 The progress struct implements [IntoFuture](https://doc.rust-lang.org/std/future/trait.IntoFuture.html) for the case where you don't care about the progress events and just want to await the final result (success or failure).
 
-It also provides a fn stream that allows you to convert it into the underlying stream and deal with the progress events one by one, e.g. to feed a progress bar.
+It also provides a `fn stream` that allows you to convert it into the underlying stream and deal with the progress events one by one, e.g. to feed a progress bar.
 
 In addition, it sometimes contains additional helper methods for common use cases.
 
@@ -111,6 +117,16 @@ An important difference between `GetMany` and multiple `Get` requests is that `G
 
 `GetMany` uses a vector of hashes even though in most cases this will be a set of hashes, to be able to control the order in which the hashes are requested. The [builder](https://docs.rs/iroh-blobs/0.90.0/src/iroh_blobs/protocol.rs.html#830-832) uses a set internally however, so multiple ranges for the same hash will be combined when using the builder.
 
+Here is an example how to create a GetMany request using the builder:
+
+```
+let request = GetManyRequest::builder()
+    .hash(hash1, ChunkRanges::all())
+    .hash(hash2, ChunkRanges::empty()) // will be ignored!
+    .hash(hash3, ChunkRanges::bytes(0..100))
+    .build();
+```
+
 ### Push
 
 The [`Push`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.PushRequest.html) request is a reverse `Get` request. Instead of requesting a blob by hash, you send a description of what you are going to send, followed by the bao encoded data.
@@ -134,6 +150,8 @@ The `Observe` request allows you to get information about what data a remote nod
 ### Observing a blob
 
 There is a new API for observing the [`Bitfield`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.Bitfield.html) of a blob. Observe returns a stream of bitfields, where each bitfield represents the current chunk availability of a blob. The stream is wrapped into an [`ObserveProgress`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.ObserveProgress.html) struct as described before, so you can just use `observe().await` to get the current bitfield.
+
+See the [bitfields](#bitfields) section for more info about bitfields.
 
 ### Restructured remote API
 
@@ -179,6 +197,16 @@ The exact shape of this API might change in the future. E.g. it would be useful 
 
 But none of the hooks that exist now will be removed. If anything, there will be more fine grained control before 1.0.
 
+## Batch add vs non-batch add.
+
+All operations that add data to the store can be performed either within a [Batch](https://docs.rs/iroh-blobs/latest/iroh_blobs/api/blobs/struct.Batch.html) or globally.
+
+When adding data *within* a batch, the return type will be a TempTag, and it will be *your* responsibility to either create a persistent Tag or to prevent the data from being garbage collected in some other way. Batches are useful for adding a large number of items to a hash sequence and then creating a single persistent tag for the hash sequence.
+
+When adding data without a batch, the default behaviour will be to create a *persistent* tag for every add operation. This means that your data is safe, but it can also lead to a large number of tags being created.
+
+You can customize the behaviour by using different functions on AddProgress, such as [assigning a named tag](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.AddProgress.html#method.with_named_tag) or opting out of tag creation with [temp_tag](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.AddProgress.html#method.temp_tag).
+
 ## Bitfields
 
 Bitfields are the most notable reason for the rewrite of the file system based store. Iroh-blobs 0.35 only kept track of partial blobs in a coarse way, by computing the missing ranges from the bao outboard and the file *size*. This is sufficient for use cases like [sendme](https://www.iroh.computer/sendme) or other use cases where data is always sequentially written, so any interruption will lead to a partial blob with the first x chunks of data being complete.
@@ -186,6 +214,18 @@ Bitfields are the most notable reason for the rewrite of the file system based s
 The new store also keeps track of gaps, so it requires an additional bitfield file per incomplete blob. Keeping track of available ranges is also what enables the `Observe` request.
 
 Bitfield files will be lazily recomputed from the data and the outboard when first interacting with a blob, so they are ephemeral data. Recomputing the bitfield can be somewhat expensive for extremely large blobs though.
+
+# Writing your own blob store
+
+In iroh-blobs 0.35 stores were abstracted over at two levels. At the low level, there was the [store trait hierarchy](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/store/index.html#traits). At the rpc level, there was a complex [rpc protocol](https://docs.rs/iroh-blobs/0.35.0/iroh_blobs/rpc/proto/index.html).
+
+The downside of the trait hierarchy was that it was pretty confusing and that it baked in some assumptions about the exact implementation that might not always be true, e.g. IO futures being non-`Send`.
+
+So in the new blobs, the rpc protocol *is* the interface you have to implement to provide a new store implementation.
+
+This makes it extremely flexible in terms of how its internals can look like. E.g. we are thinking about having an implementation of a file system based blob store using [io-uring](https://en.wikipedia.org/wiki/Io_uring) which would not use tokio at all for IO.
+
+One downside is that it is harder to implement a fully featured store from scratch that behaves like the current store but e.g. stores data on S3. We will probably add a store implementation that leaves the behaviour of an individual entry/blob customizable via traits while implementing all the boilerplate for managing tags and garbage collection.
 
 # Compatibilty
 
@@ -201,7 +241,13 @@ The old iroh-blobs was already close to optimal for dealing with large files. Sy
 
 Where there is a large improvement is when dealing with a large number of tiny blobs, e.g. if you sync a directory containing lots of small files, such as the linux kernel.
 
-todo: insert benchmark comparison linux sync
+
+
+# Stability
+
+This version of blobs has been thoroughly tested. Nevertheless, it is not yet fully production ready. Just like with [iroh itself](https://www.iroh.computer/blog/iroh-0-90-the-canary-series), iroh-blobs 0.90 is the start of the canary release series leading to blobs 1.0.
+
+There will be several API changes as we work towards 1.0. In particular the [downloader](#downloader) API will grow and become more robust. The [provider events](#provider-events-and-access-control) API will also be refined.
 
 # 
 
@@ -209,3 +255,4 @@ todo: insert benchmark comparison linux sync
 [irpc]: https://docs.rs/irpc/latest/irpc/
 [anyhow]: https://docs.rs/anyhow/latest/anyhow/
 [snafu]: https://docs.rs/snafu/latest/snafu/
+[iroh-quinn]: https://docs.rs/iroh-quinn/latest/iroh_quinn/
