@@ -81,7 +81,7 @@ If you want updates, let's say because you need to know the `RelayUrl` or public
 ```rust
 use iroh::Endpoint;
 use n0_watcher::Watcher;
-   
+
 let endpoint = Endpoint::builder()
     .alpns(vec![b"my-alpn".to_vec()])
     .bind()
@@ -96,9 +96,9 @@ Take a look at the [n0-watcher](https://docs.rs/n0-watcher/0.2.0/n0_watcher/) cr
 
 With some shifting of internals, two specific methods have changed in a subtle way, without changing names.
 
-`Endpoint::node_addr` used to wait until a full net-report ran, so the first update to `node_addr` would usually include a `RelayUrl`. Now, `node_addr` returns whatever direct addresses we know about ASAP, without waiting for a `relay_url`. If you had code that relied on the existance of a `RelayUrl` in the `NodeAddr`, you must now listen for updates to check for its existence, or just use the `Endpoint::home_relay` method.
+`Endpoint::node_addr` used to wait until a full net-report ran, so the first update to `node_addr` would usually include a `RelayUrl`. Now, `node_addr` returns whatever direct addresses we know about ASAP, without waiting for a `relay_url`. If you had code that relied on the existence of a `RelayUrl` in the `NodeAddr`, you must now listen for updates to check for its existence, or just use the `Endpoint::home_relay` method.
 
-Also, previously the `home_relay` and `node_addr` updated at the same time, which means that previously you could use the existance of one to imply the existence of the other. This is no longer the case, so make sure that your code does not rely on this logic.
+Also, previously the `home_relay` and `node_addr` updated at the same time, which means that previously you could use the existence of one to imply the existence of the other. This is no longer the case, so make sure that your code does not rely on this logic.
 
 ## ⚠️ Breaking Changes
 
