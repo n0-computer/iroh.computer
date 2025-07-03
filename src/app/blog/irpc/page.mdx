@@ -109,7 +109,7 @@ To cross a process boundary, the commands have to be serializable. But the respo
 
 At this point things start to get quite verbose:
 
-```
+```rust
 #[derive(Serialize, Deserialize)]
 struct GetRequest {
   key: String,
@@ -128,7 +128,7 @@ enum Request {
   Set(SetRequest),
 }
 
-/// the full request. This is what is used in-process.
+/// the full request including response channels. This is what is used in-process.
 enum RequestWithChannels {
   Get { request: GetRequest, response: oneshot::Sender<String> },
   Set { request: SetRequest, response: oneshot::Sender<()> },
@@ -151,7 +151,7 @@ async fn get_remote(connection: Connection, key: String) -> Result<Option<String
 
 The server side looks similar. We read a `Request` from an incoming connection, then based on the enum case decide which request we need to handle:
 
-```
+```rust
 async fn server(connection: Connection, store: BTreeMap<String, String>) -> Result<()> {
   while let Ok((send, recv)) = connection.accept_bi().await {
     let request = recv.read_to_end(1024).await?;
@@ -174,8 +174,7 @@ This works well for simple requests where there is no update channel and just a 
 
 To support this efficiently, it is best to length prefix both the initial request, subsequent updates, and responses. Even if a `Request` "knows" its own size, deserializing from an async stream is very inefficient.
 
-<Note>Since we are using postcard for ser/de, and messages will very frequently be small, we have decided to use postcard varints as length prefixes.
-</Note>
+<Note>Since we are using postcard for ser/de, and messages will very frequently be small, we have decided to use postcard varints as length prefixes.</Note>
 
 Now we have a protocol that supports different rpc types (rpc, client streaming, server streaming, bidi streaming) and that can be used both locally (via the `FullRequest` enum) and remotely.
 
