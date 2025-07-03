@@ -53,7 +53,7 @@ enum Request {
 
 Your "client" then is a tokio `mpsc::Sender<Command>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
 
-Calling such a service is quite cumbersone, e.g. calling Get:
+Calling such a service is quite cumbersome, e.g. calling Get:
 
 ```rust
 let (tx, rx) = oneshot::channel();
