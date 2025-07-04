@@ -247,13 +247,44 @@ Now let's look at the client:
 ```rust
 struct Client(irpc::Client<RequestWithChannels, Request, KvService>);
 impl Client {
-  fn get(&self, key: String) -> Result<Option<String>> {
+  async fn get(&self, key: String) -> Result<Option<String>> {
     Ok(self.0.rpc(GetRequest { key }).await?)
   }
 }
 ```
 
 The `rpc` method on `irpc::Client` will only be available for messages where the update channel is not set and the response channel is an oneshot channel, so you will get compile errors if you try to use a request in the wrong way.
+
+Ok, that's pretty nice. But then pure rpc requests are also pretty simple. What about more complex requests? Let's look at a very simple example of a bidirectional streaming rpc request. An echo request gets a stream of updates (strings) and just echoes them back, until the update stream stops.
+
+```rust
+struct EchoService {}
+impl Service for EchoService {}
+
+#[rpc_requests(KvService, message = RequestWithChannels)]
+#[derive(Serialize, Deserialize)]
+enum Request {
+  #[rpc(rx=mpsc::Receiver<String>, tx=mpsc::Sender<String>)]
+  Echo(EchoRequest),
+}
+```
+
+Let's look at the client.
+
+```rust
+struct Client(irpc::Client<RequestWithChannels, Request, EchoService>);
+impl Client {
+  async fn echo(&self) -> Result<(Sender<String>, Receiver<String>)> {
+    Ok(self.0.bidi_streaming(EchoRequest, 32, 32).await?)
+  }
+}
+```
+
+Calling echo will write the initial request to the remote, then return a handle `irpc::channel::mpsc::Sender<String>` that can be used to send updates, and a handle `irpc::channel::mpsc::Receiver<String>` to receive the echos.
+
+In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around an [`RecvStream`] that reads and deserializes length prefixed messsages, and a sender is a wrapper around a SendStream that serializes and writes length prefixed messages.
+
+The client fn can then transform these two handles for the update and response end to make the result more convenient, e.g. by converting the result into a futures [`Stream`].
 
 ## Try it out
 If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give `irpc` a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the (no longer maintained) [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
