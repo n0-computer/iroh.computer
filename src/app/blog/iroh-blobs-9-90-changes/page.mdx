@@ -92,6 +92,8 @@ while Some(progress_item) = stream.next() {
 }
 ```
 
+If you want an even more detailed example of how to use the new `iroh-blobs` with progress, check out the code for the latest version of [sendme](https://github.com/n0-computer/sendme). 
+
 ## Options
 
 Many operations come with complex options. For example, operations for adding blobs often require a `format` parameter to specify whether the blob being added is just a raw blob or a sequence of hashes. But in the vast majority of cases, users just want to add raw blobs. In other languages, you might solve this issue with either overloading or with default parameters. But rust has neither, for very good reasons.
