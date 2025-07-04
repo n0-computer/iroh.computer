@@ -31,11 +31,11 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # IRPC - a lightweight rpc crate for iroh connections
 
-When writing async rust code such as iroh protocols, you will frequently use message passing to communicate between independent parts of your code.
+When writing async rust code, like you do when writing iroh protocols, you will frequently use message passing to communicate between independent parts of your code.
 
 You will start by defining a message enum that contains the different requests your task is supposed to handle, and then write a loop inside the handler task, like a very primitive version of an actor.
 
-Let's do a simple example, an async key value store, with just Set and Get.
+Let's do a simple example, an async key-value store, with just `Set` and `Get` requests.
 
 ```rust
 enum Request {
@@ -53,7 +53,7 @@ enum Request {
 
 Your "client" then is a tokio `mpsc::Sender<Command>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
 
-Calling such a service is quite cumbersome, e.g. calling Get:
+Calling such a service is quite cumbersome. For example, here's what it takes to call `Get`:
 
 ```rust
 let (tx, rx) = oneshot::channel();
@@ -61,7 +61,7 @@ client.send(Command::Get { key: "a".to_string(), response: tx }).await?;
 let res = rx.await?;
 ```
 
-So you will usually write a client struct that is a newtype wrapper around the mpsc Sender to add some syntax candy:
+So you will usually write a client struct that is a newtype wrapper around the `mpsc::Sender` to add some syntax candy:
 
 ```rust
 struct Client(mpsc::Sender<Request>);
@@ -76,7 +76,7 @@ impl Client {
 }
 ```
 
-If you want to have some more complex requests, no problem. E.g. here is how a request would look like to add an entry from a stream:
+If you want to have some more complex requests, no problem. Here is what a request that adds and entry from a stream would look like:
 
 ```rust
 enum Request {
@@ -103,7 +103,7 @@ enum Request {
 }
 ```
 
-You already have an async boundary and a message passing based protocol, so it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
+And since you already have an async boundary and a message passing based protocol, it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
 
 To cross a process boundary, the commands have to be serializable. But the response or update channels are not. We need to separate the message itself and the update and response channels.
 
@@ -137,7 +137,7 @@ enum RequestWithChannels {
 impl From<RequestWithChannels> for Request { ... }
 ```
 
-How does the actual cross process communication look like, for example for get? Let's use postcard for serialization/deserialization:
+What does the actual cross-process communication look like? Let's take a look at a `Get` example, using postcard for serialization/deserialization:
 
 ```rust
 async fn get_remote(connection: Connection, key: String) -> Result<Option<String>> {
@@ -149,7 +149,7 @@ async fn get_remote(connection: Connection, key: String) -> Result<Option<String
 }
 ```
 
-The server side looks similar. We read a `Request` from an incoming connection, then based on the enum case decide which request we need to handle:
+The server side looks similar. We read a `Request` from an incoming connection, then, based on the enum case, decide which request we need to handle:
 
 ```rust
 async fn server(connection: Connection, store: BTreeMap<String, String>) -> Result<()> {
@@ -210,7 +210,7 @@ impl Client {
 
 This is all pretty straightforward code, but very tedious to write, especially for a large and complex protocol.
 
-There is some work that we can't avoid. We have to define the different request types. We have to specify for each request type if there is no response, a single resposne, or a stream of responses. We also have to specify if there is a stream of updates, and make sure that all these types (requests, updates and responses) are serializable, which can sometimes be a pain when it comes to error types.
+There is some work that we can't avoid. We have to define the different request types. We have to specify for each request type the kind of response we expect (no response, a single response, or a stream of responses). We also have to specify if there is a stream of updates and make sure that all these types (requests, updates and responses) are serializable, which can sometimes be a pain when it comes to error types.
 
 But what about all this boilerplate?
 - Defining the two different enums for a serializable request and a full request including channels
@@ -218,15 +218,15 @@ But what about all this boilerplate?
 - Implementing a server that reads messages and dispatches on them
 - serializing and deserializing using postcard with length prefixes
 
-The irpc crate is meant solely to reduce the tedious boilerplate involved in writing the above manually.
+**The `irpc` crate is meant solely to reduce the tedious boilerplate involved in writing the above manually.**
 
-It does *not* abstract over the connection type - it only supports [iroh-quinn] send- and receive streams out of the box, so the only two possible connection types are iroh p2p QUIC connections and normal QUIC connections. It also does not abstract over the local channel type - a local channel is always a tokio mpsc channel. Serialization is always postcard, and length prefixes are always postcard varints.
+It does *not* abstract over the connection type - it only supports [iroh-quinn] send and receive streams out of the box, so the only two possible connection types are `iroh` p2p QUIC connections and normal QUIC connections. It also does not abstract over the local channel type - a local channel is always a `tokio::sync::mpsc` channel. Serialization is always using postcard and length prefixes are always postcard varints.
 
-So let's take a look how the kv service looks using irpc:
+So let's see what our kv service looks using `irpc`:
 
 The service definition contains just what is absolutely needed. For each request type we have to define what the response item type is (in this case `String` or `()`), and what the response channel type is (none, oneshot or mpsc).
 
-The rpc_requests macro will store this information and also create the `RequestWithChannels` enum that adds the appropriate channels for each request type. It will also generate a number of `From`-conversions to make working with the requests more pleasant.
+The `rpc_requests` macro will store this information and also create the `RequestWithChannels` enum that adds the appropriate channels for each request type. It will also generate a number of `From`-conversions to make working with the requests more pleasant.
 
 ```rust
 struct KvService {}
@@ -253,4 +253,9 @@ impl Client {
 }
 ```
 
-The fn `rpc` on irpc::Client will only be available for messages where the update channel is not set and the response channel is an oneshot channel, so you will get compile errors if you try to use a request in the wrong way.
+The `rpc` method on `irpc::Client` will only be available for messages where the update channel is not set and the response channel is an oneshot channel, so you will get compile errors if you try to use a request in the wrong way.
+
+## Try it out
+If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give `irpc` a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the (no longer maintained) [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
+
+Because of this extensive experience, we are confident that `irpc` is a good solution for doing both in-process, cross-process, and cross-machine RPC, especially if you are building an `iroh` protocol. Check it out and you will see why we at number0 use it for all of the `iroh` protocols that we have created and maintained.
