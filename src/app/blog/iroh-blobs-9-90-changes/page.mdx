@@ -162,13 +162,13 @@ Where there *is* a large improvement is when dealing with a large number of tiny
 
 Here is the performance of old (`iroh-blobs@0.35` based) `sendme` syncing the linux kernel source code on localhost:
 
-```jsx
+```
 sendme receive   31.22s user 89.67s system 24% cpu 8:11.74 total
 ```
 
 And here is the performance of new (`iroh-blobs@0.90` based) `sendme` doing the same thing:
 
-```jsx
+```
 cargo run --release receive   30.44s user 72.03s system 45% cpu 3:44.73 total
 ```
 
