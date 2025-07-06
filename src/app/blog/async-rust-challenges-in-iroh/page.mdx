@@ -84,7 +84,7 @@ So we use a separate thread pool to spawn worker tasks on for bulk interactions 
 
 In normal Rust code, you can usually understand how to safely use an API just by looking at the types.
 
-A very well designed API will make it *impossible* to use entities in an incorrect state because the different states the entities can be in are modeled in the type system. This follows a design principle called [make invalid states unrepesentable](https://geeklaunch.io/blog/make-invalid-states-unrepresentable/), and emerges naturally if you do the work to model your stateful entities as state machines.
+A very well designed API will make it *impossible* to use entities in an incorrect state because the different states the entities can be in are modeled in the type system. This follows a design principle called [make invalid states unrepresentable](https://geeklaunch.io/blog/make-invalid-states-unrepresentable/), and emerges naturally if you do the work to model your stateful entities as state machines.
 
 Normal Rust APIs such as the ones in [std::io](https://doc.rust-lang.org/std/io/index.html) will have functions return an error if you call them when the entity is in the wrong state. When you call a function that does not return a `Result`, you can safely call it without having to worry about panics.
 

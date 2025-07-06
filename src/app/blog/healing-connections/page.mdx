@@ -28,7 +28,7 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-We've put alot of effort into ensure that iroh connections "just work" in most situations. To achieve this, iroh’s networking stack does a lot of clever things. It allows you to dial by NodeID, using [certain discovery mechanisms](https://iroh.computer/blog/iroh-dns). It allows you to communicate with another machine, even if your computer and the other computer are each behind a NAT, using hole punching. 
+We've put a lot of effort into ensuring that iroh connections "just work" in most situations. To achieve this, iroh’s networking stack does a lot of clever things. It allows you to dial by NodeID, using [certain discovery mechanisms](https://iroh.computer/blog/iroh-dns). It allows you to communicate with another machine, even if your computer and the other computer are each behind a NAT, using hole punching. 
 
 But did you know that iroh can maintain connections even if your network changes? Switch Wi-Fi networks, jump on a mobile hotspot, or turn on your VPN, and your connections stay intact. This works because connections correlate with your Node ID, not your IP address.
 

@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building on direct connections between devices, putting more control in the hands of your users.
 
-**TL;DR: We’re jumping to v0.90 as the *canary* release series leading to 1.0. If you’re cool working on the bleeding edge, use 0.90. If you want to wait for 1.0, stick with v0.35.x. until we cut 1.0 toward the end of the year.**
+**TL;DR: We’re jumping to v0.90 as the *canary* release series leading to 1.0. If you’re cool working on the bleeding edge, use 0.90. If you want to wait for 1.0, stick with v0.35.x until we cut 1.0 toward the end of the year.**
 
 Last time we published a release blog, we said our next release would be our release candidate for `1.0`. But, while working through all of our breaking changes and updates, we realized that waiting until we had everything worked through and finished before releasing was *not* actually the best way for us to get a stable release into the hands of our users.
 
@@ -68,11 +68,11 @@ As described in our [last release blog post](/blog/iroh-0-35-prepping-for-1-0#re
 
 ## 😯 iroh-relays no longer support STUN 😯
 
-`iroh` no longer uses the STUN protocol to learn about our external addresses. We now rely on QUIC address discovery to to that. To that effect, the `iroh-relay`s starting from `0.90` no longer support the STUN protocol. Our `iroh` configuration has also changed, as the `RelayNode` now only has `quic` configuration options.
+`iroh` no longer uses the STUN protocol to learn about our external addresses. We now rely on QUIC address discovery to do that. To that effect, the `iroh-relay`s starting from `0.90` no longer support the STUN protocol. Our `iroh` configuration has also changed, as the `RelayNode` now only has `quic` configuration options.
 
 ## 👀 `n0-watcher` crate and the `Watcher` trait 👀
 
-Many of our APIs now return `impl Watcher`, like the `Endpoint::node_addr` method. Knowing all of the details of your node’s `NodeAddr` may take a few milliseconds.. Something like the local address may be almost instant, but knowing it's home `RelayUrl` or it's publically available addresses may take more time, since it needs to do some external probing to discover.
+Many of our APIs now return `impl Watcher`, like the `Endpoint::node_addr` method. Knowing all of the details of your node’s `NodeAddr` may take a few milliseconds.. Something like the local address may be almost instant, but knowing it's home `RelayUrl` or it's publicly available addresses may take more time, since it needs to do some external probing to discover.
 
 Returning a `Watcher` here allows our users to “wait” for the `NodeAddr` in the way that is most useful for them. If you just want the earliest value, let's say because you know you are on an local network, call `initialize` to get the first value that appears.
 

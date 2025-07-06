@@ -28,7 +28,7 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Our latest video covers a proof paper by [Nancy Lynch] that shows that 100% certainty of consensus is impossible in a distributed system with even one faulty node. The paper is very comprensive, and we thought picking one to dramatize would be a great way to introduce impossibility proofs!
+Our latest video covers a proof paper by [Nancy Lynch] that shows that 100% certainty of consensus is impossible in a distributed system with even one faulty node. The paper is very comprehensive, and we thought picking one to dramatize would be a great way to introduce impossibility proofs!
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/_VAAC9Rt6H0?si=IWXKlPvoJ2qe6r9R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -43,14 +43,14 @@ Our latest video covers a proof paper by [Nancy Lynch] that shows that 100% cert
 ## Do you use this in iroh?
 
 Indirectly, yes! All iroh protocols run up against these laws of distributed systems "physics". Some examples:
-* strictly speaking, [iroh docs](/proto/iroh-docs) isn't a consensus protocol, it's a "sync" protocol. Here even the word sync is a bit of a misnomer, because there is no such thing as asynchronus synchronization, but we digress. Instead the garuntee iroh docs focuses on is that all nodes will _eventually_ have the same data, once we all have the same entries in our namespace, not that they will all agree on the same data at the same time.
+* strictly speaking, [iroh docs](/proto/iroh-docs) isn't a consensus protocol, it's a "sync" protocol. Here even the word sync is a bit of a misnomer, because there is no such thing as asynchronous synchronization, but we digress. Instead the guarantee iroh docs focuses on is that all nodes will _eventually_ have the same data, once we all have the same entries in our namespace, not that they will all agree on the same data at the same time.
 * [iroh blobs](/proto/iroh-blobs) is content-addressed (refer by hash) specifically to get around the potential of [Byzantine faults][BFT], assuming you trust the hash you're asking for in the first place.
 
 ## The extra `t` is for buggy nodes
 
 In the video, one fix to address the fault is to transition from requiring `2t + 1` to `3t + 1`. The detail we _don't_ cover in the video: the extra `t` describes that you're accounting for buggy or malicious nodes (called ["Byzantine" nodes][BFT]) as well as down/delayed nodes. The down/delayed nodes would be covered by the `2t` part of the equation.
 
-Flipping that ratio around, in essence this extra `t` says that if we want to account for buggy or malicious nodes, we can only tollerate _less than_ 1/3 of the nodes being down, delayed, or faulty instead less than half. This makes sense because we still need to handle the same cases as `2t+1`, but now we're also accounting for the fact that a node that is still sending messages could be giving you bad messages — so you need more redundancy. In a 3-node configuration, a single node failure means that you've already crossed that 1/3 threshold, so you need _at least_ one more healthy node in the system to acocunt for all of these possible errors.
+Flipping that ratio around, in essence this extra `t` says that if we want to account for buggy or malicious nodes, we can only tolerate _less than_ 1/3 of the nodes being down, delayed, or faulty instead less than half. This makes sense because we still need to handle the same cases as `2t+1`, but now we're also accounting for the fact that a node that is still sending messages could be giving you bad messages — so you need more redundancy. In a 3-node configuration, a single node failure means that you've already crossed that 1/3 threshold, so you need _at least_ one more healthy node in the system to account for all of these possible errors.
 
 ## This is not the most interesting proof in the paper!
 

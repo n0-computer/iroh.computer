@@ -5,7 +5,7 @@ export const metadata = {
 
 # WebAssembly and Browser support in Iroh
 
-Iroh can be complied to WebAssembly for use in browsers! {{className: 'lead'}}
+Iroh can be compiled to WebAssembly for use in browsers! {{className: 'lead'}}
 
 We first announced work on iroh in browsers via WebAssembly in a [blog post](/blog/iroh-and-the-web).
 As of the iroh 0.33 release, iroh can be used in projects that compile to WebAssembly.
@@ -45,8 +45,8 @@ Non-default features like `discovery-local-network` or `discovery-dht` will like
 ### npm package
 
 Currently we don't bundle iroh's Wasm build as an NPM package.
-There is no technical limitiation for this: You could build this today!
-Should you need javascript APIs, we recommend that you take write an application-specific rust wrapper crate that depends on iroh and exposes whatever the javascript side needs via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/).
+There is no technical limitation for this: You could build this today!
+Should you need javascript APIs, we recommend that you write an application-specific rust wrapper crate that depends on iroh and exposes whatever the javascript side needs via [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/).
 
 ### Use in node.js/bun.js/deno
 
