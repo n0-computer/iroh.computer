@@ -8,7 +8,7 @@ export const post = {
   author: 'ramfox, frando',
   date: '2024-05-06',
   title: 'Dial by NodeID, no address required!',
-  description: 'iroh-dns uses domain name servers to resolve dialing details, so you can dial any device by it\'s node identifier',
+  description: 'iroh-dns uses domain name servers to resolve dialing details, so you can dial any device by its node identifier',
 }
 
 export const metadata = {
@@ -50,7 +50,7 @@ Second, it was very important for us as an organization that we do not invent pr
 
 We are using two standards: the domain name system [(DNS)](https://datatracker.ietf.org/doc/html/rfc1035) and [Pkarr](https://app.pkarr.org/). DNS is typically used for resolving domain names into their associated IP addresses. But DNS actually relates _domain names_ to [_resource records_](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2), of which IP addresses are one type. Pkarr allows us to publish DNS records that resolve **elliptic curve keys** (not domain names) to resource records instead. Our **Node IDs** in iroh are elliptic curve public keys. This means we can publish an association between iroh Node IDs and some resource records. Importantly, these records are signed, so that you can verify that the record was actually published by the node with the given Node ID.
 
-As long as iroh has a Node ID and its associated relay URL (the address of the relay server that node uses to hole-punch and proxy relay packets), we can dial that node. So the Pkarr packet currently only needs to contain the Node ID and the relay URL of its preferred relay server (which we call its “home relay”). When Pkarr publishing is enabled on your iroh node, your node will create a Pkarr packet with its Node ID and relay URL, sign it, and defaults to publishing on an  `iroh-dns` server that is run by number0.
+As long as iroh has a Node ID and its associated relay URL (the address of the relay server that node uses to hole-punch and proxy relay packets), we can dial that node. So the Pkarr packet currently only needs to contain the Node ID and the relay URL of its preferred relay server (which we call its “home relay”). When Pkarr publishing is enabled on your iroh node, your node will create a Pkarr packet with its Node ID and relay URL, sign it, and defaults to publishing on an `iroh-dns` server that is run by number0.
 
 From there, others can discover your dialing information by resolving your Node ID using regular DNS. It’s worth noting that others must still learn your node ID for this to work,
 

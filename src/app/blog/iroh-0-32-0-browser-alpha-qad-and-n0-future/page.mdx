@@ -37,7 +37,7 @@ To start: join us in testing out `iroh` that compiles to WASM and can work in th
 We've got preliminary iroh support for browsers via WebAssembly!
 During this preliminary support phase, you'll need to depend on a branch to be able to use it, but we'll release it properly soon.
 
-To try it out, add this git dependency to your `Crates.toml`:
+To try it out, add this git dependency to your `Cargo.toml`:
 
 ```toml
 iroh = { git = "https://github.com/n0-computer/iroh.git", branch = "matheus23/iroh-browser", default-features = false }
@@ -60,9 +60,9 @@ Check out [PR #2799](https://github.com/n0-computer/iroh/issues/2799) for more d
 
 Finding out your node’s public address is one of the big steps necessary for hole-punching. Without knowing your public IP address, you have no way to let anyone else know what it is either. It’d be like wanting a friend to mail you a package, but not being able to tell them what your address is. We use a few different protocols speak to the `iroh` relay servers to learn about your public IP address (and a few other pieces of information).
 
-Previously, we relied solely protocols that communicated over UDP. UDP is great when you want to fire and forget, but if you need reliability or the ability to retransmit data, to ensure the other side of the connection definitely received the data, you can’t rely on UDP.
+Previously, we relied solely on protocols that communicated over UDP. UDP is great when you want to fire and forget, but if you need reliability or the ability to retransmit data, to ensure the other side of the connection definitely received the data, you can’t rely on UDP.
 
-In high latency, noise-y areas across the world, where traffic and packet loss might get too overwhelming for UDP, **we were unable to always relay on STUN and ICMP**. One solution we had to deal with the quirks of UDP, was to ensure we had relays all over the world, so that a user’s node has a better chance of reaching and getting a response from a relay server.
+In high latency, noisy areas across the world, where traffic and packet loss might get too overwhelming for UDP, **we were unable to always relay on STUN and ICMP**. One solution we had to deal with the quirks of UDP, was to ensure we had relays all over the world, so that a user’s node has a better chance of reaching and getting a response from a relay server.
 
 The other way we could solve this was by using a protocol for learning your public IP address, that was based on a reliable transport. QUIC is already an enormous part of our codebase, we thought we could use QUIC to solve this problem for us.
 

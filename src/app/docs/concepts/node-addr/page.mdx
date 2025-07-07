@@ -27,7 +27,7 @@ let ep = Endpoint::builder()
     .await?;
 ```
 
-This is why we actively encourage configuring a discovery service, and DNS is the most common one we recommend. Because we're in p2p land dialing details & even home relays for a node can change on very short notice, making this data go stale quickely. Node Identifiers are a practical source of stability that counteracts this.
+This is why we actively encourage configuring a discovery service, and DNS is the most common one we recommend. Because we're in p2p land dialing details & even home relays for a node can change on very short notice, making this data go stale quickly. Node Identifiers are a practical source of stability that counteracts this.
 
 ### When to provide full details
 If you have full dialing details, it's well worth providing them as part of a `NodeAddr` passed to `connect`. Iroh can use this to skip the network roundtrip required to either do initial address discovery, or update cached addresses. So if you have a source of up to date home relay & dialing info, provide it!

@@ -59,7 +59,7 @@ We are already making use of the bittorrent mainline DHT for fully peer to peer 
 
 The first limitation is that the bittorrent DHT works using 20 byte SHA1 hashes, while we want to resolve 32 bytes BLAKE3 hashes. This is not an insurmountable limitation. You can just SHA1 hash the BLAKE3 hash, or even just take the first 20 bytes of the hash.
 
-The second limitation is much more severe. We would like to store the 32 byte iroh node id in the DHT, but the mainline DHT does not allow this. It only allows storing IPV4 or IPV6 addresses and ports. And the ip addresses are not freely selectable, but just the public ip addresses of the node that uploads the announce. The only freely chooseable information is th 16 bit port number.
+The second limitation is much more severe. We would like to store the 32 byte iroh node id in the DHT, but the mainline DHT does not allow this. It only allows storing IPV4 or IPV6 addresses and ports. And the ip addresses are not freely selectable, but just the public ip addresses of the node that uploads the announce. The only freely chooseable information is the 16 bit port number.
 
 So an iroh node with a *publicly available* and *stable* ip address could announce content on the mainline DHT, but a node that frequently switches networks or is behind a NAT can not. But we want nodes behind a NAT to
 be able to be content providers, so this won't work for us.
@@ -96,7 +96,7 @@ Second, when requesting content the requester should be able to attach context. 
 
 ## DHT to find trackers
 
-It is possible to track a lot of content with a single state of the art server. However, as we have seen, there is a problem  finding a tracker for some content.
+It is possible to track a lot of content with a single state of the art server. However, as we have seen, there is a problem finding a tracker for some content.
 
 Trackers are most likely going to be big servers in the cloud at one of the big cloud providers or hosting providers. So they will have a public and relatively stable IP address.
 

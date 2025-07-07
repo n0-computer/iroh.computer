@@ -162,8 +162,8 @@ async fn main() -> Result<()> {
     // and `GossipReceiver` portions
     let (sender, _receiver) = topic.split();
 
-    // Broadcast a messsage to the topic.
-    // Since no one else is apart of this topic,
+    // Broadcast a message to the topic.
+    // Since no one else is a part of this topic,
     // this message is currently going out to no one.
     sender.broadcast("sup".into()).await?;
 
@@ -183,7 +183,7 @@ And let's write a `Message::Message` that has a `String` with the actual chat me
 Also, we want each of those messages to include the `NodeId` of the sender. In an actual application, we would encode and decode the messages with keypairs to ensure that everyone who sends a message is actually who they say they are. For more on that, check out our more robust chat example that exists in the [`iroh-gossip`](https://github.com/n0-computer/iroh-gossip/blob/main/examples/chat.rs) repo.
 
 In addition, the nature of the gossip protocol could potentially cause messages to be sent multiple times. This is done intentionally, to ensure at-least-once delivery of each message to all nodes. This behavior is unexpected in most app contexts, so iroh will internally deduplicate messages based on the hash of their contents.
-In this case, if someone sends re-sends a message they already sent, it will be ignored by the other peeres. To circumvent this, each message should include a piece of unique data to prevent this deduplication. This can be done in a number of ways - we will use a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce).
+In this case, if someone sends re-sends a message they already sent, it will be ignored by the other peers. To circumvent this, each message should include a piece of unique data to prevent this deduplication. This can be done in a number of ways - we will use a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce).
 
 We need to add crates that will allow us to serialize our new message types as bytes and deserialize bytes as our message type.
 
@@ -248,7 +248,7 @@ let message = Message::new(MessageBody::AboutMe {
     name: String::from("alice"),
 });
 // Turn the message into a `Vec`, and then use
-// `into` to coerse the `Vec` into `Bytes`
+// `into` to coerce the `Vec` into `Bytes`
 sender.broadcast(message.to_vec().into()).await?; 
 ```
 
@@ -256,7 +256,7 @@ sender.broadcast(message.to_vec().into()).await?;
 
 To handle incoming messages, we need to iterate over the stream of messages that come in on the `receiver` of the `Topic`.
 
-Dealing with streams in rust is complicated without additional help from crates that were designed to simplify using them. Knowing the best tools to use for this can *also* be complicated, since a certain crate may have a good trait implementation for *some* use cases, and a less good implemenation for others. It can also feel a bit yucky to add a big beefy crate to your code, when you are only using a very small subset of it's contents.
+Dealing with streams in rust is complicated without additional help from crates that were designed to simplify using them. Knowing the best tools to use for this can *also* be complicated, since a certain crate may have a good trait implementation for *some* use cases, and a less good implementation for others. It can also feel a bit yucky to add a big beefy crate to your code, when you are only using a very small subset of its contents.
 
 In this application, we are using the `StreamExt` trait to make handling async streams easier. We've found that the best option right now is to use the `futures-lite` crate. It contains a subset of the `futures` crate.
 
@@ -290,7 +290,7 @@ async fn subscribe_loop(mut receiver: GossipReceiver) -> Result<()> {
             match Message::from_bytes(&msg.content)?.body {
                 MessageBody::AboutMe { from, name } => {
                     // if it's an `AboutMe` message
-                    // add and entry into the map
+                    // add an entry into the map
                     // and print the name
                     names.insert(from, name.clone());
                     println!("> {} is now known as {}", from.fmt_short(), name);
@@ -703,7 +703,7 @@ async fn subscribe_loop(mut receiver: GossipReceiver) -> Result<()> {
             match Message::from_bytes(&msg.content)?.body {
                 MessageBody::AboutMe { from, name } => {
                     // if it's an `AboutMe` message
-                    // add and entry into the map
+                    // add an entry into the map
                     // and print the name
                     names.insert(from, name.clone());
                     println!("> {} is now known as {}", from.fmt_short(), name);
