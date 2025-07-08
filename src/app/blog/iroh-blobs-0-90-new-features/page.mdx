@@ -30,9 +30,9 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # New Request Types and New Features
 
-In our [previous blog post](https://iroh.computer/blog/iroh-blobs-0-90-upgrade-guide) we talked a lot about the generic API design of the new `iroh-blobs`. Now, let's take a look at the new features!
+In our [previous blog post](https://iroh.computer/blog/iroh-blobs-0-90-changes) we talked a lot about the generic API design of the new `iroh-blobs`. Now, let's take a look at the new features!
 
-Previously, `iroh-blobs` supported just a single request type - `Get`. Get allows to stream a blob, ranges of a blob, or an entire sequence of blobs or ranges thereof. It is pretty powerful, but especially the part about streaming hash sequences can also be confusing.
+Previously, `iroh-blobs` supported just a single request type - `Get`. Get allows you to stream a blob, ranges of a blob, or an entire sequence of blobs or ranges thereof. It is pretty powerful, but since there are so many options it can be confusing, especially the part about streaming hash sequences
 
 ## Protocol Additions and Changes
 
@@ -79,9 +79,9 @@ The `Observe` request allows you to get information about what data a remote nod
 
 ### Observing a blob
 
-There is a new API for observing the [`Bitfield`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.Bitfield.html) of a blob. An`Observe` request returns a stream of bitfields, where each bitfield represents the current chunk availability of a blob. The stream is wrapped into an [`ObserveProgress`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.ObserveProgress.html) struct and follows the same patterns as the other progress structs (as described in our previous [blobs blog post](https://iroh.computer/blog/iroh-blobs-0-90-upgrade-guide)), so you can just use `observe().await` to get the current bitfield.
+There is a new API for observing the [`Bitfield`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.Bitfield.html) of a blob. An`Observe` request returns a stream of bitfields, where each bitfield represents the current chunk availability of a blob. The stream is wrapped into an [`ObserveProgress`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.ObserveProgress.html) struct and follows the same patterns as the other progress structs (as described in our previous [blobs blog post](https://iroh.computer/blog/iroh-blobs-0-90-changes)), so you can just use `observe().await` to get the current bitfield.
 
-See the [bitfields](https://www.notion.so/iroh-blobs-0-90-0-new-request-types-and-features-2245df1306fb803f969ce32aa993adc2?pvs=21) section for more info about bitfields.
+See the [bitfields](https://www.iroh.computer/blog/iroh-blobs-0-90-new-features#bitfields) section for more info about bitfields.
 
 ### Restructured Remote API
 
@@ -99,7 +99,7 @@ There is a [`local`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/str
 
 If you want to do complex requests that download data from multiple nodes at once, there is the [`Downloader`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html). Unlike the aforementioned structs, this is not just a namespace but a stateful object that contains an `iroh` endpoint and a connection pool.
 
-The downloader allows executing requests where you just specify *what* you want to download (either just a hash or a complex request) via the [`SupportedRequest`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.SupportedRequest.html) trait, and from *where* you want to download using the [`ContentDiscovery`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.ContentDiscovery.html) trait, that allows to specify a content discovery strategy.
+The downloader allows executing requests where you specify *what* you want to download (either just a hash or a complex request) via the [`SupportedRequest`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.SupportedRequest.html) trait, and from *where* you want to download using the [`ContentDiscovery`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.ContentDiscovery.html) trait, that allows to specify a content discovery strategy.
 
 The main user-facing method of the downloader is [`download`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html#method.download), which also has an "overload" [`download_with_opts`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html#method.download_with_opts) that allows specifying additional parameters. Currently, the only options is a [split strategy](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/enum.SplitStrategy.html).
 
