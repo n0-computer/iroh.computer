@@ -153,7 +153,7 @@ Here's our plan for turning this into a CLI that actually does what we set out t
 4. If we're supposed to receive data:
   - we'll parse the ticket out of the CLI arguments,
   - download the file using [`download`](https://docs.rs/iroh-blobs/latest/iroh_blobs/rpc/client/blobs/struct.Client.html#method.download),
-  - and copy the result the local file system.
+  - and copy the result to the local file system.
 
 Phew okay! Here's how we'll grab an iroh-blobs client and look at the CLI arguments:
 
