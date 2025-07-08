@@ -1,0 +1,154 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'rklaehn',
+  date: '2025-07-08',
+  title: 'iroh-blobs 0.90 - New Request Types and Features',
+  description: 'Learn about the new features in the new blobs API',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# New Request Types and New Features
+
+In our [previous blog post](https://iroh.computer/blog/iroh-blobs-0-90-upgrade-guide) we talked a lot about the generic API design of the new `iroh-blobs`. Now, let's take a look at the new features!
+
+Previously, `iroh-blobs` supported just a single request type - `Get`. Get allows to stream a blob, ranges of a blob, or an entire sequence of blobs or ranges thereof. It is pretty powerful, but especially the part about streaming hash sequences can also be confusing.
+
+## Protocol Additions and Changes
+
+`iroh-blobs` `0.90` adds several new request types.
+
+### GetMany
+
+For the case where you want to fetch several blobs in a single request, but it’s possible the provide side doesn't necessarily group those blobs into a `HashSeq`, there is a new request type [`GetMany`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.GetManyRequest.html). This allows you to just specify a set of hashes, and additionally allows you to specify ranges for each of the hashes you want to download.
+
+`GetMany` is useful when dealing with a large number of small blobs. If you want to download a few large blobs, running multiple `Get` requests in parallel is completely fine because QUIC has very cheap independent streams.
+
+An important difference between `GetMany` and multiple `Get` requests is that `GetMany` will proceed sequentially and abort the request as soon as the provider does not have the required data, while multiple parallel `Get` requests will succeed or fail independently.
+
+`GetMany` uses a vector of hashes even though in most cases this will be a set of hashes. This allows the user to control the order in which the hashes are requested. The [builder](https://docs.rs/iroh-blobs/0.90.0/src/iroh_blobs/protocol.rs.html#830-832) uses a set internally however, so multiple ranges for the same hash will be combined when using the builder.
+
+Here is an example how to create a GetMany request using the builder:
+
+```rust
+let request = GetManyRequest::builder()
+    .hash(hash1, ChunkRanges::all())
+    .hash(hash2, ChunkRanges::empty()) // will be ignored!
+    .hash(hash3, ChunkRanges::bytes(0..100))
+    .build();
+
+```
+
+### Push
+
+The [`Push`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.PushRequest.html) request is the reverse of a `Get` request. Instead of requesting a blob by hash, you send a description of what you are going to send, followed by the bao encoded data.
+
+`Push` requests are useful for uploading data. They require access control so people can't push arbitrary data to your node.
+
+### PushMany
+
+`PushMany` is not implemented yet, but will be before `1.0`. It is the push version of `GetMany`.
+
+`PushMany` requests will require access control just like `Push` requests.
+
+### Observe
+
+The `Observe` request allows you to get information about what data a remote node has for a hash. The response to an `Observe` request is a stream of bitfields, where the first bitfield is the current availability for a blob and all subsequent updates are changes to the bitfield.
+
+## New API Features
+
+### Observing a blob
+
+There is a new API for observing the [`Bitfield`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.Bitfield.html) of a blob. An`Observe` request returns a stream of bitfields, where each bitfield represents the current chunk availability of a blob. The stream is wrapped into an [`ObserveProgress`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.ObserveProgress.html) struct and follows the same patterns as the other progress structs (as described in our previous [blobs blog post](https://iroh.computer/blog/iroh-blobs-0-90-upgrade-guide)), so you can just use `observe().await` to get the current bitfield.
+
+See the [bitfields](https://www.notion.so/iroh-blobs-0-90-0-new-request-types-and-features-2245df1306fb803f969ce32aa993adc2?pvs=21) section for more info about bitfields.
+
+### Restructured Remote API
+
+The API to interact with remote nodes is split in two namespaces, `remote` and `downloader`.
+
+### Remote
+
+[Remote](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/struct.Remote.html) is for executing individual requests, which, due to the fact that blobs is a simple request/response protocol, always interacts with a *single* remote node.
+
+In the `remote` module, there is a distinction between *executing* a request, e.g. [execute_get](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/struct.Remote.html#method.execute_get), which just executes the request and stores the resulting data locally without taking the local data into account, and more complex methods like [`fetch`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/struct.Remote.html#method.fetch) which will only download data which is not present locally.
+
+There is a [`local`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/remote/struct.Remote.html#method.local) method to get the locally available data for a `Blob` or `HashSeq`, which is used internally by `fetch`. Whether `remote` is the right place for this method, given that it is a purely local operation, is up for debate.
+
+### Downloader
+
+If you want to do complex requests that download data from multiple nodes at once, there is the [`Downloader`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html). Unlike the aforementioned structs, this is not just a namespace but a stateful object that contains an `iroh` endpoint and a connection pool.
+
+The downloader allows executing requests where you just specify *what* you want to download (either just a hash or a complex request) via the [`SupportedRequest`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.SupportedRequest.html) trait, and from *where* you want to download using the [`ContentDiscovery`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.ContentDiscovery.html) trait, that allows to specify a content discovery strategy.
+
+The main user-facing method of the downloader is [`download`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html#method.download), which also has an "overload" [`download_with_opts`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.Downloader.html#method.download_with_opts) that allows specifying additional parameters. Currently, the only options is a [split strategy](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/enum.SplitStrategy.html).
+
+The `SplitStrategy` controls if the downloader is allowed to split requests into multiple requests to *parallelize the download,* or if it is supposed to proceed *strictly sequentially.* In the future, there will be more options for specifying the level of parallelism in case of a split.
+
+### SupportedRequest
+
+`SupportedRequest` is implemented for the two get request types `Get` and `GetMany`, as well as for an individual hash or a `HashAndFormat`. You can implement it for anything that can be converted to either a `Get` or `GetMany` request.
+
+### ContentDiscovery
+
+The `ContentDiscovery` trait has a single method called [`find_providers`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/trait.ContentDiscovery.html#tymethod.find_providers) that returns a stream of providers. This can be either a finite stream, in which case the downloader will try each node in sequence and give up if the request can not be completed, or an infinite stream of possibly repeated node ids, in which case the downloader will try until success, or until the [`DownloadProgress`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/downloader/struct.DownloadProgress.html) object which acts as a handle for the request is dropped.
+
+One important fact about content discovery is that it ***only works with node ids.*** The downloader *requires* node discovery to be enabled in the `iroh` endpoint, either via one of the built-in node discovery methods (n0 DNS, mDNS or mainline DHT) or using the [`StaticProvider`](https://docs.rs/iroh/latest/iroh/discovery/static_provider/struct.StaticProvider.html) in the `iroh` discovery system if you want to manage the data yourself.
+
+`ContentDiscovery` is implemented for any sequence of things that can be converted to `iroh::NodeId`. So you can, for example, pass just a `Vec<NodeId>` or a `HashSet<NodeId>`. The order of the elements in the sequence controls the order in which the different nodes will be tried, so it is not arbitrary.
+
+While the `SupportedRequest` trait exists just to make the API more convenient to use, the `ContentDiscovery` trait is intended as a way to extend content discovery to more generic mechanisms. E.g. the content tracker protocol and implementation that exists in [iroh-experiments](https://github.com/n0-computer/iroh-experiments/tree/main/content-discovery) can be wrapped in a struct that implements `ContentDiscovery` to allow content discovery via a tracker.
+
+## Provider Events and Access Control
+
+The provider side now has more detailed yet simplified [events](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/provider/enum.Event.html) for informing the provider of ongoing operations. These events - which unlike many other event streams - can only be consumed in-process and also contain provisions for access control.
+
+Connections can be controlled on a per node-id basis, and potentially dangerous requests such as [`Push`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/provider/enum.Event.html#variant.PushRequestReceived) can also be controlled on a per-request basis. For example, you can allow a certain node to push a certain hash to you, but nothing else.
+
+The exact shape of this API might change in the future. For instance, it would be useful to also have access control for `Get` requests, as has already been [requested](https://github.com/n0-computer/iroh-blobs/issues/51) by users. But, we also don't want to slow down the very common case where `Get` is unrestricted.
+
+**None of the hooks that exist now will be removed.** If anything, there will be more fine-grained control before `1.0`.
+
+## Batch Add vs Non-Batch Add.
+
+All operations that add data to the store can be performed either within a [Batch](https://docs.rs/iroh-blobs/latest/iroh_blobs/api/blobs/struct.Batch.html) or globally.
+
+When adding data *within* a batch, the return type will be a `TempTag`, and it will be *your* responsibility to either create a persistent `Tag` or prevent the data from being garbage collected in some other way. Batches are useful for adding a large number of items to a hash sequence and then creating a single persistent tag for the hash sequence.
+
+When adding data without a batch, the default behaviour will be to create a *persistent* tag for every add operation. This means that your data is safe, but it can also lead to a large number of tags being created.
+
+You can customize the behaviour by using different functions on `AddProgress`, such as [assigning a named tag](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.AddProgress.html#method.with_named_tag) or opting out of tag creation with [temp_tag](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/api/blobs/struct.AddProgress.html#method.temp_tag).
+
+## Bitfields
+
+Bitfields are the most notable reason for the rewrite of the file system based store. `iroh-blobs` `0.35` only kept track of partial blobs in a coarse way: by computing the missing ranges from the bao outboard and the file *size*. This is sufficient for use cases like [sendme](https://www.iroh.computer/sendme) or other use cases where data is always sequentially written, so any interruption will lead to a partial blob with the first x chunks of data being complete.
+
+The new store also keeps track of gaps, so it requires an additional bitfield file per incomplete blob. Keeping track of available ranges is also what enables the `Observe` request.
+
+Bitfield files will be lazily recomputed from the data and the outboard when first interacting with a blob, so they are ephemeral data. Recomputing the bitfield can be somewhat expensive for extremely large blobs though.
+
+## Wrapping Up
+
+With the `0.90` release, `iroh-blobs` adds features that allow for a smoother more extendable API and better observability. Whether you're fetching individual blobs, coordinating large transfers, observing availability, or pushing data securely, the new request types and API changes are designed to make it easier and more powerful.
+
+If you’re building with `iroh-blobs`, we’d love to hear what you’re trying to do and where things can be improved. In the meantime, try out the new requests, poke at the new APIs, and let us know what you discover.
