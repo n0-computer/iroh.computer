@@ -38,7 +38,7 @@ And now we're excited to tackle the next environment: the browser.
 
 Let's be honest: The browser is a harsh environment for all the new network protocols out there.
 Iroh's networking stack - defined in our `iroh-net` crate - depends on QUIC, which will open a raw UDP socket on the lowest level. This is impossible in the browser.
-That said, there's a native QUIC implementation coming to the browser in the form of WebTransport, hurra!
+That said, there's a native QUIC implementation coming to the browser in the form of WebTransport, hurray!
 But wait, it doesn't quite work, because what you're connecting to needs to be served over DNS and have a working TLS certificate, whomp whooomp.
 If you want to talk to another machine from your browser, you're pretty much stuck talking to servers only.
 You can't just do an HTTP request from your laptop to your phone.
