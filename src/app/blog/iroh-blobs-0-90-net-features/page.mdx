@@ -4,7 +4,7 @@ import { MotionCanvas } from '@/components/MotionCanvas'
 export const post = {
   draft: false,
   author: 'rklaehn',
-  date: '2025-07-07',
+  date: '2025-07-08',
   title: 'iroh-blobs 0.90 - New Request Types and Features',
   description: 'Learn about the new features in the new blobs API',
 }
@@ -64,8 +64,6 @@ let request = GetManyRequest::builder()
 The [`Push`](https://docs.rs/iroh-blobs/0.90.0/iroh_blobs/protocol/struct.PushRequest.html) request is the reverse of a `Get` request. Instead of requesting a blob by hash, you send a description of what you are going to send, followed by the bao encoded data.
 
 `Push` requests are useful for uploading data. They require access control so people can't push arbitrary data to your node.
-
-Push requests are most easily created by creating a Get
 
 ### PushMany
 
