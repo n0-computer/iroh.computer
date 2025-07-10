@@ -53,7 +53,7 @@ enum Request {
 
 Your "client" then is a tokio `mpsc::Sender<Command>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
 
-Calling such a service is quite cumbersome. For example, here's what it takes to call `Get`:
+Calling such a service without a client wrapper is quite cumbersome. For example, here's what it takes to call `Get`:
 
 ```rust
 let (tx, rx) = oneshot::channel();
@@ -103,7 +103,7 @@ enum Request {
 }
 ```
 
-And since you already have an async boundary and a message passing based protocol, it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
+Since you already have an async boundary and a message passing based protocol, it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
 
 To cross a process boundary, the commands have to be serializable. But the response or update channels are not. We need to separate the message itself and the update and response channels.
 
@@ -137,7 +137,7 @@ enum RequestWithChannels {
 impl From<RequestWithChannels> for Request { ... }
 ```
 
-What does the actual cross-process communication look like? Let's take a look at a `Get` example, using postcard for serialization/deserialization:
+What does the actual cross-process communication look like? Let's take a look at a `Get` example, using [postcard] for serialization/deserialization:
 
 ```rust
 async fn get_remote(connection: Connection, key: String) -> Result<Option<String>> {
@@ -210,7 +210,7 @@ impl Client {
 
 This is all pretty straightforward code, but very tedious to write, especially for a large and complex protocol.
 
-There is some work that we can't avoid. We have to define the different request types. We have to specify for each request type the kind of response we expect (no response, a single response, or a stream of responses). We also have to specify if there is a stream of updates and make sure that all these types (requests, updates and responses) are serializable, which can sometimes be a pain when it comes to error types.
+There is some work that we can't avoid. We have to define the different request types. We have to specify for each request type the kind of response we expect (no response, a single response, or a stream of responses). We also have to specify if there are updates and make sure that all these types (requests, updates and responses) are serializable, which can sometimes be a pain when it comes to error types.
 
 But what about all this boilerplate?
 - Defining the two different enums for a serializable request and a full request including channels
@@ -282,11 +282,44 @@ impl Client {
 
 Calling echo will write the initial request to the remote, then return a handle `irpc::channel::mpsc::Sender<String>` that can be used to send updates, and a handle `irpc::channel::mpsc::Receiver<String>` to receive the echos.
 
-In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around an [`RecvStream`] that reads and deserializes length prefixed messsages, and a sender is a wrapper around a SendStream that serializes and writes length prefixed messages.
+In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around a [RecvStream] that reads and deserializes length prefixed messsages, and a sender is a wrapper around a [SendStream] that serializes and writes length prefixed messages.
 
-The client fn can then transform these two handles for the update and response end to make the result more convenient, e.g. by converting the result into a futures [`Stream`].
+The client fn can then add helper functions that transform these two handles for the update and response end to make the result more convenient, e.g. by converting the result into a futures [Stream] or the updates into a futures [Sink]. But the purpose of irpc is to reduce the boilerplate for defining services that can be used in-process or across processes, not to provide an opinionated high level API.
+
+For stream based rpc calls, there is an issue you should be aware of. The quinn [SendStream] will send a finish message when dropped. So if you have a finite stream, you might want to have an explicit end marker that you send before dropping the sender to allow the remote side to distinguish between successful termination and abnormal termination. E.g. the `SetFromStrean` request from above should look like this, and you should explicitly send a `Done` request after the last item.
+
+```rust
+#[rpc_requests(KvService, message = RequestWithChannels)]
+enum Request {
+  ...
+  #[rpc(rx=mpsc::Receiver<SetUpdate>, tx=oneshot::Sender<()>)]
+  SetFromStream(SetFromStreamRequest),
+  ...
+}
+
+enum SetUpdate {
+  Data(String),
+  Done,
+}
+```
+
+## What if you don't want rpc over iroh-quinn channels?
+
+If you integrate iroh protocols into an existing application, it could be that you already have a rpc system that you are happy with, like grpc or json-rpc over websockets.
+
+In that case, the cross process facilities of irpc will not be useful for you. But crates that use irpc will always have a very cleanly defined protocol consisting of a *serializable* request enum and serializable update and response types. Piping these messages over a different rpc transport is relatively easy.
+
+When used purely in-memory, irpc is extremely lightweight when it comes to [dependencies](https://github.com/n0-computer/irpc/blob/5cc624832cfed2653a20442851c203935039d6bc/Cargo.toml#L15). Only serde, tokio, tokio-util and thiserror, all of which you probably have in your dependency tree anyway if you write async rust.
 
 ## Try it out
-If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give `irpc` a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the (no longer maintained) [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
+
+If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give `irpc` a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
 
 Because of this extensive experience, we are confident that `irpc` is a good solution for doing both in-process, cross-process, and cross-machine RPC, especially if you are building an `iroh` protocol. Check it out and you will see why we at number0 use it for all of the `iroh` protocols that we have created and maintained.
+
+[postcard]: https://docs.rs/postcard/latest/postcard/
+[iroh-quinn]: https://docs.rs/iroh-quinn/latest/iroh_quinn/
+[RecvStream]: https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.RecvStream.html
+[SendStream]: https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.SendStream.html
+[Stream]: https://docs.rs/futures/latest/futures/prelude/trait.Stream.html
+[Sink]: https://docs.rs/futures/latest/futures/sink/trait.Sink.html
