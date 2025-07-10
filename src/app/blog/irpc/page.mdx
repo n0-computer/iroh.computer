@@ -303,13 +303,34 @@ enum SetUpdate {
 }
 ```
 
+## Errors
+
+All irpc requests, updates and responses need to be serializable. This is usually quite easy to do, with one exception. Serializing results is tricky because rust error types are not serializable by default.
+
+If you have your own custom error type, you can of course try to make it serializable.
+For existing error types like io::Error, you can write a serializable wrapper - an io error consists of a Kind and a message, both of which are serializable.
+
+And for other errors out of your control, there is the [serde-error](https://docs.rs/serde-error/latest/serde_error/) crate that makes it easy to capture useful information from existing errors and serialize them.
+
+<Note>
+My recommendation is to start with anyhow and serde_error, and only come up with nice concrete error types using thiserror or snafu once your design settles down and you know the different possible error cases by heart. Starting too early with complex concrete error types can slow down the development process a lot.
+</Note>
+
+## Stream termination
+
+If you are reading from a remote source, and there is a problem with the connection, you will immediately notice because the call to `recv().await` will fail with a [RecvError::Io](https://docs.rs/irpc/0.5.0/irpc/channel/enum.RecvError.html). If the stream has finished nominally, you will get an `Ok(None)`.
+
+But what about writing? E.g. you got a task that performs an expensive computation and writes updates to the remote in regular intervals. You will only detect that the remote side is gone once you write, so if you write infrequently you will perform an expensive computation despite the remote side no longer being available or interested.
+
+To solve this, an irpc Sender has a [closed](https://docs.rs/irpc/0.5.0/irpc/channel/mpsc/enum.Sender.html#method.closed) function that you can use to detect the remote closing without having to send a message. This wraps [tokio::sync::mpsc::Sender::closed](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.closed) for local streams and [quinn::SendStream::stopped](https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.SendStream.html#method.stopped) for remote streams.
+
 ## What if you don't want rpc over iroh-quinn channels?
 
-If you integrate iroh protocols into an existing application, it could be that you already have a rpc system that you are happy with, like grpc or json-rpc over websockets.
+If you integrate iroh protocols into an existing application, it could be that you already have a rpc system that you are happy with, like [grpc](https://grpc.io/) or [json-rpc](https://www.jsonrpc.org/).
 
-In that case, the cross process facilities of irpc will not be useful for you. But crates that use irpc will always have a very cleanly defined protocol consisting of a *serializable* request enum and serializable update and response types. Piping these messages over a different rpc transport is relatively easy.
+In that case, the cross process facilities of irpc will *not* be useful for you. But crates that use irpc will always have a very cleanly defined protocol consisting of a *serializable* request enum and serializable update and response types. Piping these messages over a different rpc transport is relatively easy.
 
-When used purely in-memory, irpc is extremely lightweight when it comes to [dependencies](https://github.com/n0-computer/irpc/blob/5cc624832cfed2653a20442851c203935039d6bc/Cargo.toml#L15). Only serde, tokio, tokio-util and thiserror, all of which you probably have in your dependency tree anyway if you write async rust.
+When used purely in-memory, irpc is extremely lightweight when it comes to [dependencies](https://github.com/n0-computer/irpc/blob/5cc624832cfed2653a20442851c203935039d6bc/Cargo.toml#L15). Only serde, tokio, tokio-util and thiserror, all of which you probably have in your dependency tree anyway if you write async rust. (we might switch to [snafu] in the future or manually write the error boilerplate to avoid the dependency).
 
 ## Try it out
 
@@ -323,3 +344,4 @@ Because of this extensive experience, we are confident that `irpc` is a good sol
 [SendStream]: https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.SendStream.html
 [Stream]: https://docs.rs/futures/latest/futures/prelude/trait.Stream.html
 [Sink]: https://docs.rs/futures/latest/futures/sink/trait.Sink.html
+[snafu]: https://docs.rs/snafu/latest/snafu/
