@@ -1,6 +1,6 @@
 # Tickets
 
-**Tl;DR:** Tickets are a way to share dialing information between iroh nodes. They're a single token that contains everything needed to connect to another node, or to fetch a blob or document. {{className: 'lead'}}
+Tickets are a way to share dialing information between iroh nodes. They're a single token that contains everything needed to connect to another node, or to fetch a blob or document. {{className: 'lead'}}
 
 <Note>
 Have a ticket? Try pasting it into the [iroh ticket explorer](https://ticket.iroh.computer) to break it down! Here's an [example](https://ticket.iroh.computer?ticket=docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6aaa)
@@ -34,13 +34,13 @@ Tickets always start with an ascii string that describes the type of ticket (eg:
 
 When you create a ticket, it embeds the IP addresses of the machines you're using to create the ticket. This means that if you share a ticket with someone, they can use it to connect to your machine. This is a feature, not a bug. It's a way to bootstrap connections between peers without needing a central server. It also means you should be careful about sharing tickets with people you don't want to have your IP address.
 
-It's worth point out this setup is considerably better than full peer-2-peer systems, which _broadcast_ your IP to peers. Instead in iroh, we use tickets to form a "cozy network" between peers you explicitly want to connect with. It's possible to go "full p2p" & configure your app to broadcast dialing details, but we think tickets represent a better middle-ground default.
+It's worth pointing out this setup is considerably better than full peer-2-peer systems, which _broadcast_ your IP to peers. Instead in iroh, we use tickets to form a "cozy network" between peers you explicitly want to connect with. It's possible to go "full p2p" & configure your app to broadcast dialing details, but we think tickets represent a better middle-ground default.
 
 ## Document Tickets are _secrets_
 
 When you create a document ticket, you're creating a secret that allows someone to read or write to a document. This means that you should be careful about sharing document tickets with people you don't trust. What's more, someone who has a document ticket can use it to create new tickets for the same document. This means that if you share a document ticket with someone, they can use it to create new tickets for the same document, and share those tickets with others.
 
 ## Tickets in Apps
-Using tickets in your app comes down to what you're trying to accomplish. For short-lived sessions where both devices are online at the same time, tickets are an incredibly powerful way to bootstrap connections, and require no additinonal servers for coordination.
+Using tickets in your app comes down to what you're trying to accomplish. For short-lived sessions where both devices are online at the same time, tickets are an incredibly powerful way to bootstrap connections, and require no additional servers for coordination.
 
 If you have any means of automating (like, a central database or server to bootstrap from) we recommend you _do not_ use tickets in your app, and instead program around the idea that you can _dial by NodeID_. Tickets can contain information that can go stale quickly. instead focus on caching `nodeIDs`, and letting iroh transparently resolve dialing details at runtime.

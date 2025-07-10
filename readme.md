@@ -27,7 +27,7 @@ Our docs are generated. Use the following steps to make adjustments to the conte
 - run `node generate-api-pages.js` to generate the doc files for the website
 
 ### Style / grammar guide
-Follow the style that has already been layed out. But as a general rule of thumb, follow normal English punctuation, but favor brevity over proper grammar. In other words, use capital letters at the start of sentences, and end them with a period, but sentences can be fragments if that gets the point across quicker.
+Follow the style that has already been laid out. But as a general rule of thumb, follow normal English punctuation, but favor brevity over proper grammar. In other words, use capital letters at the start of sentences, and end them with a period, but sentences can be fragments if that gets the point across quicker.
 
 ## Learn more
 

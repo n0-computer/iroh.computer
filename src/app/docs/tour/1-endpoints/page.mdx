@@ -69,7 +69,7 @@ node id: PublicKey(95224c92856163add8a9cb68a81183aa5d9881c4def58625a9f4266a0743b
 ```
 
 <Note>
-  This code just prints it's ID & exits. For a more complete example, check out the [connect example](https://github.com/n0-computer/iroh/blob/main/iroh/examples/connect.rs)
+  This code just prints its ID & exits. For a more complete example, check out the [connect example](https://github.com/n0-computer/iroh/blob/main/iroh/examples/connect.rs)
 </Note>
 
 The non-setup part of this program adds up to 3 lines of code, and one of them is a print statement! The first line constructs an endpoint. 99% of apps will have a single endpoint in the entire app, so you’ll build the endpoint once, and refer to it a bunch. Then we call *bind* to ask the operating system for a networking port. This calling bind will kick off work in the background that we’ll talk about in a bit.

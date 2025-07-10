@@ -6,9 +6,9 @@ At this point, we’re connected, yay! Now we just have to… do something… wi
 
 Protocols are modules you compose together to add functionality to connections. Protocols exist for file transfer, game server sync, message broadcasting, document collaboration, all kinds of stuff. You can use off-the-shelf protocols to quickly add functionality, work directly with QUIC streams & build a fully custom protocol that does exactly what you want, or fork an existing protocol to get what you need.
 
-Coming from the world of HTTP client/server models, protocols are kinda like request handlers, but they can go beyond request/response creating multiple streams of data  and usually code up both initiating & accepting protocol connections in the same.
+Coming from the world of HTTP client/server models, protocols are kinda like request handlers, but they can go beyond request/response creating multiple streams of data and usually code up both initiating & accepting protocol connections in the same.
 
-Protocols are an ever-growing topic, but to give you a basic idea, let's add the [blobs](/proto/iroh-blobs) protocol. First we need to add it to our depdendencies:
+Protocols are an ever-growing topic, but to give you a basic idea, let's add the [blobs](/proto/iroh-blobs) protocol. First we need to add it to our dependencies:
 
 ```
 cargo add iroh-blobs --features=rpc
