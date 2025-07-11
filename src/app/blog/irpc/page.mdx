@@ -308,7 +308,7 @@ enum SetUpdate {
 All irpc requests, updates and responses need to be serializable. This is usually quite easy to do, with one exception. Serializing results is tricky because rust error types are not serializable by default.
 
 If you have your own custom error type, you can of course try to make it serializable.
-For existing error types like io::Error, you can write a serializable wrapper - an io error consists of a Kind and a message, both of which are serializable.
+For existing error types like io::Error, you can write a custom serializer to be used with [`#[serde(with...)]`](https://serde.rs/field-attrs.html#with). This is how we deal with errors [in iroh-blobs](https://github.com/n0-computer/iroh-blobs/blob/bc61e8e9419256070968d8ce90cc5d1ce6db0c10/src/util.rs#L10).
 
 And for other errors out of your control, there is the [serde-error](https://docs.rs/serde-error/latest/serde_error/) crate that makes it easy to capture useful information from existing errors and serialize them.
 
