@@ -12,10 +12,10 @@ import {WrenchCodeIcon} from '@/components/icons/WrenchCodeIcon';
 import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
-import {LogoCloud} from '@/components/LogoCloud';
+import {LogoCloud} from '@/components/home/LogoCloud';
 
 import logoRust from '@/images/language-logos/rust.svg';
-import { Code, CodeGroup } from '@/components/Code';
+import { CodeBlock } from '@/components/CodeBlock';
 
 export const metadata = {
   title: 'Iroh',
@@ -113,7 +113,7 @@ export default function Page() {
             </div>
             <div className='mb-4 md:w-1/2 p-10'>
               <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
-              <p>Iroh is running in production on hundreds of thousands of devices, on all major platforms.</p>
+              <p>Iroh is running in production on <strong>millions</strong> of devices, on all major platforms.</p>
             </div>
             <div className='relative overflow-hidden' style={{ width: '100%', height: 350 }}>
               <UsersShowcase />
@@ -140,33 +140,7 @@ export default function Page() {
                 </Link>
               </div>
               <div className='lg:w-2/3 lg:mt-28'>
-                <CodeGroup title="main.rs">
-                  <Code className="language-rust">{`// a program that creates two endpoints & sends a ping between them
-use anyhow::Result;
-use iroh::{Endpoint, protocol::Router};
-use iroh_ping::{ALPN as PingALPN, Ping};
-
-#[tokio::main]
-async fn main() -> Result<()> {
-    // create the receive side
-    let recv_ep = Endpoint::builder().discovery_n0().bind().await?;
-    let recv_router = Router::builder(recv_ep)
-        .accept(PingALPN, Ping::new())
-        .spawn();
-
-    let addr = recv_router.endpoint().node_addr().await?;
-
-    // create a send side & send a ping
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
-    let send_pinger = Ping::new();
-    send_pinger.ping(&send_ep, addr).await?;
-
-    // ok!
-    Ok(())
-}`}
-                  </Code>
-                </CodeGroup>
-
+                <CodeBlock code={codeSample} language='rust' />
               </div>
             </div>
           </section>
@@ -182,3 +156,29 @@ async fn main() -> Result<()> {
     </div>
   )
 }
+
+
+const codeSample = `// a program that creates two endpoints & sends a ping between them
+use anyhow::Result;
+use iroh::{Endpoint, protocol::Router};
+use iroh_ping::{ALPN as PingALPN, Ping};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // create the receive side
+    let recv_endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_router = Router::builder(recv_endpoint)
+      .accept(PingALPN, Ping::new())
+      .spawn();
+
+    // get the receive side's address:
+    let addr = recv_router.endpoint().node_addr().await?;
+
+    // create the send side & send a ping!
+    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_pinger = Ping::new();
+    send_pinger.ping(&send_ep, addr).await?;
+
+    // ok!
+    Ok(())
+}`
