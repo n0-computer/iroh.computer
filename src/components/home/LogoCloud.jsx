@@ -65,7 +65,7 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
   return (
     <div>
       <div className="pl-5 md:pl-10 pt-8 lg:max-w-none">
-        <h1 className="text-lg font-medium text-irohGray-600 dark:text-irohGray-200">Trusted by the world’s most innovative teams</h1>
+        <h1 className="text-lg font-medium text-irohGray-600 dark:text-irohGray-200">Trusted at scale by the world&apos;s most innovative teams</h1>
       </div>
       <div className="relative w-full overflow-hidden py-4">
         {/* Gradient masks for fading edges */}
