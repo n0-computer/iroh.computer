@@ -13,6 +13,7 @@ import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
+import {UseCaseScroller, UseCases} from '@/components/home/UseCases';
 
 import logoRust from '@/images/language-logos/rust.svg';
 import { CodeBlock } from '@/components/CodeBlock';
@@ -58,6 +59,12 @@ export default function Page() {
             </div>
           </section>
 
+          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 grid grid-cols-1 md:grid-cols-2 border-b border-irohGray-300 dark:border-irohGray-800'>
+            <LogoCloud />
+            <UseCaseScroller />
+          </section>
+
+
           <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
             <div className='md:col-span-3 px-5 py-20 border-r border-irohGray-300 dark:border-irohGray-800'>
               <ConnectDevicesIllustration className='mb-12 max-w-xl' />
@@ -70,7 +77,6 @@ export default function Page() {
             </div>
           </section>
 
-          <LogoCloud />
 
           {/* iroh protocols */}
           <section className='pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
