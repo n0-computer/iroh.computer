@@ -46,5 +46,23 @@ export const protocols = [
     "documentation": "https://godotengine.org/asset-library/asset/3948",
     "repository": "https://github.com/tipragot/godot-iroh",
     "version": "v0.1.5"
+  },
+  {
+    "icon": "",
+    "title": " Iroh Content Discovery",
+    "tagline": "A protocol to communicate with a content tracker for iroh-blobs.",
+    "slug": "iroh-content-discovery",
+    "documentation": "https://docs.rs/iroh-content-discovery/latest/iroh_content_discovery/",
+    "repository": "https://github.com/tipragot/godot-iroh",
+    "version": "v0.1.0"
+  },
+  {
+    "icon": "",
+    "title": "Iroh ping",
+    "tagline": "A minimal protocol to ping iroh nodes.",
+    "slug": "iroh-ping",
+    "documentation": "https://docs.rs/iroh-ping/latest/iroh_ping/",
+    "repository": "https://github.com/n0-computer/iroh-ping",
+    "version": "v0.2.0"
   }
 ]
