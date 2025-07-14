@@ -53,7 +53,8 @@ export const protocols = [
     "tagline": "A protocol to communicate with a content tracker for iroh-blobs.",
     "slug": "iroh-content-discovery",
     "documentation": "https://docs.rs/iroh-content-discovery/latest/iroh_content_discovery/",
-    "repository": "https://github.com/tipragot/godot-iroh",
+    "repository": "https://github.com/n0-computer/iroh-experiments/",
+    "readmePath": "content-discovery/README.md",
     "version": "v0.1.0"
   },
   {
