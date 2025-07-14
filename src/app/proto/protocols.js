@@ -37,5 +37,14 @@ export const protocols = [
     "documentation": "https://docs.rs/iroh-roq/latest/iroh_roq/",
     "repository": "https://github.com/n0-computer/iroh-roq",
     "version": "v0.1.0"
+  },
+  {
+    "icon": "",
+    "title": "Godot iroh",
+    "tagline": "A peer-to-peer multiplayer extension for Godot based on Iroh.",
+    "slug": "godot-iroh",
+    "documentation": "https://godotengine.org/asset-library/asset/3948",
+    "repository": "https://github.com/tipragot/godot-iroh",
+    "version": "v0.1.5"
   }
 ]
