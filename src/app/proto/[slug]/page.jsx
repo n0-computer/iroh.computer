@@ -19,7 +19,7 @@ export default function Protocol() {
   useEffect(() => {
     (async () => {
       let url = protocol.repository.replace("https://github.com", "https://raw.githubusercontent.com");
-      url = `${url}/refs/heads/main/README.md`;
+      url = `${url}/refs/heads/main/${protocol.readmePath ?? "README.md"}`;
       const res = await fetch(url);
       const text = await res.text()
       setMarkdown(text);
