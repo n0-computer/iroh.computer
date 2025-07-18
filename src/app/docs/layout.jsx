@@ -17,7 +17,7 @@ export const navItems = [
     links: [
       {title: 'Overview', href: '/docs/overview'},
       {title: 'Quickstart', href: '/docs/quickstart'},
-      {title: 'Tour', href: '/docs/tour' },
+      {title: 'Tour', href: '/docs/tour'},
       {title: 'Examples', href: '/docs/examples'},
     ],
   },
@@ -36,9 +36,9 @@ export const navItems = [
     links: [
       {title: 'Protocol Registry', href: '/proto'},
       {title: 'Write your own Protocol', href: '/docs/protocols/writing'},
-      {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh'},
-      {title: 'FAQ', href: '/docs/faq' },
-      {title: 'Wasm/Browser Support', href: '/docs/wasm-browser-support' },
+      {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh', external: true},
+      {title: 'FAQ', href: '/docs/faq'},
+      {title: 'Wasm/Browser Support', href: '/docs/wasm-browser-support'},
     ],
   },
 ];

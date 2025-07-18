@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import {Button} from '@/components/Button';
 import {Heading} from '@/components/Heading';
