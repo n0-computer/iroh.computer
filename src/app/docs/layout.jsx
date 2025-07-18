@@ -34,7 +34,7 @@ export const navItems = [
   },
   {title: 'Resources',
     links: [
-      {title: 'Protocol Registry', href: '/proto'},
+      {title: 'Protocol Registry', href: '/proto', external: true},
       {title: 'Write your own Protocol', href: '/docs/protocols/writing'},
       {title: 'Awesome List', href: 'https://github.com/n0-computer/awesome-iroh', external: true},
       {title: 'FAQ', href: '/docs/faq'},
