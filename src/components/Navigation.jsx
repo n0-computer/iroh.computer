@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import clsx from 'clsx';
 import {AnimatePresence, motion, useIsPresent} from 'framer-motion';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 
 import {useIsInsideMobileNavigation} from '@/components/MobileNavigation';
 import {useSectionStore} from '@/components/SectionProvider';
@@ -29,7 +30,7 @@ function TopLevelNavItem({href, children}) {
   );
 }
 
-function NavLink({href, tag, active, isAnchorLink = false, children}) {
+function NavLink({href, tag, active, isAnchorLink = false, external, children}) {
   return (
     <Link
       href={href}
@@ -42,7 +43,10 @@ function NavLink({href, tag, active, isAnchorLink = false, children}) {
           'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white',
       )}
     >
-      <span className="truncate">{children}</span>
+      <span className="truncate inline-flex">
+        {children}
+        {external && <ArrowTopRightOnSquareIcon className="w-4 h-4 mt-1 ml-1" />}
+      </span>
       {tag && (
         <Tag variant="small" color="zinc">
           {tag}
@@ -145,7 +149,7 @@ function NavigationGroup({group, className}) {
         <ul role="list" className="border-l border-transparent">
           {group.links.map((link) => (
             <motion.li key={link.href} layout="position" className="relative">
-              <NavLink href={link.href} active={link.href === pathname}>
+              <NavLink active={link.href === pathname} {...link}>
                 {link.title}
               </NavLink>
               <AnimatePresence mode="popLayout" initial={false}>
