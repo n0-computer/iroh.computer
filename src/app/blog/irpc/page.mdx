@@ -229,6 +229,8 @@ The service definition contains just what is absolutely needed. For each request
 The `rpc_requests` macro will store this information and also create the `RequestWithChannels` enum that adds the appropriate channels for each request type. It will also generate a number of `From`-conversions to make working with the requests more pleasant.
 
 ```rust
+use irpc::channel::oneshot;
+
 struct KvService {}
 impl Service for KvStoreService {}
 
@@ -258,6 +260,8 @@ The `rpc` method on `irpc::Client` will only be available for messages where the
 Ok, that's pretty nice. But then pure rpc requests are also pretty simple. What about more complex requests? Let's look at a very simple example of a bidirectional streaming rpc request. An echo request gets a stream of updates (strings) and just echoes them back, until the update stream stops.
 
 ```rust
+use irpc::channel::mpsc;
+
 struct EchoService {}
 impl Service for EchoService {}
 
@@ -289,6 +293,8 @@ The client fn can then add helper functions that transform these two handles for
 For stream based rpc calls, there is an issue you should be aware of. The quinn [SendStream] will send a finish message when dropped. So if you have a finite stream, you might want to have an explicit end marker that you send before dropping the sender to allow the remote side to distinguish between successful termination and abnormal termination. E.g. the `SetFromStrean` request from above should look like this, and you should explicitly send a `Done` request after the last item.
 
 ```rust
+use irpc::channel::{oneshot, mpsc};
+
 #[rpc_requests(KvService, message = RequestWithChannels)]
 enum Request {
   ...
