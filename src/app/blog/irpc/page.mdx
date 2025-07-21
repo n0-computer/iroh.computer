@@ -29,7 +29,7 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-# IRPC - a lightweight rpc crate for iroh connections
+# [IRPC] - a lightweight rpc crate for iroh connections
 
 When writing async rust code, like you do when writing iroh protocols, you will frequently use message passing to communicate between independent parts of your code.
 
@@ -340,7 +340,7 @@ When used purely in-memory, irpc is extremely lightweight when it comes to [depe
 
 ## Try it out
 
-If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give `irpc` a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
+If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give [`irpc`](https://docs.rs/irpc/latest/irpc/) a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
 
 Because of this extensive experience, we are confident that `irpc` is a good solution for doing both in-process, cross-process, and cross-machine RPC, especially if you are building an `iroh` protocol. Check it out and you will see why we at number0 use it for all of the `iroh` protocols that we have created and maintained.
 
@@ -351,3 +351,4 @@ Because of this extensive experience, we are confident that `irpc` is a good sol
 [Stream]: https://docs.rs/futures/latest/futures/prelude/trait.Stream.html
 [Sink]: https://docs.rs/futures/latest/futures/sink/trait.Sink.html
 [snafu]: https://docs.rs/snafu/latest/snafu/
+[irpc]: https://docs.rs/irpc/latest/irpc/
