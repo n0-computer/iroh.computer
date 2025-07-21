@@ -51,13 +51,13 @@ enum Request {
 }
 ```
 
-Your "client" then is a tokio `mpsc::Sender<Command>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
+Your "client" then is a tokio `mpsc::Sender<Request>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
 
 Calling such a service without a client wrapper is quite cumbersome. For example, here's what it takes to call `Get`:
 
 ```rust
 let (tx, rx) = oneshot::channel();
-client.send(Command::Get { key: "a".to_string(), response: tx }).await?;
+client.send(Request::Get { key: "a".to_string(), response: tx }).await?;
 let res = rx.await?;
 ```
 
@@ -105,7 +105,7 @@ enum Request {
 
 Since you already have an async boundary and a message passing based protocol, it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
 
-To cross a process boundary, the commands have to be serializable. But the response or update channels are not. We need to separate the message itself and the update and response channels.
+To cross a process boundary, the requests have to be serializable. But the response or update channels are not. We need to separate the message itself and the update and response channels.
 
 At this point things start to get quite verbose:
 
