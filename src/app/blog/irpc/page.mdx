@@ -1,0 +1,354 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2025-07-21',
+  title: 'IRPC',
+  description:
+    "A lightweight rpc crate for iroh protocols",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# [IRPC] - a lightweight rpc crate for iroh connections
+
+When writing async rust code, like you do when writing iroh protocols, you will frequently use message passing to communicate between independent parts of your code.
+
+You will start by defining a message enum that contains the different requests your task is supposed to handle, and then write a loop inside the handler task, like a very primitive version of an actor.
+
+Let's do a simple example, an async key-value store, with just `Set` and `Get` requests.
+
+```rust
+enum Request {
+  Set {
+    key: String,
+    value: String,
+    response: oneshot::Sender<()>,
+  }
+  Get {
+    key: String,
+    response: oneshot::Sender<Option<String>>,
+  }
+}
+```
+
+Your "client" then is a tokio `mpsc::Sender<Command>` or a small wrapper around it that makes it more convenient to use. And your server is a task that contains a handler loop.
+
+Calling such a service without a client wrapper is quite cumbersome. For example, here's what it takes to call `Get`:
+
+```rust
+let (tx, rx) = oneshot::channel();
+client.send(Command::Get { key: "a".to_string(), response: tx }).await?;
+let res = rx.await?;
+```
+
+So you will usually write a client struct that is a newtype wrapper around the `mpsc::Sender` to add some syntax candy:
+
+```rust
+struct Client(mpsc::Sender<Request>);
+impl Client {
+  ...
+  async fn get(&self, key: String) -> Result<Option<String>> {
+    let (tx, rx) = oneshot::channel();
+    self.0.send(Request::Get { key, response: tx }).await?;
+    Ok(rx.await??)
+  }
+  ...
+}
+```
+
+If you want to have some more complex requests, no problem. Here is what a request that adds and entry from a stream would look like:
+
+```rust
+enum Request {
+  ...
+  SetFromStrean {
+    key: String,
+    value: mpsc::Receiver<String>,
+    response: oneshot::Sender<()>,
+  }
+  ...
+}
+```
+
+Or a request that gets a value as a stream:
+
+```rust
+enum Request {
+  ...
+  GetAsStream {
+    key: String,
+    response: mpsc::Sender<Result<String>>,
+  }
+  ...
+}
+```
+
+Since you already have an async boundary and a message passing based protocol, it seems like it would be easy to also use this protocol across a process boundary. But you still want to retain the ability to use it in-process with zero overhead.
+
+To cross a process boundary, the commands have to be serializable. But the response or update channels are not. We need to separate the message itself and the update and response channels.
+
+At this point things start to get quite verbose:
+
+```rust
+#[derive(Serialize, Deserialize)]
+struct GetRequest {
+  key: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct SetRequest {
+  key: String,
+  value: String,
+}
+
+/// the serializable request. This is what the remote side reads first to know what to do
+#[derive(Serialize, Deserialize)]
+enum Request {
+  Get(GetRequest),
+  Set(SetRequest),
+}
+
+/// the full request including response channels. This is what is used in-process.
+enum RequestWithChannels {
+  Get { request: GetRequest, response: oneshot::Sender<String> },
+  Set { request: SetRequest, response: oneshot::Sender<()> },
+}
+
+impl From<RequestWithChannels> for Request { ... }
+```
+
+What does the actual cross-process communication look like? Let's take a look at a `Get` example, using [postcard] for serialization/deserialization:
+
+```rust
+async fn get_remote(connection: Connection, key: String) -> Result<Option<String>> {
+  let (send, recv) = connection.open_bi().await?;
+  send.write_all(postcard::to_stdvec(GetRequest { key })?).await?;
+  let res = recv.read_to_end(1024).await?;
+  let res = postcard::from_bytes(&res)?;
+  Ok(res)
+}
+```
+
+The server side looks similar. We read a `Request` from an incoming connection, then, based on the enum case, decide which request we need to handle:
+
+```rust
+async fn server(connection: Connection, store: BTreeMap<String, String>) -> Result<()> {
+  while let Ok((send, recv)) = connection.accept_bi().await {
+    let request = recv.read_to_end(1024).await?;
+    let request: Request = postcard::from_bytes(&request)?;
+    match request {
+      Request::Get(GetRequest { key }) => {
+        let response = store.get(key);
+        let response = postcard::to_stdvec(&response)?;
+        send.write_all(&response).await?;
+        send.finish();
+      }
+      ...
+    }
+
+  }
+}
+```
+
+This works well for simple requests where there is no update channel and just a single response. But we also want to support requests with updates like `SetFromStrean` and requests with stream responses like `GetAsStream`.
+
+To support this efficiently, it is best to length prefix both the initial request, subsequent updates, and responses. Even if a `Request` "knows" its own size, deserializing from an async stream is very inefficient.
+
+<Note>Since we are using postcard for ser/de, and messages will very frequently be small, we have decided to use postcard varints as length prefixes.</Note>
+
+Now we have a protocol that supports different rpc types (rpc, client streaming, server streaming, bidi streaming) and that can be used both locally (via the `FullRequest` enum) and remotely.
+
+But we said that we wanted to be able to seamlessly switch between remote or local. So let's do that (length prefixes omitted):
+
+```rust
+enum Client {
+  Local(mpsc::Sender<FullRequest>),
+  Remote(quinn::Connection),
+}
+
+impl Client {
+  async fn get(&self, key: String) -> Result<Option<String>> {
+    let request = GetRequest { key };
+    match self {
+      Self::Local(chan) => {
+        let (tx, rx) = oneshot::channel();
+        let request = FullRequest { request, response: tx };
+        chan.send(request).await?;
+        Ok(rx.await??)
+      }
+      Self::Remote(conn) => {
+        let (send, recv) = connection.open_bi().await?;
+        send.write_all(postcard::to_stdvec(request)?).await?;
+        let res = recv.read_to_end(1024).await?;
+        let res = postcard::from_bytes(&res)?;
+        Ok(res)
+      }
+    }
+  }
+}
+```
+
+This is all pretty straightforward code, but very tedious to write, especially for a large and complex protocol.
+
+There is some work that we can't avoid. We have to define the different request types. We have to specify for each request type the kind of response we expect (no response, a single response, or a stream of responses). We also have to specify if there are updates and make sure that all these types (requests, updates and responses) are serializable, which can sometimes be a pain when it comes to error types.
+
+But what about all this boilerplate?
+- Defining the two different enums for a serializable request and a full request including channels
+- Implementing a client with async fns for each request type
+- Implementing a server that reads messages and dispatches on them
+- serializing and deserializing using postcard with length prefixes
+
+**The `irpc` crate is meant solely to reduce the tedious boilerplate involved in writing the above manually.**
+
+It does *not* abstract over the connection type - it only supports [iroh-quinn] send and receive streams out of the box, so the only two possible connection types are `iroh` p2p QUIC connections and normal QUIC connections. It also does not abstract over the local channel type - a local channel is always a `tokio::sync::mpsc` channel. Serialization is always using postcard and length prefixes are always postcard varints.
+
+So let's see what our kv service looks using `irpc`:
+
+The service definition contains just what is absolutely needed. For each request type we have to define what the response item type is (in this case `String` or `()`), and what the response channel type is (none, oneshot or mpsc).
+
+The `rpc_requests` macro will store this information and also create the `RequestWithChannels` enum that adds the appropriate channels for each request type. It will also generate a number of `From`-conversions to make working with the requests more pleasant.
+
+```rust
+use irpc::channel::oneshot;
+
+struct KvService {}
+impl Service for KvStoreService {}
+
+#[rpc_requests(KvService, message = RequestWithChannels)]
+#[derive(Serialize, Deserialize)]
+enum Request {
+  #[rpc(tx=oneshot::Sender<String>)]
+  Get(GetRequest),
+  #[rpc(tx=oneshot::Sender<()>)]
+  Put(PutRequest),
+}
+```
+
+Now let's look at the client:
+
+```rust
+struct Client(irpc::Client<RequestWithChannels, Request, KvService>);
+impl Client {
+  async fn get(&self, key: String) -> Result<Option<String>> {
+    Ok(self.0.rpc(GetRequest { key }).await?)
+  }
+}
+```
+
+The `rpc` method on `irpc::Client` will only be available for messages where the update channel is not set and the response channel is an oneshot channel, so you will get compile errors if you try to use a request in the wrong way.
+
+Ok, that's pretty nice. But then pure rpc requests are also pretty simple. What about more complex requests? Let's look at a very simple example of a bidirectional streaming rpc request. An echo request gets a stream of updates (strings) and just echoes them back, until the update stream stops.
+
+```rust
+use irpc::channel::mpsc;
+
+struct EchoService {}
+impl Service for EchoService {}
+
+#[rpc_requests(KvService, message = RequestWithChannels)]
+#[derive(Serialize, Deserialize)]
+enum Request {
+  #[rpc(rx=mpsc::Receiver<String>, tx=mpsc::Sender<String>)]
+  Echo(EchoRequest),
+}
+```
+
+Let's look at the client.
+
+```rust
+struct Client(irpc::Client<RequestWithChannels, Request, EchoService>);
+impl Client {
+  async fn echo(&self) -> Result<(Sender<String>, Receiver<String>)> {
+    Ok(self.0.bidi_streaming(EchoRequest, 32, 32).await?)
+  }
+}
+```
+
+Calling echo will write the initial request to the remote, then return a handle `irpc::channel::mpsc::Sender<String>` that can be used to send updates, and a handle `irpc::channel::mpsc::Receiver<String>` to receive the echos.
+
+In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around a [RecvStream] that reads and deserializes length prefixed messsages, and a sender is a wrapper around a [SendStream] that serializes and writes length prefixed messages.
+
+The client fn can then add helper functions that transform these two handles for the update and response end to make the result more convenient, e.g. by converting the result into a futures [Stream] or the updates into a futures [Sink]. But the purpose of irpc is to reduce the boilerplate for defining services that can be used in-process or across processes, not to provide an opinionated high level API.
+
+For stream based rpc calls, there is an issue you should be aware of. The quinn [SendStream] will send a finish message when dropped. So if you have a finite stream, you might want to have an explicit end marker that you send before dropping the sender to allow the remote side to distinguish between successful termination and abnormal termination. E.g. the `SetFromStrean` request from above should look like this, and you should explicitly send a `Done` request after the last item.
+
+```rust
+use irpc::channel::{oneshot, mpsc};
+
+#[rpc_requests(KvService, message = RequestWithChannels)]
+enum Request {
+  ...
+  #[rpc(rx=mpsc::Receiver<SetUpdate>, tx=oneshot::Sender<()>)]
+  SetFromStream(SetFromStreamRequest),
+  ...
+}
+
+enum SetUpdate {
+  Data(String),
+  Done,
+}
+```
+
+## Errors
+
+All irpc requests, updates and responses need to be serializable. This is usually quite easy to do, with one exception. Serializing results is tricky because rust error types are not serializable by default.
+
+If you have your own custom error type, you can of course try to make it serializable.
+For existing error types like io::Error, you can write a custom serializer to be used with [`#[serde(with...)]`](https://serde.rs/field-attrs.html#with). This is how we deal with errors [in iroh-blobs](https://github.com/n0-computer/iroh-blobs/blob/bc61e8e9419256070968d8ce90cc5d1ce6db0c10/src/util.rs#L10).
+
+And for other errors out of your control, there is the [serde-error](https://docs.rs/serde-error/latest/serde_error/) crate that makes it easy to capture useful information from existing errors and serialize them.
+
+<Note>
+My recommendation is to start with anyhow and serde_error, and only come up with nice concrete error types using thiserror or snafu once your design settles down and you know the different possible error cases by heart. Starting too early with complex concrete error types can slow down the development process a lot.
+</Note>
+
+## Stream termination
+
+If you are reading from a remote source, and there is a problem with the connection, you will immediately notice because the call to `recv().await` will fail with a [RecvError::Io](https://docs.rs/irpc/0.5.0/irpc/channel/enum.RecvError.html). If the stream has finished nominally, you will get an `Ok(None)`.
+
+But what about writing? E.g. you got a task that performs an expensive computation and writes updates to the remote in regular intervals. You will only detect that the remote side is gone once you write, so if you write infrequently you will perform an expensive computation despite the remote side no longer being available or interested.
+
+To solve this, an irpc Sender has a [closed](https://docs.rs/irpc/0.5.0/irpc/channel/mpsc/enum.Sender.html#method.closed) function that you can use to detect the remote closing without having to send a message. This wraps [tokio::sync::mpsc::Sender::closed](https://docs.rs/tokio/latest/tokio/sync/mpsc/struct.Sender.html#method.closed) for local streams and [quinn::SendStream::stopped](https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.SendStream.html#method.stopped) for remote streams.
+
+## What if you don't want rpc over iroh-quinn channels?
+
+If you integrate iroh protocols into an existing application, it could be that you already have a rpc system that you are happy with, like [grpc](https://grpc.io/) or [json-rpc](https://www.jsonrpc.org/).
+
+In that case, the cross process facilities of irpc will *not* be useful for you. But crates that use irpc will always have a very cleanly defined protocol consisting of a *serializable* request enum and serializable update and response types. Piping these messages over a different rpc transport is relatively easy.
+
+When used purely in-memory, irpc is extremely lightweight when it comes to [dependencies](https://github.com/n0-computer/irpc/blob/5cc624832cfed2653a20442851c203935039d6bc/Cargo.toml#L15). Only serde, tokio, tokio-util and thiserror, all of which you probably have in your dependency tree anyway if you write async rust. (we might switch to [snafu] in the future or manually write the error boilerplate to avoid the dependency).
+
+## Try it out
+
+If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give [`irpc`](https://docs.rs/irpc/latest/irpc/) a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
+
+Because of this extensive experience, we are confident that `irpc` is a good solution for doing both in-process, cross-process, and cross-machine RPC, especially if you are building an `iroh` protocol. Check it out and you will see why we at number0 use it for all of the `iroh` protocols that we have created and maintained.
+
+[postcard]: https://docs.rs/postcard/latest/postcard/
+[iroh-quinn]: https://docs.rs/iroh-quinn/latest/iroh_quinn/
+[RecvStream]: https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.RecvStream.html
+[SendStream]: https://docs.rs/iroh-quinn/latest/iroh_quinn/struct.SendStream.html
+[Stream]: https://docs.rs/futures/latest/futures/prelude/trait.Stream.html
+[Sink]: https://docs.rs/futures/latest/futures/sink/trait.Sink.html
+[snafu]: https://docs.rs/snafu/latest/snafu/
+[irpc]: https://docs.rs/irpc/latest/irpc/
