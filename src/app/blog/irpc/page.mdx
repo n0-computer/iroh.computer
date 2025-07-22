@@ -76,12 +76,12 @@ impl Client {
 }
 ```
 
-If you want to have some more complex requests, no problem. Here is what a request that adds and entry from a stream would look like:
+If you want to have some more complex requests, no problem. Here is what a request that adds an entry from a stream would look like:
 
 ```rust
 enum Request {
   ...
-  SetFromStrean {
+  SetFromStream {
     key: String,
     value: mpsc::Receiver<String>,
     response: oneshot::Sender<()>,
@@ -170,7 +170,7 @@ async fn server(connection: Connection, store: BTreeMap<String, String>) -> Resu
 }
 ```
 
-This works well for simple requests where there is no update channel and just a single response. But we also want to support requests with updates like `SetFromStrean` and requests with stream responses like `GetAsStream`.
+This works well for simple requests where there is no update channel and just a single response. But we also want to support requests with updates like `SetFromStream` and requests with stream responses like `GetAsStream`.
 
 To support this efficiently, it is best to length prefix both the initial request, subsequent updates, and responses. Even if a `Request` "knows" its own size, deserializing from an async stream is very inefficient.
 
@@ -197,7 +197,7 @@ impl Client {
         Ok(rx.await??)
       }
       Self::Remote(conn) => {
-        let (send, recv) = connection.open_bi().await?;
+        let (send, recv) = conn.open_bi().await?;
         send.write_all(postcard::to_stdvec(request)?).await?;
         let res = recv.read_to_end(1024).await?;
         let res = postcard::from_bytes(&res)?;
@@ -222,7 +222,7 @@ But what about all this boilerplate?
 
 It does *not* abstract over the connection type - it only supports [iroh-quinn] send and receive streams out of the box, so the only two possible connection types are `iroh` p2p QUIC connections and normal QUIC connections. It also does not abstract over the local channel type - a local channel is always a `tokio::sync::mpsc` channel. Serialization is always using postcard and length prefixes are always postcard varints.
 
-So let's see what our kv service looks using `irpc`:
+So let's see what our kv service looks like using `irpc`:
 
 The service definition contains just what is absolutely needed. For each request type we have to define what the response item type is (in this case `String` or `()`), and what the response channel type is (none, oneshot or mpsc).
 
@@ -232,7 +232,7 @@ The `rpc_requests` macro will store this information and also create the `Reques
 use irpc::channel::oneshot;
 
 struct KvService {}
-impl Service for KvStoreService {}
+impl Service for KvService {}
 
 #[rpc_requests(KvService, message = RequestWithChannels)]
 #[derive(Serialize, Deserialize)]
@@ -265,7 +265,7 @@ use irpc::channel::mpsc;
 struct EchoService {}
 impl Service for EchoService {}
 
-#[rpc_requests(KvService, message = RequestWithChannels)]
+#[rpc_requests(EchoService, message = RequestWithChannels)]
 #[derive(Serialize, Deserialize)]
 enum Request {
   #[rpc(rx=mpsc::Receiver<String>, tx=mpsc::Sender<String>)]
@@ -284,13 +284,13 @@ impl Client {
 }
 ```
 
-Calling echo will write the initial request to the remote, then return a handle `irpc::channel::mpsc::Sender<String>` that can be used to send updates, and a handle `irpc::channel::mpsc::Receiver<String>` to receive the echos.
+Calling echo will write the initial request to the remote, then return a handle `irpc::channel::mpsc::Sender<String>` that can be used to send updates, and a handle `irpc::channel::mpsc::Receiver<String>` to receive the echoes.
 
-In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around a [RecvStream] that reads and deserializes length prefixed messsages, and a sender is a wrapper around a [SendStream] that serializes and writes length prefixed messages.
+In the in-process case, sender and receiver are just wrappers around tokio channels. In the networking case, a receiver is a wrapper around a [RecvStream] that reads and deserializes length prefixed messages, and a sender is a wrapper around a [SendStream] that serializes and writes length prefixed messages.
 
 The client fn can then add helper functions that transform these two handles for the update and response end to make the result more convenient, e.g. by converting the result into a futures [Stream] or the updates into a futures [Sink]. But the purpose of irpc is to reduce the boilerplate for defining services that can be used in-process or across processes, not to provide an opinionated high level API.
 
-For stream based rpc calls, there is an issue you should be aware of. The quinn [SendStream] will send a finish message when dropped. So if you have a finite stream, you might want to have an explicit end marker that you send before dropping the sender to allow the remote side to distinguish between successful termination and abnormal termination. E.g. the `SetFromStrean` request from above should look like this, and you should explicitly send a `Done` request after the last item.
+For stream based rpc calls, there is an issue you should be aware of. The quinn [SendStream] will send a finish message when dropped. So if you have a finite stream, you might want to have an explicit end marker that you send before dropping the sender to allow the remote side to distinguish between successful termination and abnormal termination. E.g. the `SetFromStream` request from above should look like this, and you should explicitly send a `Done` request after the last item.
 
 ```rust
 use irpc::channel::{oneshot, mpsc};
@@ -340,7 +340,7 @@ When used purely in-memory, irpc is extremely lightweight when it comes to [depe
 
 ## Try it out
 
-If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give [`irpc`](https://docs.rs/irpc/latest/irpc/) a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stable at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
+If you are writing an `iroh` protocol and have run into the same tedious boiler plate issues around RPC as we have, give [`irpc`](https://docs.rs/irpc/latest/irpc/) a shot. We've spent a lot of time iterating on this issue, in fact this is the second crate we've published that takes a stab at easing the RPC burden. Take a look at the [`quic-rpc`](https://github.com/n0-computer/quic-rpc) if you are curious.
 
 Because of this extensive experience, we are confident that `irpc` is a good solution for doing both in-process, cross-process, and cross-machine RPC, especially if you are building an `iroh` protocol. Check it out and you will see why we at number0 use it for all of the `iroh` protocols that we have created and maintained.
 
