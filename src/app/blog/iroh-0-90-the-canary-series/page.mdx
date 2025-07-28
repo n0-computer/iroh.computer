@@ -72,7 +72,7 @@ As described in our [last release blog post](/blog/iroh-0-35-prepping-for-1-0#re
 
 ## 👀 `n0-watcher` crate and the `Watcher` trait 👀
 
-Many of our APIs now return `impl Watcher`, like the `Endpoint::node_addr` method. Knowing all of the details of your node’s `NodeAddr` may take a few milliseconds.. Something like the local address may be almost instant, but knowing it's home `RelayUrl` or it's publicly available addresses may take more time, since it needs to do some external probing to discover.
+Many of our APIs now return `impl Watcher`, like the `Endpoint::node_addr` method. Knowing all of the details of your node’s `NodeAddr` may take a few milliseconds.. Something like the local address may be almost instant, but knowing its home `RelayUrl` or its publicly available addresses may take more time, since it needs to do some external probing to discover.
 
 Returning a `Watcher` here allows our users to “wait” for the `NodeAddr` in the way that is most useful for them. If you just want the earliest value, let's say because you know you are on an local network, call `initialize` to get the first value that appears.
 
