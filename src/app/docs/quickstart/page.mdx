@@ -90,7 +90,7 @@ async fn main() -> anyhow::Result<()> {
     // We initialize an in-memory backing store for iroh-blobs
     let store = MemStore::new();
     // Then we initialize a struct that can accept blobs requests over iroh connections
-    let blobs = Blobs::new(&store, endpoint.clone(), None);
+    let blobs = BlobsProtocol::new(&store, endpoint.clone(), None);
 
     // ...
 
@@ -124,11 +124,11 @@ match arg_refs.as_slice() {
         println!("Couldn't parse command line arguments: {args:?}");
         println!("Usage:");
         println!("    # to send:");
-        println!("    cargo run --example transfer -- send [FILE]");
+        println!("    cargo run -- send [FILE]");
         println!("    # this will print a ticket.");
         println!();
         println!("    # to receive:");
-        println!("    cargo run --example transfer -- receive [TICKET] [FILE]");
+        println!("    cargo run -- receive [TICKET] [FILE]");
     }
 }
 ```
@@ -177,7 +177,7 @@ let ticket = BlobTicket::new(node_id.into(), tag.hash, tag.format);
 
 println!("File hashed. Fetch this file by running:");
 println!(
-    "cargo run --example transfer -- receive {ticket} {}",
+    "cargo run -- receive {ticket} {}",
     filename.display()
 );
 ```
