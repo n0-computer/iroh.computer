@@ -1,0 +1,316 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Floris Bruynooghe',
+  date: '2025-07-29',
+  title: 'Multipath Will Fix This',
+  description:
+    "A lightweight rpc crate for iroh protocols",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+
+Iroh is a library to establish direct peer-to-peer QUIC connections.
+This mean iroh does NAT traversal, colloquially known as holepunching.
+
+The basic idea is that two endpoints, both behind a NAT, establish a
+connection via a relay server.  Once the connection is established
+they can do two things:
+
+- Exchange QUIC datagrams via the relay connection.
+- Coordinate holepunching to establish a direct connection.
+
+And once you have holepunched, you can move the QUIC datagrams to the
+direct connection and stop relying on the relay server.  Simple.
+
+Note:
+
+  This post is generally going to simplify the world a lot.  Of course
+  there are many more network situations other than two endpoints both
+  connected to the internet via a NAT router.  And iroh has to work
+  with all of them.  But you would get bored reading this and I would
+  get lost writing it.  So I'm keeping this narrative simple.
+
+
+# Relay Servers
+
+An iroh relay server is a classical piece of server software, running
+in a datacenter.  It exists even thouh we want p2p connections,
+because in todays internet we can not have direct connections without
+holepunching.  And you can not have holepunching without being able to
+coordinate.  Thus the relay server.
+
+Because we would like this relay server to essentially *always* work,
+it uses the most common protocol on the internet: HTTP1.1 inside a TLS
+stream.  Endpoints establish an entirely normal HTTPS connection to
+the relay server and then upgrades it to a WebSocket connection
+[^websocket].  This works even in many places where the TLS connection
+is Machine-In-The-Middled by inserting new "trusted" root certs
+because of "security".  As long as an endpoint keeps this WebSocket
+connection open it can use the relay server.
+
+[^websocket]: What's that?  You're still using iroh < 0.91?  Ok fine,
+    maybe your relay server still uses a custom upgrade protocol
+    instead of WebSockets.
+
+The relay server itself is the simplest thing we can get away with.
+It forwards UDP datagrams from one endpoint to another.  Since iroh
+endpoints are identified by a [`NodeId`] it means you send it a
+destination `NodeId` together with a datagram.  The relay server might
+now either:
+
+- Drop the datagram on the floor, because the destination endpoint is
+  not connected to this relay server.
+  
+- Forward the datagram to the destination.
+
+The relay server does not need to know what is in the datagram.  In
+fact iroh makes sure it **does not** know what is inside: the payload
+is always encrypted to the destination endpoint [^1].
+
+[^1]: Almost, QUIC's handshake has to establish a TLS connection.
+    This means it has to send the TLS `ClientHello` message in clear
+    text like any other TLS connection on the internet.
+    
+    
+# Holpunching
+
+UDP holepunching is simple really [^simplehp].  All you need is for each
+endpoint to send a UDP datagram to the other at the same time.  The
+NAT routers will think the incoming datagrams are a response to the
+outgoing ones and treat it as a connection.  Now you have a
+holepunched, direct connection.
+
+[^simplehp]: Of course it isn't.  But as already said, the word count
+    of this post is finite.
+
+To do this an endpoint needs to:
+
+- Know which IP addresses it might be reachable on.  Some time we'll
+  write this up in it's own blog post, for now I'll just assume then
+  endpoints know.
+
+- Send these IP address candidates to the remote endpoint via the
+  relay server.
+
+- Once both endpoints have the peer's candidate addresses, send "ping"
+  datagrams to each candidate address of the peer.  Both at the same
+  time.
+  
+- If a "ping" datagram is received, respond with "yay, we
+  holepunched!".  Typically this will be only on 1 IP path out of all
+  the candidates.  Or maybe more and more these days it'll succeed for
+  both an IPv4 and and IPv6 path.
+  
+If you followed arefully you'll have counted 3 special messages that
+need to be sent to the peer endpoint:
+
+1. IP address candidates.  These are sent via the relay server.
+
+2. Pings.  These are sent on the non-relayed IP paths.
+
+3. Pongs.  These are also sent on the non-relayed IP paths.
+
+They need to be sent as UDP datagrams.  Over the same *paths* as the
+QUIC datagrams are also being sent: the **relay path** and any
+**direct paths**.
+
+
+# Multiplexing UDP datagrams
+
+Iroh stands on the shoulders of giants, and it looked carefully at
+ZeroTier and Tailscale.  In particular it borrowed a lot from the DERP
+design from Tailscale.  From the above holepunching description we get
+two kinds of packets:
+
+- Application payload.  For iroh these are QUIC datagrams.
+- Holepunching datagrams.
+
+When an iroh endpoint receives a packet it needs to first figure out
+which kind of packet this is: a QUIC datagram, or a DERP datagram?  If
+it is a QUIC packet it is passed onto the QUIC stack [^quicstack].  If
+it is a DERP datagram it needs to be handed by iroh itself, by a
+component we call the *magic socket*.  This is done using the "QUIC
+bit", a bit in the UDP datagram defined as always set to 1 in QUIC
+version 1 [^greasing].
+
+
+[^quicstack]: iroh uses Quinn for the QUIC stack, an excellet project.
+
+[^greasing]: Since QUIC has released RFC 9287 which advocateds
+    "greasing" this bit: effectively toggeling it randomly.  This is
+    an attempt to stop middleboxes from ossifying the protocol by
+    starting to recognise this bit.  Iroh not being able to grease
+    this bit right now is not ideal either.
+
+
+# IP Congestion Control
+
+This system works great and is what powers iroh today.  However it
+also has its limitations.  One interesting aspect of the internet is
+*congestion control*.  Basically IP packets get send around the
+internet from router to router, and each hop has it's own speed and
+capacity.  If you send too many packets the pipes will clog up and
+start to slow down.  If you send yet more packets routers will start
+dropping them.
+
+Congestion control is tasked with threading the fine line of sending
+as many packets as fast as possible between two endpoints, without
+adversally affecting the latency and packet loss.  This is difficult
+because there are many independent endpoints using all those links
+between routers at the same time.  But it also has had a few decades
+of research by now, so we achieve reasonably decent results by now.
+
+Each TCP connection has its own congestion controllers, one per
+endpoint.  As the same goes for each QUIC connection.  Unfortunately
+our holepunching packets live outside of the QUIC connection so do
+not.  What is worse: when holepunching succeeds and iroh endpoint will
+route the QUIC datagrams via a different path then before: they will
+stop flowing over the relay connection and start using the direct
+path.  This is not great for the congestion controller, so iroh
+effectively tells it to restart.
+
+
+# Multiple Paths
+
+By now I've talked several times about a "relay path" and a "direct
+path".  A typical iroh connection has probably quite a few possible
+paths available between the two endpoints.  A typical set would be:
+
+- The path via the relay server [^relaypath].
+- An IPv4 path over the WiFi interface.
+- An IPv6 path over the WiFi interface.
+- An IPv4 path over the mobile data interface.
+- An IPv6 path over the mobile data interface.
+
+[^relaypath]: While this is currently a single relay path, you can
+    easily imagine how you could expand this to a number of relay
+    server paths.  Patience.  The future.
+
+The entire point of the relay path is to be able to start
+communicating without needing holepunching.  So that path just works.
+But generally you'd expect the bottom 4 paths to need holepunching.
+And currently iroh chooses the one with the lowest latency after
+holepunching.  But what if iroh was just aware of all those paths all
+the time?
+
+
+# QUIC Multipath
+
+Let's forget holepunching for a minute, and assume we can establish
+all those paths without any firewall getting in the way.  Would it not
+be great if our QUIC stack was aware of these multiple paths?  For
+example, it could keep a congestion controller for each path
+separately.  Each path would also have its own Round Trip Time (RTT).
+So you can make an educated guess at which path you'd like to send new
+packets without them being blocked, dropped or slowed down
+[^mpcongestion].
+
+This is exactly what the [QUIC-MULTIPATH] IETF draft has been figuring
+out: allow QUIC endpoints to use multiple paths at the same time.  And
+we totally want to use this in iroh.  We can have a world where we
+have several possible paths, select one as primary and others as
+backup paths and seamlessly transition between them as your endpoint
+moves through the network and paths appear and disappear [^irohmove].
+
+There are **a lot** of details about QUIC-MULTIPATH on how to make it
+work.  And adding this functionality to Quinn has been a major
+undertaking.  But the branch is becoming functional at last.
+
+[^mpcongestion]: But hey!  Some of these paths share at least the
+    first and last hop.  So they are not independent!  Indeed, they
+    are not.  Congestion controllers is still a research area,
+    especially for multiple paths with shared bottlenecks.  Though You
+    should note that this already happens a lot on the internet, your
+    laptop or phone probably has many TCP and/or QUIC connections to
+    several servers right now.  And these definitely share hops.  Yet
+    the congestion controllers do somehow figure out how make this
+    work, at least to some degree.
+    
+[^irohmove]: Wait, doesn't iroh already say it can do this?  Indeed,
+    indeed.  Though if you've tried this you'd have noticed your
+    application did experience some hicckups for a few seconds as iroh
+    was figuring out where traffic needs to go.  In theory we can do
+    better with multipath, though it'll take some tweaking and
+    turning.
+
+[QUIC-MULTIPATH]: https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/
+
+# Mutltipath Holepunching
+
+If you've paid attention you'll have noticed that so far this still
+doesn't solve some of our issues: the holepunching datagrams still
+live outside of the QUIC stack.  This means we send them at whatever
+time, not paying attention to the congestion controller.  That's fine
+under light load, but under heavy load often results in lost packets.
+That in turns leads to having to re-try sending those.  But preferably
+without accidentally DOSing an innocent UDP socket just quietly
+hanging out on the internet, accidentally using an IP address that you
+thought might belong to the remote endpoint.
+
+So the next step we would like to take with the iroh multipath project
+is to move holepunching logic itself into QUIC.  We're also not the
+first to consider this: Marten Seemann and Christian Huitema have been
+thinking about this as well and wrote down [some thoughts in a blog
+post].  More importantly they started [QUIC-NAT-TRAVERSAL] draft which
+conceptually does a simple thing: move the holepunching packets *into*
+QUIC packets.
+
+[some thoughts in a blog post]: https://seemann.io/posts/2024-10-26---p2p-quic/
+[QUIC-NAT-TRAVERSAL]: https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/
+
+While QUIC-NAT-TRAVERSAL is highly experimental and we don't expect to
+follow it exactly as of the time of writing, this does have a number
+of benefits:
+
+- The QUIC packets are already encrypted, we no longer need to manage
+  our own encryption layer separately.
+
+- QUIC already has very advanced packet acknowledgement and loss
+  recovery mechanisms.  Including the congestion control mechanisms.
+  Essentially QUIC is a reliable transport, which this gets to benefit
+  from.
+
+- QUIC already has robust protection against sending too much data to
+  unspececting hosts on the internet.
+
+- In combination with QUIC-MULTIPATH we get a very robust and flexible ys
+
+Another consideration is that QUIC is already extensible.  Notice that
+both QUIC-MULTIPATH and QUIC-NAT-TRAVERSAL are negotiated at
+connection setup.  This is a robust mechanism that allows us to be
+confident that in the future we'll be able to improve on these
+mechanisms.
+
+
+# Work In Progress
+
+This would all change the iroh wire-protocol.  This is part of the
+reason we want this done before our 1.0 release: once we release this
+we promise to keep our wire-protocol the same.  Right now we're hard
+at work building the pieces needed for this all.  And sometime
+soon-ish they will start landing in the 0.9x releases.
+
+We aim for iroh to become even more reliable for folks who push the
+limits, thanks to moving all the holepunching logic right into the
+QUIC stack.
