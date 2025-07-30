@@ -157,7 +157,9 @@ This is done using the "QUIC bit",
 a bit in the UDP datagram defined as always set to 1 in QUIC version 1.[^greasing]
 
 
-[^quicstack]: iroh uses Quinn for the QUIC stack, an excellent project.
+[^quicstack]: iroh uses [Quinn] for the QUIC stack, an excellent project.
+
+[Quinn]: https://crates.io/crates/quinn
 
 [^greasing]: Since QUIC has released RFC 9287 which advocates "greasing" this bit:
     effectively toggling it randomly.
