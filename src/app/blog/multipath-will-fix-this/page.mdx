@@ -7,7 +7,7 @@ export const post = {
   date: '2025-07-29',
   title: 'Multipath Will Fix This',
   description:
-    "A lightweight rpc crate for iroh protocols",
+    "Why iroh is adopting QUIC-MULTIPATH",
 }
 
 export const metadata = {
@@ -34,7 +34,7 @@ Iroh is a library to establish direct peer-to-peer QUIC connections.
 This mean iroh does NAT traversal, colloquially known as holepunching.
 
 The basic idea is that two endpoints, both behind a NAT, establish a
-connection via a relay server.  Once the connection is established
+connection via a relay server.  Once the connection to the relay server is established
 they can do two things:
 
 - Exchange QUIC datagrams via the relay connection.
@@ -43,22 +43,21 @@ they can do two things:
 And once you have holepunched, you can move the QUIC datagrams to the
 direct connection and stop relying on the relay server.  Simple.
 
-Note:
-
-  This post is generally going to simplify the world a lot.  Of course
-  there are many more network situations other than two endpoints both
-  connected to the internet via a NAT router.  And iroh has to work
-  with all of them.  But you would get bored reading this and I would
-  get lost writing it.  So I'm keeping this narrative simple.
-
+<Note>
+This post is generally going to simplify the world a lot.  Of course
+there are many more network situations other than two endpoints both
+connected to the internet via a NAT router.  And iroh has to work
+with all of them.  But you would get bored reading this and I would
+get lost writing it.  So I'm keeping this narrative simple.
+</Note>
 
 # Relay Servers
 
 An iroh relay server is a classical piece of server software, running
-in a datacenter.  It exists even thouh we want p2p connections,
-because in todays internet we can not have direct connections without
+in a datacenter.  It exists even though we want p2p connections,
+because in today's internet we can not have direct connections without
 holepunching.  And you can not have holepunching without being able to
-coordinate.  Thus the relay server.
+coordinate.  Thus, the relay server.
 
 Because we would like this relay server to essentially *always* work,
 it uses the most common protocol on the internet: HTTP1.1 inside a TLS
@@ -79,18 +78,21 @@ endpoints are identified by a [`NodeId`] it means you send it a
 destination `NodeId` together with a datagram.  The relay server might
 now either:
 
+[`NodeId`]: https://docs.rs/iroh/0.90.0/iroh/type.NodeId.html
+
 - Drop the datagram on the floor, because the destination endpoint is
   not connected to this relay server.
   
 - Forward the datagram to the destination.
 
 The relay server does not need to know what is in the datagram.  In
-fact iroh makes sure it **does not** know what is inside: the payload
-is always encrypted to the destination endpoint [^1].
+fact, iroh makes sure it **does not** know what is inside: the payload
+is always encrypted to the destination endpoint.[^1]
 
-[^1]: Almost, QUIC's handshake has to establish a TLS connection.
+[^1]: Almost: The QUIC handshake has to establish a TLS connection.
     This means it has to send the TLS `ClientHello` message in clear
-    text like any other TLS connection on the internet.
+    text like any other TLS connection on the internet.  Yes, we know
+    about ECH.  One thing at a time.
     
     
 # Holpunching
@@ -107,8 +109,8 @@ holepunched, direct connection.
 To do this an endpoint needs to:
 
 - Know which IP addresses it might be reachable on.  Some time we'll
-  write this up in it's own blog post, for now I'll just assume then
-  endpoints know.
+  write this up in its own blog post, for now I'll just assume the
+  endpoints know this.
 
 - Send these IP address candidates to the remote endpoint via the
   relay server.
@@ -120,7 +122,7 @@ To do this an endpoint needs to:
 - If a "ping" datagram is received, respond with "yay, we
   holepunched!".  Typically this will be only on 1 IP path out of all
   the candidates.  Or maybe more and more these days it'll succeed for
-  both an IPv4 and and IPv6 path.
+  both an IPv4 and an IPv6 path.
   
 If you followed arefully you'll have counted 3 special messages that
 need to be sent to the peer endpoint:
@@ -147,18 +149,18 @@ two kinds of packets:
 - Holepunching datagrams.
 
 When an iroh endpoint receives a packet it needs to first figure out
-which kind of packet this is: a QUIC datagram, or a DERP datagram?  If
+which kind of packet this is: a QUIC datagram, or a holepunching datagram?  If
 it is a QUIC packet it is passed onto the QUIC stack [^quicstack].  If
-it is a DERP datagram it needs to be handed by iroh itself, by a
+it is a holepunching datagram it needs to be handed by iroh itself, by a
 component we call the *magic socket*.  This is done using the "QUIC
 bit", a bit in the UDP datagram defined as always set to 1 in QUIC
 version 1 [^greasing].
 
 
-[^quicstack]: iroh uses Quinn for the QUIC stack, an excellet project.
+[^quicstack]: iroh uses Quinn for the QUIC stack, an excellent project.
 
-[^greasing]: Since QUIC has released RFC 9287 which advocateds
-    "greasing" this bit: effectively toggeling it randomly.  This is
+[^greasing]: Since QUIC has released RFC 9287 which advocates
+    "greasing" this bit: effectively toggling it randomly.  This is
     an attempt to stop middleboxes from ossifying the protocol by
     starting to recognise this bit.  Iroh not being able to grease
     this bit right now is not ideal either.
@@ -166,12 +168,12 @@ version 1 [^greasing].
 
 # IP Congestion Control
 
-This system works great and is what powers iroh today.  However it
+This system works great and is what powers iroh today.  However, it
 also has its limitations.  One interesting aspect of the internet is
-*congestion control*.  Basically IP packets get send around the
+*congestion control*.  Basically, IP packets get send around the
 internet from router to router, and each hop has it's own speed and
 capacity.  If you send too many packets the pipes will clog up and
-start to slow down.  If you send yet more packets routers will start
+start to slow down.  If you send yet more packets, routers will start
 dropping them.
 
 Congestion control is tasked with threading the fine line of sending
@@ -179,13 +181,13 @@ as many packets as fast as possible between two endpoints, without
 adversally affecting the latency and packet loss.  This is difficult
 because there are many independent endpoints using all those links
 between routers at the same time.  But it also has had a few decades
-of research by now, so we achieve reasonably decent results by now.
+of research, so we achieve reasonably decent results by now.
 
 Each TCP connection has its own congestion controllers, one per
-endpoint.  As the same goes for each QUIC connection.  Unfortunately
+endpoint.  As the same goes for each QUIC connection.  Unfortunately,
 our holepunching packets live outside of the QUIC connection so do
-not.  What is worse: when holepunching succeeds and iroh endpoint will
-route the QUIC datagrams via a different path then before: they will
+not.  What is worse: when holepunching succeeds, the iroh endpoint will
+route the QUIC datagrams via a different path then before; they will
 stop flowing over the relay connection and start using the direct
 path.  This is not great for the congestion controller, so iroh
 effectively tells it to restart.
@@ -222,7 +224,7 @@ all those paths without any firewall getting in the way.  Would it not
 be great if our QUIC stack was aware of these multiple paths?  For
 example, it could keep a congestion controller for each path
 separately.  Each path would also have its own Round Trip Time (RTT).
-So you can make an educated guess at which path you'd like to send new
+So you can make an educated guess on which path you'd like to send new
 packets without them being blocked, dropped or slowed down
 [^mpcongestion].
 
@@ -239,8 +241,8 @@ undertaking.  But the branch is becoming functional at last.
 
 [^mpcongestion]: But hey!  Some of these paths share at least the
     first and last hop.  So they are not independent!  Indeed, they
-    are not.  Congestion controllers is still a research area,
-    especially for multiple paths with shared bottlenecks.  Though You
+    are not.  Congestion control is still a research area,
+    especially for multiple paths with shared bottlenecks.  Though, you
     should note that this already happens a lot on the internet, your
     laptop or phone probably has many TCP and/or QUIC connections to
     several servers right now.  And these definitely share hops.  Yet
@@ -252,11 +254,11 @@ undertaking.  But the branch is becoming functional at last.
     application did experience some hicckups for a few seconds as iroh
     was figuring out where traffic needs to go.  In theory we can do
     better with multipath, though it'll take some tweaking and
-    turning.
+    tuning.
 
 [QUIC-MULTIPATH]: https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/
 
-# Mutltipath Holepunching
+# Multipath Holepunching
 
 If you've paid attention you'll have noticed that so far this still
 doesn't solve some of our issues: the holepunching datagrams still
@@ -292,7 +294,7 @@ of benefits:
   from.
 
 - QUIC already has robust protection against sending too much data to
-  unspececting hosts on the internet.
+  unsuspecting hosts on the internet.
 
 - In combination with QUIC-MULTIPATH we get a very robust and flexible ys
 
