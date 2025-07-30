@@ -87,6 +87,7 @@ The relay server might now either:
 The relay server does not need to know what is in the datagram.
 In fact, iroh makes sure it **does not** know what is inside:
 the payload is always encrypted to the destination endpoint.[^1]
+The relay server is nothing more than another network path along which UDP datagrams can travel between iroh nodes.
 
 [^1]: Almost: The QUIC handshake has to establish a TLS connection.
     This means it has to send the TLS `ClientHello` message in clear text like any other TLS connection on the internet.
