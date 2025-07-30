@@ -74,7 +74,7 @@ As long as an endpoint keeps this WebSocket connection open it can use the relay
 
 The relay server itself is the simplest thing we can get away with.
 It forwards UDP datagrams from one endpoint to another,
-tunneling them inside the HTTP connection.
+tunneling them inside the HTTP connections.
 Since iroh endpoints are identified by a [`NodeId`] it means you send it a destination `NodeId` together with a datagram.
 The relay server might now either:
 
