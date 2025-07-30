@@ -64,7 +64,7 @@ Thus, the relay server.
 Because we would like this relay server to essentially *always* work,
 it uses the most common protocol on the internet:
 HTTP1.1 inside a TLS stream.
-Endpoints establish an entirely normal HTTPS connection to the relay server and then upgrades it to a WebSocket connection [^websocket].
+Endpoints establish an entirely normal HTTPS connection to the relay server and then upgrades it to a WebSocket connection.[^websocket]
 This works even in many places where the TLS connection is Machine-In-The-Middled by inserting new "trusted" root certs because of "security".
 As long as an endpoint keeps this WebSocket connection open it can use the relay server.
 
@@ -96,7 +96,7 @@ the payload is always encrypted to the destination endpoint.[^1]
     
 # Holpunching
 
-UDP holepunching is simple really [^simplehp].
+UDP holepunching is simple really.[^simplehp]
 All you need is for each endpoint to send a UDP datagram to the other at the same time.
 The NAT routers will think the incoming datagrams are a response to the outgoing ones and treat it as a connection.
 Now you have a holepunched, direct connection.
@@ -148,11 +148,11 @@ From the above holepunching description we get two kinds of packets:
 
 When an iroh endpoint receives a packet it needs to first figure out which kind of packet this is:
 a QUIC datagram, or a holepunching datagram?
-If it is a QUIC packet it is passed onto the QUIC stack [^quicstack].
+If it is a QUIC packet it is passed onto the QUIC stack.[^quicstack]
 If it is a holepunching datagram it needs to be handed by iroh itself,
 by a component we call the *magic socket*.
 This is done using the "QUIC bit",
-a bit in the UDP datagram defined as always set to 1 in QUIC version 1 [^greasing].
+a bit in the UDP datagram defined as always set to 1 in QUIC version 1.[^greasing]
 
 
 [^quicstack]: iroh uses Quinn for the QUIC stack, an excellent project.
@@ -198,7 +198,7 @@ By now I've talked several times about a "relay path" and a "direct path".
 A typical iroh connection has probably quite a few possible paths available between the two endpoints.
 A typical set would be:
 
-- The path via the relay server [^relaypath].
+- The path via the relay server.[^relaypath]
 - An IPv4 path over the WiFi interface.
 - An IPv6 path over the WiFi interface.
 - An IPv4 path over the mobile data interface.
@@ -222,13 +222,13 @@ and assume we can establish all those paths without any firewall getting in the 
 Would it not be great if our QUIC stack was aware of these multiple paths?
 For example, it could keep a congestion controller for each path separately.
 Each path would also have its own Round Trip Time (RTT).
-So you can make an educated guess on which path you'd like to send new packets without them being blocked, dropped or slowed down [^mpcongestion].
+So you can make an educated guess on which path you'd like to send new packets without them being blocked, dropped or slowed down.[^mpcongestion]
 
 This is exactly what the [QUIC-MULTIPATH] IETF draft has been figuring out:
 allow QUIC endpoints to use multiple paths at the same time.
 And we totally want to use this in iroh.
 We can have a world where we have several possible paths, 
-select one as primary and others as backup paths and seamlessly transition between them as your endpoint moves through the network and paths appear and disappear [^irohmove].
+select one as primary and others as backup paths and seamlessly transition between them as your endpoint moves through the network and paths appear and disappear.[^irohmove]
 
 There are **a lot** of details about QUIC-MULTIPATH on how to make it work.
 And adding this functionality to Quinn has been a major undertaking.
