@@ -287,7 +287,9 @@ this does have a number of benefits:
 
 - QUIC already has robust protection against sending too much data to unsuspecting hosts on the internet.
 
-- In combination with QUIC-MULTIPATH we get a very robust and flexible ys
+- In combination with QUIC-MULTIPATH we get a very robust and flexible system,
+  allowing us to always schedule packets on the best possible path.
+  Timely reacting to path changes and re-start holepunching.
 
 Another consideration is that QUIC is already extensible.
 Notice that both QUIC-MULTIPATH and QUIC-NAT-TRAVERSAL are negotiated at connection setup.
