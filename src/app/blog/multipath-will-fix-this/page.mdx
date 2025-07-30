@@ -190,7 +190,7 @@ As the same goes for each QUIC connection.
 Unfortunately, our holepunching packets live outside of the QUIC connection so do not.
 What is worse:
 when holepunching succeeds,
-the iroh endpoint will route the QUIC datagrams via a different path then before;
+the iroh endpoint will route the QUIC datagrams via a different path than before;
 they will stop flowing over the relay connection and start using the direct path.
 This is not great for the congestion controller,
 so iroh effectively tells it to restart.
