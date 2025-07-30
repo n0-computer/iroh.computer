@@ -146,7 +146,9 @@ From the above holepunching description we get two kinds of packets:
   For iroh these are QUIC datagrams.
 - Holepunching datagrams.
 
-When an iroh endpoint receives a packet it needs to first figure out which kind of packet this is:
+Both these need to be sent and received from the same socket,
+because holepunching a differet socket than your application data uses is not that helpful.
+So when an iroh endpoint receives a packet it needs to first figure out which kind of packet this is:
 a QUIC datagram, or a holepunching datagram?
 If it is a QUIC packet it is passed onto the QUIC stack.[^quicstack]
 If it is a holepunching datagram it needs to be handed by iroh itself,
