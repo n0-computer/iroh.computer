@@ -192,7 +192,8 @@ so we achieve reasonably decent results by now.
 Each TCP connection has its own congestion controllers,
 one per endpoint.
 And the same goes for each QUIC connection.
-Unfortunately, our holepunching packets live outside of the QUIC connection so do not.
+Unfortunately, our holepunching packets live outside of the QUIC connection,
+so they do not know about the QUIC congestion controller.
 What is worse:
 when holepunching succeeds,
 the iroh endpoint will route the QUIC datagrams via a different path than before;
