@@ -196,8 +196,17 @@ What is worse:
 when holepunching succeeds,
 the iroh endpoint will route the QUIC datagrams via a different path than before;
 they will stop flowing over the relay connection and start using the direct path.
-This is not great for the congestion controller,
-so iroh effectively tells it to restart.
+
+But the QUIC stack is entirely unaware of this!
+It has no idea about what destination packets get sent to.
+Iroh completely lies to the QUIC stack and tells it to send packets to some private IPv6 range.[^ipv6ula]
+Routing them to the correct path on the way out and rewriting received packets to come from this address.
+
+[^ipv6ula]: Using our own IPv6 [Unique Local Address] Global ID.
+[Unique Local Address]: https://en.wikipedia.org/wiki/Unique_local_address
+
+Which is not great for the congestion controller,
+So iroh somehow coerces the QUIC congestion controller to restart whenever iroh chooses a new path.
 
 
 # Multiple Paths
