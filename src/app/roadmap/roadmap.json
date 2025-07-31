@@ -174,19 +174,35 @@
       "description": "transition from anyhow to thiserror in all critical code paths",
       "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
     },
-    { "version": "v0.90.0", "done": true, "released": "2025-06-27", "doc": "https://www.iroh.computer/blog/iroh-0-90-the-canary-series" },
     {
-      "done": false,
-      "title": "blobs 1.0 API",
-      "description": "overhaul blobs API",
+      "done": true,
+      "title": "iroh-blobs 1.0 candidate API",
+      "description": "Overhaul the blobs API",
       "tracking_issue": null
     },
     {
-      "done": false,
+      "done": true,
       "title": "iroh-blobs: multiprovider fan-in",
-      "description": "Download data from multiple providers",
-      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4"
+      "description": "Download data from multiple providers using the `SplitStrategy` enum",
+      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4",
+      "doc": "https://docs.rs/iroh-blobs/latest/iroh_blobs/api/downloader/enum.SplitStrategy.html"
     },
+    { "version": "v0.90.0", "done": true, "released": "2025-06-27", "doc": "https://www.iroh.computer/blog/iroh-0-90-the-canary-series" },
+    {
+      "done": true,
+      "title": "deprecate TCP relay connections",
+      "description": "We no longer support connecting to the relays using raw TCP, only WebSockets",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Overhaul the relay protocol",
+      "description": "Fix the relay handshake, clean up unused frames.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.91.0", "done": true, "released": "2025-07-30", "doc": "https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break" },
     {
       "done": false,
       "title": "QUIC Multipath support",
