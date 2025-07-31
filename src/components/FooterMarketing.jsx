@@ -8,7 +8,6 @@ import { BlueskyIcon, DiscordIcon, GitHubIcon, MastodonIcon, TwitterIcon, YouTub
 const navigation = {
   build: [
     { name: 'Documentation', href: '/docs' },
-    { name: 'iroh.network', href: 'https://iroh.network' },
     { name: 'Github', href: 'https://github.com/n0-computer/iroh' },
   ],
   learn: [
