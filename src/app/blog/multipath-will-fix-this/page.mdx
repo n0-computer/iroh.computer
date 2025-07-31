@@ -158,7 +158,7 @@ If it is a QUIC packet it is passed onto the QUIC stack.[^quicstack]
 If it is a holepunching datagram it needs to be handed by iroh itself,
 by a component we call the *magic socket*.
 This is done using the "QUIC bit",
-a bit in the UDP datagram defined as always set to 1 in QUIC version 1.[^greasing]
+a bit in the first byte of the datagram which is defined as always set to 1 in QUIC version 1.[^greasing]
 
 
 [^quicstack]: iroh uses [Quinn] for the QUIC stack, an excellent project.
@@ -190,7 +190,7 @@ so we achieve reasonably decent results by now.
 
 Each TCP connection has its own congestion controllers,
 one per endpoint.
-As the same goes for each QUIC connection.
+And the same goes for each QUIC connection.
 Unfortunately, our holepunching packets live outside of the QUIC connection so do not.
 What is worse:
 when holepunching succeeds,
@@ -219,8 +219,8 @@ A typical set would be:
 The entire point of the relay path is to be able to start communicating without needing holepunching.
 So that path just works.
 But generally you'd expect the bottom 4 paths to need holepunching.
-And currently iroh chooses the one with the lowest latency after holepunching.
-But what if iroh was just aware of all those paths all the time?
+And currently iroh chooses the path with the lowest latency after holepunching.
+But what if iroh was aware of all those paths all the time?
 
 
 # QUIC Multipath
