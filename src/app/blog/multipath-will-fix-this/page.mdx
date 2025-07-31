@@ -159,6 +159,7 @@ If it is a holepunching datagram it needs to be handed by iroh itself,
 by a component we call the *magic socket*.
 This is done using the "QUIC bit",
 a bit in the first byte of the datagram which is defined as always set to 1 in QUIC version 1.[^greasing]
+For holepunching datagrams we set this bit to 0.
 
 
 [^quicstack]: iroh uses [Quinn] for the QUIC stack, an excellent project.
