@@ -31,8 +31,10 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 
 Iroh is a library to establish direct peer-to-peer QUIC connections.
-This mean iroh does NAT traversal, 
+This mean iroh does [NAT traversal],
 colloquially known as holepunching.
+
+[NAT traversal]: https://en.wikipedia.org/wiki/NAT_traversal
 
 The basic idea is that two endpoints, both behind a NAT, establish a connection via a relay server.
 Once the connection to the relay server is established they can do two things:
