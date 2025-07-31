@@ -31,7 +31,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 
 Iroh is a library to establish direct peer-to-peer QUIC connections.
-This mean iroh does [NAT traversal],
+This means iroh does [NAT traversal],
 colloquially known as holepunching.
 
 [NAT traversal]: https://en.wikipedia.org/wiki/NAT_traversal
@@ -59,14 +59,14 @@ So I'm keeping this narrative simple.
 An iroh relay server is a classical piece of server software,
 running in a datacenter.
 It exists even though we want p2p connections,
-because in today's internet we can not have direct connections without holepunching.
-And you can not have holepunching without being able to coordinate.
+because in today's internet we cannot have direct connections without holepunching.
+And you cannot have holepunching without being able to coordinate.
 Thus, the relay server.
 
 Because we would like this relay server to essentially *always* work,
 it uses the most common protocol on the internet:
 HTTP1.1 inside a TLS stream.
-Endpoints establish an entirely normal HTTPS connection to the relay server and then upgrades it to a WebSocket connection.[^websocket]
+Endpoints establish an entirely normal HTTPS connection to the relay server and then upgrade it to a WebSocket connection.[^websocket]
 This works even in many places where the TLS connection is Machine-In-The-Middled by inserting new "trusted" root certs because of "security".
 As long as an endpoint keeps this WebSocket connection open it can use the relay server.
 
@@ -98,7 +98,7 @@ The relay server is nothing more than another network path along which UDP datag
     One thing at a time.
 
 
-# Holpunching
+# Holepunching
 
 UDP holepunching is simple really.[^simplehp]
 All you need is for each endpoint to send a UDP datagram to the other at the same time.
@@ -151,11 +151,11 @@ From the above holepunching description we get two kinds of packets:
 - Holepunching datagrams.
 
 Both these need to be sent and received from the same socket,
-because holepunching a differet socket than your application data uses is not that helpful.
+because holepunching a different socket than your application data uses is not that helpful.
 So when an iroh endpoint receives a packet it needs to first figure out which kind of packet this is:
 a QUIC datagram, or a holepunching datagram?
 If it is a QUIC datagram it is passed onto the QUIC stack.[^quicstack]
-If it is a holepunching datagram it needs to be handed by iroh itself,
+If it is a holepunching datagram it needs to be handled by iroh itself,
 by a component we call the *magic socket*.
 This is done using the "QUIC bit",
 a bit in the first byte of the datagram which is defined as always set to 1 in QUIC version 1.[^greasing]
@@ -168,7 +168,7 @@ For holepunching datagrams we set this bit to 0.
 
 [^greasing]: Since QUIC has released RFC 9287 which advocates "greasing" this bit:
     effectively toggling it randomly.
-    This is an attempt to stop middleboxes from ossifying the protocol by starting to recognise this bit.
+    This is an attempt to stop middleboxes from ossifying the protocol by starting to recognize this bit.
     Iroh not being able to grease this bit right now is not ideal either.
 
 
@@ -177,14 +177,14 @@ For holepunching datagrams we set this bit to 0.
 This system works great and is what powers iroh today.
 However, it also has its limitations.
 One interesting aspect of the internet is *congestion control*.
-Basically, IP packets get send around the internet from router to router,
-and each hop has it's own speed and capacity.
+Basically, IP packets get sent around the internet from router to router,
+and each hop has its own speed and capacity.
 If you send too many packets the pipes will clog up and start to slow down.
 If you send yet more packets,
 routers will start dropping them.
 
 Congestion control is tasked with threading the fine line of sending as many packets as fast as possible between two endpoints,
-without adversally affecting the latency and packet loss.
+without adversely affecting the latency and packet loss.
 This is difficult because there are many independent endpoints using all those links between routers at the same time.
 But it also has had a few decades of research,
 so we achieve reasonably decent results by now.
@@ -263,12 +263,12 @@ But the branch is becoming functional at last.
     Though, you should note that this already happens a lot on the internet,
     your laptop or phone probably has many TCP and/or QUIC connections to several servers right now.
     And these definitely share hops.
-    Yet the congestion controllers do somehow figure out how make this work,
+    Yet the congestion controllers do somehow figure out how to make this work,
     at least to some reasonable degree.
 
 [^irohmove]: Wait, doesn't iroh already say it can do this?
     Indeed, indeed.
-    Though if you've tried this you'd have noticed your application did experience some hicckups for a few seconds as iroh was figuring out where traffic needs to go.
+    Though if you've tried this you'd have noticed your application did experience some hiccups for a few seconds as iroh was figuring out where traffic needs to go.
     In theory we can do better with multipath,
     though it'll take some tweaking and tuning.
 
@@ -282,7 +282,7 @@ This means we send them at whatever time,
 not paying attention to the congestion controller.
 That's fine under light load,
 but under heavy load often results in lost packets.
-That in turns leads to having to re-try sending those.
+That in turn leads to having to re-try sending those.
 But preferably without accidentally DOSing an innocent UDP socket just quietly hanging out on the internet,
 accidentally using an IP address that you thought might belong to the remote endpoint.
 
@@ -309,7 +309,7 @@ this does have a number of benefits:
 
 - In combination with QUIC-MULTIPATH we get a very robust and flexible system,
   allowing us to always schedule packets on the best possible path.
-  Timely reacting to path changes and re-start holepunching.
+  Timely reacting to path changes and restarting holepunching.
 
 Another consideration is that QUIC is already extensible.
 Notice that both QUIC-MULTIPATH and QUIC-NAT-TRAVERSAL are negotiated at connection setup.
