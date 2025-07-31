@@ -82,7 +82,7 @@ The relay server might now either:
 
 - Drop the datagram on the floor,
   because the destination endpoint is not connected to this relay server.
-  
+
 - Forward the datagram to the destination.
 
 The relay server does not need to know what is in the datagram.
@@ -94,8 +94,8 @@ The relay server is nothing more than another network path along which UDP datag
     This means it has to send the TLS `ClientHello` message in clear text like any other TLS connection on the internet.
     Yes, we know about ECH.
     One thing at a time.
-    
-    
+
+
 # Holpunching
 
 UDP holepunching is simple really.[^simplehp]
@@ -118,12 +118,12 @@ To do this an endpoint needs to:
 - Once both endpoints have the peer's candidate addresses,
   send "ping" datagrams to each candidate address of the peer.
   Both at the same time.
-  
+
 - If a "ping" datagram is received,
   respond with "yay, we holepunched!".
   Typically this will be only on 1 IP path out of all the candidates.
   Or maybe more and more these days it'll succeed for both an IPv4 and an IPv6 path.
-  
+
 If you followed carefully you'll have counted 3 special messages that need to be sent to the peer endpoint:
 
 1. IP address candidates.  These are sent via the relay server.
@@ -233,7 +233,7 @@ So you can make an educated guess on which path you'd like to send new packets w
 This is exactly what the [QUIC-MULTIPATH] IETF draft has been figuring out:
 allow QUIC endpoints to use multiple paths at the same time.
 And we totally want to use this in iroh.
-We can have a world where we have several possible paths, 
+We can have a world where we have several possible paths,
 select one as primary and others as backup paths and seamlessly transition between them as your endpoint moves through the network and paths appear and disappear.[^irohmove]
 
 There are **a lot** of details about QUIC-MULTIPATH on how to make it work.
@@ -251,7 +251,7 @@ But the branch is becoming functional at last.
     And these definitely share hops.
     Yet the congestion controllers do somehow figure out how make this work,
     at least to some reasonable degree.
-    
+
 [^irohmove]: Wait, doesn't iroh already say it can do this?
     Indeed, indeed.
     Though if you've tried this you'd have noticed your application did experience some hicckups for a few seconds as iroh was figuring out where traffic needs to go.
