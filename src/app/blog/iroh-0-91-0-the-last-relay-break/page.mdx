@@ -5,7 +5,7 @@ export const post = {
   draft: false,
   author: 'ramfox, matheus23',
   date: '2025-08-01',
-  title: 'iroh 0.91.0 - The Last Relay Break 🎆',
+  title: 'iroh 0.91.0 - Making relays use established standards 🎆',
   description: 'Release of iroh v0.91.0',
 }
 
@@ -49,7 +49,7 @@ We told you that the canary series may have breaking wire-level changes any time
 
 However, we are happy to say that after this release, barring some unforeseen issues, **this will be the last wire-level breaking change to the relay servers and relay protocol**.
 
-Previously, there were two options for connecting to the relay servers, using raw TCP streams or using WebSockets. We’ve narrowed that down to one option: you can now only communicate to the relay servers using WebSockets. 
+Previously, there were two options for connecting to the relay servers, using raw TCP streams or using WebSockets. We’ve narrowed that down to one option: you can now only communicate to the relay servers using WebSockets. This doubles down on our quest to make iroh use more established standards!
 
 Well, if we’ve always been able to use WebSockets to connect to the relays, why is this a wire-level breaking change? Great question.
 
