@@ -71,13 +71,13 @@ In any case, we fixed this shortcoming by adding a random challenge to sign prov
 
 This extra challenge would in theory add another round trip to the relay connection: instead of sending a signed `ClientInfo` frame right away, a client would have to wait for the server to send the challenge first.
 
-To mitigate this, we’ve borrowed ideas from a fairly new RFC, the [HTTP Concealed Authentication Scheme](https://datatracker.ietf.org/doc/rfc9729/) (RFC 9729. Most TLS connections nowadays support a feature [“TLS Keying Material Exporters”](https://datatracker.ietf.org/doc/html/rfc5705) (RFC 5705), which allows both ends of an established TLS connection to extract keying material (random-looking bytes) that will be the same on both ends of the connection, but different for different connections. We sign those bytes as the challenge and send it immediately via HTTP header, saving us a round-trip that would otherwise happen after the WebSocket was established.
+To mitigate this, we’ve borrowed ideas from a fairly new RFC, the [HTTP Concealed Authentication Scheme](https://datatracker.ietf.org/doc/rfc9729/) (RFC 9729. Most TLS connections nowadays support a feature called [“TLS Keying Material Exporters”](https://datatracker.ietf.org/doc/html/rfc5705) (RFC 5705), which allows both ends of an established TLS connection to extract keying material (random-looking bytes) that will be the same on both ends of the connection, but different for different connections. We sign those bytes as the challenge and send it immediately via HTTP header, saving us a round-trip that would otherwise happen after the WebSocket was established.
 
 However, since browsers don’t have APIs for this TLS feature ([yet?](https://github.com/w3c/webtransport/issues/411)), we fall back to a normal extra round-trip in case such a header isn’t present.
 
 ### ECN Byte
 
-`iroh` ’s direct connections are QUIC connections. QUIC connections have congestion controllers, that regulate how much data they send across the connection in an attempt to send as much as possible without getting high packet loss.
+`iroh`’s direct connections are QUIC connections. QUIC connections have congestion controllers, that regulate how much data they send across the connection in an attempt to send as much as possible without getting high packet loss.
 
 If you cannot get a direct connection to another node (likely due to strict NAT or firewall conditions), `iroh` will fall back to using the relay servers as a proxy to send your data through to the other node. This proxy will tunnel those QUIC packets over the server, but the proxy connection is a WebSocket connection, not a QUIC connection (with its built-in congestion control).
 
