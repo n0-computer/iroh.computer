@@ -13,7 +13,7 @@ import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
-import {UseCaseScroller, UseCases} from '@/components/home/UseCases';
+import {UseCaseScroller} from '@/components/home/UseCases';
 
 import logoRust from '@/images/language-logos/rust.svg';
 import { CodeBlock } from '@/components/CodeBlock';
