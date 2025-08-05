@@ -10,6 +10,7 @@ import {
   ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
 import { Button } from './Button'
+import Link from 'next/link';
 
 const koulen = localFont({
   src: '../fonts/Koulen-Regular.ttf',
@@ -162,8 +163,8 @@ export default function SendmePage() {
             </div>
 
           <div className='border-t border-b bg-iroh-kv-1 p-5 py-20'>
-            <h2 className='text-2xl font-bold font-space-mono'>Sendme is built on <a href="/" className='text-iroh-purple-500'>iroh</a></h2>
-            <p className='md:max-w-lg mt-5'>Just like <a className='text-iroh-purple-500' href="https://dumbpipe.dev">dumbpipe</a>, sendme is built on iroh. Sendme uses <a className='text-iroh-purple-700' href='/docs/overview'>iroh</a> to establish direct links between devices for data transfer, and <a className='text-iroh-purple-700' href="/proto/iroh-blobs">iroh-blobs</a> to send and verify your files</p>
+            <h2 className='text-2xl font-bold font-space-mono'>Sendme is built on <Link href="/" className='text-iroh-purple-500'>iroh</Link></h2>
+            <p className='md:max-w-lg mt-5'>Just like <Link className='text-iroh-purple-500' href="https://dumbpipe.dev">dumbpipe</Link>, sendme is built on iroh. Sendme uses <Link className='text-iroh-purple-700' href='/docs/overview'>iroh</Link> to establish direct links between devices for data transfer, and <Link className='text-iroh-purple-700' href="/proto/iroh-blobs">iroh-blobs</Link> to send and verify your files</p>
             <Button href='/' variant='filled' className='mt-5 plausible-event-name=Sendme+Iroh+CTA+Click'>BUILD ON IROH</Button>
           </div>
         </div>
