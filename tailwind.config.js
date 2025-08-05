@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ['./src/**/*.{js,mjs,jsx,mdx}'],
   darkMode: 'class',
   theme: {
@@ -28,7 +28,7 @@ module.exports = {
         ]
       },
       fontFamily: {
-        'space': ['Space Grotesk', 'sans-serif'], 
+        'space': ['Space Grotesk', 'sans-serif'],
         'spaceMono': ['Space Mono', 'sans-serif'],
         'koulen': 'var(--font-koulen-regular)'
       },
