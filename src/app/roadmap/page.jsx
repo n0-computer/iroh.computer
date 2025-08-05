@@ -23,7 +23,7 @@ export default function Component() {
           <p className='font-space tracking-tight text-zinc-800 dark:text-zinc-100'>Last Updated {formatDate(last_updated)}</p>
         </header>
         <div className='max-w-2xl mb-20'>
-          <h1 className='text-3xl font-bold font-spaceMono text-iroh-gray-700 mb-4'></h1>
+          <h1 className='text-3xl font-bold font-space-mono text-iroh-gray-700 mb-4'></h1>
           <p className='text-iroh-gray-500'></p>
         </div>
         {roadmap.milestones.map((milestone, i) => {
@@ -97,7 +97,7 @@ function Subtasks({ data }) {
           {data[taskName]
             ? <CheckCircleIcon className='w-4 h-4 text-iroh-purple-500 inline-block' />
             : <div className='w-2.5 h-2.5 ml-0.5 rounded-full bg-iroh-gray-600 dark:bg-iroh-gray-500 inline-block' />}
-          <span className='ml-2 leading-tight text-xs font-spaceMono text-iroh-gray-500'>{taskName}</span>
+          <span className='ml-2 leading-tight text-xs font-space-mono text-iroh-gray-500'>{taskName}</span>
         </li>
       ))}
     </ul>

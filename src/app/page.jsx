@@ -43,10 +43,10 @@ export default function Page() {
               </div>
               <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
                 <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
-                  <h1 className="z-50 text-5xl font-bold font-space-mono leading-tight">
+                  <h1 className="z-50 text-5xl font-bold leading-tight">
                     p2p that just works
                   </h1>
-                  <h3 className="text-lg font-space-mono mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
                   <div className='flex mt-3'>
                     <a href="/docs/quickstart" className="my-4 p-3 px-4 transition bg-iroh-gray-800 text-iroh-purple-500 uppercase hover:bg-iroh-gray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
                     <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
