@@ -29,6 +29,16 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
+<div className="not-prose">
+    <ThemeImage
+        lightSrc='/blog/iroh-on-QUIC-multipath/mp_light.png'
+        darkSrc='/blog/iroh-on-QUIC-multipath/mp_dark.png'
+        alt='a phone and a laptop connected by cloud, cellular, and wifi paths through the internet'
+        width={800}
+        height={300}
+      />
+</div>
+
 
 Iroh is a library to establish direct peer-to-peer QUIC connections.
 This means iroh does [NAT traversal],
@@ -326,3 +336,7 @@ And sometime soon-ish they will start landing in the 0.9x releases.
 
 We aim for iroh to become even more reliable for folks who push the limits,
 thanks to moving all the holepunching logic right into the QUIC stack.
+
+** **
+
+### Footnotes
