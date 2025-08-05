@@ -63,7 +63,7 @@ function TabGroupHeader({title, children, selectedIndex}) {
   }
 
   return (
-    <div className="flex min-h-[calc(theme(spacing.12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-200 dark:border-zinc-800 dark:bg-transparent">
+    <div className="flex min-h-[calc(--spacing(12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-200 dark:border-zinc-800 dark:bg-transparent">
       {title && (
         <h3 className="mr-auto pt-3 text-xs font-semibold text-white">
           {title}

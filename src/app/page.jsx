@@ -34,8 +34,8 @@ export default function Page() {
           {/* hero */}
           <section className="min-h-92 pt-20 bg-cover" style={{ height: 600 }}>
             <div className='relative h-10 max-w-6xl mx-auto'>
-              <div className='absolute h-full top-0 left-0 bg-gradient-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }} />
-              <div className='absolute h-full top-0 right-0 bg-gradient-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
+              <div className='absolute h-full top-0 left-0 bg-linear-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }} />
+              <div className='absolute h-full top-0 right-0 bg-linear-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
             </div>
             <div className='relative max-w-6xl mx-auto'>
               <div className='absolute z-10 overflow-hidden w-full'>

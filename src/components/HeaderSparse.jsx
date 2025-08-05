@@ -76,7 +76,7 @@ export function HeaderSparse() {
             </button>
           </div>
           <div className="flex-1 flex sm:items-stretch sm:justify-start">
-            <Link href="/" className="block flex-shrink-0 flex items-center mr-auto">
+            <Link href="/" className="block shrink-0 flex items-center mr-auto">
               <img className="block h-7 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh" width={200} />
             </Link>
 
