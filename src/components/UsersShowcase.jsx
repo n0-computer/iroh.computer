@@ -75,7 +75,7 @@ export const UsersShowcase = function UsersShowcase() {
                     <Image
                       src={projects[currentIndex].thumbnail}
                       alt={projects[currentIndex].title}
-                      width={150} 
+                      width={150}
                       height={150}
                       className='rounded-lg overflow-hidden shadow-sm mx-auto mb-5'
                       />
@@ -94,7 +94,7 @@ export const UsersShowcase = function UsersShowcase() {
           <button
             key={index}
             className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? 'bg-irohGray-600 dark:bg-irohGray-300' : 'bg-irohGray-700/20 dark:bg-irohGray-600/40'
+              index === currentIndex ? 'bg-iroh-gray-600 dark:bg-iroh-gray-300' : 'bg-iroh-gray-700/20 dark:bg-iroh-gray-600/40'
             }`}
             onClick={() => {
               setCurrentIndex(index)

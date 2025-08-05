@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Readme } from "@/components/Readme";
 import { Prose } from "@/components/Prose";
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 
 
 export default function Protocol() {
@@ -24,7 +25,7 @@ export default function Protocol() {
       const text = await res.text()
       setMarkdown(text);
     })()
-  }, [protocol.repository]);
+  }, [protocol.repository, protocol.readmePath]);
 
   useEffect(() => {
     (async () => {
@@ -42,14 +43,14 @@ export default function Protocol() {
 
   return (
     <div>
-      <a
+      <Link
         href="/proto"
         aria-label="Go back to articles"
-        className="flex text-sm font-medium -ml-5 text-irohPurple-500 mb-5"
+        className="flex text-sm font-medium -ml-5 text-iroh-purple-500 mb-5"
       >
         <ChevronLeftIcon className="mr-1 mt-1 h-4 w-4" />
         All Protocols
-      </a>
+      </Link>
       <article>
         <div className="flex flex-col">
           <div className="w-full font-space">

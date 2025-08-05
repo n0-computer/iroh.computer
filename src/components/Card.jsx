@@ -60,7 +60,7 @@ Card.Cta = function CardCta({ children }) {
   return (
     <div
       aria-hidden="true"
-      className="relative z-10 mt-4 flex items-center text-sm font-medium text-irohPurple-500"
+      className="relative z-10 mt-4 flex items-center text-sm font-medium text-iroh-purple-500"
     >
       {children}
       <ChevronRightIcon className="ml-1 h-4 w-4 stroke-current" />

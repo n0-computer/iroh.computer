@@ -11,7 +11,7 @@ function TopLevelNavItem({ href, children }) {
     <li>
       <Link
         href={href}
-        className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+        className="text-iroh-gray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
       >
         {children}
       </Link>
@@ -24,7 +24,7 @@ function DiscordLink(props) {
     <li>
       <Link
         href="https://iroh.computer/discord"
-        className='px-3 py-2 -mt-2 flex text-sm bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 transition hover:text-irohPurple-500 dark:hover:text-irohPurple-500 hover:bg-black/10 rounded'>
+        className='px-3 py-2 -mt-2 flex text-sm bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 transition hover:text-iroh-purple-500 dark:hover:text-iroh-purple-500 hover:bg-black/10 rounded'>
         Join Discord
       </Link>
     </li>
@@ -42,9 +42,9 @@ export function HeaderSparse() {
     function handleScroll() {
       const navbar = document.getElementById('navbar');
       if (window.scrollY > 0) {
-        navbar.classList.add('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+        navbar.classList.add('bg-iroh-gray-50', 'shadow-md', 'dark:bg-iroh-gray-900');
       } else {
-        navbar?.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+        navbar?.classList.remove('bg-iroh-gray-50', 'shadow-md', 'dark:bg-iroh-gray-900');
       }
     }
 
@@ -65,7 +65,7 @@ export function HeaderSparse() {
         <div className="relative flex items-center justify-between h-20">
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
             {/* Mobile menu button  */}
-            <button id="toggle-mobile-menu" type="button" onClick={toggleMobileMenu} className="inline-flex items-center justify-center p-2 rounded-md text-irohGray-400 hover:text-white hover:bg-irohGray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+            <button id="toggle-mobile-menu" type="button" onClick={toggleMobileMenu} className="inline-flex items-center justify-center p-2 rounded-md text-iroh-gray-400 hover:text-white hover:bg-iroh-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
               <span className="sr-only">Open main menu</span>
               <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -76,7 +76,7 @@ export function HeaderSparse() {
             </button>
           </div>
           <div className="flex-1 flex sm:items-stretch sm:justify-start">
-            <Link href="/" className="block flex-shrink-0 flex items-center mr-auto">
+            <Link href="/" className="block shrink-0 flex items-center mr-auto">
               <img className="block h-7 w-auto" src="/img/logo/iroh-wordmark-purple.svg" alt="Iroh" width={200} />
             </Link>
 

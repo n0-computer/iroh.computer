@@ -20,8 +20,8 @@ export const icons = {
 function ResourceIcon({ icon }) {
   const Icon = icons[icon];
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-irohPurple-300/10 dark:group-hover:ring-irohPurple-400">
-      <Icon className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-irohPurple-300/10 dark:group-hover:stroke-irohPurple-400" />
+    <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-zinc-900/5 ring-1 ring-zinc-900/25 backdrop-blur-[2px] transition duration-300 group-hover:bg-white/50 group-hover:ring-zinc-900/25 dark:bg-white/7.5 dark:ring-white/15 dark:group-hover:bg-iroh-purple-300/10 dark:group-hover:ring-iroh-purple-400">
+      <Icon className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-iroh-purple-300/10 dark:group-hover:stroke-iroh-purple-400" />
     </div>
   );
 }
@@ -32,17 +32,17 @@ function ResourcePattern({mouseX, mouseY, ...gridProps}) {
 
   return (
     <div className="pointer-events-none">
-      <div className="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
+      <div className="absolute inset-0 rounded-2xl transition duration-300 mask-[linear-gradient(white,transparent)] group-hover:opacity-50">
         <GridPattern
           width={72}
           height={56}
           x="50%"
-          className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-black/[0.02] stroke-black/5 dark:fill-white/1 dark:stroke-white/2.5"
+          className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-black/2 stroke-black/5 dark:fill-white/1 dark:stroke-white/2.5"
           {...gridProps}
         />
       </div>
       <motion.div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#D7EDEA] to-[#F4FBDF] opacity-0 transition duration-300 group-hover:opacity-100 dark:from-[#202D2E] dark:to-[#303428]"
+        className="absolute inset-0 rounded-2xl bg-linear-to-r from-[#D7EDEA] to-[#F4FBDF] opacity-0 transition duration-300 group-hover:opacity-100 dark:from-[#202D2E] dark:to-[#303428]"
         style={style}
       />
       <motion.div

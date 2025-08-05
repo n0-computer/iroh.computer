@@ -64,7 +64,7 @@ function CopyButton({code}) {
       className={clsx(
           'group/button absolute right-4 top-3.5 overflow-hidden rounded-sm py-1 pl-2 pr-3 text-2xs font-medium opacity-0 backdrop-blur transition focus:opacity-100 group-hover:opacity-100',
         copied ?
-          'bg-irohPurple-400/10 ring-1 ring-inset ring-irohPurple-400/20' :
+          'bg-iroh-purple-400/10 ring-1 ring-inset ring-iroh-purple-400/20' :
           'bg-white/5 hover:bg-white/7.5 dark:bg-white/2.5 dark:hover:bg-white/5',
       )}
       onClick={() => {
@@ -86,7 +86,7 @@ function CopyButton({code}) {
       <span
         aria-hidden={!copied}
         className={clsx(
-            'pointer-events-none absolute inset-0 flex items-center justify-center text-irohPurple-400 transition duration-300',
+            'pointer-events-none absolute inset-0 flex items-center justify-center text-iroh-purple-400 transition duration-300',
             !copied && 'translate-y-1.5 opacity-0',
         )}
       >
@@ -143,7 +143,7 @@ function CodeGroupHeader({title, children, selectedIndex}) {
   }
 
   return (
-    <div className="flex min-h-[calc(theme(spacing.12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-700 bg-zinc-800 px-4 dark:border-zinc-800 dark:bg-transparent">
+    <div className="flex min-h-[calc(--spacing(12)+1px)] flex-wrap items-start gap-x-4 border-b border-zinc-700 bg-zinc-800 px-4 dark:border-zinc-800 dark:bg-transparent">
       {title && (
         <h3 className="mr-auto pt-3 text-xs font-semibold text-white">
           {title}
@@ -156,7 +156,7 @@ function CodeGroupHeader({title, children, selectedIndex}) {
               className={clsx(
                   'border-b py-3 transition ui-not-focus-visible:outline-none',
                 childIndex === selectedIndex ?
-                  'border-irohPurple-500 text-irohPurple-400' :
+                  'border-iroh-purple-500 text-iroh-purple-400' :
                   'border-transparent text-zinc-400 hover:text-zinc-300',
               )}
             >

@@ -14,10 +14,10 @@ export const metadata = {
 export default function Page() {
   return (
     <div className='max-w-3xl mx-auto'>
-      <Prose>
-        <Heading size={1} className="text-4xl">Protocols</Heading>
-        <p>Iroh Protocols are pluggable extensions that build on direct connections. Like HTTP server middleware on steroids! Mix & match for fast, flexible, functionality.</p>
-      </Prose>
+      <div>
+        <Heading size={1} className="text-4xl font-bold font-space mb-3">Protocols</Heading>
+        <p className='text-iroh-gray-500 leading-relaxed'>Iroh Protocols are pluggable extensions that build on direct connections. Like HTTP server middleware on steroids! Mix & match for fast, flexible, functionality.</p>
+      </div>
       <div className="mb-16 mt-6 flex gap-3">
         <Button href="/docs/concepts/protocol" arrow="right">Protocols Overview</Button>
         <Button href="/docs/protocols/writing" variant="outline">Write a protocol</Button>
