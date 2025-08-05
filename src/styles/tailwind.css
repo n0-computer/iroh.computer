@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap');
 
 @layer base {
-  :root {
+  /*:root {
     --shiki-color-text: theme('colors.white');
     --shiki-token-constant: theme('colors.irohPurple.300');
     --shiki-token-string: theme('colors.irohPurple.300');
@@ -12,7 +12,7 @@
     --shiki-token-function: theme('colors.violet.300');
     --shiki-token-string-expression: theme('colors.irohPurple.300');
     --shiki-token-punctuation: theme('colors.zinc.200');
-  }
+  }*/
 
   [inert] ::-webkit-scrollbar {
     display: none;
