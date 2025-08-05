@@ -28,7 +28,7 @@ export default function Component() {
               </p>
               <div className="flex gap-4">
                 <Link href="https://cal.com/team/number-0/n0des-enterprise">
-                  <Button className="bg-gray-900 hover:bg-gray-800 px-6 py-2 text-sm font-medium cursor-pointer">
+                  <Button arrow="none" className="bg-gray-900 hover:bg-gray-800 px-6 py-2 text-sm font-medium cursor-pointer">
                     CONTACT SALES
                   </Button>
                 </Link>
@@ -64,7 +64,7 @@ export default function Component() {
                 <ThemeImage
                   width={800}
                   height={600}
-                  alt="a cluster of computers in various locations"
+                  alt="a cluster of computers in various locations,"
                   lightSrc="/svg/enterprise_nodes_light.svg"
                   darkSrc="/svg/enterprise_nodes_dark.svg"
                 />
@@ -120,8 +120,8 @@ export default function Component() {
             <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">Say Yes Where Others Say No</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
               Iroh drives public key infrastructure into individual connections, forming an attributable audit trail that
-              is asserted on every packet of data sent. No more "Hey, how did this data end up in an S3 bucket?" You'll
-              have an audit log that matches each PUT, with an audit log connected to a user's identity, regardless of
+              is asserted on every packet of data sent. No more &ldquo;Hey, how did this data end up in an S3 bucket?&rdquo; You&apos;ll
+              have an audit log that matches each PUT, with an audit log connected to a user&apos;s identity, regardless of
               where they are in the world.
             </p>
           </div>
@@ -136,7 +136,7 @@ export default function Component() {
                   Your Enterprise GTM Back-of-House
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  We'll work directly with your team to deliver a seamless, compliant, and up-to-date experience for
+                  We will work directly with your team to deliver a seamless, compliant, and up-to-date experience for
                   each of your target verticals. As the team behind a ground-up networking stack, we have a deep well of
                   knowledge of the technical fundamentals that underpin enterprise design decisions.
                 </p>
@@ -146,11 +146,12 @@ export default function Component() {
                 <h3 className="text-3xl font-medium mb-4 text-gray-900 dark:text-white">Tailor-Made Stacks</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                   Draw from a library of enterprise-focused networking protocols for authentication, data transfer,
-                  encryption, streaming, broadcast, leader election, replication, and more. Iroh means composing what's
+                  encryption, streaming, broadcast, leader election, replication, and more. Iroh means composing what&apos;s
                   needed instead of building from scratch.
                 </p>
                 <Link href="/proto">
                   <Button
+                    arrow="none"
                     variant="outline"
                     className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent"
                   >
@@ -169,11 +170,12 @@ export default function Component() {
               Ready to Transform Your Enterprise Networking?
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              Compose what's needed instead of building from scratch.
+              Compose what&apos;s needed instead of building from scratch.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="https://cal.com/team/number-0/n0des-enterprise">
                 <Button
+                  arrow="none"
                   variant="outline"
                   className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 px-8 py-3 bg-transparent"
                 >

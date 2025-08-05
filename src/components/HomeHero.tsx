@@ -66,7 +66,7 @@ const alphaModifierMap = Array.from({ length: TOTAL_SQUARES }).map((_, index) =>
   return mod ? mod[2] : 0
 })
 
-export const HomeHero = function HomeHero({ className, style }: { className: string, style: string }) {
+export const HomeHero = function HomeHero({ className, style = {} }: { className: string, style: any }) {
   const [time, setTime] = useState(0)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
