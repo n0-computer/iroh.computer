@@ -8,6 +8,7 @@ import {LogoCloud} from '@/components/home/LogoCloud';
 import {UseCaseScroller} from '@/components/home/UseCases';
 import { FooterMarketing } from "@/components/FooterMarketing"
 import Link from "next/link"
+import { ThemeImage } from "@/components/ThemeImage"
 
 export default function Component() {
   return (
@@ -59,7 +60,15 @@ export default function Component() {
                   public key you can dial. Iroh figures out the rest.
                 </p>
               </div>
-              {/*<UseCaseScroller />*/}
+              <div>
+                <ThemeImage
+                  width={800}
+                  height={600}
+                  alt="a cluster of computers in various locations"
+                  lightSrc="/svg/enterprise_nodes_light.svg"
+                  darkSrc="/svg/enterprise_nodes_dark.svg"
+                />
+              </div>
             </div>
           </div>
         </section>
