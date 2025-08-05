@@ -73,7 +73,7 @@ export function UseCaseScroller() {
       {/* Sentence display */}
       <div className="relative h-20 md:h-36 lg:h-24 flex mb-10">
         <p
-          className={`text-xl font-semibold md:text-2xl transition-opacity duration-500 text-irohGray-700 dark:text-irohGray-200 ${
+          className={`text-xl font-semibold md:text-2xl transition-opacity duration-500 text-iroh-gray-700 dark:text-iroh-gray-200 ${
             isVisible ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -88,7 +88,7 @@ export function UseCaseScroller() {
             <div
               key={index}
               className={`w-2 h-2 rounded-full transition-colors ${
-                index === currentSentenceIndex ? "bg-irohPurple-600" : "bg-gray-300"
+                index === currentSentenceIndex ? "bg-iroh-purple-600" : "bg-gray-300"
               }`}
             />
           ))}
@@ -101,8 +101,8 @@ export function UseCaseScroller() {
           <button
             key={category}
             onClick={() => handleCategoryChange(category)}
-            className={`px-2 py-1 text-sm font-semibold transition-colors bg-irohGray-200/10 ${
-              selectedCategory === category ? "text-irohPurple-500" : "text-irohGray-800/20 dark:text-irohGray-400 hover:text-irohPurple-500"
+            className={`px-2 py-1 text-sm font-semibold transition-colors bg-iroh-gray-200/10 ${
+              selectedCategory === category ? "text-iroh-purple-500" : "text-iroh-gray-800/20 dark:text-iroh-gray-400 hover:text-iroh-purple-500"
             }`}
           >
             {category}

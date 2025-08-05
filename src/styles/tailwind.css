@@ -1,18 +1,20 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap');
 
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
 @layer base {
-  /*:root {
-    --shiki-color-text: theme('colors.white');
-    --shiki-token-constant: theme('colors.irohPurple.300');
-    --shiki-token-string: theme('colors.irohPurple.300');
-    --shiki-token-comment: theme('colors.zinc.500');
-    --shiki-token-keyword: theme('colors.sky.300');
-    --shiki-token-parameter: theme('colors.pink.300');
-    --shiki-token-function: theme('colors.violet.300');
-    --shiki-token-string-expression: theme('colors.irohPurple.300');
-    --shiki-token-punctuation: theme('colors.zinc.200');
-  }*/
+  :root {
+    --shiki-color-text: var(--color-white);
+    --shiki-token-constant: var(--color-iroh-purple-300);
+    --shiki-token-string: var(--color-iroh-purple-300);
+    --shiki-token-comment: var(--color-zinc-500);
+    --shiki-token-keyword: var(--color-sky-300);
+    --shiki-token-parameter: var(--color-pink-300);
+    --shiki-token-function: var(--color-violet-300);
+    --shiki-token-string-expression: var(--color-iroh-purple-300);
+    --shiki-token-punctuation: var(--color-zinc-200);
+  }
 
   [inert] ::-webkit-scrollbar {
     display: none;
