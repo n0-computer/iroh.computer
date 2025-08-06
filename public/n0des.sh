@@ -36,3 +36,4 @@ release_url="https://vorc.s3.us-east-2.amazonaws.com/n0des-${target}-${tag}"
 echo "Downloading n0des for $target with tag $tag to ./n0des"
 curl "$release_url" -f -o ./n0des
 chmod a+x ./n0des
+echo "Downloaded. Run the n0des CLI by executing ./n0des --help"
