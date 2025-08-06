@@ -98,7 +98,7 @@ The relay server might now either:
 - Forward the datagram to the destination.
 
 The relay server does not need to know what is in the datagram.
-In fact, iroh makes sure it **does not** know what is inside:
+In fact, iroh makes sure it **cannot** know what is inside:
 the payload is always encrypted to the destination endpoint.[^1]
 The relay server is nothing more than another network path along which UDP datagrams can travel between iroh nodes.
 
