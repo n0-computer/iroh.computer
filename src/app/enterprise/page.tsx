@@ -17,7 +17,7 @@ export default function Component() {
 
       <div className="min-h-screentransition-colors font-space">
         {/* Hero Section */}
-        <section className="relative z-10 py-24 px-6 bg-iroh-kv-2 bg-cover min-h-[70vh]">
+        <section className="py-24 px-6 bg-iroh-kv-2 bg-cover min-h-[70vh]">
           <div className="container mx-auto max-w-4xl pt-20">
             <div className="max-w-xl">
               <h1 className="text-6xl md:text-6xl mb-6 text-gray-900 leading-tight font-bold">
@@ -38,14 +38,14 @@ export default function Component() {
         </section>
 
         {/* Trust Section */}
-        <section className="relative z-10 py-16 px-6">
+        <section className="py-16 px-6">
           <div className="container mx-auto max-w-3xl">
             <LogoCloud />
           </div>
         </section>
 
         {/* Edge-First Networking */}
-        <section className="relative z-10 py-20 px-6">
+        <section className="py-20 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="grid lg:grid-cols-2 gap-16 items-start">
               <div>
@@ -74,7 +74,7 @@ export default function Component() {
         </section>
 
         {/* Features Grid */}
-        <section className="relative z-10 py-20 px-6">
+        <section className="py-20 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="space-y-4">
@@ -114,21 +114,24 @@ export default function Component() {
           </div>
         </section>
 
-        {/* Audit Trail Section */}
-        <section className="relative z-10 py-20 px-6">
-          <div className="container mr-auto max-w-4xl px-6">
-            <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">Say Yes Where Others Say No</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              Iroh drives public key infrastructure into individual connections, forming an attributable audit trail that
-              is asserted on every packet of data sent. No more &ldquo;Hey, how did this data end up in an S3 bucket?&rdquo; You&apos;ll
-              have an audit log that matches each PUT, with an audit log connected to a user&apos;s identity, regardless of
-              where they are in the world.
-            </p>
+        <section className="py-20 px-6">
+          <div className="container mx-auto px-16 flex">
+            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">An SLA with <i className="italic">so</i> many nines</h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                  When servers can run on the edge, reliability goes up. As the makers of iroh, the n0 team can deliver unprecedented avilability backed by a contractual guarantee.
+                </p>
+              </div>
+              <div className="relative">
+                <h1 className="text-9xl text-gray-600/50">99.9999</h1>
+                <div className="absolute right-0 top-0 z-10 h-full w-[200px] bg-linear-to-l from-iroh-gray-50 dark:from-iroh-gray-900 to-transparent"></div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Technical Diagram */}
-        <section className="relative z-10 py-20 px-6">
+        <section className="py-20 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
@@ -136,7 +139,7 @@ export default function Component() {
                   Your Enterprise GTM Back-of-House
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  We will work directly with your team to deliver a seamless, compliant, and up-to-date experience for
+                  We work directly with your team to deliver a seamless, compliant, and up-to-date experience for
                   each of your target verticals. As the team behind a ground-up networking stack, we have a deep well of
                   knowledge of the technical fundamentals that underpin enterprise design decisions.
                 </p>
@@ -163,8 +166,18 @@ export default function Component() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="relative z-10 py-20 px-6 border-t border-gray-200 dark:border-gray-800">
+        <section className="py-20 px-6">
+          <div className="container mx-auto max-w-4xl px-6 flex">
+            <div>
+              <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">Auditing that ties identity to individual connections</h2>
+              <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                Iroh drives public key infrastructure into individual connections, forming an attributable audit trail that is asserted on every packet of data sent. No more &ldquo;Hey, how did this data end up in an S3 bucket?&rdquo; You&apos;ll have an audit log that matches each PUT, with an audit log connected to a user&apos;s identity, regardless of where they are in the world.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-6 border-t border-gray-200 dark:border-gray-800">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-normal mb-6 text-gray-900 dark:text-white">
               Ready to Transform Your Enterprise Networking?
