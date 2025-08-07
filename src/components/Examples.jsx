@@ -14,7 +14,7 @@ const examples = [
     href: '/docs/examples/gossip-chat',
     name: 'Gossip Chat',
     description:
-      'A simple chat app using iroh-net gossip connections.',
+      'A simple chat app using iroh-gossip topic swarms.',
       tags: ["gossip", "CLI"],
       pattern: {
         y: 16,
@@ -29,7 +29,7 @@ const examples = [
     href: 'https://github.com/n0-computer/iroh-examples/tree/main/tauri-todos',
     name: 'Todos',
     description:
-      'See iroh in the classic TODO app example, with a CLI & desktop GUI.',
+      'See iroh in the classic TODO app example with a tauri desktop GUI.',
     tags: ["data modeling", "CLI", "tauri", "desktop"],
     pattern: {
       y: 16,
@@ -43,8 +43,8 @@ const examples = [
     href: 'https://github.com/n0-computer/sendme',
     name: 'Sendme',
     description:
-      'A file sharing app with a CLI, desktop and iOS apps, built with iroh, fully open source!',
-    tags: ["file sharing", "desktop", "iOS", "blobs", "connections"],
+      'A file sharing CLI, built with iroh, fully open source!',
+    tags: ["CLI", "file sharing", "blobs"],
     pattern: {
       y: 16,
       squares: [
@@ -57,8 +57,8 @@ const examples = [
     href: 'https://github.com/n0-computer/dumbpipe',
     name: 'Dumbpipe',
     description:
-      'Need to connect two computers? Try a dumb pipe.',
-    tags: ["CLI", "unix pipes", "connections"],
+      'Need to connect two computers? Try a dumb pipe. Expose unix pipes or locally running TCP servers via iroh.',
+    tags: ["CLI", "unix pipes"],
     pattern: {
       y: 16,
       squares: [
@@ -71,7 +71,7 @@ const examples = [
     href: 'https://github.com/n0-computer/iroh-examples/tree/main/extism',
     name: 'Extism',
     description:
-      'Provide Iroh APIs to all kinds of languages with iroh existism host functions',
+      'Provide Iroh APIs to all kinds of languages with iroh extism host functions',
     tags: ["plugins", "multi-language", "WASM"],
     pattern: {
       y: 16,
@@ -85,8 +85,22 @@ const examples = [
     href: 'https://github.com/n0-computer/iroh-examples/tree/main/iroh-automerge',
     name: 'Automerge',
     description:
-      'Example of backing automerge with iroh-net connections',
-    tags: ["connections", "CRDTs"],
+      'Sync two automerge documents across machines via iroh connections.',
+    tags: ["protocol", "CRDTs"],
+    pattern: {
+      y: 16,
+      squares: [
+        [0, 1],
+        [1, 3],
+      ],
+    },
+  },
+  {
+    href: 'https://github.com/n0-computer/iroh-examples/tree/main/iroh-automerge-repo',
+    name: 'Automerge Repo',
+    description:
+      'Sync and gossip repositories of Automerge documents peer to peer.',
+    tags: ["protocol", "CRDTs", "automerge-repo"],
     pattern: {
       y: 16,
       squares: [
@@ -100,7 +114,7 @@ const examples = [
     name: 'Swarmie',
     description:
       'A proof of concept tool to use iroh global content discovery using the bittorrent mainline DHT.',
-    tags: ["DHTs", "content discovery"],
+    tags: ["CLI", "DHTs", "content discovery"],
     pattern: {
       y: 16,
       squares: [
