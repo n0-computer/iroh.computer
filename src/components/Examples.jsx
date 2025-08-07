@@ -14,7 +14,7 @@ const examples = [
     href: '/docs/examples/gossip-chat',
     name: 'Gossip Chat',
     description:
-      'A simple chat app using iroh-gossip pubsub.',
+      'A simple chat app using iroh-gossip topic swarms.',
       tags: ["gossip", "CLI"],
       pattern: {
         y: 16,
