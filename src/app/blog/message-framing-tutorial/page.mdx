@@ -32,6 +32,7 @@ This tutorial is a written version of the youtube tutorial published on the [n0c
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/h6bBLbcj4Vg?si=vY4irkgTKKWN75vI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+
 # Intro
 
 The first time you dig into `iroh` to write your own protocol, you quickly realize that what you mostly interact with is the QUIC API.
@@ -41,6 +42,7 @@ The QUIC API can feel extremely low level: you are dealing with raw streams and 
 In this post, we are going to talk about *message framing* as a technique to get you away from having to think of your protocol in terms of bytes and instead thinking of it in terms of logical messages.
 
 Message framing is a generally applicable concept, and by no means limited to working with protocols on `iroh`!
+
 
 # Framed Messages
 
@@ -66,6 +68,7 @@ The next time you read off the stream, you read off another length, and repeat t
 
 For an in-depth look at message framing, including a look into other forms of framing that already exist in networking, [watch the youtube video that this tutorial is based on](https://www.youtube.com/watch?v=h6bBLbcj4Vg).
 
+
 # Code setup
 
 First, head to your coding directory and run `cargo init frame_me`, which is what we are calling this project locally.
@@ -77,6 +80,7 @@ Now, let's add a few crates that we will be using in this example:
 `cargo add tokio iroh anyhow`
 
 Tokio is our async runtime, `iroh` is our networking library, and the Anyhow crate allows us to do easy error handling.
+
 
 # Setting up our main function
 
@@ -126,6 +130,7 @@ The ALPN string is formatted based on the conventions we recommend. The first se
 We use the `RouterBuilder` to create the `recv_router`, which won't do much for us until we add our custom protocol later.
 
 The `addr` is the `NodeAddr` of the receive endpoint, which contains all the address information we know about ourselves, including our `node_id`. We will use the `addr` to connect from the send endpoint to the receive endpoint, using the `Endpoint::connect` method.
+
 
 # Scaffolding out `write_frame` and `read_frame`
 
@@ -200,6 +205,7 @@ Then we do some clean up!
 `recv_router.shutdown().await?` stops the accept loop, closes all the connections, and closes the underlying endpoint.
 
 If you call `cargo run` at this point, the example will compile, but it will error at runtime: the `Router` is expecting at least one protocol and will error when it builds.
+
 
 # Smol Protocol
 
@@ -292,6 +298,7 @@ impl ProtocolHandler for SmolProtocol {
 }
 ```
 
+
 # Implementing `write_frame` and `read_frame`
 
 Now we get to the actual message framing part! When we go to write data to the stream, we first need to write the size of the data, then the data itself.
@@ -377,6 +384,7 @@ impl ProtocolHandler for SmolProtocol {
 }
 ```
 
+
 # The full example:
 
 ```rust
@@ -460,6 +468,7 @@ impl ProtocolHandler for SmolProtocol {
     }
 }
 ```
+
 
 # Further exploring
 
