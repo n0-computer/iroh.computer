@@ -77,7 +77,7 @@ export const UsersShowcase = function UsersShowcase() {
                       alt={projects[currentIndex].title}
                       width={150}
                       height={150}
-                      className='rounded-lg overflow-hidden shadow-sm mx-auto mb-5'
+                      className='rounded-lg overflow-hidden shadow-xs mx-auto mb-5'
                       />
                   </Link>
                   <Link className='cursor-pointer' href={projects[currentIndex].href}>

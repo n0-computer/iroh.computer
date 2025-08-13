@@ -55,8 +55,8 @@ export default function SendmePage() {
         </div>
         <Image src="/img/sendme/sendme_hero_1.svg" alt='one computer sending files to another computer through a pipe' width='1600' height='900' className='md:-mt-20' />
 
-        <div className='md:-mt-20 mx-5 md:mx-0 h-10 border-l border-r shadow-sm' />
-        <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+        <div className='md:-mt-20 mx-5 md:mx-0 h-10 border-l border-r shadow-xs' />
+        <div className='mx-5 md:mx-0 border-t border-l border-r shadow-xs'>
           <div className='md:flex'>
             <div className='px-5 py-10 border-b md:border-r md:w-5/12'>
               <h2 className='text-4xl text-zinc-700 font-koulen'>File transfer<br />doesn&apos;t need to be complicated</h2>
@@ -92,8 +92,8 @@ export default function SendmePage() {
           </div>
         </div>
 
-        <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-sm' />
-        <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+        <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-xs' />
+        <div className='mx-5 md:mx-0 border-t border-l border-r shadow-xs'>
           <div className='px-5 pt-10'>
             <h3 className='font-koulen text-zinc-600 text-xl'>USING SENDME:</h3>
           </div>
@@ -139,8 +139,8 @@ export default function SendmePage() {
           </div>
         </div>
 
-          <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-sm' />
-          <div className='mx-5 md:mx-0 border-t border-l border-r shadow-sm'>
+          <div className='mx-5 md:mx-0 h-5 border-l border-r shadow-xs' />
+          <div className='mx-5 md:mx-0 border-t border-l border-r shadow-xs'>
             <div>
               <div className='p-5'>
                 <h3 className='text-2xl md:text-3xl font-koulen'>Free, for files & folders of any size</h3>

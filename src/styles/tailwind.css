@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap");
 
 @import "tailwindcss";
 
@@ -26,7 +26,7 @@
 }
 
 @layer utilities {
-  .in-prose {
+  .centered-prose {
     max-width: 50rem;
     margin-left: calc(50% - min(50%, 33rem));
     margin-right: calc(50% - min(50%, 33rem));
