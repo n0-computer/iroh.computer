@@ -67,7 +67,7 @@ export default function DocsLayout({children, sections = {}}) {
         <div className="relative flex h-full flex-col px-4 pt-14 sm:px-6 lg:px-8">
           <main className="flex-auto">
             <article className="flex h-full flex-col pb-10 pt-16">
-              <Prose className="flex-auto">{children}</Prose>
+              <Prose className="flex-auto centered-prose">{children}</Prose>
               <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
               </footer>
             </article>

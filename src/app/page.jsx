@@ -95,7 +95,7 @@ export default function Page() {
               <h3 className='text-3xl font-bold mb-4'>Build your own protocol</h3>
               <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
               <Link href="/docs/quickstart" className={clsx(
-                "my-4 p-3 transition bg-iroh-gray-800 shadow-sm text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
+                "my-4 p-3 transition bg-iroh-gray-800 shadow-xs text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
                 <span>Protocol Docs</span>
               </Link>
             </div>
