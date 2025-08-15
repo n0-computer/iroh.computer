@@ -80,17 +80,17 @@ export default {
            1000 : "#0E0E0F",
         },
         'irohPurple': {
-          // TODO - actual color gradation
-          50: "#7C7CFF",
-          100: "#7C7CFF",
-          200: "#7C7CFF",
-          300: "#7C7CFF",
-          400: "#7C7CFF",
+          50: "#EEF1FF",
+          100: "#E1E8FF",
+          200: "#C9D4FF",
+          300: "#A8B6FF",
+          400: "#8790FF",
           500: "#7C7CFF",
-          600: "#7C7CFF",
-          700: "#7C7CFF",
-          800: "#7C7CFF",
-          900: "#7C7CFF",
+          600: "#6257F7",
+          700: "#4E3FE0",
+          800: "#3225C6",
+          900: "#2D279C",
+          950: "#1D175B",
         }
       },
       animation: {

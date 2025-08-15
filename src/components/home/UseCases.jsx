@@ -101,7 +101,7 @@ export function UseCaseScroller() {
           <button
             key={category}
             onClick={() => handleCategoryChange(category)}
-            className={`px-2 py-1 text-sm font-semibold transition-colors bg-iroh-gray-200/10 ${
+            className={`px-2 py-1 text-sm font-semibold transition-colors bg-iroh-gray-200/10 cursor-pointer ${
               selectedCategory === category ? "text-iroh-purple-500" : "text-iroh-gray-800/20 dark:text-iroh-gray-400 hover:text-iroh-purple-500"
             }`}
           >
