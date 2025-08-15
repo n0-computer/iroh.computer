@@ -122,7 +122,7 @@ export function FooterMarketing() {
           </div>
         </div>
         <div className="mt-16 flex border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
-          <p className="text-xs leading-5 text-gray-400 mr-auto">&copy; 2024 n0, inc.</p>
+          <p className="text-xs leading-5 text-gray-400 mr-auto">&copy; 2025 n0, inc.</p>
           <ThemeToggle />
         </div>
       </div>
