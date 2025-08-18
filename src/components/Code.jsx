@@ -174,17 +174,17 @@ function CodeGroupPanels({children, ...props}) {
 
   if (hasTabs) {
     return (
-      <Tab.Panels>
+      <TabPanels>
         {Children.map(children, (child) => (
-          <Tab.Panel>
+          <TabPanel>
             <CodePanel {...props}>{child}</CodePanel>
-          </Tab.Panel>
+          </TabPanel>
         ))}
-      </Tab.Panels>
+      </TabPanels>
     );
   }
 
-  return <CodePanel {...props}>{children}</CodePanel>;
+  return <>{Children.map(children, child => <CodePanel {...props}>{child}</CodePanel>)}</>
 }
 
 function usePreventLayoutShift() {
