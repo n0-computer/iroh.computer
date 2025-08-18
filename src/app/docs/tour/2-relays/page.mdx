@@ -13,7 +13,17 @@ Keep in mind, connections are end-2-end encrypted, which means relays can’t re
 Coming back to our program, let’s add support for relays:
 
 
-```
+```rust
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let builder = iroh::Endpoint::builder()
+        .relay_mode(iroh::RelayMode::Default);
+
+    let endpoint = builder.bind().await?;
+    println!("node id: {:?}", endpoint.node_id());
+
+    Ok(())
+}
 ```
 
 Here we've set the relay mode to `Default`, but this hasn't actually changed anything. Our prior code had `relay_mode` implicitly set to `Default`, and this works because iroh comes with a set of free-to-use public relays by default, run by the number 0 team. You’re more than welcome to run your own relays, use the number 0 hosted solution [n0des.iroh.computer](https://n0des.iroh.computer), run your own, or, ideally all of the above! The code for relay servers is in the main iroh repo, and we release compiled binaries for relays on each release of iroh.

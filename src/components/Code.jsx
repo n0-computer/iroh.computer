@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {Tab} from '@headlessui/react';
+import {Tab, TabList, TabPanel, TabPanels} from '@headlessui/react';
 import clsx from 'clsx';
 import {create} from 'zustand';
 
@@ -150,7 +150,7 @@ function CodeGroupHeader({title, children, selectedIndex}) {
         </h3>
       )}
       {hasTabs && (
-        <Tab.List className="-mb-px flex gap-4 text-xs font-medium">
+        <TabList className="-mb-px flex gap-4 text-xs font-medium">
           {Children.map(children, (child, childIndex) => (
             <Tab
               className={clsx(
@@ -163,7 +163,7 @@ function CodeGroupHeader({title, children, selectedIndex}) {
               {getPanelTitle(child.props)}
             </Tab>
           ))}
-        </Tab.List>
+        </TabList>
       )}
     </div>
   );
@@ -174,17 +174,17 @@ function CodeGroupPanels({children, ...props}) {
 
   if (hasTabs) {
     return (
-      <Tab.Panels>
+      <TabPanels>
         {Children.map(children, (child) => (
-          <Tab.Panel>
+          <TabPanel>
             <CodePanel {...props}>{child}</CodePanel>
-          </Tab.Panel>
+          </TabPanel>
         ))}
-      </Tab.Panels>
+      </TabPanels>
     );
   }
 
-  return <CodePanel {...props}>{children}</CodePanel>;
+  return <>{Children.map(children, child => <CodePanel {...props}>{child}</CodePanel>)}</>
 }
 
 function usePreventLayoutShift() {

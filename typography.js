@@ -222,8 +222,8 @@ module.exports = ({ theme }) => ({
       },
       figcaption: {
         color: 'var(--tw-prose-captions)',
-        fontSize: theme('fontSize.xs')[0],
-        ...theme('fontSize.xs')[1],
+        fontSize: theme('fontSize.sm')[0],
+        ...theme('fontSize.sm')[1],
         marginTop: theme('spacing.2'),
       },
 
