@@ -1,0 +1,273 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dig, b5, ramfox',
+  date: '2025-08-22',
+  title: 'Error handling in iroh',
+  description: "Read about iroh's approach to error handling",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Error handling in Rust is one of those topics that can spark passionate debates in the community. After wrestling with various approaches in the [iroh](https://iroh.computer/) codebase, the team has developed some insights about the current state of error handling, the tradeoffs involved, and how to get the best of both worlds.
+
+# The Great Error Handling Divide
+
+The Rust ecosystem has largely coalesced around two main approaches to error handling:
+
+**The `anyhow` approach**: One big generic error type that can wrap anything. It's fast to implement, gives you full backtraces, and lets you attach context easily. Perfect for applications where you mainly care about "something went wrong" and want good debugging information.
+
+**The `thiserror` approach**: Carefully crafted enum variants for every possible error case. This gives you precise error types that consumers can match on and handle differently. It's the approach that many library authors (rightfully) prefer because it provides a stable, matchable API.
+
+Both approaches have their merits, but there's an interesting third option that's rarely discussed: the standard library's IO error model.
+
+# Can we have both?
+
+The standard library's approach to IO errors is actually quite elegant. Instead of cramming everything into a single error type or creating hundreds of variants, it splits errors into two components:
+
+- **Error kind**: The broad category of what went wrong (permission denied, not found, etc.)
+- **Error source**: Additional context and the original error chain
+
+This lets you match on the high-level error patterns while still preserving detailed information. You can write code that handles "connection refused" generically while still having access to the underlying TCP error details when needed.
+
+Surprisingly, this pattern hasn't been adopted widely in other Rust libraries. It strikes a nice balance between the two extremes.
+
+# The Backtrace Problem
+
+Here's where things get frustrating: If you want proper error handling with backtraces, you're in for a world of pain due to fundamental limitations in Rust's error handling story. For more context, take a look at [this comment](https://github.com/rust-lang/rust/issues/99301#issuecomment-2937061356), as well as the rest of the thread.
+
+The core issue is that **Rust still hasn't stabilized backtrace propagation on errors**. This creates a cascade of problems:
+
+- `anyhow` can provide full backtraces because all errors are `anyhow` errors, and it has an extension trait that can propagate traces through the chain
+- `thiserror` cannot reliably provide backtraces when errors are nested, because each error type would need to know about the backtrace inside its wrapped errors
+
+The technical limitation comes down to Rust's trait system. When you implement `Into<YourError>` for the `?` operator to work nicely, you need a blanket implementation for all error types. But this conflicts with backtrace handling because you can only access backtraces on concrete types, not through the `Error` trait.
+
+This means you get to choose: either nice ergonomics with `?` or backtraces. You can't have both without significant workarounds.
+
+# Enter Snafu: The Hybrid Approach
+
+After considerable experimentation and, admittedly, some screaming at the compiler, we found a solution that works for our needs: [snafu](https://github.com/shepmaster/snafu).
+
+Snafu is essentially `thiserror` on steroids. It provides:
+
+- Enum-based error types with derive macros (like `thiserror`)
+- Rich context attachment and error chaining
+- Automatic backtrace capture when constructing error variants
+- Extension traits that work around Rust's limitations
+
+The key breakthrough is figuring out how to wrap snafu errors *within* other snafu and non-snafu , while preserving the full backtrace chain. This required some careful incantations to work around the `Into` trait conflicts, but the result is that developers can now have an IO error nested three levels deep and still get a complete backtrace.
+
+When using `snafu` (in conjunction with our `n0-snafu` crate—more on this below), our test failures now look like this (with `RUST_BACKTRACE=1` ):
+
+```rust
+Error: 
+    0: The relay denied our authentication (not authorized)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              ⋮ 9 frames hidden ⋮                               
+10: iroh_relay::server::tests::test_relay_access_control::{{closure}}::hd7e62eebdecb5f10
+    at /iroh/iroh-relay/src/server.rs:987
+                              ⋮ 21 frames hidden ⋮                              
+32: iroh_relay::server::tests::test_relay_access_control::hf276e536250e2f5f
+    at /iroh/iroh-relay/src/server.rs:1016
+33: iroh_relay::server::tests::test_relay_access_control::{{closure}}::h72fb6babf688bbfd
+    at /iroh/iroh-relay/src/server.rs:948
+                              ⋮ 23 frames hidden ⋮                              
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              ⋮ 8 frames hidden ⋮                               
+ 9: <iroh_relay::client::ConnectError as core::convert::From<iroh_relay::protos::handshake::Error>>::from::h862bd832592732c4
+    at /iroh/iroh-relay/src/client.rs:56
+                               ⋮ 1 frame hidden ⋮                               
+11: iroh_relay::client::ClientBuilder::connect::{{closure}}::h5a1014df84d149d0
+    at /iroh/iroh-relay/src/client.rs:281
+12: iroh_relay::server::tests::test_relay_access_control::{{closure}}::hd7e62eebdecb5f10
+    at /iroh/iroh-relay/src/server.rs:986
+                              ⋮ 21 frames hidden ⋮                              
+34: iroh_relay::server::tests::test_relay_access_control::hf276e536250e2f5f
+    at /iroh/iroh-relay/src/server.rs:1016
+35: iroh_relay::server::tests::test_relay_access_control::{{closure}}::h72fb6babf688bbfd
+    at /iroh/iroh-relay/src/server.rs:948
+                              ⋮ 23 frames hidden ⋮                              
+```
+
+A lot of credit deserves to go to [eyre](https://docs.rs/eyre/latest/eyre/), after which our error formatting is based!
+
+# Our push for concrete errors with backtraces
+
+As part of our [push to 1.0](https://iroh.computer/roadmap), we’re transitioning to structured errors using `snafu`. We have started this conversion in iroh `v0.90` .
+
+We’ve learned a lot so far, and there is further to go. We have some established patterns, but still need to ensure that all of our APIs follow those patterns, as well as ensure that any logging or error reporting formats the information in a way that’s easy to understand. Or, at least, as easy to understand as possible.
+
+We also very much missed how ergonomic `anyhow` is to work with, especially when writing tests. We now have a `n0-snafu` crate that provides utilities for working with `snafu` , that help claw back some of this ease-of-use especially when writing tests or examples.
+
+## Concrete-error writing guidelines
+
+Here are some guidelines we’ve used while writing concrete-errors.
+
+### Error enums are scoped to ***functions*** not ***modules***
+
+During the initial refactor of our errors to use concrete types, we leaned toward the module-level error approach. It did make the conversion more simple at first and was a good stepping stone: we didn’t have to worry as much about enum hierarchy, for example, and instead shoved everything into one enum.
+
+For complex parts of our code, however, this soon became unwieldily. 
+
+This was especially apparent in what eventually became the `iroh-relay::client::ConnectError` enum. SO many things can go wrong during a connection to relay server, even before you attempt to dial the relay server!
+
+We quickly realized that we needed some additional hierarchy: everything that can go wrong *before* dialing, and the errors that occur *while* dialing. Hence, we have the `DialError` enum nested inside the `ConnectError` enum.
+
+### Lean toward error enum names that are descriptive of the error, when logical
+
+One positive side effect of naming enums based around its function and purpose, rather than just having one giant enum for the whole module, was how the name of the enums allowed you to understand much more quickly the kinds of things that could go wrong in a function or method.
+
+A good example of this is our `ticket::ParseError` enum. Previously, this was a `ticket::Error`. We decided `ParseError` was a more descriptive and logical name: the only kind of errors you can get when working with the ticket are issues that can occur when parsing the ticket: maybe it’s the wrong “kind” of ticket, maybe there are issues when serializing or deserializing, or verifying the ticket. Calling it a `ParseError` means that any user who looks at the API can understand the scope of things that can go wrong when using a ticket, before reading any documentation.
+
+This came up mostly when looking functions and methods that had simple or lower-level functionality. For example, the `connect`  function mentioned above had so many possible categories of errors that calling the enum `ConnectError` was actually the most descriptive  and accurate name we could give it.
+
+### Errors for public traits should contain a `Custom` variant, with helpful APIs for creating that variant
+
+It doesn’t necessarily need to be called `Custom` , but for traits that folks working with `iroh` can implement themselves, we needed to ensure that they could use the errors associated with that trait for their own purposes.
+
+A great example of this is our `Discovery` trait, that has a `DiscoveryError`:
+
+```rust
+/// Discovery errors
+#[common_fields({
+    backtrace: Option<snafu::Backtrace>,
+    #[snafu(implicit)]
+    span_trace: n0_snafu::SpanTrace,
+})]
+#[allow(missing_docs)]
+#[derive(Debug, Snafu)]
+#[non_exhaustive]
+pub enum DiscoveryError {
+    #[snafu(display("No discovery service configured"))]
+    NoServiceConfigured {},
+    #[snafu(display("Discovery produced no results for {}", node_id.fmt_short()))]
+    NoResults { node_id: NodeId },
+    #[snafu(display("Service '{provenance}' error"))]
+    User {
+        provenance: &'static str,
+        source: Box<dyn std::error::Error + Send + Sync + 'static>,
+    },
+}
+
+impl DiscoveryError {
+    /// Creates a new user error from an arbitrary error type.
+    pub fn from_err<T: std::error::Error + Send + Sync + 'static>(
+        provenance: &'static str,
+        source: T,
+    ) -> Self {
+        UserSnafu { provenance }.into_error(Box::new(source))
+    }
+
+    /// Creates a new user error from an arbitrary boxed error type.
+    pub fn from_err_box(
+        provenance: &'static str,
+        source: Box<dyn std::error::Error + Send + Sync + 'static>,
+    ) -> Self {
+        UserSnafu { provenance }.into_error(source)
+    }
+}
+```
+
+We have some specific errors, `NoServiceConfigured` and `NoResults` that we use in our own discovery implementations, but we also have a `User` error that allows someone who is implementing their own discovery trait to propigate whatever appropriate errors they need.
+
+We also provide `DiscoveryError::from_err` and `DiscoveryError::from_error_box` to easily allow users to create whatever `DiscoveryError`s they need.
+
+## The Tradeoffs Are Real
+
+Let's be honest about the costs:
+
+**Structured errors require more work upfront**. You need to think about error variants, write more boilerplate, and make decisions about error hierarchies.
+
+**Generic errors are faster to implement**. When you just need to get something working, `anyhow` is hard to beat for velocity.
+
+**Library vs. application needs differ**. Libraries benefit more from structured errors because they need stable APIs. Applications often care more about debugging information than precise error matching.
+
+**The tooling isn't perfect**. Rust's error handling story has fundamental limitations that require workarounds and compromise.
+
+### `n0-snafu`
+
+One of the biggest sources of frustration we faced during the conversion to concrete-errors with backtraces, was that we missed the ergonomics of `anyhow` when writing tests and examples. `snafu` does have their own version of `anyhow::anyhow!` called `snafu::whatever!`, but we ran into friction during tests and examples when we wanted to return any combination of `whatever` errors, `anyhow` errors, concrete errors we created in `iroh`, and concrete errors from other libraries we are using.
+
+For that, we wrote `n0-snafu` , a utility crate that allows for working with `snafu` (and other types of errors) with ease. It’s not *quite* as ergonomic as if you were just using `anyhow` throughout your entire application, but again, we’ve already established that part of the game here is trade-offs.
+
+This benefits of using `n0-snafu` in combination with `snafu` were the most apparent in tests, by  useing `n0-snafu::Result` and the `n0-snafu::ResultExt` , we could gain back some of the ease-of-use that we had when relying on `anyhow`. Here is a parsed-down example of an actual test in iroh:
+
+```rust
+#[cfg(test)]
+mod tests {
+	// allows us to use the `.e()` and `.with_context()` methods:
+	use n0_snafu::ResultExt; 
+	...
+	
+	#[tokio::test]
+	async fn endpoint_connect_close() -> n0_snafu::Result {
+		...
+    let ep = Endpoint::builder()
+        .secret_key(server_secret_key)
+        .alpns(vec![TEST_ALPN.to_vec()])
+        .relay_mode(RelayMode::Custom(relay_map.clone()))
+        .insecure_skip_relay_cert_verify(true)
+        .bind()
+        // returns an `iroh::BindError`, so it
+        // can be implicitly returned without explicit conversion:
+        .await?; 
+
+    let server = tokio::spawn(
+        async move {
+            info!("accepting connection");
+            // returns an `Option`, it needs to be converted to
+            // a `Result` using `.e()`:
+            let incoming = ep.accept().await.e()?;
+            
+            // returns a `quinn::ConnectionError`
+            // needs to be converted into a `n0_snafu::Error` using the `.e()` method
+            // in order to use the `?`:
+            let conn = incoming.await.e()?;
+            // same as above:
+            let mut stream = conn.accept_uni().await.e()?;
+            let mut buf = [0u8; 5];
+            // `.with_context` allows you to add context to the error when
+            // converting to a `n0_snafu::Error`:
+            stream.read_exact(&mut buf).await.with_context(|| format!("could not read from the stream")?;
+            ...
+            // check out `iroh/src/endpoint.rs for the full test
+   }
+}
+```
+
+## Looking Forward
+
+There is a lot of pressure from the Rust community's to ensure that all libraries return concrete errors—this is not misguided—structured errors do provide real benefits for library APIs and error handling. **But the pragmatic reality is that different projects have different needs.**
+
+For the iroh project, the hybrid approach is working well:
+
+- Use structured errors for public APIs where consumers need to handle different cases
+- Preserve rich context and backtraces for debugging
+
+The error handling landscape in Rust is still evolving. Until backtrace propagation is stabilized and the ergonomics improve, teams are making tradeoffs. The key is being intentional about those tradeoffs rather than letting dogma drive technical decisions.
+
+- Accept that some boilerplate is the cost of precise error handling
+
+What matters most is choosing an approach that serves the project's needs—whether that's the simplicity of `anyhow`, the precision of `thiserror`, or something in between. The perfect error handling system doesn't exist, but good-enough error handling that ships is infinitely better than perfect error handling that never gets implemented.
