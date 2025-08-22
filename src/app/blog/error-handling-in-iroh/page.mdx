@@ -53,9 +53,11 @@ Surprisingly, this pattern hasn't been adopted widely in other Rust libraries. I
 
 # The Backtrace Problem
 
-Here's where things get frustrating: If you want proper error handling with backtraces, you're in for a world of pain due to fundamental limitations in Rust's error handling story. For more context, take a look at [this comment](https://github.com/rust-lang/rust/issues/99301#issuecomment-2937061356), as well as the rest of the thread.
+Here's where things get frustrating: If you want proper error handling with backtraces, you're in for a world of pain due to fundamental limitations in Rust's error handling story.
 
-The core issue is that **Rust still hasn't stabilized backtrace propagation on errors**. This creates a cascade of problems:
+The core issue is that **Rust still hasn't stabilized backtrace propagation on errors**. For more context, take a look at [this comment](https://github.com/rust-lang/rust/issues/99301#issuecomment-2937061356), as well as the rest of the thread.
+
+This creates a cascade of problems:
 
 - `anyhow` can provide full backtraces because all errors are `anyhow` errors, and it has an extension trait that can propagate traces through the chain
 - `thiserror` cannot reliably provide backtraces when errors are nested, because each error type would need to know about the backtrace inside its wrapped errors
@@ -63,6 +65,8 @@ The core issue is that **Rust still hasn't stabilized backtrace propagation on e
 The technical limitation comes down to Rust's trait system. When you implement `Into<YourError>` for the `?` operator to work nicely, you need a blanket implementation for all error types. But this conflicts with backtrace handling because you can only access backtraces on concrete types, not through the `Error` trait.
 
 This means you get to choose: either nice ergonomics with `?` or backtraces. You can't have both without significant workarounds.
+
+To be clear, we are not criticizing the rust maintainers; this is difficult work. But it does mean that crate authors have to make tough choices when it comes to error handling.
 
 # Enter Snafu: The Hybrid Approach
 
@@ -75,7 +79,7 @@ Snafu is essentially `thiserror` on steroids. It provides:
 - Automatic backtrace capture when constructing error variants
 - Extension traits that work around Rust's limitations
 
-The key breakthrough is figuring out how to wrap snafu errors *within* other snafu and non-snafu , while preserving the full backtrace chain. This required some careful incantations to work around the `Into` trait conflicts, but the result is that developers can now have an IO error nested three levels deep and still get a complete backtrace.
+The key breakthrough is figuring out how to wrap snafu errors *within* other snafu and non-snafu, while preserving the full backtrace chain. This required some careful incantations to work around the `Into` trait conflicts, but the result is that developers can now have an IO error nested three levels deep and still get a complete backtrace.
 
 When using `snafu` (in conjunction with our `n0-snafu` crate—more on this below), our test failures now look like this (with `RUST_BACKTRACE=1` ):
 
@@ -115,11 +119,11 @@ A lot of credit deserves to go to [eyre](https://docs.rs/eyre/latest/eyre/), aft
 
 # Our push for concrete errors with backtraces
 
-As part of our [push to 1.0](https://iroh.computer/roadmap), we’re transitioning to structured errors using `snafu`. We have started this conversion in iroh `v0.90` .
+As part of our [push to 1.0](https://iroh.computer/roadmap), we’re transitioning to structured errors using `snafu`. We have started this conversion in iroh `v0.90`.
 
 We’ve learned a lot so far, and there is further to go. We have some established patterns, but still need to ensure that all of our APIs follow those patterns, as well as ensure that any logging or error reporting formats the information in a way that’s easy to understand. Or, at least, as easy to understand as possible.
 
-We also very much missed how ergonomic `anyhow` is to work with, especially when writing tests. We now have a `n0-snafu` crate that provides utilities for working with `snafu` , that help claw back some of this ease-of-use especially when writing tests or examples.
+We also very much missed how ergonomic `anyhow` is to work with, especially when writing tests. We now have a `n0-snafu` crate that provides utilities for working with `snafu`, that help claw back some of this ease-of-use especially when writing tests or examples.
 
 ## Concrete-error writing guidelines
 
@@ -141,11 +145,11 @@ One positive side effect of naming enums based around its function and purpose, 
 
 A good example of this is our `ticket::ParseError` enum. Previously, this was a `ticket::Error`. We decided `ParseError` was a more descriptive and logical name: the only kind of errors you can get when working with the ticket are issues that can occur when parsing the ticket: maybe it’s the wrong “kind” of ticket, maybe there are issues when serializing or deserializing, or verifying the ticket. Calling it a `ParseError` means that any user who looks at the API can understand the scope of things that can go wrong when using a ticket, before reading any documentation.
 
-This came up mostly when looking functions and methods that had simple or lower-level functionality. For example, the `connect`  function mentioned above had so many possible categories of errors that calling the enum `ConnectError` was actually the most descriptive  and accurate name we could give it.
+This came up mostly when looking at functions and methods that had simple or lower-level functionality. For example, the `connect`  function mentioned above had so many possible categories of errors that calling the enum `ConnectError` was actually the most descriptive  and accurate name we could give it.
 
 ### Errors for public traits should contain a `Custom` variant, with helpful APIs for creating that variant
 
-It doesn’t necessarily need to be called `Custom` , but for traits that folks working with `iroh` can implement themselves, we needed to ensure that they could use the errors associated with that trait for their own purposes.
+It doesn’t necessarily need to be called `Custom`, but for traits that folks working with `iroh` can implement themselves, we needed to ensure that they could use the errors associated with that trait for their own purposes.
 
 A great example of this is our `Discovery` trait, that has a `DiscoveryError`:
 
@@ -190,7 +194,7 @@ impl DiscoveryError {
 }
 ```
 
-We have some specific errors, `NoServiceConfigured` and `NoResults` that we use in our own discovery implementations, but we also have a `User` error that allows someone who is implementing their own discovery trait to propigate whatever appropriate errors they need.
+We have some specific errors, `NoServiceConfigured` and `NoResults` that we use in our own discovery implementations, but we also have a `User` error that allows someone who is implementing their own discovery trait to propagate whatever appropriate errors they need.
 
 We also provide `DiscoveryError::from_err` and `DiscoveryError::from_error_box` to easily allow users to create whatever `DiscoveryError`s they need.
 
@@ -212,7 +216,7 @@ One of the biggest sources of frustration we faced during the conversion to conc
 
 For that, we wrote `n0-snafu` , a utility crate that allows for working with `snafu` (and other types of errors) with ease. It’s not *quite* as ergonomic as if you were just using `anyhow` throughout your entire application, but again, we’ve already established that part of the game here is trade-offs.
 
-This benefits of using `n0-snafu` in combination with `snafu` were the most apparent in tests, by  useing `n0-snafu::Result` and the `n0-snafu::ResultExt` , we could gain back some of the ease-of-use that we had when relying on `anyhow`. Here is a parsed-down example of an actual test in iroh:
+The benefits of using `n0-snafu` in combination with `snafu` were the most apparent in tests, by  using `n0-snafu::Result` and the `n0-snafu::ResultExt` , we could gain back some of the ease-of-use that we had when relying on `anyhow`. Here is a parsed-down example of an actual test in iroh:
 
 ```rust
 #[cfg(test)]
@@ -259,7 +263,7 @@ mod tests {
 
 ## Looking Forward
 
-There is a lot of pressure from the Rust community's to ensure that all libraries return concrete errors—this is not misguided—structured errors do provide real benefits for library APIs and error handling. **But the pragmatic reality is that different projects have different needs.**
+There is a lot of pressure from the Rust community to ensure that all libraries return concrete errors—this is not misguided—structured errors do provide real benefits for library APIs and error handling. **But the pragmatic reality is that different projects have different needs.**
 
 For the iroh project, the hybrid approach is working well:
 
