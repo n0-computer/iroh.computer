@@ -128,26 +128,21 @@ it is stuck behind a Destination Endpoint Dependent NAT.
 # Session Traversal Utilities for NAT: STUN
 
 Naturally such servers have existed for a while.
-As part of the standardisation around audio-video calls in the form of SIP and WebRTC, there was a need for endpoints to learn about their reflexive transport addresses.
+As part of the standardisation around audio-video calls in the form of SIP and WebRTC,
+there was a need for endpoints to learn about their reflexive transport addresses.
 For this the STUN spec was created,
-initially in [RFC 3489] and several versions later we are now at [RFC 8489] if we didn't miss anything.[^rfc-numbers]
+which by now has evolved into [RFC 8489].
+A sizable tome.
 
-[RFC 3489]: https://datatracker.ietf.org/doc/html/rfc3489
 [RFC 8489]: https://datatracker.ietf.org/doc/html/rfc8489
 
-[^rfc-numbers]: In between there was RFC 5389.  RFC number cuteness tricks will never stop being cute.
-
-Not going to lie about it: I've never read the full STUN spec.[^spec-reading]
+Not going to lie about it: I've never read the full STUN spec.
 It contains a lot and can do many things.
-And yet, the really useful part is surprisingly small.
-Until version 0.32 iroh used STUN exclusively.
-It worked pretty simple:
+And yet, the part iroh actively used is surprisingly small:
 
-[^spec-reading]: While I *have* read many QUIC RFCs in their entirity, several times.  So it's not like I'm adverse to reading lengthy IETF specs.
-
-- Generate a STUN transaction ID.
+- Generate a STUN transaction ID, just a few random bytes.
 - Send a STUN request to a STUN server (the iroh relay server) in a UDP datagram.
-- Wait for a response from the server matching transaction ID.
+- Wait for a response from the server which matches the request's transaction ID.
 
 That's it.
 
@@ -167,8 +162,8 @@ Let's look at what we don't get from this:
   STUN happens outside of this however,
   which makes packet loss much more likely if the application is busy.
 
-All of these are things that are solved in QUIC: QUIC is a secure,
-reliable transport with advanced congestion control and loss detection.
+All of these are things that are solved in QUIC:
+QUIC is a secure, reliable transport with advanced congestion control and loss detection.
 And we already use it for our application protocol so we won't have two different endpoints sending and receiving on the same socket.
 
 
@@ -198,7 +193,7 @@ Thus this becomes event-based rather than request-response.
 # QAD in iroh Relay Servers
 
 Since iroh 0.32 both iroh and the relay servers have supported,
-and used, QAD as well as STUN.
+and used, both QAD as well as STUN.
 Since the 0.90 release we have switched to QAD exclusively.
 
 The work is not finished yet though.
