@@ -119,7 +119,10 @@ To the client this is the *Reflexive Transport Address*.
 If the client is behind a NAT router this will be a different address than the client itself is sending from.
 So a client can use this to detect if it is behind a NAT.
 A client can go even further and use multiple such servers.
-Now it can tell if the NAT router is Destination Endpoint Dependent or Destination Endpoint Independent.
+Now if it receives the same reflexive transport address twice,
+it is behind a Destination Endpoint Independent NAT.
+If it receives two different reflexive transport addresses,
+it is stuck behind a Destination Endpoint Dependent NAT.
 
 
 # Session Traversal Utilities for NAT: STUN
