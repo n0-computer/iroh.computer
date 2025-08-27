@@ -129,11 +129,18 @@ As part of the standardisation around audio-video calls in the form of SIP and W
 For this the STUN spec was created,
 initially in [RFC 3489] and several versions later we are now at [RFC 8489] if we didn't miss anything.[^rfc-numbers]
 
+[RFC 3489]: https://datatracker.ietf.org/doc/html/rfc3489
+[RFC 8489]: https://datatracker.ietf.org/doc/html/rfc8489
+
+[^rfc-numbers]: In between there was RFC 5389.  RFC number cuteness tricks will never stop being cute.
+
 Not going to lie about it: I've never read the full STUN spec.[^spec-reading]
 It contains a lot and can do many things.
 And yet, the really useful part is surprisingly small.
 Until version 0.32 iroh used STUN exclusively.
 It worked pretty simple:
+
+[^spec-reading]: While I *have* read many QUIC RFCs in their entirity, several times.  So it's not like I'm adverse to reading lengthy IETF specs.
 
 - Generate a STUN transaction ID.
 - Send a STUN request to a STUN server (the iroh relay server) in a UDP datagram.
@@ -160,13 +167,6 @@ Let's look at what we don't get from this:
 All of these are things that are solved in QUIC: QUIC is a secure,
 reliable transport with advanced congestion control and loss detection.
 And we already use it for our application protocol so we won't have two different endpoints sending and receiving on the same socket.
-
-[RFC 3489]: https://datatracker.ietf.org/doc/html/rfc3489
-[RFC 8489]: https://datatracker.ietf.org/doc/html/rfc8489
-
-[rfc-numbers]: In between there was RFC 5389.  RFC number cuteness tricks will never stop being cute.
-
-[spec-reading]: While I *have* read many QUIC RFCs in their entirity, several times.  So it's not like I'm adverse to reading lengthy IETF specs.
 
 
 # QUIC Address Discovery
