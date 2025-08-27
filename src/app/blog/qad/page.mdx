@@ -157,8 +157,8 @@ Let's look at what we don't get from this:
   If the request is lost you eventually time out and need to resend it—very primitive.
 
 - Congestion Control.
-  You will be sending application traffic over the same sockets.
-  STUN happens outside of this however,
+  You will be sending application traffic over the same sockets as the STUN datagrams.
+  However, STUN requests are sent outside of the normal flow of data,
   which makes packet loss much more likely if the application is busy.
 
 All of these are things that are solved in QUIC:
