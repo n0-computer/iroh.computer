@@ -68,27 +68,27 @@ Practical people today mostly classify NATs in two types however:
 - Destination Endpoint Independent
 - Destination Endpoint Dependent
 
-Let's unpack that a bit more.
-A NAT router's job is to map an internal IP & port to an external IP & port,
-or let's call this mapping an internal *address* to an external *address* for simplicity.[^addr]
-When a new connection is created from inside the network an endpoint binds on a source address,
+Let's unpack that a bit more:
+a NAT router's job is to map an internal IP & port to an external IP & port,
+or let's call this mapping an *internal address* to an *external address* for simplicity.[^addr]
+When a new connection is created from inside the network an endpoint binds a socket on an internal source address,
 usually leaving exact IP & port choices to the kernel.
-The NAT router then creates a mapping and sends the datagram from some external address.
+When this endpoint sends out a datagram to the internet,
+the NAT router creates a mapping and sends the datagram from external address of it's choosing.
 Incoming datagrams to to this external address are then looked up in the mapping table to deliver back to the origial source address of the endpoint.
 
-[^addr]: Technically we are dealing with *socket addresses*, which on IPv4 is indeed an IP address + port,
+[^addr]: Technically we are dealing with *socket addresses*, which on IPv4 is indeed an IP address and port,
    but IPv6 adds in a scope and flow label into the socket address.
    These fields have some advanced uses but are often ignored,
-   so it is easier to think of of an IP & port tuple.
+   so it is easier to think of of an IP & port 2-tuple.
    So naming this *address* is a bit a handwavy term,
    though sufficient to understand the needed logic.
 
-For a Destination Endpoint Indenpendent mapping the mapping is very simple:
-each unique source address is mapped to one of the available external addresses (an IP address + port combination),
-*independently* of the destination address of the datagram.
+For a Destination Endpoint Indenpendent mapping the mapping is straight forward:
+each unique source address is mapped to one of the available external addresses (an IP address & port combination),
+*regardless* of the destination address of the datagram.
 That means a single source address can send datagrams to many destinations on the internet,
 and they will all share the same external address on the NAT router.
-This is very convenient for holepunching.
 
 For a Destination Endpoint Dependent mapping there could be several variations.
 However for a home router that typically does only have one external IP address only the external port can change.
@@ -105,11 +105,11 @@ There are still tricks you can do, but for now iroh does not yet support this.
 # Reflexive Transport Address
 
 This brings us to the fancy term "Reflexive Transport Address".
-Consider you are a server sitting on the internet and you receive some datagrams from an endpoint behind a NAT router.
+Consider you are a server sitting on the internet and you receive a datagram from an endpoint behind a NAT router.
 The IP header of the received datagram will contain the source IP address,
 while the UDP header will contain the source port number.
 The IP & port the server will see is the external address of the mapping the NAT router makes.
-To send a response you'd send a datagram addressed to this address.
+To send a response the server would send a datagram addressed to this observed source address.
 
 In other words, the source address the server *observes*,
 is the address it sends responses too.
@@ -118,14 +118,14 @@ To the client this is the *Reflexive Transport Address*.
 
 If the client is behind a NAT router this will be a different address than the client itself is sending from.
 So a client can use this to detect if it is behind a NAT.
-A client can go even further and use multiple such servers.
-Now if it receives the same reflexive transport address twice,
+A client can go even further and use multiple such servers:
+now if it receives the same reflexive transport address twice,
 it is behind a Destination Endpoint Independent NAT.
 If it receives two different reflexive transport addresses,
 it is stuck behind a Destination Endpoint Dependent NAT.
 
 
-# Session Traversal Utilities for NAT: STUN
+# STUN
 
 Naturally such servers have existed for a while.
 As part of the standardisation around audio-video calls in the form of SIP and WebRTC,
@@ -141,7 +141,7 @@ It contains a lot and can do many things.
 And yet, the part iroh actively used is surprisingly small:
 
 - Generate a STUN transaction ID, just a few random bytes.
-- Send a STUN request to a STUN server (the iroh relay server) in a UDP datagram.
+- Send a STUN request to a STUN server in a UDP datagram.
 - Wait for a response from the server which matches the request's transaction ID.
 
 That's it.
@@ -154,7 +154,7 @@ Let's look at what we don't get from this:
 
 - Reliability.
   It's a simple UDP-based protocol.
-  If the request is lost you eventually time out and need to resend it—very primitive.
+  If the request is lost you eventually time out and need to resend it — very primitive.
 
 - Congestion Control.
   You will be sending application traffic over the same sockets as the STUN datagrams.
@@ -168,11 +168,12 @@ And we already use it for our application protocol so we won't have two differen
 
 # QUIC Address Discovery
 
-This is such an obvious idea that someone already wrote it down as an IETF draft (thanks Maarten and Christian!):
+This is such an obvious idea that someone already wrote it down as an IETF draft (thanks Marten and Christian!):
 https://quicwg.org/address-discovery/draft-ietf-quic-address-discovery.html
 
 QUIC Address Discovery, or QAD as we call it, is an extension to the QUIC protocol that gets negotiated during the QUIC handshake.
-If negotiated the remote side will send you a new OBSERVED_ADDRESS frame containing the reflexive transport address it observed for you.
+If negotiated,
+the remote side will send you an OBSERVED_ADDRESS frame containing the reflexive transport address it observed for you.
 
 One of the cool things is that this can happen regardless of the application protocol being used,
 as it happens entirely in QUIC frames.
