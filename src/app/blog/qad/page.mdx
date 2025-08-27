@@ -31,8 +31,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # Holepunching
 
-As you probably know, iroh is in the business of holepunching.
-And gives you a QUIC connection on top.
+As you probably know, iroh is in the business of holepunching and gives you a QUIC connection on top.
 The typical scenario is establishing a direct connection between two devices, like laptops or phones, both on different home networks.
 Home networks tend to have a [NAT] router in front of them,
 and, even when using IPv6, tend to block new incoming connections in the same fashion as a NAT router would.
@@ -69,25 +68,35 @@ Practical people today mostly classify NATs in two types however:
 - Destination Endpoint Independent
 - Destination Endpoint Dependent
 
-What does this mean?
-A NAT router's job is to map an internal IP + port to an external IP + port.
-When a new connection is created from inside the network the endpoint decides on the source IP + port.
-The NAT router then creates a mapping and sends the datagram from some external IP address and port.
-Incoming datagrams to to this external IP + port are then looked up in the mapping table to deliver back to the origial source IP + port of the endpoint.
+Let's unpack that a bit more.
+A NAT router's job is to map an internal IP & port to an external IP & port,
+or let's call this mapping an internal *address* to an external *address* for simplicity.[^addr]
+When a new connection is created from inside the network an endpoint binds on a source address,
+usually leaving exact IP & port choices to the kernel.
+The NAT router then creates a mapping and sends the datagram from some external address.
+Incoming datagrams to to this external address are then looked up in the mapping table to deliver back to the origial source address of the endpoint.
+
+[^addr]: Technically we are dealing with *socket addresses*, which on IPv4 is indeed an IP address + port,
+   but IPv6 adds in a scope and flow label into the socket address.
+   These fields have some advanced uses but are often ignored,
+   so it is easier to think of of an IP & port tuple.
+   So naming this *address* is a bit a handwavy term,
+   though sufficient to understand the needed logic.
 
 For a Destination Endpoint Indenpendent mapping the mapping is very simple:
-for each unique source IP + port pair is mapped to one external IP + port pair,
-*independently* of the destination IP + port of the datagram.
-That means a single source IP + port can send datagrams to many destinations on the internet,
-and they will all share the same external IP + port on the NAT router.
+each unique source address is mapped to one of the available external addresses (an IP address + port combination),
+*independently* of the destination address of the datagram.
+That means a single source address can send datagrams to many destinations on the internet,
+and they will all share the same external address on the NAT router.
 This is very convenient for holepunching.
 
 For a Destination Endpoint Dependent mapping there could be several variations.
 However for a home router that typically does only have one external IP address only the external port can change.
-So the NAT router can pick a new port for each destination, even if the source IP + port remains the same.
+So the NAT router can pick a new port for each destination, even if the source address remains the same.
 
 Now think back to holepunching:
-you need to know the external IP + port the NAT router will map to in order to send the holepunching datagrams to each other at the same time.
+you need to know the external address the NAT router will map to,
+in order to send the holepunching datagrams to each other at the same time.
 With Destination Endpoint *Independent* NAT you can use the information from another connection for this.
 Destination Endpoint *Dependent* NAT however makes this much harder.
 There are still tricks you can do, but for now iroh does not yet support this.
@@ -99,10 +108,10 @@ This brings us to the fancy term "Reflexive Transport Address".
 Consider you are a server sitting on the internet and you receive some datagrams from an endpoint behind a NAT router.
 The IP header of the received datagram will contain the source IP address,
 while the UDP header will contain the source port number.
-The IP + port the server will see is the external IP + port of the mapping the NAT router makes.
-To send a response you'd send a datagram addressed to this IP + port.
+The IP & port the server will see is the external address of the mapping the NAT router makes.
+To send a response you'd send a datagram addressed to this address.
 
-In other words, the source IP + port the server *observes*,
+In other words, the source address the server *observes*,
 is the address it sends responses too.
 Thus you can build a server that informs a client endpoint about the client's address as observed by the server.
 The the client this is the *Reflexive Transport Address*.
