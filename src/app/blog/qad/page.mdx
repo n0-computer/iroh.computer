@@ -40,7 +40,7 @@ And to be fair, blocking random incoming connections to a home network is a sens
 [NAT]: https://en.wikipedia.org/wiki/Network_address_translation
 
 The simplified theory of how UDP holepunching works is that both endpoints send a packet to each other at the same time.
-Both routers see the outgoing datagram first, and when they receive the incoming datagram, it is considered to be same connection and is allowed in.
+Both routers see the outgoing datagram first, and when they receive the incoming datagram, it is considered to be the same connection and is allowed in.
 To achieve this in practice you need two things:
 
 - A means of communicating the coordination.
@@ -60,8 +60,8 @@ How are we supposed to predict how a random router on the internet is going to b
 NAT routers have existed for a very long time,
 and as the world tried to understand them many words have been spilled classifying and naming them.
 It's a confusing mess.
-[RFC 4787] can be used as a jumping point to explore the bewildering number of updates and references to older RFCs.
-Practical people today mostly classify NATs in two types however:
+[RFC 4787] can be used as a jumping-off point to explore the bewildering number of updates and references to older RFCs.
+Practical people today mostly classify NATs into two types however:
 
 [RFC 4787]: https://datatracker.ietf.org/doc/rfc4787/
 
@@ -74,17 +74,17 @@ or let's call this mapping an *internal address* to an *external address* for si
 When a new connection is created from inside the network an endpoint binds a socket on an internal source address,
 usually leaving exact IP & port choices to the kernel.
 When this endpoint sends out a datagram to the internet,
-the NAT router creates a mapping and sends the datagram from external address of it's choosing.
-Incoming datagrams to to this external address are then looked up in the mapping table to deliver back to the origial source address of the endpoint.
+the NAT router creates a mapping and sends the datagram from an external address of its choosing.
+Incoming datagrams to this external address are then looked up in the mapping table to deliver back to the original source address of the endpoint.
 
 [^addr]: Technically we are dealing with *socket addresses*, which on IPv4 is indeed an IP address and port,
    but IPv6 adds in a scope and flow label into the socket address.
    These fields have some advanced uses but are often ignored,
-   so it is easier to think of of an IP & port 2-tuple.
-   So naming this *address* is a bit a handwavy term,
+   so it is easier to think of an IP & port 2-tuple.
+   So naming this *address* is a bit of a handwavy term,
    though sufficient to understand the needed logic.
 
-For a Destination Endpoint Indenpendent mapping the mapping is straight forward:
+For a Destination Endpoint Independent mapping the mapping is straightforward:
 each unique source address is mapped to one of the available external addresses (an IP address & port combination),
 *regardless* of the destination address of the datagram.
 That means a single source address can send datagrams to many destinations on the internet,
@@ -112,7 +112,7 @@ The IP & port the server will see is the external address of the mapping the NAT
 To send a response the server would send a datagram addressed to this observed source address.
 
 In other words, the source address the server *observes*,
-is the address it sends responses too.
+is the address it sends responses to.
 Thus you can build a server that informs a client endpoint about the client's address as observed by the server.
 To the client this is the *Reflexive Transport Address*.
 
@@ -128,7 +128,7 @@ it is stuck behind a Destination Endpoint Dependent NAT.
 # STUN
 
 Naturally such servers have existed for a while.
-As part of the standardisation around audio-video calls in the form of SIP and WebRTC,
+As part of the standardization around audio-video calls in the form of SIP and WebRTC,
 there was a need for endpoints to learn about their reflexive transport addresses.
 For this the STUN spec was created,
 which by now has evolved into [RFC 8489].
