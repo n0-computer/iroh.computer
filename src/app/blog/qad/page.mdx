@@ -1,0 +1,208 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Floris Bruynooghe',
+  date: '2025-09-01',
+  title: 'Moving from STUN to QUIC Address Discovery',
+  description:
+    "Moving STUN into QUIC",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# Holepunching
+
+As you probably know, `iroh` is in the business of holepunching.
+The typical scenario is establishing a direct QUIC connection between two devices, like laptops or phones, both on different home networks.
+Home networks tend to have a [NAT] router in front of them,
+and tend to block new incoming connections even when using IPv6.
+To be fair: blocking random incoming connections to a home network is a sensible choice.
+
+[NAT]: https://en.wikipedia.org/wiki/Network_address_translation
+
+The simplified theory of how UDP holepunching works is that both endpoints send a packet to each other at the same time.
+Both routers see the *outgoing* datagram first, and when they receive the *incoming* datagram, it is considered to be the same connection and is allowed in.
+To achieve this in practice you need two things:
+
+- A means of communicating the coordination.
+  Iroh uses the relay server as a network path between the two endpoints for this.
+  We explained this in more detail in the [iroh on QUIC Multipath] post.
+
+[iroh on QUIC Multipath]: https://www.iroh.computer/blog/iroh-on-QUIC-multipath
+
+- The address the NAT router is going to be using for the other endpoint – this is where you have to send your holepunching datagrams.
+
+The second part is often called "address discovery", and it seems an impossible task.
+How are we supposed to predict how a random router on the internet is going to behave?
+
+# NAT Types
+
+NAT routers have existed for a very long time,
+and as the world has tried to understand them many words have been spilled classifying and naming them.
+It's a confusing mess.
+[RFC 4787] can be used as a jumping-off point to explore the bewildering number of updates and references to older RFCs.
+Practical people today mostly classify NATs into two types however:
+
+[RFC 4787]: https://datatracker.ietf.org/doc/rfc4787/
+
+- Destination Endpoint Independent
+- Destination Endpoint Dependent
+
+Let's unpack that a bit more:
+a NAT router's job is to map an internal IP & port to an external IP & port,
+or let's call this mapping an *internal address* to an *external address* for simplicity.[^addr]
+When a new connection is created from inside the network an endpoint binds a socket on an internal source address,
+usually leaving exact IP & port choices to the kernel.
+When this endpoint sends out a datagram to the internet,
+the NAT router creates a mapping and sends the datagram from an external address of its choosing.
+Incoming datagrams to this external address are then looked up in the mapping table to deliver back to the original source address of the endpoint.
+
+[^addr]: Technically we are dealing with *socket addresses*, which on IPv4 is indeed an IP address and port,
+   but IPv6 adds in a scope and flow label into the socket address.
+   These fields have some advanced uses but are often ignored,
+   so it is easier to think of an IP & port 2-tuple.
+   So naming this *address* is a bit of a handwavy term,
+   though sufficient to understand the needed logic.
+
+For a Destination Endpoint Independent mapping the mapping is straightforward:
+each unique source address is mapped to one of the available external addresses (an IP address & port combination),
+*regardless* of the destination address of the datagram.
+That means a single source address can send datagrams to many destinations on the internet,
+and they will all share the same external address on the NAT router.
+
+For a Destination Endpoint Dependent mapping there could be several variations.
+However, a home router typically only has one external IP address, so only the external port can change.
+So the NAT router can pick a new port for each destination, even if the source address remains the same.
+
+Now think back to holepunching:
+you need to know the external address the NAT router will map to,
+in order to send the holepunching datagrams to each other at the same time.
+With Destination Endpoint *Independent* NAT you can use the information from another connection for this.
+Destination Endpoint *Dependent* NAT however makes this much harder.
+There are still tricks you can do, but for now iroh does not yet support this.
+
+
+# Reflexive Transport Address
+
+This brings us to the fancy term "Reflexive Transport Address".
+Consider you are a server sitting on the internet and you receive a datagram from an endpoint behind a NAT router.
+The IP header of the received datagram contains the source IP address,
+while the UDP header contains the source port number.
+The IP & port combination the server sees is the external address, the mapped address the NAT router made.
+To send a response, the server needs to send a datagram addressed to this observed source address.
+
+In other words, the source address the server *observes*,
+is the address it sends responses to.
+Thus you can build a server that informs a client endpoint about the client's address as observed by the server.
+To the client this is the *Reflexive Transport Address*.
+
+If the client is behind a NAT router this will be a different address than the client itself is sending from.
+So a client can use this to detect if it is behind a NAT.
+A client can go even further and use multiple such servers:
+now if it receives the same reflexive transport address twice,
+it is behind a Destination Endpoint Independent NAT.
+If it receives two different reflexive transport addresses,
+it is stuck behind a Destination Endpoint Dependent NAT.
+
+
+# STUN
+
+Naturally such servers have existed for a while.
+As part of the standardization around audio-video calls in the form of SIP and WebRTC,
+there was a need for endpoints to learn about their reflexive transport addresses.
+For this the STUN spec was created,
+which by now has evolved into [RFC 8489].
+A sizable tome.
+
+[RFC 8489]: https://datatracker.ietf.org/doc/html/rfc8489
+
+Not going to lie about it: I've never read the full STUN spec.
+It contains a lot and can do many things.
+And yet, the part `iroh` actively used is surprisingly small:
+
+- Generate a STUN transaction ID, just a few random bytes.
+- Send a STUN request to a STUN server in a UDP datagram.
+- Wait for a response from the server which matches the request's transaction ID.
+
+That's it.
+
+So why change working systems?
+Let's look at what we don't get from this:
+
+- Encryption.
+  While in theory you can encrypt STUN requests using DTLS it's not something that is done much.
+
+- Reliability.
+  It's a simple UDP-based protocol.
+  If the request is lost you eventually time out and need to resend it – very primitive.
+
+- Congestion Control.
+  You will be sending application traffic over the same sockets as the STUN datagrams.
+  However, STUN requests are sent outside of the normal flow of data,
+  which makes packet loss much more likely if the application is busy.
+
+All of these are things that are solved in QUIC:
+QUIC is a secure, reliable transport with advanced congestion control and loss detection.
+And we already use it for our application protocol so we won't have two different endpoints sending and receiving on the same socket.
+
+
+# QUIC Address Discovery
+
+This is such an obvious idea that someone already wrote it down as an IETF draft (thanks Marten and Christian!):
+https://quicwg.org/address-discovery/draft-ietf-quic-address-discovery.html
+
+QUIC Address Discovery, or QAD as we call it, is an extension to the QUIC protocol that gets negotiated during the QUIC handshake.
+If negotiated,
+the remote side will send you an OBSERVED_ADDRESS frame containing the reflexive transport address it observed for you.
+
+One of the cool things is that this can happen regardless of the application protocol being used,
+as it happens entirely in QUIC frames.
+So you can still use this connection to carry application data.
+
+Another really nice feature flowing from this is that this isn't a request-response protocol anymore.
+QUIC supports connection migration for clients,
+e.g. when your NAT router updates the mapping for some reason,
+or when you move from a Wifi network to mobile data,
+QUIC will detect this and migrate the connection to this new network,
+without losing any data or breaking the connection.
+And whenever that happens while the QAD extension is negotiated,
+a new reflexive transport address is observed and will be sent in a new OBSERVED_ADDRESS frame.
+Thus this becomes event-based rather than request-response.
+
+
+# QAD in `iroh` Relay Servers
+
+Since `iroh` 0.32, `iroh` and the relay servers have supported,
+and used, both QAD as well as STUN.
+Since the 0.90 release we have switched to QAD exclusively.
+
+The work is not finished yet though.
+Iroh still uses a special-purpose QUIC connection for QAD.
+At some point we would like to also support making the normal relay connection over QUIC when possible,
+in addition to the current HTTPS1.1/WebSocket connection.
+This would be one fewer connection to the relay server and truly allow us to benefit from the event-based nature of QAD.
+This is something for after the 1.0 release however.
+
+
+** **
+
+### Footnotes
