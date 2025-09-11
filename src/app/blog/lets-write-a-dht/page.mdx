@@ -33,7 +33,7 @@ Iroh blobs is a very efficient way to distribute data from one peer to another. 
 
 This is a very hard problem. Existing systems such as bittorrent solve it reasonably well, although they are not perfect.
 
-The standard solution for content discovery in systems such as bittorrent and IPFS is a distributed hash table. This series of blog posts and the associated repository are an experiment: is it possible to write a high performance distributed hash table using iroh connections?
+The standard solution for content discovery in systems such as bittorrent and IPFS is a Distributed Hash Table (DHT). This series of blog posts and the associated repository are an experiment: is it possible to write a high performance distributed hash table using iroh connections?
 
 The code is not yet production ready, but it is an interesting use case for many advanced techniques involving iroh connections, such as connection pools and 0rtt connections. It also is a nice way to show off irpc, both for *local* rpc to control a DHT node and for the DHT protocol itself.
 
