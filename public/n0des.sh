@@ -3,9 +3,11 @@
 
 set -e
 
-# Set tag from first argument or default to "latest"
+# Set tag from first argument, environment variable, or default to "latest"
 if [ -n "$1" ]; then
     tag="${1:0:7}"
+elif [ -n "$TAG" ]; then
+    tag="${TAG:0:7}"
 else
     tag="latest"
 fi
