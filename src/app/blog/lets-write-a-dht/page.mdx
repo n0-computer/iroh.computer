@@ -47,7 +47,7 @@ So a distributed hash table seen as a black box is just like a hashtable, but sp
 
 ## Keys
 
-Just like a normal hash table, a distributed hash table maps some key type to some value type. Keys in local hash tables can be of arbitrary size. The key that is actually used for lookup is a (e.g. 64 bit) hash of the value, and the hash table has additional logic to deal with rare but inevitable hash collisions. For distributed hash tables, typically you restrict the key to a fixed size and let the application deal with the mapping from the actual key to the hash table keyspace. E.g. the bittorrent mainline DHT uses a 20 byte keyspace, which is the size of a SHA1 hash. The main purpose of the mainline DHT is to find content providers for data based on a SHA1 hash of the data. But even with mainline there are cases where the actual key you want to look up is larger than the keyspace, e.g. bep_0044 where you want to look up some information for an ED25519 public key. In that case mainline does exactly what you would do in a local hash table - it hashes the public key using SHA1 and then uses the hash as the lookup key.
+Just like a normal hash table, a distributed hash table maps some key type to some value type. Keys in local hash tables can be of arbitrary size. The key that is actually used for lookup is a (e.g. 64 bit) hash of the value, and the hash table has additional logic to deal with rare but inevitable hash collisions. For distributed hash tables, typically you restrict the key to a fixed size and let the application deal with the mapping from the actual key to the hash table keyspace. E.g. the bittorrent mainline DHT uses a 20 byte keyspace, which is the size of a SHA1 hash. The main purpose of the mainline DHT is to find content providers for data based on a SHA1 hash of the data. But even with mainline there are cases where the actual key you want to look up is larger than the keyspace, e.g. [bep_0044] where you want to look up some information for an ED25519 public key. In that case mainline does exactly what you would do in a local hash table - it hashes the public key using SHA1 and then uses the hash as the lookup key.
 
 For iroh we are mainly interested in looking up content based on its BLAKE3 hash. Another use case for the DHT is to look up information for an iroh node id, which is an ED25519 public key. So it makes sense for a clean room implementation to choose a 32 byte keyspace. An arbitrary size key can be mapped to this keyspace using a cryptographic hash function with an astronomically low probability of collisions.
 
@@ -79,9 +79,9 @@ As mentioned above, in a DHT not every node has all the data. So we need some me
 
 ## Kademlia
 
-The most popular routing algorithm for DHTs is [Kademlia]. The core idea of kademlia is to define a [metric] that gives a scalar distance between any two keys (points in the metric space) that fulfills the metric axioms. DHT nodes have a node id that gets mapped to the metric space, and you store the data on the `k` nodes that are closest to the key.
+The most popular routing algorithm for DHTs is [Kademlia]. The core idea of Kademlia is to define a [metric] that gives a scalar distance between any two keys (points in the metric space) that fulfills the metric axioms. DHT nodes have a node id that gets mapped to the metric space, and you store the data on the `k` nodes that are closest to the key.
 
-The metric chosen by kademlia is the XOR metric: the distance of two keys `a` and `b` is simply the bitwise xor of the keys. This is absurdly cheap to compute and fulfills all the metric axioms. It also helps with sparse routing tables, as we will learn later.
+The metric chosen by Kademlia is the XOR metric: the distance of two keys `a` and `b` is simply the bitwise xor of the keys. This is absurdly cheap to compute and fulfills all the metric axioms. It also helps with sparse routing tables, as we will learn later.
 
 If a node had perfect knowledge of all other nodes in the network, it could give you a perfect answer to the question "where should I store the data for key `key`". Just sort the set of all keys that correspond to node ids by distance to the key and return the `k` smallest values. For small to medium DHTs this is a viable strategy, since modern computers can easily store millions of 32 byte keys without breaking a sweat. But for either extremely large DHTs or nodes with low memory requirements, it is desirable to store just a subset of all keys.
 
@@ -116,17 +116,17 @@ A key property of a DHT compared to more rigid algorithms is that nodes should b
 
 # RPC protocol
 
-Now that we have a very rough idea what a distributed hashtable is meant to do, let's start defining the protocol that nodes will use to talk to each other. We are going to use [irpc] to define the protocol. This has the advantage that we can simulate a DHT consisting of thousands of node in memory initially for tests, and then use the same code with iroh connections as the underlying transport in production.
+Now that we have a very rough idea what a distributed hashtable is meant to do, let's start defining the protocol that nodes will use to talk to each other. We are going to use [irpc] to define the protocol. This has the advantage that we can simulate a DHT consisting of thousands of nodes in memory for tests, and then use the same code with iroh connections as the underlying transport in production.
 
 First of all, we need a way to store and retrieve values. This is basically just a key value store API for a multimap. This protocol in isolation is sufficient to implement a tracker, a node that has full knowledge of what is where.
 
 <Note>
-Every type we use in the RPC protocol must be serializable using serde so we can [postcard] serialize it. Postcard is a non self-describing format, so we need to make sure to keep the order of the enum cases if we want the protocol to be long term stable. All rpc requests, responses and the overall rpc enum have the `#[derive(Debug, Serialize, Deserialize)]` annotation, but we will omit this from the examples below for brevity.
+Every type we use in the RPC protocol must be serializable so we can serialize it using [postcard]. Postcard is a non self-describing format, so we need to make sure to keep the order of the enum cases if we want the protocol to be long term stable. All rpc requests, responses and the overall rpc enum have the `#[derive(Debug, Serialize, Deserialize)]` annotation, but we will omit this from the examples below for brevity.
 </Note>
 
 ## Values
 
-An id is just a 32 byte blob, with conversions from iroh::NodeId and blake3::Hash.
+An id is just a 32 byte blob, with conversions from [iroh::NodeId](https://docs.rs/iroh/latest/iroh/type.NodeId.html) and [blake3::Hash](https://docs.rs/blake3/latest/blake3/struct.Hash.html).
 ```rust
 pub struct Id([u8; 32]);
 ```
@@ -308,7 +308,7 @@ impl MemStorage {
 
 ## Routing implementation
 
-Now it looks like we have run out of simple things to do and need to actually implement the routing part. The routing API does not care how the routing table is organized internally - it could just as well be the full set of nodes. But we want to implement the kademlia algorithm to get that nice power law distribution.
+Now it looks like we have run out of simple things to do and need to actually implement the routing part. The routing API does not care how the routing table is organized internally - it could just as well be the full set of nodes. But we want to implement the Kademlia algorithm to get that nice power law distribution.
 
 So let's define the routing table. First of all we need some simple integer arithmetic like xor and leading_zeros for 256 bit numbers. There are various crates that provide this, but since we don't need anything fancy like multiplication or division, we just quickly implemented it inline.
 
@@ -354,7 +354,7 @@ Now assuming that the system has some way to find valid DHT nodes, all we need i
 
 ## Insertion
 
-Insertion means first computing which bucket the node should go into, and then inserting at that index. Computing the bucket index is computing the xor distance to our own node id, then counting leading zeros and flipping the result around, since we want bucket 0 to contain the closest nodes and bucket 255 to contain the furthest away nodes as per kademlia convention.
+Insertion means first computing which bucket the node should go into, and then inserting at that index. Computing the bucket index is computing the xor distance to our own node id, then counting leading zeros and flipping the result around, since we want bucket 0 to contain the closest nodes and bucket 255 to contain the furthest away nodes as per Kademlia convention.
 
 ```rust
 fn bucket_index(&self, target: &[u8; 32]) -> usize {
@@ -1242,5 +1242,6 @@ The next step is to write tests using actual iroh connections. We will have to d
 [ArrayVec]: https://docs.rs/arrayvec/0.7.6/arrayvec/
 [FuturesUnordered]: https://docs.rs/futures-buffered/latest/futures_buffered/struct.FuturesUnordered.html
 [textplots]: https://docs.rs/textplots/0.8.7/textplots/
+[bep-0044]: https://www.bittorrent.org/beps/bep_0044.html
 
 [^1]: The nodes will not retain perfect knowledge due to the k-buckets being limited in size
