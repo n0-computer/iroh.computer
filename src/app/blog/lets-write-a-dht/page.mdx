@@ -53,6 +53,8 @@ For iroh we are mainly interested in looking up content based on its BLAKE3 hash
 
 <Note>
 It is important to keep in mind that despite the main purpose of the DHT being BLAKE3 lookups, the key is just an arbitrary blob. You can put whatever you want in these 32 bytes, BLAKE3 hashes, SHA2 hashes, ED25519 public keys, whatever fits 32 bytes.
+
+Also, a DHT with a smaller keyspace such as mainline with its 20 bytes would still be completely viable provided that you had a way to store arbitrary values for a key. The reason to use 32 bytes is just convenience, since this is a completely separate implementation anyway.
 </Note>
 
 ## Values
@@ -438,6 +440,10 @@ We could just sort it, but we are only interested in the order of the `k` smalle
 
 As a last trick, instead of storing (id, distance) tuples we just store the distance itself while sorting, and recompute the node id itself by xor-ing again with the target id. This reduces the size of the temporary array by half.
 
+<Note>
+We are treating find_closest_nodes as essentially free. As a justification for this, We wrote a microbenchmark that does find_closest_nodes with `k=20` for a *full* routing table that you will rarely see in the real world. It takes `94.690 µs` on average on my machine. So it might not be completely free, but compared to the networking overhead it is probably nothing to worry about!
+</Note>
+
 ## Wiring it up
 
 The handler for our rpc protocol is a typical rust actor. The actor has the mem storage as well as the routing table as state, and processes messages one by one. If the storage was persistent, you might want to perform the actual storage and retrieval as well as the
@@ -620,7 +626,7 @@ put_immutable aggregates all node ids where the data was stored and returns them
 
 The first phase of the implementation of both NetworkPut and NetworkGet is powered by the iterative lookup algo. Since this is used both externally to store and retrieve values and internally to perform random lookups to maintain the routing table, it gets its own RPC call.
 
-```
+```rust
 pub enum ApiProto {
     ...
     #[rpc(wrap, tx = oneshot::Sender<Vec<NodeId>>)]
@@ -1103,14 +1109,6 @@ How big can you go?
 
 With the memory based tests you can easily go up to 10k nodes, and even go up to 100k nodes with a lot of patience, on a 32GiB macbook pro. The limiting factor is the fixed size of the routing table. For a 100k node test, just the routing tables alone are ~20 GiB. You could optimize this even further by having a more compact routing table or my memoizing/Arc-ing node ids, but this would come with downsides for performance in production, and in any case 100k nodes already is a lot.
 
-## Iroh connection tests
-
-Memory based tests are great to check the behaviour of the routing algorithm. To test networking overhead, it is useful to have a test that runs in a single process but uses one iroh endpoint per node.
-
-We will create an iroh endpoint per DHT node, then use a shared [static discovery provider](https://docs.rs/iroh/0.91.2/iroh/discovery/static_provider/struct.StaticProvider.html) to add dialing information for each node, and disable relay mode. In this test we will use a dedicated client pool per node that is actually backed by an iroh connection pool, just like you would do for a production DHT node.
-
-Unsurprisingly, this test produces exactly the same results as the memory tests. It just takes a bit longer and is a great way to find issues in the underlying connection pool.
-
 # An evolving network
 
 So now we have tests to show that the routing works as designed when the routing tables are properly initialized, and also tests that the routing table maintenance strategies work to properly initiailze the routing tables over time.
@@ -1226,6 +1224,12 @@ And here is the resulting gif:
 </div>
 
 You can clearly see all nodes quickly forgetting about the dead nodes (last 100 pixels in each row). So removal of dead nodes works in principle. You could of course accelerate this by explicitly pinging all routing table entries in regular intervals, but that would be costly, and only gradually forgetting about dead nodes might even have some advantages - there is a grace period where nodes could come back.
+
+# What's next?
+
+So now we got a DHT impl and have some reasonable condidence that it works in principle. But all tests use memory connections, which is of course not what is going to be used in production.
+
+The next step is to write tests using actual iroh connections. We will have to deal with real world issues like talking to many nodes without having too many connections open at the same time. And we will move closer to a DHT implementation that can be useful in the messy real world.
 
 [Kademlia]: https://en.wikipedia.org/wiki/Kademlia
 [metric]: https://en.wikipedia.org/wiki/Metric_space
