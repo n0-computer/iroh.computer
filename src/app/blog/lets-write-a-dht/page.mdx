@@ -49,7 +49,7 @@ So a distributed hash table seen as a black box is just like a hashtable, but sp
 
 Just like a normal hashtable, a distributed hashtable maps some key type to some value type. Keys in local hashtables can be of arbitrary size. The key that is actually used for lookup is a (e.g. 64 bit) hash of the value, and the hashtable has additional logic to deal with rare but inevitable hash collisions. For distributed hash tables, typically you restrict the key to a fixed size and let the application deal with the mapping from the actual key to the hashtable keyspace. E.g. the bittorrent mainline DHT uses a 20 byte keyspace, which is the size of a SHA1 hash. The main purpose of the mainline DHT is to find content providers for data based on a SHA1 hash of the data. But even with mainline there are cases where the actual key you want to look up is larger than the keyspace, e.g. bep_0044 where you want to look up some information for an ED25519 public key. In that case mainline does exactly what you would do in a local hashtable - it hashes the public key using SHA1 and then uses the hash as the lookup key.
 
-For iroh we are mainly interested in looking up content based on its BLAKE3 hash. Another use case for the DHT is to look up information for an iroh node id, which is an ED25519 public key. So it makes sense for a clean room implementation to choose a 32 byte keyspace. An arbitrary size key can be mapped to this keyspace using a cryptographic hash function with an astronomically low probabilty of collisions.
+For iroh we are mainly interested in looking up content based on its BLAKE3 hash. Another use case for the DHT is to look up information for an iroh node id, which is an ED25519 public key. So it makes sense for a clean room implementation to choose a 32 byte keyspace. An arbitrary size key can be mapped to this keyspace using a cryptographic hash function with an astronomically low probability of collisions.
 
 <Note>
 It is important to keep in mind that despite the main purpose of the DHT being BLAKE3 lookups, the key is just an arbitrary blob. You can put whatever you want in these 32 bytes, BLAKE3 hashes, SHA2 hashes, ED25519 public keys, whatever fits 32 bytes.
@@ -518,7 +518,714 @@ What we have now is an actor that stores values and maintains a routing table. A
 
 The next step is to implement the iterative lookup algorithm. Once we have that, storage and retrieval are just calls to the `k` closest nodes to a key that are the result of the iterative lookup algorithm.
 
-Both storage and retrieval involve *a lot* of network operations. To hide all these details from the user, we will need a message based protocol that the DHT client uses to communicate with the 
+Both storage and retrieval involve *a lot* of network operations. To hide all these details from the user, we will need a message based protocol that the DHT client uses to communicate with the DHT actor. This will also be an irpc protocol, but it will be used either in memory or to control a DHT node running in a different process on a local machine, so it does not have to concern itself as much with having small messages and with adversarial scenarios.
+
+We also don't have to care about stability, since this will be used only between the same version of the binary.
+
+As mentined, the main complexity of a DHT is the routing. What values we store almost does not matter, as long as they can be validated somehow and are small enough to fit. So for testing, we are going to implement just storage of immutable small blobs.
+
+We need the ability to store and retrieve such blobs, and for the user facing API we don't care about nodes. All these details are for the DHT to sort out internally. So let's design the API.
+
+The API protocol will also contain internal messages that the DHT needs for periodic tasks. We can just hide them from the public API wrapper if we don't want our users to mess with internals.
+
+```rust
+#[rpc_requests(message = ApiMessage)]
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ApiProto {
+    #[rpc(wrap, tx = mpsc::Sender<NodeId>)]
+    NetworkPut { id: Id, value: Value },
+    #[rpc(wrap, tx = mpsc::Sender<(NodeId, Value)>)]
+    NetworkGet { id: Id, kind: Kind },
+    ... plumbing rpc calls
+}
+```
+
+We need the ability to store and retrieve values.
+
+Storing values is a two step process, first use the iterative algorithm to find the `k` closest nodes, then, in parallel, try to store the value on all these nodes. To give the user some feedback over where the data is stored, we return a stream of node ids where the data was successfully stored.
+
+Retrieval is almost identical. We first find the `k` closest nodes, then, in parallel, ask all of them for the value. Again we return a stream of (NodeId, Value) so we can get answers to the user as soon as they become available.
+
+In case of immutable values, the first validated value is all it takes, as soon as we got that we can abort the operation. For other values we might want to wait for all results and then choose the most recent one, or use them all, e.g. to retrieve content over iroh-blobs from multiple sources.
+
+Here is the ApiClient for the get_immutable and put_immutable rpc calls:
+
+```rust
+async fn put_immutable(
+    &self,
+    value: &[u8],
+) -> irpc::Result<(blake3::Hash, Vec<NodeId>)> {
+    let hash = blake3::hash(value);
+    let id = Id::from(*hash.as_bytes());
+    let mut rx = self
+        .0
+        .server_streaming(
+            NetworkPut {
+                id,
+                value: Value::Blake3Immutable(Blake3Immutable {
+                    timestamp: now(),
+                    data: value.to_vec(),
+                }),
+            },
+            32,
+        )
+        .await?;
+    let mut res = Vec::new();
+    loop {
+        match rx.recv().await {
+            Ok(Some(id)) => res.push(id),
+            Ok(None) => break,
+            Err(_) => {}
+        }
+    }
+    Ok((hash, res))
+}
+
+async fn get_immutable(&self, hash: blake3::Hash) -> irpc::Result<Option<Vec<u8>>> {
+    let id = Id::from(*hash.as_bytes());
+    let mut rx = self
+        .0
+        .server_streaming(
+            NetworkGet {
+                id,
+                kind: Kind::Blake3Immutable,
+            },
+            32,
+        )
+        .await?;
+    loop {
+        match rx.recv().await {
+            Ok(Some((_, value))) => {
+                let Value::Blake3Immutable(Blake3Immutable { data, .. }) = value else {
+                    continue; // Skip non-Blake3Immutable values
+                };
+                if blake3::hash(&data) == hash {
+                    return Ok(Some(data));
+                } else {
+                    continue; // Hash mismatch, skip this value
+                }
+            }
+            Ok(None) => {
+                break Ok(None);
+            }
+            Err(e) => {
+                break Err(e.into());
+            }
+        }
+    }
+}
+```
+
+put_immutable aggregates all node ids where the data was stored and returns them. You could have a different API where you don't wait for storage on all nodes. get_immutable just returns after the first correct value - at this point you have the correct data and there is no point in waiting for more of the same.
+
+The first phase of the implementation of both NetworkPut and NetworkGet is powered by the iterative lookup algo. Since this is used both externally to store and retrieve values and internally to perform random lookups to maintain the routing table, it gets its own RPC call.
+
+```
+pub enum ApiProto {
+    ...
+    #[rpc(wrap, tx = oneshot::Sender<Vec<NodeId>>)]
+    Lookup {
+        initial: Option<Vec<NodeId>>,
+        id: Id,
+    },
+    ...
+}
+...
+impl ApiClient {
+    async fn lookup(
+        &self,
+        id: Id,
+        initial: Option<Vec<NodeId>>,
+    ) -> irpc::Result<Vec<NodeId>> {
+        self.0.rpc(Lookup { id, initial }).await
+    }
+}
+```
+
+Lookup gets an initial set of node ids to start, and an id to look up. It returns the `k` closest nodes to the id. All the internals of the iterative lookup algorithm are hidden.
+
+The plumbing to process this is not that interesting. But let's take a look at the iterative lookup algorithm itself now:
+
+```rust
+async fn iterative_find_node(self, target: Id, initial: Vec<NodeId>) -> Vec<NodeId> {
+    let mut candidates = initial
+        .into_iter()
+        .filter(|addr| *addr != self.pool.id())
+        .map(|id| (Distance::between(&target, &id.as_bytes()), id))
+        .collect::<BTreeSet<_>>();
+    let mut queried = HashSet::new();
+    let mut tasks = FuturesUnordered::new();
+    let mut result = BTreeSet::new();
+    queried.insert(self.pool.id());
+    result.insert((
+        Distance::between(&self.pool.id().as_bytes(), &target),
+        self.pool.id(),
+    ));
+
+    loop {
+        for _ in 0..self.config.alpha {
+            let Some(pair @ (_, id)) = candidates.pop_first() else {
+                break;
+            };
+            queried.insert(id);
+            let fut = self.query_one(id, target);
+            tasks.push(async move { (pair, fut.await) });
+        }
+
+        while let Some((pair @ (_, id), cands)) = tasks.next().await {
+            let Ok(cands) = cands else {
+                self.api.nodes_dead(&[id]).await.ok();
+                continue;
+            };
+            for cand in cands {
+                let dist = Distance::between(&target, &cand.as_bytes());
+                if !queried.contains(&cand) {
+                    candidates.insert((dist, cand));
+                }
+            }
+            self.api.nodes_seen(&[id]).await.ok();
+            result.insert(pair);
+        }
+
+        // truncate the result to k.
+        while result.len() > self.config.k {
+            result.pop_last();
+        }
+
+        // find the k-th best distance
+        let kth_best_distance = result
+            .iter()
+            .nth(self.config.k - 1)
+            .map(|(dist, _)| *dist)
+            .unwrap_or(Distance::MAX);
+
+        // true if we candidates that are better than distance for result[k-1].
+        let has_closer_candidates = candidates
+            .first()
+            .map(|(dist, _)| *dist < kth_best_distance)
+            .unwrap_or_default();
+
+        if !has_closer_candidates {
+            break;
+        }
+    }
+
+    // result already has size <= k
+    result.into_iter().map(|(_, id)| id).collect()
+}
+```
+
+The algorithm maintains a set of `candidates` sorted by distance to the target. This set is initially populated from the local routing table, or can be passed in by the user.
+
+It also maintains a set of nodes that were already `queried` to prevent running around in circles. The id of the node itself is added to the queried set to prevent self queries. It is also added to the result set for the case where the node itself is in the set of closest nodes.
+
+Last but not least, it maintains a set of `result` nodes sorted by distance to the target. The only way for a node to end up in the result set is if it has actually answered a query, so is proven to be alive from the point of view of the local node at the time of the query.
+
+The algorithm makes no assumptions whatsoever about the candidates, not even that they exist. So it pulls candidates in distance order with a configurable parallelism level `alpha` and validates them by performing a `FindNode` query on them for the target key. Ongoing FindNode queries are tracked in a [FuturesUnordered].
+
+As FindNode tasks complete, we get information about whether the candidate is alive or not.
+
+For unreachable candidates, we drop them but also inform the actor that the node id should be removed from the routing table. For reachable nodes, we add the *node* we called to the result and the nodes the node *returned* to the candidates set. We can't add them to the result yet since they might be stale, or the node might lie to us. We also call nodes_seen to update the timestamp of the node in the routing table.
+
+We only ever keep the best `k` nodes in the result set. The abort criterion is the most tricky part. We want to abort if none of the candidates is better than the kth best node in the result set, or if we have run out of candidates to try.
+
+There might be an off by one error somewhere in there, but the algorithm seems to work well. The algorithm does not do any pings to check node liveness, since a Ping request and a FindNode request are identical in terms of latency and cost, and a FindNode request does something useful.
+
+# NetworkGet and NetworkPut
+
+The iterative lookup algorithm is really the most complex part, but for completeness sake here is how the actual NetworkGet and NetworkPut rpc calls are implemented. We first get good initial candidates from the local routing table. Even a pure client node will after some time accumulate some knowledge about the network that is useful for finding good places to start the search.
+
+```rust
+async fn handle_api(&mut self, message: ApiMessage) {
+    match message {
+        ...
+        ApiMessage::NetworkGet(msg) => {
+            let initial = self.node.routing_table.find_closest_nodes(&msg.id, K);
+            self.tasks.spawn(self.state.clone().network_get(initial, msg.inner, msg.tx));
+        }
+        ...
+    }
+}
+```
+
+The network_get itself, which is run in a task, then just calls the iterative_find_node fn above to find the `k` closest nodes, and then attempts to get the value from all of them with a configurable parallelism level, returning results to the caller immediately as they arrive.
+
+The network_put fn looks extremely similar.
+
+```rust
+async fn network_get(
+    self,
+    initial: Vec<NodeId>,
+    msg: NetworkGet,
+    tx: mpsc::Sender<(NodeId, Value)>,
+) {
+    let ids = self.clone().iterative_find_node(msg.id, initial).await;
+    stream::iter(ids)
+        .for_each_concurrent(self.config.parallelism, |id| {
+            let pool = self.pool.clone();
+            let tx = tx.clone();
+            let msg = NetworkGet { id: msg.id, kind: msg.kind };
+            async move {
+                let Ok(client) = pool.client(id).await else {
+                    return;
+                };
+                // Get all values of the specified kind for the key
+                let Ok(mut rx) = client.get_all(msg.id, msg.kind).await else {
+                    return;
+                };
+                while let Ok(Some(value)) = rx.recv().await {
+                    if tx.send((id, value)).await.is_err() {
+                        break;
+                    }
+                }
+                drop(client);
+            }
+        })
+        .await;
+}
+```
+
+# Does this work?
+
+Ok, now it seems that we have written a rudimentary DHT. There are some missing parts, such as routing table maintenance. Every query will update the routing table by calling nodes_seen or nodes_dead, but we also want to actively maintain the routing table even if there are no user queries.
+
+But before we get lost in these details... Does this thing even work? Sure, we can write unit tests for the various components such as the routing table. But that won't tell us all that much about the behaviour of a system of thousands of nodes.
+
+What we need is a realistically sized DHT that we can just prod by storing values and see if it behaves correctly. Ideally we want to be able to do this without setting up a kubernetes cluster of actual machines. For the behaviour of the algorithm in the happy case it is sufficient to just simulate a lot of DHT nodes in memory in a single process, connected via irpc memory channels.
+
+For a slightly more realistic simulation we can create a large number of actual DHT nodes that communicate via iroh connections. This can still all happen within a single process, but will be more expensive.
+
+Taking a step back, what does it *mean* for a DHT to work anyway? Sure, we can put values in and get them out again. But there are various pathological cases where the DHT will seem to work but really does not.
+
+E.g. the DHT could decide to store all values on one node, which works just fine but completely defeats the purpose of a DHT. Or it could only work for certain keys.
+
+So we need to take a look at the DHT node internals and see if it works in the expected way.
+
+## Validating lookups
+
+As we have seen, the iterative algorithm to find the `k` closest nodes is at the core of the DHT. Fortunately, for a test scenario we know the perfect result of that call. We can just take the entire set of node ids we have set up for the test, compute the `k` closest to the target node, and compare this set with the set returned by lookup/iterative_find_node. The intersection between the set returned by lookup and the perfect set of node ids gives us a somewhat more precise way to measure the quality of the routing algorithm. For a fully initialized DHT it should be almost always perfect overlap.
+
+Almost, because the algorithm is random and greedy, and there is always a tiny chance that a node can not be found.
+
+We need to perform this test for a large number of randomly chosen keys to prevent being fooled by a DHT that only works for certain values.
+
+## Validating data distribution
+
+A perfect overlap with the perfect set does not mean that everything is perfect. E.g. we could have a bug in our metric that leads to always the 20 smallest nodes in the set being chosen. Both the brute force scan and the iterative lookup would always find these 20 nodes, but data would not be evenly distributed across the network, which defeats the whole purpose of a DHT.
+
+So another useful test is to store a number of random values and check the data distribution in the DHT. Data should be evenly distributed around all nodes, with just the inevitable statistical variation.
+
+## Visualizing the results
+
+In all these cases, we are going to get a lot of data, and the results are not precise enough to be checked in classical unit tests. Instead we are going to plot things like overlap with the perfect set of node ids as well as data distribution, and to condense the information even further plot histograms of these distributions.
+
+Later it would be valuable to compute statitical properties of the distributions and check them against expectations. But for now we just need some basic way to check if the thing works at all. So let's write some tests...
+
+## Testing in memory with irpc
+
+One of the plumbing details we omitted when describing the inner workings of the DHT actor is the client pool. A DHT node is doing a lot of tiny interactions with a lot of nodes, so we don't want to open a connection every time we talk to a remote node. But we also don't want to keep connections open indefinitely, since there will be a lot of them. So one of the things the DHT actor has is an abstract client pool that can provide a client given a remote node id.
+
+```rust
+pub trait ClientPool: Send + Sync + Clone + Sized + 'static {
+    /// Our own node id
+    fn id(&self) -> NodeId;
+
+    /// Adds dialing info to a node id.
+    ///
+    /// The default impl doesn't add anything.
+    fn node_addr(&self, node_id: NodeId) -> NodeAddr {
+        node_id.into()
+    }
+
+    /// Adds dialing info for a node id.
+    ///
+    /// The default impl doesn't add anything.
+    fn add_node_addr(&self, _addr: NodeAddr) {}
+
+    /// Use the client to perform an operation.
+    ///
+    /// You must not clone the client out of the closure. If you do, this client
+    /// can become unusable at any time!
+    fn client(&self, id: NodeId) -> impl Future<Output = Result<RpcClient, String>> + Send;
+}
+```
+
+The client pool is used inside the DHT actor whenever it needs to talk to a remote client. It has ways to add and retrieve dialing information for node ids, but most importantly a way to get a `RpcClient`. This client can be backed either by an actual iroh connection, or just an extremely cheap tokio mpsc channel.
+
+For testing, we are going to implement a TestPool that just holds a set of memory clients that is populated during test setup.
+
+```rust
+#[derive(Debug, Clone)]
+struct TestPool {
+    clients: Arc<Mutex<BTreeMap<NodeId, RpcClient>>>,
+    node_id: NodeId,
+}
+
+impl ClientPool for TestPool {
+    async fn client(&self, id: NodeId) -> Result<RpcClient, String> {
+        let client = self
+            .clients
+            .lock()
+            .unwrap()
+            .get(&id)
+            .cloned()
+            .ok_or_else(|| format!("client not found: {}", id))?;
+        Ok(client)
+    }
+
+    fn id(&self) -> NodeId {
+        self.node_id
+    }
+}
+```
+
+Each DHT node gets their own TestPool, but they all share the map from NodeId to RpcClient. So this is extremely cheap.
+
+## Tests with perfect routing tables
+
+The first test we can perform is to give all nodes perfect[^1] knowledge about the network by just telling them about all other node ids, then perform storage and queries and look at statistics. If there is something fundamentally wrong with the routing algorithm we should see it here. At this point tests are just printing output, so they need to be run with --nocapture.
+
+We are using the [textplots] crate to get nice plots in the console, with some of the plotting code written by claude.
+
+```
+> cargo test perfect_routing_tables_1k -- --nocapture
+
+Histogram - Commonality with perfect set of 20 ids
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⢸⠉⠉⡇ 100.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁⠈⠁ 0.0
+0.0                                           20.0
+```
+
+So far, so good. We get a 100% overlap with the perfect set of ids.
+```
+Storage usage per node
+⡁⠈⢸⢹⠈⣿⣿⠈⠀⠁⠈⠀⠁⢸⢸⠁⠈⠀⠁⢸⢸⡇⠈⠀⠁⠈⢸⠁⠈⠀⠁⠈⠀⠁⢸⠀⠁⣿⢸⢹⡏⡇⠁⠈⠀⠁⠈⠀⠁⠈⡁ 8.0
+⠄⠀⣾⢸⠀⣿⣿⠀⢰⠀⠀⠀⠀⢸⢸⠀⠀⢰⠀⢸⢸⡇⠀⠀⢰⠀⢸⠀⡆⢰⠀⠀⠀⠀⢸⡆⢰⣿⢸⣾⡇⡇⠀⠀⠀⠀⠀⢰⠀⢰⠄
+⠂⠀⣿⢸⠀⣿⣿⢠⢸⠀⠀⠀⠀⣼⣼⠀⠀⢸⠀⢸⢸⡇⢠⢠⣼⠀⢸⠀⡇⢸⠀⠀⠀⢠⢸⡇⢸⣿⢸⣿⣧⡇⡄⠀⠀⠀⠀⢸⠀⢸⠂
+⣁⠀⣿⢸⢀⣿⣿⢸⢸⡀⢀⠀⠀⣿⣿⠀⢀⢸⠀⢸⣸⡇⢸⢸⣿⡀⢸⣀⡇⢸⠀⢀⠀⣸⢸⣇⢸⣿⢸⣿⣿⣇⡇⢀⢀⣀⡀⢸⠀⣸⡁
+⢼⠀⣿⢸⢸⣿⣿⢸⢸⡇⢸⠀⠀⣿⣿⠀⢸⢸⠀⢸⣿⡇⢸⢸⣿⡇⢸⣿⡇⢸⠀⢸⠀⣿⢸⣿⢸⣿⢸⣿⣿⣿⡇⢸⢸⣿⡇⢸⠀⣿⠄
+⢺⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⠀⣿⣿⣿⣿⢸⢸⠀⣿⣿⣿⣿⣿⣿⣿⢸⣿⡇⣿⢸⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣿⡇⣿⣿⣿⣿⣿⡇⣿⡇
+⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣶⣿⣿⣿⣿⣾⣾⡆⣿⣿⣿⣿⣿⣿⣿⣾⣿⣷⣿⣾⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣷⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 0.0
+0.0                                          999.0
+
+Histogram - Storage usage per node
+⡏⠉⠉⠉⠉⠉⢹⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 310.0
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⡇⠀⠀⠀⠀⠀⢸⠉⠉⠉⠉⠉⢹⣀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⡏⠉⠉⠉⠉⠉⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡇⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⡧⠤⠤⠤⠤⠤⢤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣀⣀⡁
+⠁⠈⠀⠁⠈⠀⠉⠈⠀⠁⠈⠀⠉⠈⠀⠁⠈⠀⠁⠉⠀⠁⠈⠀⠁⠉⠀⠁⠈⠀⠁⠈⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁⠁⠈⠀⠁⠈⠁ 14.0
+0.0                                            8.0
+```
+
+Data is evenly distributed over the DHT nodes. The histogram also looks reasonable. Since we have 100% overlap with the perfect set of nodes, the little bump at the end is just a blip, provided or XOR metric works.
+
+```
+Routing table size per node
+⣹⣯⡇⢡⡌⡇⠁⠈⡇⠁⠈⣿⡅⣼⢠⠁⠈⢠⠁⠈⢠⡇⣯⠀⢹⣿⢠⠁⠈⠀⡇⠈⠀⠁⠈⡇⠁⠈⣤⣽⢨⠀⠁⡌⠀⢹⣿⢸⣿⢸⡁ 141.0
+⢼⣿⣿⢸⣿⡇⡇⣿⡇⢸⡇⣿⣿⣿⢸⡇⢸⣿⡇⠀⣿⣿⣿⡇⢸⣿⢸⣿⠀⠀⣿⣿⡇⢸⣿⣿⣿⡇⣿⣿⣿⢸⣿⣿⠀⣿⣿⢸⣿⢸⠄
+⣺⣿⣿⣿⣿⣧⣇⣿⡇⣸⣿⣿⣿⣿⣿⣧⢸⣿⣿⠀⣿⣿⣿⣿⣸⣿⣿⣿⣧⡀⣿⣿⣿⣸⣿⣿⣿⡇⣿⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣼⠂
+⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⣿⣿⣿⣿⣿⣿⣸⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⡁
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 120.0
+0.0                                          999.0
+
+Histogram - Routing table size per node
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⢸⡇⠁⠈⡁ 186.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⢸⡇⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⢀⢸⣿⡇⣤⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⣿⣸⣿⣇⣿⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 0.0
+0.0                                          141.0
+```
+
+All routing tables have roughly the same size. Not surprising since we have initialized them all with a randomized sequence of all node ids.
+
+## Tests with almost empty routing tables
+
+But the above just tells us that the DHT works if we initialize the routing tables with all node ids. That is not how it works in the real world. Nodes come and go, and the DHT is supposed to learn about the network.
+
+So let's write a test where we initially don't have perfect routing information.
+
+We need to give each node at least some initial information about the rest of the network, so we arrange the nodes in a ring and give each node the next 20 nodes in the ring as initial nodes in their routing table (bootstrap nodes). We know that in principle every node is connected with every other node this way, but we also know that this is not going to lead to perfect routing.
+
+So let's see how bad it is.
+
+```
+❯ cargo test just_bootstrap_1k -- --nocapture
+
+Histogram - Commonality with perfect set of 20 ids
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⢸⠉⠉⠉⠉⡇⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 22.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⢀⣀⣀⣀⣀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⡖⠒⠒⠒⢺⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡗⠒⠒⠒⢺⠀⠀⠀⠀⢸⠀⠀⠀⠀⡗⠒⠒⠒⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡏⠉⠉⠉⢹⠀⠀⠀⠀⠂
+⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠤⠤⠤⠤⡇⠀⠀⠀⢸⠀⠀⠀⠀⡁
+⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠉⠈⠀⠁⠈⠁⠁⠈⠀⠉⠈⠀⠁⠈⠁⠁⠈⠀⠉⠉⠉⠉⠉⠁ 1.0
+0.0                                           11.0
+```
+
+Pretty bad. The routing gives between 0 and 11 correct nodes. Note that even with this very suboptimal routing table setup the lookup would work 100% of the time if you use the same node for storage and retrieval, since it always gives the same wrong answer. If you were to use different nodes, there is still some decent chance of an overlap.
+
+Let's look at more stats:
+```
+Storage usage per node
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⢸⢠⢡⠈⡄⠁⡏⢸⣧⡏⠀⢹⡏⡇⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 17.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⢸⢸⡆⣷⠀⣇⣸⣿⣇⠀⢸⣇⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⢸⣾⣷⣿⠀⣿⣿⣿⣿⠀⢸⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣤⢸⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣿⡇⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣿⡇⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⡇⡀⡆⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣧⣧⢠⠀⠀⠀⡁
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 0.0
+0.0                                          999.0
+```
+
+We interact with the node with index 500, and since each node only knows about nodes further right on the ring, the nodes to the left of our initial node are not used at all.
+
+```
+Routing table size per node
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⡏⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 90.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 20.0
+0.0                                          999.0
+```
+
+We have only interacted with node 500, so it has learned a bit about the network. But the other nodes only have the initial 20 bootstrap nodes. We have run all nodes in transient mode, so they don't learn about other nodes unless they actively perform a query, which in this case only node 500 has done.
+
+## Testing active routing table maintenance
+
+An important part of a DHT node is active routing table maintenance to learn about other nodes proactively. Here is a test where each node performs a lookup of its own node id in periodic intervals just to learn about the rest of the world.
+
+```
+cargo test --release self_lookup_strategy -- --nocapture
+```
+
+Initially things look just as bad as with just bootstrap nodes:
+
+```
+Histogram - Commonality with perfect set of 20 ids
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⢸⠉⠉⠉⠉⡇⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 23.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⡖⠒⠒⠒⢺⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⢠⠤⠤⠤⠤⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠉⠉⠉⠉⢹⠉⠉⠉⠉⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⡖⠒⠒⠒⢺⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡗⠒⠒⠒⢺⠀⠀⠀⠀⢸⠀⠀⠀⠀⡗⠒⠒⠒⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡖⠒⠒⠒⢲⠀⠀⠀⠀⠂
+⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠀⠀⠀⠀⢸⠀⠀⠀⠀⡇⠀⠀⠀⢸⠤⠤⠤⠤⡇⠀⠀⠀⢸⠀⠀⠀⠀⡁
+⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠉⠈⠀⠁⠈⠁⠁⠈⠀⠉⠈⠀⠁⠈⠁⠁⠈⠀⠉⠉⠉⠉⠉⠁ 1.0
+0.0                                           11.0
+```
+
+But after just a few random lookups, routing results are perfect for this small DHT
+
+```
+Histogram - Commonality with perfect set of 20 ids
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⢸⠉⠉⡇ 96.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⡇
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡤⠤⢼⠀⠀⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁⠈⠈⠁⠈⠁ 0.0
+0.0                                           20.0
+```
+
+The node that is being probed can still be clearly seen, but after just a few self lookups at least all nodes have reasonably sized routing tables:
+
+```
+Routing table size per node
+⡁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⡏⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⠀⠁⠈⡁ 131.0
+⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⠄⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄
+⠂⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂
+⣵⡆⢀⠀⠀⡀⠀⢀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁
+⣿⣿⣾⣠⣆⣧⣦⣾⣾⡇⠀⡀⠀⣸⠀⡄⢀⠀⠀⠀⢰⡀⠀⣀⣀⣿⣼⣼⣦⣀⠀⠀⠀⠀⠀⠀⠀⢀⢀⣷⣶⡆⣤⣄⢠⡀⠀⠀⠀⠀⠄
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣴⣧⣾⣿⣿⣿⣾⣼⣆⣧⣿⣷⣸⣿⣿⣿⣿⣿⣿⣿⣇⣀⣼⣸⣴⣤⣿⣼⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⡄⣀⡂
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇
+⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁ 42.0
+0.0                                          999.0
+```
+
+How big can you go?
+
+With the memory based tests you can easily go up to 10k nodes, and even go up to 100k nodes with a lot of patience, on a 32GiB macbook pro. The limiting factor is the fixed size of the routing table. For a 100k node test, just the routing tables alone are ~20 GiB. You could optimize this even further by having a more compact routing table or my memoizing/Arc-ing node ids, but this would come with downsides for performance in production, and in any case 100k nodes already is a lot.
+
+## Iroh connection tests
+
+Memory based tests are great to check the behaviour of the routing algorithm. To test networking overhead, it is useful to have a test that runs in a single process but uses one iroh endpoint per node.
+
+We will create an iroh endpoint per DHT node, then use a shared [static discovery provider](https://docs.rs/iroh/0.91.2/iroh/discovery/static_provider/struct.StaticProvider.html) to add dialing information for each node, and disable relay mode. In this test we will use a dedicated client pool per node that is actually backed by an iroh connection pool, just like you would do for a production DHT node.
+
+Unsurprisingly, this test produces exactly the same results as the memory tests. It just takes a bit longer and is a great way to find issues in the underlying connection pool.
+
+# An evolving network
+
+So now we have tests to show that the routing works as designed when the routing tables are properly initialized, and also tests that the routing table maintenance strategies work to properly initiailze the routing tables over time.
+
+What is missing is to simulate a more dynamic network where nodes come and go. We need to know if routing tables eventually learn about new nodes and forget about dead nodes. These kinds of tests don't benefit from running over real iroh connections, so we are going to use mem connections.
+
+## Nodes joining
+
+Having a static test setup with a fixed number of nodes is nice and simple. So we have to set things up such that we still have `n` nodes, but some are initially disconnected. Then do something to connect them to the rest and watch the system evolve. The key for this is the set of bootstrap nodes. We can set up some nodes without bootstrap nodes, and make sure the set of bootstrap nodes for the connected nodes does not contain any of the partitioned nodes. The partitioned nodes will be completely invisible from the connected nodes, as if they don't exist at all.
+
+Then, after some time, do something to connect the disconnected nodes, e.g. tell each of them about one node in the connected set. That should be enough for them to eventually learn about the other nodes, and also for the other nodes to learn about them.
+
+Let's look at the test setup:
+
+```rust
+async fn partition_1k() -> TestResult<()> {
+    // all nodes have all the strategies enabled
+    let config = Config::full();
+    let n = 1000;
+    let k = 900;
+    let bootstrap = |i| {
+        if i < k {
+            // nodes below k form a ring
+            (1..=20).map(|j| (i + j) % k).collect::<Vec<_>>()
+        } else {
+            // nodes above k don't have bootstrap peers
+            vec![]
+        }
+    };
+    let secrets = create_secrets(0, n);
+    let ids = create_node_ids(&secrets);
+    let (nodes, _clients) = create_nodes_and_clients(&ids, bootstrap, config).await;
+    ...
+}
+```
+
+We configure the nodes with all routing table maintenance strategies enabled. Then we create 900 nodes that are connected in a ring, and 100 nodes that don't have any bootstrap nodes (`create_nodes_and_clients` takes a function that gives the indices of the bootstrap node for each node).
+
+Then we let the system run for some time so the 900 connected nodes have some time to learn about each other. Then comes the interesting part - we tell each of the 100 disconnected nodes about 1 of the 900 connected nodes.
+
+```rust
+    for _i in 0..10 {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        // visualize results
+    }
+    let id0 = nodes[0].0;
+    // tell the partitioned nodes about id0
+    for i in k..n {
+        let (_, (_, api)) = &nodes[i];
+        api.nodes_seen(&[id0]).await.ok();
+    }
+    for _i in 0..30 {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        // visualize results
+    }
+```
+
+Now the 100 previously disconnected nodes should learn about the main swarm of 900 nodes, and more importantly the 900 nodes of the main swarm should learn about the 100 new nodes.
+
+But how do we visualize results? First of all we need a way to show the state of the system at one point in time. We got 1000 nodes, so each node can have at most 1000 entries in its routing table. So we could have a bitmap of 1000 rows where each row is the routing table of that node.
+
+But now we need to additionally show evolution of this bitmap over time. Fortunately there are great libraries for animated gifs in rust, so we can just generate an animated gif that shows the evolution of the connectivity map over time.
+
+Here it is:
+
+<div className="not-prose">
+  <img src="/blog/lets-write-a-dht/partition_1k.gif" width={1000} height={1000} alt="Addition of 100 partitioned nodes" />
+</div>
+
+The big diagonal bar is the bootstrap nodes. As you can see they wrap around at 900. The lowest 100 rows are the routing tables of the initially disconnected nodes, and the rightmost 100 pixels is the knowledge of the connected nodes of the initially disconnected rows. Both are initially empty. As soon as the 100 partitioned nodes are connected, the 100 new nodes very quickly learn about the main swarm, and the main swarm somewhat more slowly learns about the 100 new nodes. So everything works as designed.
+
+You could now experiment with different routing table maintenance strategies to make things faster. But fundamentally, things work already. After some time the 100 new nodes would be fully integrated into the swarm.
+
+## Nodes leaving
+
+Another thing we need to test is nodes leaving. When nodes leave for whatever reason, the remaining nodes should notice and purge these nodes from their routing tables after some time. This is necessary for the DHT to continue functioning - a routing table full of dead nodes is worthless. We don't want to immediately forget about nodes when they are briefly unreachable - they might come back, but we should eventually get rid of them.
+
+The way deleting dead nodes works in this DHT impl is also via random key lookups. If you notice during a key lookup that a node in your routing table is unreachable, you will purge it from the routing table briefly afterwards. So a node that has all the active routing table maintenance strategies enabled should also automatically get rid of dead nodes over time.
+
+How do we test this? We have 1000 fully connected nodes like in many previous tests, then "kill" the last 100 of them and observe the evolution of the system. For our mem connection pool this is easy to do by just reaching into the underlying `BTreeMap<NodeId, RpcClient>` and removing the last 100 clients.
+
+Here is the test code. We let the DHT connect for 10 seconds, then kill the last 100 nodes, and see how things evolve in the remaining 900 nodes for some time.
+
+```rust
+async fn remove_1k() -> TestResult<()> {
+    let n = 1000;
+    let k = 900;
+    let secrets = create_secrets(seed, n);
+    let ids = create_node_ids(&secrets);
+    // all nodes have all the strategies enabled
+    let config = Config::full();
+    let (nodes, clients) = create_nodes_and_clients(&ids, next_n(20), config).await;
+    for _i in 0..10 {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        // write bitmap
+    }
+    for i in k..n {
+        clients.lock().unwrap().remove(&ids[i]);
+    }
+    for _i in 0..40 {
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        // write bitmap
+    }
+    // write animated gif
+    Ok(())
+}
+```
+
+And here is the resulting gif:
+
+<div className="not-prose">
+  <img src="/blog/lets-write-a-dht/remove_1k.gif" width={1000} height={1000} alt="Removal of 100 nodes" />
+</div>
+
+You can clearly see all nodes quickly forgetting about the dead nodes (last 100 pixels in each row). So removal of dead nodes works in principle. You could of course accelerate this by explicitly pinging all routing table entries in regular intervals, but that would be costly, and only gradually forgetting about dead nodes might even have some advantages - there is a grace period where nodes could come back.
 
 [Kademlia]: https://en.wikipedia.org/wiki/Kademlia
 [metric]: https://en.wikipedia.org/wiki/Metric_space
@@ -529,3 +1236,7 @@ Both storage and retrieval involve *a lot* of network operations. To hide all th
 [node discovery]: https://www.iroh.computer/blog/iroh-global-node-discovery
 [IndexSet]: https://docs.rs/indexmap/latest/indexmap/set/struct.IndexSet.html
 [ArrayVec]: https://docs.rs/arrayvec/0.7.6/arrayvec/
+[FuturesUnordered]: https://docs.rs/futures-buffered/latest/futures_buffered/struct.FuturesUnordered.html
+[textplots]: https://docs.rs/textplots/0.8.7/textplots/
+
+[^1]: The nodes will not retain perfect knowledge due to the k-buckets being limited in size
