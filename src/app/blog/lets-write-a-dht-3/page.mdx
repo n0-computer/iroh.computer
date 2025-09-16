@@ -7,7 +7,7 @@ export const post = {
   date: '2025-09-20',
   title: 'A DHT for iroh',
   description:
-    "Let's write a DHT for iroh - part 3",
+    "Let's write a DHT for iroh - tests",
 }
 
 export const metadata = {
@@ -136,27 +136,27 @@ We are using the [textplots] crate to get nice plots in the console, with some o
 ```
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/perfect_routing_tables_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 So far, so good. We get a 100% overlap with the perfect set of ids.
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/perfect_routing_tables_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/perfect_routing_tables_1k_-_histogram_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 Data is evenly distributed over the DHT nodes. The histogram also looks reasonable. Since we have 100% overlap with the perfect set of nodes, the little bump at the end is just a blip, provided or XOR metric works.
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/perfect_routing_tables_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/perfect_routing_tables_1k_-_histogram_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 All routing tables have roughly the same size. Not surprising since we have initialized them all with a randomized sequence of all node ids.
@@ -176,7 +176,7 @@ So let's see how bad it is.
 ```
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/just_bootstrap_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 Pretty bad. The routing gives between 0 and 11 correct nodes. Note that even with this very suboptimal routing table setup the lookup would work 100% of the time if you use the same node for storage and retrieval, since it always gives the same wrong answer. If you were to use different nodes, there is still some decent chance of an overlap.
@@ -184,13 +184,13 @@ Pretty bad. The routing gives between 0 and 11 correct nodes. Note that even wit
 Let's look at more stats:
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/just_bootstrap_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 We interact with the node with index 500, and since each node only knows about nodes further right on the ring, the nodes to the left of our initial node are not used at all.
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/just_bootstrap_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 We have only interacted with node 500, so it has learned a bit about the network. But the other nodes only have the initial 20 bootstrap nodes. We have run all nodes in transient mode, so they don't learn about other nodes unless they actively perform a query, which in this case only node 500 has done.
@@ -206,19 +206,19 @@ cargo test --release self_lookup_strategy -- --nocapture
 Initially things look just as bad as with just bootstrap nodes:
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/self_lookup_strategy-0_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-0_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 But after just a few random lookups, routing results are close to perfect for this small DHT
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/self_lookup_strategy-9_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-9_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 The node that is being probed can still be clearly seen, but after just a few self lookups at least all nodes have reasonably sized routing tables:
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/self_lookup_strategy-9_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-9_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 ## How big can you go?
@@ -291,7 +291,7 @@ But now we need to additionally show evolution of this bitmap over time. Fortuna
 Here it is:
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/partition_1k.gif" width={1000} height={1000} alt="Addition of 100 partitioned nodes" />
+  <img src="/blog/lets-write-a-dht-3/partition_1k.gif" width={1000} height={1000} alt="Addition of 100 partitioned nodes" />
 </div>
 
 The big diagonal bar is the bootstrap nodes. As you can see they wrap around at 900. The lowest 100 rows are the routing tables of the initially disconnected nodes, and the rightmost 100 pixels is the knowledge of the connected nodes of the initially disconnected rows. Both are initially empty. As soon as the 100 partitioned nodes are connected, the 100 new nodes very quickly learn about the main swarm, and the main swarm somewhat more slowly learns about the 100 new nodes. So everything works as designed.
@@ -336,7 +336,7 @@ async fn remove_1k() -> TestResult<()> {
 And here is the resulting gif:
 
 <div className="not-prose">
-  <img src="/blog/lets-write-a-dht/remove_1k.gif" width={1000} height={1000} alt="Removal of 100 nodes" />
+  <img src="/blog/lets-write-a-dht-3/remove_1k.gif" width={1000} height={1000} alt="Removal of 100 nodes" />
 </div>
 
 You can clearly see all nodes quickly forgetting about the dead nodes (last 100 pixels in each row). So removal of dead nodes works in principle. You could of course accelerate this by explicitly pinging all routing table entries in regular intervals, but that would be costly, and only gradually forgetting about dead nodes might even have some advantages - there is a grace period where nodes could come back.
