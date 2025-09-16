@@ -347,7 +347,7 @@ Rust is very nice in that it allows you to write data structures with a lot of m
 
 Hence the `Box`, and you will sometimes have to jump through some hoops initializing a Buckets struct.
 
-The problem would go away if we were to use Vec instead of ArrayVec, but that would mean that the routing table data is spread all over the heap depending on heap fragmentation at the time of allocation.
+The problem would go away if we were to use `Vec` instead of `ArrayVec`, but that would mean that the routing table data is spread all over the heap depending on heap fragmentation at the time of allocation.
 </Note>
 
 Now assuming that the system has some way to find valid DHT nodes, all we need is a way to insert nodes into the routing table, and to query the routing table for the `k` closest nodes to some key `x` to implement the FindNode rpc call.
