@@ -270,7 +270,7 @@ This client can now be used either with a remote node that is connected via a me
 
 ## Storage implementation
 
-The first thing we would have to do to implement this protocol would be the storage part. For this experiment we will just use a very simple memory storage. This might even be a good idea for production! We have a limited value size, and DHTs are not persistent storage anyway. DHT records need to be continuously republished, so if a DHT node goes down it will just be repopulated with values shortly after becoming online again.
+The first thing we would have to do to implement this protocol would be the storage part. For this experiment we will use a very simple memory storage. This might even be a good idea for production! We have a limited value size, and DHTs are not persistent storage anyway. DHT records need to be continuously republished, so if a DHT node goes down it will just be repopulated with values shortly after becoming online again.
 
 The only notable thing we do here is to store values for different value kinds separately for more simple retrieval, and to use an [IndexSet] for the values to keep values sorted by insertion time.
 
