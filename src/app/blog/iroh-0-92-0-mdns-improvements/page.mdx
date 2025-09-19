@@ -1,0 +1,101 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2025-09-19',
+  title: 'iroh 0.92.0 - mDNS improvements',
+  description: 'Release of iroh v0.92.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
+
+We're excited to bring you this release, which includes two feature contributions from external contributors! We're grateful for our growing community and their interest in making `iroh` as amazing as possible.
+
+This release introduces new features to mDNS discovery: "passive" mode, which allows you to listen for nodes on the local network without publishing your own details, and expiry events that are emitted via the `subscribe` stream, along with other improvements throughout the codebase!
+
+## 🌐 mDNS passive mode
+
+Previously, if you wanted to discover other nodes on your local network, you also had to publish your own information. Now, you can listen passively and receive addresses from other nodes without announcing your own.
+
+The default behavior for [`discovery_local_network`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) is still to launch mDNS discovery in active mode.
+
+Use [`add_discovery`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.add_discovery) along with [`MdnsDiscovery::builder`](https://docs.rs/iroh/latest/iroh/discovery/mdns/struct.MdnsDiscovery.html#method.builder) to launch mDNS discovery in passive mode:
+
+```rust
+// Create mDNS discovery with advertising disabled
+let mdns_discovery = MdnsDiscovery::builder().advertise(false);
+
+// Create endpoint with mDNS discovery
+let endpoint = Endpoint::builder()
+    .add_discovery(mdns_discovery)
+    .bind()
+    .await?;
+```
+
+Thank you to contributor [Le-Maz](https://github.com/Le-Maz) for PR [#3403](https://github.com/n0-computer/iroh/pull/3403)!
+
+## 🪦 Discovery Expiry Events
+
+Our mDNS implementation, `swarm-discovery`, supports notifications when a node leaves the network. We now surface that information in the `Discovery::subscribe` stream!
+
+Previously, the subscribe stream only emitted `DiscoveryItem`s when a node joined the local network. Now, the subscribe stream emits `DiscoveryEvent` s both when a node is discovered and when it has expired:
+
+```rust
+// The types of events now emitted by
+// the `Discovery::subscribe` stream:
+pub enum DiscoveryEvent {
+		// emitted when a node is discovered
+    Discovered(DiscoveryItem),
+    // emitted when a node has expired
+    Expired(NodeId),
+}
+```
+
+Thanks [oscartbeaumont](https://github.com/oscartbeaumont)! For more info, check out PR [#3409](https://github.com/n0-computer/iroh/pull/3409)
+
+## 👷 Additional Improvements
+
+We've included updates that allow [configuring the maximum number of TLS tickets](https://github.com/n0-computer/iroh/pull/3442) (especially useful when making a large number of 0-RTT connections) and added [serde support](https://github.com/n0-computer/iroh/pull/3454) for `net_report::Report`s.
+
+Thanks to [varun-doshi](https://github.com/varun-doshi) for adding a `Deref` impl for `PublicKey`, PR [#3438](https://github.com/n0-computer/iroh/pull/3438).
+
+Thanks to [julianpryde](https://github.com/julianpryde) for adding jitter to DNS retries, PR [#3447](https://github.com/n0-computer/iroh/pull/3447).
+
+Thanks to [alx0x10](https://github.com/alx0x10) for some doc improvements, PR [#3446](https://github.com/n0-computer/iroh/pull/3446).
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - added
+        - “passive” mode for mDNS discovery
+            - `MdnsDiscovery::new(node_id: NodeId)` → `MdnsDiscovery::new(node_id: NodeId, advertise: bool)`
+    - changed
+        - The `subscribe` method for the `Discovery` trait now returns a stream of `DiscoveryEvent` rather than `DiscoveryItem`. A discovery event now includes expiry events that notify you when a node that was previously discovered (usually via mDNS) can no longer be found.
+            - `fn subscribe(&self) -> Option<BoxStream<DiscoveryItem>>` → `fn subscribe(&self) -> Option<BoxStream<DiscoveryEvent>>`
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.92.0](https://github.com/n0-computer/iroh/releases/tag/v0.92.0).
+
+If you want to know what is coming up, check out the [v0.93.0 milestone](https://github.com/n0-computer/iroh/milestone/47) and [v0.99.0 milestone](https://github.com/n0-computer/iroh/milestone/34), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
