@@ -5,9 +5,9 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2025-09-26',
-  title: 'A DHT for iroh',
+  title: 'A DHT for iroh - The Protocol',
   description:
-    "Let's write a DHT for iroh - protocol",
+    "Let's write a DHT for iroh - Part 1, The Protocol",
 }
 
 export const metadata = {
@@ -233,3 +233,5 @@ An implementation detail: the routing table does not have to contain discovery i
 You might ask why this is not a streaming response but rather a single Vec. The number of nodes a node will return in response to a FindNode query is very small (at most ~20) and is immediately available after querying the routing table. So there is no point in streaming this - 20 NodeAddrs with some discovery info will fit into 1 or 2 MTUs, so it is more efficient to send them all at once.
 
 And that's it. That is the entire RPC protocol. Many DHT implementations also add a `Ping` call, but since querying the routing table is so cheap, if you want to know if a node is alive, you might as well ask it for the closest nodes to some random key and get some extra information for free.
+
+Please checkout our published DHT code under [`iroh-dht-experiment`](https://github.com/n0-computer/iroh-dht-experiment), but we will explore actually implementing and testing the DHT in later blog posts! Stay tuned.
