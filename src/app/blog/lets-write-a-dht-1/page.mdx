@@ -185,7 +185,7 @@ So let's take a look at the RPC annotations. `Set` is a normal RPC call with a s
 
 GetResponse is still missing. It's an enum describing whether the set succeeded, and if not, why it failed. You might wonder why we don't use a `Result<(), SetError>`: you could do that, but you have to be aware that serializing detailed errors is sometimes a big pain, and also the exact details of the failure like the stack trace are nobody's business. We give you a very rough idea of why the request failed so you can decide whether to try again or not. For example, `ErrFull` means you might try a bit later; `ErrInvalid` means that there is something wrong with the value, e.g., signature error, and there is no point in trying again.
 
-```
+```rust
 pub enum SetResponse {
     Ok,
     /// The key was too far away from the node ID in terms of the DHT metric.
