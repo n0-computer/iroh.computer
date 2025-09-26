@@ -1,0 +1,237 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2025-09-26',
+  title: 'A DHT for iroh - The Protocol',
+  description:
+    "Let's write a DHT for iroh - Part 1, The Protocol",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Iroh blobs is a very efficient way to distribute data from one peer to another. It even has some capabilities to get data from multiple nodes, as of iroh-blobs 0.9x. But there is one crucial component missing for it to become a global permissionless content distribution system: a content discovery service that tells you which nodes have which content.
+
+This is a very hard problem. Existing systems such as bittorrent solve it reasonably well, although they are not perfect.
+
+The standard solution for content discovery in systems such as bittorrent and IPFS is a Distributed Hash Table (DHT). This series of blog posts and the associated repository are an experiment: is it possible to write a high performance distributed hash table using iroh connections?
+
+The code is not yet production ready, but it is an interesting use case for many advanced techniques involving iroh connections, such as connection pools and 0rtt connections. It also is a nice way to show off irpc, both for *local* rpc to control a DHT node and for the DHT protocol itself.
+
+# What is a Distributed Hash Table
+
+Let's see what wikipedia says:
+
+"A distributed hash table (DHT) is a distributed system that provides a lookup service similar to a hash table. Key–value pairs are stored in a DHT, and any participating node can efficiently retrieve the value associated with a given key. The main advantage of a DHT is that nodes can be added or removed with minimum work around re-distributing keys."
+
+So a distributed hash table seen as a black box is just like a hashtable, but spread over possibly millions of machines that are connected via possibly slow and fallible network connections. The algorithm needs to gracefully deal with nodes being slow or high latency, nodes coming and going, and ideally even with some nodes that intentionally misbehave.
+
+## Keys
+
+Just like a normal hash table, a distributed hash table maps some key type to some value type. Keys in local hash tables can be of arbitrary size. The key that is actually used for lookup is a (e.g., 64-bit) hash of the value, and the hash table has additional logic to deal with rare but inevitable hash collisions. For distributed hash tables, you typically restrict the key to a fixed size and let the application deal with the mapping from the actual key to the hash table keyspace. For example, the BitTorrent mainline DHT uses a 20-byte keyspace, which is the size of a SHA1 hash. The main purpose of the mainline DHT is to find content providers for data based on a SHA1 hash of the data. But even with mainline, there are cases where the actual key you want to look up is larger than the keyspace, e.g., [bep_0044] where you want to look up some information for an ED25519 public key. In that case, mainline does exactly what you would do in a local hash table—it hashes the public key using SHA1 and then uses the hash as the lookup key.
+
+For iroh, we are mainly interested in looking up content based on its BLAKE3 hash. Another use case for the DHT is to look up information for an iroh node ID, which is an ED25519 public key. So it makes sense for a clean-room implementation to choose a 32-byte keyspace. An arbitrary size key can be mapped to this keyspace using a cryptographic hash function with an astronomically low probability of collisions.
+
+<Note>
+It is important to keep in mind that despite the main purpose of the DHT being BLAKE3 lookups, the key is just an arbitrary blob. You can put whatever you want in these 32 bytes: BLAKE3 hashes, SHA2 hashes, ED25519 public keys, whatever fits 32 bytes.
+
+Also, a DHT with a smaller keyspace such as mainline with its 20 bytes would still be completely viable provided that you had a way to store arbitrary values for a key. The reason to use 32 bytes is just convenience, since this is a completely separate implementation anyway.
+</Note>
+
+## Values
+
+In principle, values in a DHT can be of arbitrary size. But there are various reasons for wanting to keep the values small.
+
+First, we want requests to store and look up data to be small for efficiency. Ideally a storage or lookup request should fit into a single network packet even with the inevitable framing overhead. In QUIC, the minimum MTU (maximum transmission unit) is specified as 1200 bytes. So if a request consisting of key, value, and some overhead fits into 1200 bytes, a request or response will be sent as a single non-fragmented UDP packet.
+
+Second, we rely on arbitrary nodes on the network to store data for us without being in any way compensated for it. So the values need to be small so that a small DHT node can store many of them. If the value size were unlimited, people could and would abuse the DHT for storing actual data, which would put a lot of load on DHT nodes and make it extremely unlikely that people would run DHT nodes without being compensated for it.
+
+For that reason, mature systems such as the mainline DHT restrict value size to 1000 bytes, and we are going to limit value size to 1024 bytes or 1KiB.
+
+You could write a DHT to store arbitrary values, but in almost all cases, the value should have some relationship with the key. For example, for mainline, the value in most cases is a set of socket addresses where you can download the data for the SHA1 hash of the key. So in principle, you could validate the key by checking if you can actually download the data from the socket addresses contained in the data. In some mainline extensions, like BEP_0044, the key is the SHA1 hash of an ED25519 public key, and the value contains the actual public key, a signature computed from the corresponding private key, and some user data. Again, it is possible to validate the value based on the key—if the SHA1 hash of the public key contained in the value does not match the lookup key, the value is invalid for the key.
+
+## Storage
+
+Even disregarding all the distributed systems complexity, at the end of the day the data needs to live somewhere. Each node will store a fraction of the total data. So one component of a DHT node is just a remotely accessible key-value store, where the key is a fixed-size blob. There can be multiple values for a key. For example, there can be multiple nodes that store the same data. For that reason the storage is a multimap. The storage layer needs to have some mechanism to limit the number of values for a key, typically by time based expiry and/or a maximum number of values per key.
+
+## Routing
+
+As mentioned above, in a DHT, not every node has all the data. So we need some mechanism to find which node has the data. Basically, we need a way for a node to say "I don't have the data, but you might try my neighbours X and Y, they are more likely to have it". Regardless of the exact routing algorithm, it is important to understand that routing is only concerned with keys, not with values. You first find the nodes that are most likely to have a value for a key, then ask these nodes for the actual value. So the two parts (routing and value storage/retrieval) should be pretty separate. Adding new value types should be possible without having to touch the routing algorithm, and modifying the routing algorithm should be possible without having to think about values at all.
+
+## Kademlia
+
+The most popular routing algorithm for DHTs is [Kademlia]. The core idea of Kademlia is to define a [metric] that gives a scalar distance between any two keys (points in the metric space) that fulfills the metric axioms. DHT nodes have a node ID that gets mapped to the metric space, and you store the data on the `k` nodes that are closest to the key.
+
+The metric chosen by Kademlia is the XOR metric: the distance between two keys `a` and `b` is simply the bitwise XOR of the keys. This is absurdly cheap to compute and fulfills all the metric axioms. It also helps with sparse routing tables, as we will learn later.
+
+If a node had perfect knowledge of all other nodes in the network, it could give you a perfect answer to the question "where should I store the data for key `key`". Just sort the set of all keys that correspond to node IDs by distance to the key and return the `k` smallest values. For small to medium DHTs, this is a viable strategy, since modern computers can easily store millions of 32-byte keys without breaking a sweat. But for either extremely large DHTs or nodes with low memory requirements, it is desirable to store just a subset of all keys.
+
+<Note>
+It would be easily possible for a modern machine to keep the entire set of known node IDs in memory even for very large DHTs. But you have to remember that routing is just a part of the work of the DHT, and the DHT process should be cheap enough in terms of memory and storage that you can run it in the background without slowing down the entire system.
+</Note>
+
+A fixed-size random sampling of the set of all known node IDs would be viable and would work, but there are some downsides. For a completely random sampling, you do not have detailed knowledge of your immediate neighbours, so it would take many hops to find a better node if you are already close to the goal. If the sampling was only neighbours in terms of the distance metric, it would take you many hops to find a node that is far away. It turns out that the best distribution is a power-law distribution where you know a lot of immediate neighbours but also some nodes that are far away.
+
+Imagine you wanted to find an arbitrary person, and your entire friend group was geographically close. It would be a lot of hops to find somebody that is far away. Now imagine your entire friend group was randomly spread around the world. It would take a lot of hops to find a neighbour that is not in your friend group. The ideal friend distribution is to know a lot of people in your village, but also some people in the next city, in neighbouring countries, and a few on different continents.
+
+Kademlia uses a routing table that remembers nodes based on proximity. It defines proximity buckets based on the number of leading zeros of the XOR distance to your own node ID. For a k-bit keyspace, there are k proximity buckets, and for each of these so-called k-buckets, you have a maximum number of nodes you will remember. This gives a fixed upper limit on the size of the routing table while automatically keeping a power-law distribution. You will know almost all nodes in your immediate proximity, but also some nodes that are on the other side of the world in terms of the XOR metric space. The way the bucketing is done is quite cheap, but other schemes would work just as well as long as you approximate a power law distribution. For example, you could also have 32 buckets based on the number of trailing zero *bytes* in the distance and increase the bucket size.
+
+<Note>
+For our key size of 32 bytes or 256 bits, and a max bucket size of 20 keys, the maximum routing table size is 20 * 256 = 5120 nodes or 20 * 256 * 32 = 163840 bytes. 
+</Note>
+
+## Lookup algorithm
+
+If each node had perfect knowledge of all other nodes on the network, lookup and storage would be just a two step process:
+
+1. Ask any node for the `k` closest nodes to key `x`.
+2. Store/look up the data on these `k` nodes.
+
+But since this is no longer the case, the lookup process needs to be iterative. We first use our local knowledge to find good candidates to ask, then ask them for the `k` closest nodes to our target `x` that they know. We then ask some of the resulting nodes the same question again, until we can no longer make an improvement. Basically, we do a greedy downhill search until we arrive at a minimum, which due to the power-law distribution of the nodes is hopefully a global minimum. There are some intricacies to this iterative algorithm. For example, we always ask multiple nodes at each stage while keeping the parallelism limited to avoid having too many concurrent connections. Fortunately, these complexities don't leak into the protocol. All we need is a way to ask a node for the `k` closest nodes to some key `x` according to its local knowledge.
+
+<Note>Due to the limited size of the routing table and the low cost of computing the distance, this query is extremely cheap for a node to answer. Both the query and the response are small enough to fit into an unfragmented UDP packet.</Note>
+
+## Routing table updates
+
+A key property of a DHT compared to more rigid algorithms is that nodes should be able to come and go at any time. So you update the routing tables whenever you interact with a different node ID of a DHT node. In addition, you actively query the network with random keys to learn about new node IDs. We will perform some experiments with various updating schemes later.
+
+# RPC protocol
+
+Now that we have a very rough idea what a distributed hashtable is meant to do, let's start defining the protocol that nodes will use to talk to each other. We are going to use [irpc] to define the protocol. This has the advantage that we can simulate a DHT consisting of thousands of nodes in memory for tests and then use the same code with iroh connections as the underlying transport in production.
+
+First of all, we need a way to store and retrieve values. This is basically just a key-value store API for a multimap. This protocol in isolation is sufficient to implement a tracker, a node that has full knowledge of what is where.
+
+<Note>
+Every type we use in the RPC protocol must be serializable so we can serialize it using [postcard]. Postcard is a non-self-describing format, so we need to make sure to keep the order of the enum cases if we want the protocol to be long-term stable. All rpc requests, responses and the overall rpc enum have the `#[derive(Debug, Serialize, Deserialize)]` annotation, but we will omit this from the examples below for brevity.
+</Note>
+
+## Values
+
+An ID is just a 32-byte blob, with conversions from [iroh::NodeId](https://docs.rs/iroh/latest/iroh/type.NodeId.html) and [blake3::Hash](https://docs.rs/blake3/latest/blake3/struct.Hash.html).
+```rust
+pub struct Id([u8; 32]);
+```
+
+A value can be a bunch of different things, all related to the key. Either a provider for a BLAKE3 hash, a message signed by an Ed25519 key, or a tiny blob of BLAKE3 hashed data. Each of these variants corresponds to a mainline feature.
+```rust
+pub enum Value {
+    Blake3Provider(Blake3Provider),
+    ED25519SignedMessage(ED25519SignedMessage),
+    Blake3Immutable(Blake3Immutable),
+}
+```
+
+We want the ability to query only values of a certain kind, so we need a corresponding Kind enum:
+```rust
+pub enum Kind {
+    Blake3Provider,
+    ED25519SignedMessage,
+    Blake3Immutable,
+}
+```
+
+## KV store protocol
+
+For the key-value store part of the DHT RPC protocol, we want to keep things extremely minimalistic. So we need a way to set and get values.
+
+```rust
+pub struct Set {
+    pub key: Id,
+    pub value: Value,
+}
+
+pub struct GetAll {
+    pub key: Id,
+    pub kind: Kind,
+    ...
+}
+```
+
+Set allows us to ask the node to store a value. It might refuse to do so, but we can ask. GetAll allows us to get all values of a certain kind. That's it. So here is the storage and retrieval part of our protocol:
+
+```rust
+    #[rpc_requests(message = RpcMessage)]
+    pub enum RpcProto {
+        /// Set a key to a value.
+        #[rpc(tx = oneshot::Sender<SetResponse>)]
+        Set(Set),
+        /// Get all values of a certain kind for a key, as a stream of values.
+        #[rpc(tx = mpsc::Sender<Value>)]
+        GetAll(GetAll),
+        ... // routing part TBD
+    }
+```
+
+So let's take a look at the RPC annotations. `Set` is a normal RPC call with a single answer message of type `SetResponse`, which contains some information about whether the set was successful and if not, why not. GetAll might return many values, so we use a response stream of `Value`s. The `#[rpc_requests(message = RpcMessage)]` annotation is to turn this enum into an irpc rpc protocol and to define a corresponding message enum. For details, see this [blog post about irpc].
+
+GetResponse is still missing. It's an enum describing whether the set succeeded, and if not, why it failed. You might wonder why we don't use a `Result<(), SetError>`: you could do that, but you have to be aware that serializing detailed errors is sometimes a big pain, and also the exact details of the failure like the stack trace are nobody's business. We give you a very rough idea of why the request failed so you can decide whether to try again or not. For example, `ErrFull` means you might try a bit later; `ErrInvalid` means that there is something wrong with the value, e.g., signature error, and there is no point in trying again.
+
+```rust
+pub enum SetResponse {
+    Ok,
+    /// The key was too far away from the node ID in terms of the DHT metric.
+    ErrDistance,
+    /// The value is too old.
+    ErrExpired,
+    /// The node does not have capacity to store the value.
+    ErrFull,
+    /// The value is invalid, e.g. the signature does not match the public key.
+    ErrInvalid,
+}
+```
+
+## Routing protocol
+
+The routing part of the protocol is a bit more interesting. We want the ability to query a node for its local knowledge of nodes for a key. So the message needs to contain the key we are looking for. But there is one more thing: if the requester is itself a DHT node, the callee might want to add this node ID to its routing table. If the requester is a short-lived client, we don't want its node ID to be added to the routing table since asking it anything would be pointless. It is up to the callee to validate that the ID is a valid responsive DHT node and then update its routing table; all we do in the request is provide this information.
+
+Note that for a mem transport, there is no way for the callee to check the requester node ID. For the RPC protocol, the mem transport is used in simulations where we trust the caller. When the request comes in via an iroh connection, we can do a quick check that the requester node ID is the remote node ID of the connection.
+
+```rust
+pub struct FindNode {
+    pub id: Id,
+    pub requester: Option<NodeId>,
+}
+```
+
+Now let's add this message to the rpc protocol:
+
+```rust
+#[rpc_requests(message = RpcMessage)]
+pub enum RpcProto {
+    ...
+    /// A request to query the routing table for the most natural locations
+    #[rpc(tx = oneshot::Sender<Vec<NodeAddr>>)]
+    FindNode(FindNode),
+}
+```
+
+The answer is a sequence of iroh [NodeAddr]s, containing most importantly the node ID of the nodes, but also information like the current home relay and possibly even socket addresses where you can attempt to dial the node. Of course, we could rely on [node discovery] here, but DHTs will perform a lot of connections to a very large number of nodes, and the callee already has some information about how to dial the node, so we might as well include it to reduce the load on the node discovery system.
+
+<Note>
+An implementation detail: the routing table does not have to contain discovery information. It is purely about node IDs. When we answer a FindNode request, we enrich the node IDs with the discovery information that is stored in the iroh endpoint.
+</Note>
+
+You might ask why this is not a streaming response but rather a single Vec. The number of nodes a node will return in response to a FindNode query is very small (at most ~20) and is immediately available after querying the routing table. So there is no point in streaming this - 20 NodeAddrs with some discovery info will fit into 1 or 2 MTUs, so it is more efficient to send them all at once.
+
+And that's it. That is the entire RPC protocol. Many DHT implementations also add a `Ping` call, but since querying the routing table is so cheap, if you want to know if a node is alive, you might as well ask it for the closest nodes to some random key and get some extra information for free.
+
+Please checkout our published DHT code under [`iroh-dht-experiment`](https://github.com/n0-computer/iroh-dht-experiment), but we will explore actually implementing and testing the DHT in later blog posts! Stay tuned.
