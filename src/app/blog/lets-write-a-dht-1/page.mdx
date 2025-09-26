@@ -35,11 +35,11 @@ This is a very hard problem. Existing systems such as bittorrent solve it reason
 
 The standard solution for content discovery in systems such as bittorrent and IPFS is a Distributed Hash Table (DHT). This series of blog posts and the associated repository are an experiment: is it possible to write a high performance distributed hash table using iroh connections?
 
-The code is not yet production ready, but it is an interesting use case for many advanced techniques involving iroh connections, such as connection pools and 0rtt connections. It also is a nice way to show off irpc, both for *local* rpc to control a DHT node and for the DHT protocol itself.
+The code is not yet production ready, but it is an interesting use case for many advanced techniques involving iroh connections, such as connection pools and 0rtt connections. It also is a nice way to show off [irpc], both for *local* rpc to control a DHT node and for the DHT protocol itself.
 
 # What is a Distributed Hash Table
 
-Let's see what wikipedia says:
+Let's see what [wikipedia](https://en.wikipedia.org/wiki/Distributed_hash_table) says:
 
 "A distributed hash table (DHT) is a distributed system that provides a lookup service similar to a hash table. Key–value pairs are stored in a DHT, and any participating node can efficiently retrieve the value associated with a given key. The main advantage of a DHT is that nodes can be added or removed with minimum work around re-distributing keys."
 
@@ -235,3 +235,12 @@ You might ask why this is not a streaming response but rather a single Vec. The 
 And that's it. That is the entire RPC protocol. Many DHT implementations also add a `Ping` call, but since querying the routing table is so cheap, if you want to know if a node is alive, you might as well ask it for the closest nodes to some random key and get some extra information for free.
 
 Please checkout our published DHT code under [`iroh-dht-experiment`](https://github.com/n0-computer/iroh-dht-experiment), but we will explore actually implementing and testing the DHT in later blog posts! Stay tuned.
+
+[Kademlia]: https://en.wikipedia.org/wiki/Kademlia
+[metric]: https://en.wikipedia.org/wiki/Metric_space
+[irpc]: https://docs.rs/irpc/latest/irpc/
+[postcard]: https://docs.rs/postcard/latest/postcard/
+[blog post about irpc]: https://www.iroh.computer/blog/irpc
+[NodeAddr]: https://docs.rs/iroh/latest/iroh/struct.NodeAddr.html
+[node discovery]: https://www.iroh.computer/blog/iroh-global-node-discovery
+[bep_0044]: https://www.bittorrent.org/beps/bep_0044.html
