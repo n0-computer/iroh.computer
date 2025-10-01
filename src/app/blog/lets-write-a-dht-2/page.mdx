@@ -2,9 +2,8 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 import {ThemeImage} from '@/components/ThemeImage'
 
 export const post = {
-  draft: true,
   author: 'Rüdiger Klaehn',
-  date: '2025-09-19',
+  date: '2025-10-06',
   title: 'A DHT for iroh',
   description:
     "Let's write a DHT for iroh - implementation",
@@ -33,33 +32,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Using an irpc client directly is not exactly horrible, but nevertheless we want to add some sugar to make it more easy to use. So we write a wrapper around the irpc client that makes using it more convenient. Set and FindNode are just async fns, GetAll returns a stream of responses.
 
-```rust
-impl RpcClient {
-    ...
-
-    pub async fn set(&self, key: Id, value: Value) -> irpc::Result<SetResponse> {
-        self.0.rpc(Set { key, value }).await
-    }
-
-    pub async fn get_all(
-        &self,
-        key: Id,
-        kind: Kind,
-    ) -> irpc::Result<irpc::channel::mpsc::Receiver<Value>> {
-        self.0
-            .server_streaming(GetAll { key, kind }, 32)
-            .await
-    }
-
-    pub async fn find_node(
-        &self,
-        id: Id,
-        requester: Option<NodeId>,
-    ) -> irpc::Result<Vec<NodeAddr>> {
-        self.0.rpc(FindNode { id, requester }).await
-    }
-}
-```
+<https://github.com/n0-computer/iroh-dht-experiment/blob/561cad3740d3f13aa1b49f5d0b79c5198c1bd9a5/src/lib.rs#L323>
 
 This client can now be used either with a remote node that is connected via a memory transport, or with a node that is connected via an iroh connection.
 
@@ -69,43 +42,13 @@ The first thing we would have to do to implement this protocol would be the stor
 
 The only notable thing we do here is to store values for different value kinds separately for more simple retrieval, and to use an [IndexSet] for the values to keep values sorted by insertion time.
 
-```rust
-struct MemStorage {
-    /// The DHT data storage, mapping keys to values.
-    /// Separated by kind to allow for efficient retrieval.
-    data: BTreeMap<Id, BTreeMap<Kind, IndexSet<Value>>>,
-}
-
-impl MemStorage {
-    fn new() -> Self {
-        Self {
-            data: BTreeMap::new(),
-        }
-    }
-
-    /// Set a value for a key.
-    fn set(&mut self, key: Id, value: Value) {
-        let kind = value.kind();
-        self.data
-            .entry(key)
-            .or_default()
-            .entry(kind)
-            .or_default()
-            .insert(value);
-    }
-
-    /// Get all values of a certain kind for a key.
-    fn get_all(&self, key: &Id, kind: &Kind) -> Option<&IndexSet<Value>> {
-        self.data.get(key).and_then(|kinds| kinds.get(kind))
-    }
-}
-```
+<https://github.com/n0-computer/iroh-dht-experiment/blob/561cad3740d3f13aa1b49f5d0b79c5198c1bd9a5/src/lib.rs#L869>
 
 ## Routing implementation
 
 Now it looks like we have run out of simple things to do and need to actually implement the routing part. The routing API does not care how the routing table is organized internally - it could just as well be the full set of nodes. But we want to implement the Kademlia algorithm to get that nice power law distribution.
 
-So let's define the routing table. First of all we need some simple integer arithmetic like xor and leading_zeros for 256 bit numbers. There are various crates that provide this, but since we don't need anything fancy like multiplication or division, we just quickly implemented it inline.
+So let's define the routing table. First of all we need some simple integer arithmetic like xor and leading_zeros for 256 bit numbers. There are various crates that provide this, but since we don't need anything fancy like multiplication or division, we just quickly implemented it [inline]<https://github.com/n0-computer/iroh-dht-experiment/blob/561cad3740d3f13aa1b49f5d0b79c5198c1bd9a5/src/lib.rs#L899>.
 
 The routing table itself is just a 2d array of node ids. Each row (k-bucket) has a small fixed upper size, so we are going to use the [ArrayVec] crate to prevent allocations. For each node id we just keep a tiny bit of extra information - a timestamp when we have last seen any evidence that the node actually exists and responds, to decide which nodes to check for liveness.
 
@@ -151,50 +94,11 @@ Now assuming that the system has some way to find valid DHT nodes, all we need i
 
 Insertion means first computing which bucket the node should go into, and then inserting at that index. Computing the bucket index is computing the xor distance to our own node id, then counting leading zeros and flipping the result around, since we want bucket 0 to contain the closest nodes and bucket 255 to contain the furthest away nodes as per Kademlia convention.
 
-```rust
-fn bucket_index(&self, target: &[u8; 32]) -> usize {
-    let distance = xor(&self.local_id.as_bytes(), target);
-    let zeros = leading_zeros(&distance);
-    if zeros >= BUCKET_COUNT {
-        0 // Same node case
-    } else {
-        BUCKET_COUNT - 1 - zeros
-    }
-}
-
-fn add_node(&mut self, node: NodeInfo) -> bool {
-    if node.id == self.local_id {
-        return false;
-    }
-
-    let bucket_idx = self.bucket_index(node.id.as_bytes());
-    self.buckets[bucket_idx].add_node(node)
-}
-```
+<https://github.com/n0-computer/iroh-dht-experiment/blob/561cad3740d3f13aa1b49f5d0b79c5198c1bd9a5/src/lib.rs#L796>
 
 Insertion in a bucket where the node already exists means just updating the timestamp. Otherwise just append the node, and if there is no room either make room by evicting the oldest existing node, or ping the oldest node and fail the insertion if the old node responds. For now we just fail, favoring stability. Nodes will be pinged in regular intervals anyway, and nodes that are non-responsive will be purged.
 
-```rust
-impl KBucket {
-    fn add_node(&mut self, node: NodeInfo) -> bool {
-        // Check if node already exists and update it
-        for existing in &mut self.nodes {
-            if existing.id == node.id {
-                existing.last_seen = node.last_seen;
-                return true; // Updated existing node
-            }
-        }
-
-        // Add new node if space available
-        if self.nodes.len() < K {
-            self.nodes.push(node);
-            return true;
-        }
-
-        false // Bucket full
-    }
-}
-```
+<https://github.com/n0-computer/iroh-dht-experiment/blob/561cad3740d3f13aa1b49f5d0b79c5198c1bd9a5/src/lib.rs#L704>
 
 As you can see this is a very simple implementation. Within the bucket we don't care about order.
 
@@ -551,7 +455,7 @@ async fn handle_api(&mut self, message: ApiMessage) {
 
 The network_get itself, which is run in a task, then just calls the iterative_find_node fn above to find the `k` closest nodes, and then attempts to get the value from all of them with a configurable parallelism level, returning results to the caller immediately as they arrive.
 
-The network_put fn looks extremely similar.
+The network_put fn looks similar.
 
 ```rust
 async fn network_get(
