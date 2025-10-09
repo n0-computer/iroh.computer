@@ -92,8 +92,6 @@ let conn = pool.get_or_connect(remote_id)?;
 /// use the connection as usual.
 ```
 
-We had this exact problem at a customer, where we wanted to avoid spamming the relay with gigabytes of blob transfers before getting a direct connection to avoid overloading the relay and slowing down the more important control plane gossip messages.
-
 The code to await a direct connection will change quite a bit once we have QUIC multipath. But the capability will remain, and we will update the test code to reflect the new API.
 
 <Note>
