@@ -108,7 +108,7 @@ We experimented with a safer callback-based API, but it turned out to be just to
 
 # Abstract request and response streams
 
-Iroh-blobs is a protocol that tries to avoids overabstraction. For example as of now you can only use the BLAKE3 hash function, and we hardcode the chunk group size to a value that should work well for all users.
+Iroh-blobs is a protocol that tries to avoid overabstraction. For example as of now you can only use the BLAKE3 hash function, and we hardcode the chunk group size to a value that should work well for all users.
 
 But sometimes there are cases where a bit of abstraction is needed. There was a user request to be able to use compression with iroh-blobs in [sendme]. One way to do this is to compress files before adding them to the blob store. But this has various downsides. It requires you to create a copy of all data before adding it to the blob store, and will also not lead to very good compression rates when dealing with a large number of small files, since each file will have to be compressed in isolation.
 
