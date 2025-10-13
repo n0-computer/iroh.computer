@@ -34,7 +34,7 @@ Let's start with a feature that is essential for blobs itself, but can also be u
 
 # Connection pool
 
-There is a new connection pool in `util::connection_pool`. This is useful whenever you have a protocol that has to talk to a large number of endpoints while keeping an upper bound of concurrent open connections. In blobs this is used whenever you use the downloader to orchestrate blobs downloads from multiple providers.
+There is a new connection pool in `util::connection_pool`. This is useful whenever you have a protocol that has to talk to a large number of endpoints while keeping an upper bound of concurrent open connections. In blobs, this is used whenever you use the downloader to orchestrate blobs downloads from multiple providers.
 
 Iroh connections are relatively lightweight, but even so you don't want to keep thousands of them open at the same time. But opening a new connection every time you do a small exchange with a peer is very wasteful. The ConnectionPool gives you an API to deal with these tradeoffs.
 
