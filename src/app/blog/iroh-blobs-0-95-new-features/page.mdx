@@ -70,7 +70,7 @@ So far, pretty straightforward. There is an additional option to perform some se
 As an example, you might want to do iroh-blobs transfers only on direct connections in order to get good performance or reduce bandwidth use on the relay. If establishing direct connections is not possible, the connection establishment would time out, and you would never even attempt a transfer from such a node.
 
 ```rust
-let on_connected = |ep: Endpoint, conn: Connection| async move {
+async fn on_connected(ep: Endpoint, conn: Connection) -> io::Result<()> {
     let Ok(id) = conn.remote_node_id() else {
         return Err(io::Error::other("unable to get node id"));
     };
@@ -103,6 +103,26 @@ Until then, just depend on iroh-blobs. Iroh-blobs without persistent storage is 
 One thing to keep in mind when using the connection pool: the connection pool needs the ability to track which connections are currently being used. To do this, the connection pool does not return `Connection` but `ConnectionRef`, a struct that derefs to `Connection` but contains some additional lifetime tracking.
 
 But `Connection` is `Clone`, so in principle there is nothing stopping you from cloning the wrapped connection and losing the lifetime tracking. **Don't do this**. If you work with connections from the pool, you should pass around either a `ConnectionRef` or a `&Connection` to make sure the underlying `ConnectionRef` stays alive.
+
+Incorrect usage of `ConnectionRef`:
+
+```rust
+fn handle_connection(connection: Connection) { tokio::spawn(...) }
+
+let conn = pool.get_or_connect(remote_id)?;
+handle_connection(conn.clone()); // clones the Connection out of the ConnectionRef.
+/// The ConnectionRef will be dropped here, and the pool will consider the connection idle!
+```
+
+Correct usage of `ConnectionRef`:
+
+```rust
+fn handle_connection(connection: ConnectionRef) { tokio::spawn(...) }
+
+let conn = pool.get_or_connect(remote_id)?;
+handle_connection(conn.clone());
+/// The ConnectionRef will be moved into the task, and its lifetime will be properly tracked!
+```
 
 We experimented with a safer callback-based API, but it turned out to be just too inconvenient to use.
 
