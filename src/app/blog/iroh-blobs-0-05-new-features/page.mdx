@@ -97,7 +97,7 @@ The code to await a direct connection will change quite a bit once we have QUIC 
 <Note>
 The connection pool is generic enough that it will move to its own crate together with some other iroh utilities. It lives in blobs only until iroh 1.0 is released.
 
-Until then, just depend in iroh-blobs. Iroh-blobs without persistent storage is a very lightweight dependency.
+Until then, just depend on iroh-blobs. Iroh-blobs without persistent storage is a very lightweight dependency.
 </Note>
 
 One thing to keep in mind when using the connection pool: the connection pool needs the ability to track which connections are currently being used. To do this, the connection pool does not return `Connection` but `ConnectionRef`, a struct that derefs to `Connection` but contains some additional lifetime tracking.
