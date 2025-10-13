@@ -65,7 +65,7 @@ pub struct Options {
 
 You can configure the max number of connections to be retained, the maximum tolerable duration for connection establishment, and the max duration connections are kept when idle.
 
-So far, pretty straightforward. There is an additional option to perform some setup before the connection is handed out to the user. For example you can reject connections based on the data available at this time from the endpoint and the connection, or wait for the connection to reach a certain state before handing it out.
+So far, pretty straightforward. There is an additional option to perform some setup before the connection is handed out to the user. For example, you can reject connections based on the data available at this time from the endpoint and the connection, or wait for the connection to reach a certain state before handing it out.
 
 As an example, you might want to do iroh-blobs transfers only on direct connections in order to get good performance or reduce bandwidth use on the relay. If establishing direct connections is not possible, the connection establishment would time out, and you would never even attempt a transfer from such a node.
 
