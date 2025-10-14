@@ -1,0 +1,107 @@
+export const metadata = {
+  title: 'Architecture',
+  description:
+    'Iroh architecture',
+};
+
+
+# Architecture
+
+Iroh aims to provide peer-to-peer QUIC connections which are:
+
+- Reliable, always connect if possible.
+- Fast to connect, the first bytes should flow immediately.
+- Direct connections with low-latency.
+
+To enable this iroh often uses a relay server to help with establishing direct connections if there are firewalls or NAT devices involved.
+And if direct connectivity is entirely impossible the relay servers will serve as a fallback path between the two iroh nodes.
+
+However iroh works equally well without relay servers if there are not firewalls involved.
+
+## Addressing
+
+Iroh uses an ed25519 public key as both an identifier and a routing key,
+this public key is called the `NodeId`.
+
+The NodeId must be known before you can communicate with a remote node.
+Once the QUIC handshake has completed you can be sure the connection is fully encrypted **and** authenticated thanks to the NodeId.
+Furthermore, when a relay server is used it routes datagrams based on the NodeId for which it is addressed.
+
+Since connectivity still happens on top of the IP network,
+nodes need to know more than just the NodeId of a remote node to reach them.
+To be able to reach a remote node a valid relay URL or a direct address[^udpaddr] must be known.
+This is encapsulated in the `NodeAddr` structure which has fields for the relay URL and direct addresses.
+
+While on the transport layer this makes sense,
+it can often be difficult to know the current relay URL or direct addresses of a remote iroh node.
+Especially as nodes move around in the world relay and direct addressing changes.
+This is why iroh provides a [discovery mechanism](/discovery) which helps resolve a NodeId into the ephemeral addressing in a NodeAddr.
+
+[^udpaddr]: Direct addresses are ordinary UDP socket addresses.
+
+
+## Relay Servers
+
+By default iroh nodes use relay servers.
+
+The relay server serves two main purposes:
+
+- Provide a reliable path to send datagrams between iroh nodes.
+- Enable establishing direct connections: holepunching.
+
+For the first functionality the relay server runs a normal HTTP 1.1 server over TLS.
+Iroh nodes make an entirely normal HTTP request and after this *upgrade* the connection to a raw TCP stream [^websocket].
+On this TCP stream iroh nodes send packets **encrypted** and **addressed** to exactly one remote node using the ed25519 public key.
+Only the destination node can decrypt the contents of packets sent over the relay server.
+The relay server itself can only sees the destination NodeId,
+and if that destination node is also connected to the relay server the datagram is forwarded to it.
+
+To help with establishing direct connections the relay service provides several additional services.
+Most importantly some services to discover the *reflective transport address*:
+
+- [STUN]: an old, effective, but vulnerable mechanism.
+- [QUIC Address Discovery]: experimental but encrypted and reliable.
+
+This reflective transport address, an IP address, is then used by the iroh nodes to initiate holepunching.
+See more below for details on holepunching.
+
+Finally each node is configured with a set of relay servers and at startup the nearest (lowest latency) relay server is selected as *home relay*.
+The only special thing about a home relay is that a node always maintains a connection to it,
+so that peers can use it in a NodeAddr to reach the node.
+Since the NodeAddr for an iroh node contains the relay URL of the home relay,
+there is no need for each node to be configured with the relay servers of all remote nodes.
+This allows relay servers to be operated independently.
+
+[^websocket]: By the time iroh 1.0 is released this will always be a websocket channel.
+    Making the connection look even more standard for observers and helping iroh work in browsers.
+
+[STUN]: https://datatracker.ietf.org/doc/rfc5389/
+[QUIC Address Discovery]: https://datatracker.ietf.org/doc/draft-seemann-quic-address-discovery/
+
+## Holepunching
+
+Holepunching is the process of establishing a direct connection between nodes on the internet,
+even if there are firewalls in between iroh nodes that would otherwise disallow incoming connections.
+Holepunching tends to be easier on UDP,
+which is a great match for iroh which only uses UDP datagrams to communicate between nodes.
+
+To successfully holepunch an iroh node needs the following:
+
+- The reflective transport address.
+- Coordination with remote node via a side channel.
+
+Which is exactly what the relay server provides to iroh nodes.
+
+The reflective transport address is a fancy way of saying the IP address + port from which traffic is observed by e.g. the relay server.
+The idea is that this address can also be used to contact the node behind the firewall,
+if the firewall thinks the incoming traffic matches outgoing traffic.
+
+For this a node will send UDP datagrams to the remote node's reflective address,
+while at the same time sending a message via the relay server informing the remote node to do the same.
+Since both nodes are now sending UDP datagrams on the same 4-tuple
+(source IP address, source port, destination IP address, destination port),
+the firewalls consider this to be expected incoming traffic and let the incoming datagrams through.
+
+It should be noted that the relay server does not knowingly play a role in the holepunching.
+While it needs to forward packets between both iroh nodes it has no knowledge of the contents,
+and thus does not know if the packets are for application data or holepunching coordination.
