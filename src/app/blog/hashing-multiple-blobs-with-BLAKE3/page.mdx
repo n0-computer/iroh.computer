@@ -35,7 +35,9 @@ But what if you have a situation where you don't have enough chunks to work with
 
 For this exploration, we are going to assume that all blobs have the same size, and that this size is known at compile time.
 
-So the signature of the function we want to implement is
+<Note>TLDR: This post demonstrates BLAKE3 can be silly fast, even for small blobs</Note>
+
+The signature of the function we want to implement is
 
 ```rust
 fn hash_many<const N: usize>(slices: &[[u8;N]]) -> Vec<Hash>
@@ -127,9 +129,9 @@ The hazmat API gives you the ability to use the `Hasher` to compute the intermed
 
 But the API still focuses around the `Hasher`, so it still works only for computing data for *individual* blobs.
 
-## Extending the public API
+## Using the internal platform API
 
-So it looks like we have no choice but to dig deeper and see if we can extend the public API.
+So it looks like we have no choice but to dig deeper and see if we can implement this using existing internals.
 
 What we definitely don't want to touch for this small exploration is the hand-optimized SIMD code. So let's look at the entry point to the SIMD code and check if we can repurpose it to work with multiple blobs.
 
@@ -295,15 +297,30 @@ hash_many_simd_rayon 1024 bytes, 1048576 blobs: 75.162083ms
 
 The result is pretty good. We get a factor 17 speed up over the reference implementation, and still a factor 2.1 speedup over just using rayon.
 
-# A public API?
+Comparing with SHA2-256, we get an improvement of ~2.5 when hashing both sequentially, an improvement of 2.6 if we hash both using rayon, and an improvement of 5.4 if we use SIMD+rayon for BLAKE3 and just rayon for SHA2.
+
+```
+Speedups over SHA2-256:
+sequential: 2.5049265097570244
+rayon:      2.6302891590885866
+rayon+simd: 5.3943491646477755
+```
+
+The improvement will vary a lot between architectures and depending on the chosen small blob size.
+
+# What would a public API look like?
 
 The fn we have implemented for the bechmarks is very limited. The number of blobs to hash must be a multiple of the platform specific `MAX_SIMD_DEGREE`, the blobs to be hashed must be all the same size, and the size must be a multiple of the BLOCK_LEN of 64 bytes.
 
-We can relax most of these constraints with some extra effort. But having *different sized* small blobs would be a can of worms.
+We can relax most of these constraints with some extra effort.
+
+But having *different sized* small blobs would be a can of worms. It would require changes to the SIMD implementation itself, such as the ability to set the offset per block instead of just having the option to increment or not.
 
 In addition, at present the API only supports hashing an array of slices in memory. There might be situations where you have an iterator of slices but don't want to collect them into a vec for hashing.
 
 Also, if you have blobs that are more than 1 chunk but less than simd_degree chunks in size, currently there is no way to hash those using `Platform::hash_many`, so you would have to fall back to sequential hashing.
+
+Last but not least, requiring the blob size to be known at compile time is limiting.
 
 So I am not sure how a public API for hashing multiple blobs would look like.
 
@@ -316,18 +333,25 @@ So I am not sure how a public API for hashing multiple blobs would look like.
 
 Platform: NEON
 rayon threads: 10
-hash_many_baseline 1024 bytes, 1048576 blobs: 1.309129958s
-hash_many_rayon_simple 1024 bytes, 1048576 blobs: 153.760791ms
-hash_many_simd 1024 bytes, 1048576 blobs: 549.289042ms
-hash_many_simd_rayon 1024 bytes, 1048576 blobs: 74.79275ms
+hash_many_baseline 1024 bytes, 1048576 blobs: 1.254154625s
+hash_many_rayon_simple 1024 bytes, 1048576 blobs: 152.511417ms
+hash_many_simd 1024 bytes, 1048576 blobs: 563.662083ms
+hash_many_simd_rayon 1024 bytes, 1048576 blobs: 79.925208ms
+sha2_hash_many_baseline 1024 bytes, 1048576 blobs: 3.270222791s
+sha2_hash_many_rayon 1024 bytes, 1048576 blobs: 403.399834ms
 
 Speedups over baseline:
-rayon:      8.514068830460165
-simd:       2.383317084268359
-simd+rayon: 17.50343392909072
+rayon:      8.223349108349048
+simd:       2.2250115145673193
+simd+rayon: 15.691602892043772
 
 Speedups over rayon:
-simd+rayon: 2.055824809222819
+simd+rayon: 1.908176666865853
+
+Speedups over SHA2-256:
+sequential: 2.6075116463410564
+rayon:      2.6450467901691583
+rayon+simd: 5.047216567769207
 ```
 
 I would be curious what the ratio is on different architectures. Try it out and let me know on X (@klaehnr) or bluesky (@rklaehn.bsky.social).
