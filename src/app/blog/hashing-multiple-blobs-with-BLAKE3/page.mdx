@@ -1,0 +1,368 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2025-10-20',
+  title: 'Hashing multiple blobs with BLAKE3',
+  description:
+    "How to quickly hash multiple small blobs with BLAKE3",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+The BLAKE3 hash function is extremely fast for hashing large blobs. This is mainly[^1] due to the fact that as a tree hash function, BLAKE3 splits the data into chunks and can hash multiple chunks at the same time using both instruction level parallelism (SIMD instructions) and thread-level parallelism (multiple cores).
+
+But what if you have a situation where you don't have enough chunks to work with? You have a large number of small blobs you want to compute the BLAKE3 hash for, so in principle you *have* enough data. But every individual blob is less than one 1 KiB chunk in length, so there is no room whatsoever to use any per-blob parallelism.
+
+For this exploration, we are going to assume that all blobs have the same size, and that this size is known at compile time.
+
+<Note>TLDR: This post demonstrates BLAKE3 can be silly fast, even for small blobs</Note>
+
+The signature of the function we want to implement is
+
+```rust
+fn hash_many<const N: usize>(slices: &[[u8;N]]) -> Vec<Hash>
+```
+
+# Test parameters
+
+For the tests we want to hash a large number of small blobs of identical size. So let's write a fn to generate test data.
+
+```rust
+fn test_data<const N: usize>(n: usize) -> Vec<[u8; N]> {
+    (0..n as u64)
+        .map(|i| {
+            let mut res = [0u8; N];
+            res[..8].copy_from_slice(&i.to_le_bytes());
+            res
+        })
+        .collect()
+}
+```
+
+# Establishing a baseline
+
+To establish a baseline, let's do the hashing fully sequentially.
+
+```rust
+fn hash_many_baseline<const N: usize>(slices: &[&[u8;N]]) -> Vec<Hash> {
+    slices.iter().map(|slice| blake3::hash(*slice)).collect()
+}
+```
+
+And try it out with a large number of blobs.
+
+```rust
+let test_data = test_data::<1024>(n);
+let slices = test_data.iter().collect::<Vec<_>>();
+let hashes = hash_many_baseline(slices.as_slice());
+```
+
+This is what we get on a M1 macbook pro:
+
+```
+hash_many_baseline 1024 bytes, 1048576 blobs: 1.282111833s
+```
+
+Let's see how far we can improve on this!
+
+# Thread level parallelism
+
+The first way to speed this up is to use thread level parallelism to make use of multiple cores.
+
+In rust there is a fantastic library for thread level parallelism for compute bound tasks called [rayon], which is also used within the [BLAKE3] crate itself. So let's use that in the most straightforward way possible and see how much it improves things:
+
+```rust
+fn hash_many_rayon<const N: usize>(slices: &[&[u8;N]]) -> Vec<Hash> {
+    return slices
+        .par_iter()
+        .map(|s| blake3::hash(*s))
+        .collect();
+}
+```
+
+The result is a very respectable improvement. This is a 10 core machine, and we are getting a factor ~8.5 improvement. The hash computations are of course completely independent, but they all need to read from memory, and of course there is some coordination overhead. So 8.5 is pretty decent.
+
+```
+hash_many_rayon 1024 bytes, 1048576 blobs: 151.543208ms
+```
+
+# Instruction level parallelism
+
+We can use thread level parallelism for *any* hash function. But one of the strengths of BLAKE3, and also the source of complexity of the [code base], is the ability to use instruction level parallelism. The BLAKE3 crate comes with hand-optimized SIMD implementations for [all major architectures](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L45) and even WASM SIMD instructions.
+
+We can expect a modest improvement for relatively narrow SIMD instruction sets like NEON (apple silicon) with a width of 4, and bigger improvements for wide SIMD instruction sets such as AVX512 (16) in modern x64 CPUs.
+
+Here is the parallelism level (simd degree) for different SIMD instruction sets:
+[fn simd_degree](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L102)
+
+## Using the BLAKE3 crate out of the box
+
+Unfortunately, the use case of hashing multiple blobs has not yet been considered in the [public API]. The public API for hashing has a fn to compute a [hash](https://docs.rs/blake3/latest/blake3/fn.hash.html), and a more advanced API that provides a [`Hasher`](https://docs.rs/blake3/latest/blake3/struct.Hasher.html) that can be [update](https://docs.rs/blake3/latest/blake3/struct.Hasher.html#method.update)d, for incrementally hashing or for hashing giant blobs that don't fit in memory.
+
+But there is *nothing* to work with multiple hashes at the same time.
+
+## Hazmat API to the rescue?
+
+There is a [hazmat API] for advanced users, that we at n0 use in [iroh-blobs] to hash subtrees. When computing a chunk hash, the offset of the chunk in the file is an input parameter. So hashing `[0u8;1024]` at offset 0 will have a different intermediate result than hashing the exact same data at a different offset.
+
+The hazmat API gives you the ability to use the `Hasher` to compute the intermediate results for a subtree that does not start at offset 0. It does this by providing a way to [set the input offset](https://docs.rs/blake3/latest/blake3/hazmat/trait.HasherExt.html#tymethod.set_input_offset) and to [get the result as an intermediate `ChainingValue`](https://docs.rs/blake3/latest/blake3/hazmat/trait.HasherExt.html#tymethod.finalize_non_root).
+
+But the API still focuses around the `Hasher`, so it still works only for computing data for *individual* blobs.
+
+## Using the internal platform API
+
+So it looks like we have no choice but to dig deeper and see if we can implement this using existing internals.
+
+What we definitely don't want to touch for this small exploration is the hand-optimized SIMD code. So let's look at the entry point to the SIMD code and check if we can repurpose it to work with multiple blobs.
+
+The per-platform SIMD implementations are exposed via a [Platform](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L45) enum. Whenever you want to use the SIMD implementations, you use [Platform::detect](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L45), which uses a mixture of compile time flags and runtime detection to detect the most efficient SIMD instruction set. Then you use platform methods to perform the actual computations.
+
+There are various methods on `Platform`, the two that are relevant for simple hashing are [hash_many](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L205C12-L205C21) and [compress_in_place](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/platform.rs#L123). The other methods are only relevant for extendable-output functions ([xof]).
+
+Hash_many is the most important SIMD optimized operation. In normal usage, this is used to compute intermediate results for multiple 1 KiB chunks of the same blob. What we want to do is to use this to compute multiple root hashes (not intermediate results!) for multiple blobs.
+
+Here is the signature of hash_many:
+```rust
+pub fn hash_many<const N: usize>(
+    &self,
+    inputs: &[&[u8; N]],
+    key: &CVWords,
+    counter: u64,
+    increment_counter: IncrementCounter,
+    flags: u8,
+    flags_start: u8,
+    flags_end: u8,
+    out: &mut [u8],
+)
+```
+
+We want to implement `fn hash_many<const N: usize>(slices: &[&[u8;N]]) -> Vec<Hash>`, so at least the input parameter looks useful. We need to figure out what parameters to set on the key, counter, various flags and figure out what the output format is.
+
+### Counter
+
+The counter is just the chunk counter, starting with 0. Since we want to hash multiple independent blobs, we want this to be 0 for not just the initial input but for all inputs. `IncrementCounter` is an enum that has cases `Yes` or `No`, so we will go with `No` here.
+
+### Key
+
+The next parameter we need to figure out is key. It is of type `CVWords`. Looking at the top level [fn hash](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/lib.rs#L913), this is just initialized to a constant [IV](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/reference_impl/reference_impl.rs#L35). So we can just use that and see if it works.
+
+### Flags
+
+To figure out what to pass to the various flags, we can infer a few things just from the signature.
+
+Hashing an individual chunk is a multi step process, where there can be different flags in different steps. Here are the [available flags](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/lib.rs#L192C4-L192C26) in the code. The ones that are relevant for normal hashing of small blobs are `CHUNK_START`, `CHUNK_END` and `ROOT`.
+
+<Note>
+A BLAKE3 *chunk* (1024 bytes) is hashed incrementally in 64 byte *blocks*. As a normal user of the hash function, you don't ever have to think about this. But since we want to repurpose the SIMD code, we have to.
+</Note>
+
+The slices we are passing in are full chunks, so flag_start needs to be `CHUNK_START` and flag_end needs to be `CHUNK_END`. In addition, we want to use hash_many to compute a root hash, not an intermediate value. So for the last block in the chunk we also need to set the `ROOT` flag.
+
+### Output
+
+Now that we have hopefully figured out the right values for all input parameters, we need to figure out what the output is and how to convert it to our desired output, a `Hash`.
+
+The output, just like the key, is a 32 byte continuation value. This comes in two different representations - a 32 byte slice [CVBytes](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/lib.rs#L176), or 8 32 bit words [CVWords](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/lib.rs#L175).
+
+hash_many produces multiple continuation values, so the output is just a buffer that needs to be at least `32*inputs.len()` and will contain the continuation value for each chunk.
+
+To go from a continuation value to a hash, we can just use [Hash::from_bytes](https://github.com/BLAKE3-team/BLAKE3/blob/f8dbfe0b18fd500fd5ae2647c76a5bbdcf49f348/src/lib.rs#L252). 
+
+<Note>We will only get a correct root hash if we have set the ROOT flag on the last block of the computation.</Note>
+
+### Putting it all together
+
+```rust
+let mut buf = vec![0u8; chunks.len() * OUT_LEN];
+platform.hash_many(
+    chunks,
+    IV, // use the intitial continuation value for normal hashing
+    0, // counter 0
+    IncrementCounter::No, // keep counter 0 for all chunks
+    0, // no flags for blocks in the middle, if any
+    CHUNK_START, // use CHUNK_START for the first block in the chunk
+    CHUNK_END | ROOT, // use CHUNK_END for the last block in the chunk, and set ROOT so we get a root hash
+    &mut buf, // output buffer must be 32 * chunks.len
+);
+let hashes = buf.chunks_exact(OUT_LEN).map(Hash::from_slice).collect::<Vec<_>>();
+```
+
+This call produces correct hashes, but only works with the following constraints:
+
+- chunks.len() must be platform::MAX_SIMD_DEGREE
+- the length of each chunk must be a multiple of the block size (64 bytes)
+
+<Note>
+For testing, you can just set Platform to Platform::Portable. Some functions will panic when using Platform::Portable but silently produce wrong results when using a SIMD platform.
+
+This is to be expected since we are using an internal API and preconditions are checked further outside.
+</Note>
+
+To relax these constraints we must split our blobs to be hashed into groups of MAX_SIMD_DEGREE, process the last chunk sequentially if it is < MAX_SIMD_DEGREE, and make sure to only process whole blocks using hash_many.
+
+This adds some modest complexity, but nothing really annoying. Here is [my implementation](https://github.com/rklaehn/BLAKE3/blob/119532e729052836059ba713e9dd36d7f25d3b8a/src/multihash.rs#L89).
+
+For benchmarking, we can just make sure that the constraints are met and use a simplified version.
+
+```rust
+fn hash_many_simd<const N: usize>(slices: &[&[u8; N]]) -> Vec<Hash> {
+    assert!(!slices.is_empty());
+    assert!(slices.len() % MAX_SIMD_DEGREE == 0);
+    assert!(N % BLOCK_LEN == 0);
+    let platform = Platform::detect();
+    slices
+        .chunks(MAX_SIMD_DEGREE)
+        .flat_map(|batch| {
+            let mut buf = [0u8; OUT_LEN * MAX_SIMD_DEGREE];
+            platform.hash_many(
+                batch,
+                IV,
+                0,
+                IncrementCounter::No,
+                0,
+                CHUNK_START,
+                CHUNK_END | ROOT,
+                &mut buf,
+            );
+            std::array::from_fn::<Hash, MAX_SIMD_DEGREE, _>(|i| {
+                Hash::from_slice(&buf[i * OUT_LEN..(i + 1) * OUT_LEN]).unwrap()
+            })
+        })
+        .collect()
+}
+```
+
+```
+hash_many_simd 1024 bytes, 1048576 blobs: 547.307667ms
+```
+
+We get a pretty decent speed up on apple silicon (NEON) compared to the reference implementation. From 1.282111833s to 547.307667ms, so a factor of 2.34 improvement. On CPUs with a wider SIMD instruction set you would expect even further improvements.
+
+# Combining instruction level parallelism and thread level parallelism
+
+Instruction level parallelism alone is frequently a good choice if you have a small batch of blobs to hash. You get a decent speed up but only use one CPU, and don't affect other parts of your program. But what if you have a big batch of blobs to hash and have the entire box for yourself? For peak performance we can combine instruction level parallelism and thread level parallelism.
+
+Here is the above, but with additional rayon thread level parallelism:
+
+```rust
+fn hash_many_simd_rayon<const N: usize>(slices: &[&[u8; N]]) -> Vec<Hash> {
+    assert!(!slices.is_empty());
+    assert!(slices.len() % MAX_SIMD_DEGREE == 0);
+    assert!(N % BLOCK_LEN == 0);
+    let platform = Platform::detect();
+    slices.par_chunks(MAX_SIMD_DEGREE)
+        .flat_map_iter(|batch| {
+            let mut buf = [0u8; OUT_LEN * MAX_SIMD_DEGREE];
+            platform.hash_many(
+                batch,
+                IV,
+                0,
+                IncrementCounter::No,
+                0,
+                CHUNK_START,
+                CHUNK_END | ROOT,
+                &mut buf,
+            );
+            std::array::from_fn::<Hash, MAX_SIMD_DEGREE, _>(|i| {
+                Hash::from_slice(&buf[i * OUT_LEN..(i + 1) * OUT_LEN]).unwrap()
+            })
+        })
+        .collect()
+}
+```
+
+```
+hash_many_simd_rayon 1024 bytes, 1048576 blobs: 75.162083ms
+```
+
+The result is pretty good. We get a factor 17 speed up over the reference implementation, and still a factor 2.1 speedup over just using rayon.
+
+Comparing with SHA2-256, we get an improvement of ~2.5 when hashing both sequentially, an improvement of 2.6 if we hash both using rayon, and an improvement of 5.4 if we use SIMD+rayon for BLAKE3 and just rayon for SHA2.
+
+```
+Speedups over SHA2-256:
+sequential: 2.5049265097570244
+rayon:      2.6302891590885866
+rayon+simd: 5.3943491646477755
+```
+
+The improvement will vary a lot between architectures and depending on the chosen small blob size.
+
+# What would a public API look like?
+
+The fn we have implemented for the bechmarks is very limited. The number of blobs to hash must be a multiple of the platform specific `MAX_SIMD_DEGREE`, the blobs to be hashed must be all the same size, and the size must be a multiple of the BLOCK_LEN of 64 bytes.
+
+We can relax most of these constraints with some extra effort.
+
+But having *different sized* small blobs would be a can of worms. It would require changes to the SIMD implementation itself, such as the ability to set the offset per block instead of just having the option to increment or not.
+
+In addition, at present the API only supports hashing an array of slices in memory. There might be situations where you have an iterator of slices but don't want to collect them into a vec for hashing.
+
+Also, if you have blobs that are more than 1 chunk but less than simd_degree chunks in size, currently there is no way to hash those using `Platform::hash_many`, so you would have to fall back to sequential hashing.
+
+Last but not least, requiring the blob size to be known at compile time is limiting.
+
+So I am not sure how a public API for hashing multiple blobs would look like.
+
+# Try it out
+
+```
+> git clone https://github.com/rklaehn/BLAKE3
+> cd BLAKE3
+> RUSTFLAGS="-C target-cpu=native" cargo run --release --example hash_many
+
+Platform: NEON
+rayon threads: 10
+hash_many_baseline 1024 bytes, 1048576 blobs: 1.254154625s
+hash_many_rayon_simple 1024 bytes, 1048576 blobs: 152.511417ms
+hash_many_simd 1024 bytes, 1048576 blobs: 563.662083ms
+hash_many_simd_rayon 1024 bytes, 1048576 blobs: 79.925208ms
+sha2_hash_many_baseline 1024 bytes, 1048576 blobs: 3.270222791s
+sha2_hash_many_rayon 1024 bytes, 1048576 blobs: 403.399834ms
+
+Speedups over baseline:
+rayon:      8.223349108349048
+simd:       2.2250115145673193
+simd+rayon: 15.691602892043772
+
+Speedups over rayon:
+simd+rayon: 1.908176666865853
+
+Speedups over SHA2-256:
+sequential: 2.6075116463410564
+rayon:      2.6450467901691583
+rayon+simd: 5.047216567769207
+```
+
+I would be curious what the ratio is on different architectures. Try it out and let me know on X (@klaehnr) or bluesky (@rklaehn.bsky.social).
+
+[^1]: Another reason for the speed of BLAKE3 is that it is frugal with cryptographic operations. See [too much crypto] for details.
+
+[too much crypto]: https://eprint.iacr.org/2019/1492
+[BLAKE3]: https://docs.rs/blake3/latest/blake3
+[code base]: https://github.com/blake3-team/BLAKE3
+[rayon]: https://docs.rs/rayon/latest/rayon/
+[public API]: https://docs.rs/blake3/latest/blake3
+[hazmat API]: https://docs.rs/blake3/latest/blake3/hazmat/index.html
+[iroh-blobs]: https://docs.rs/iroh-blobs/latest/iroh_blobs/
+[xof]: https://en.wikipedia.org/wiki/Extendable-output_function
