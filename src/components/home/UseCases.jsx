@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 
 const useCases = {
-  "Resiliant Apps": [
+  "Resilient Apps": [
     "Delta Chat uses iroh to power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious."
   ],
   "AI/ML": [
