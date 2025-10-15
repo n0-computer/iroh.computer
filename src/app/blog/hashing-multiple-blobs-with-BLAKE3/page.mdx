@@ -312,7 +312,7 @@ So I am not sure how a public API for hashing multiple blobs would look like.
 ```
 > git clone https://github.com/rklaehn/BLAKE3
 > cd BLAKE3
-> cargo run --release --example hash_many
+> RUSTFLAGS="-C target-cpu=native" cargo run --release --example hash_many
 
 Platform: NEON
 rayon threads: 10
