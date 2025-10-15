@@ -4,7 +4,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2025-10-20',
+  date: '2025-10-15',
   title: 'Hashing multiple blobs with BLAKE3',
   description:
     "How to quickly hash multiple small blobs with BLAKE3",
@@ -128,6 +128,8 @@ There is a [hazmat API] for advanced users, that we at n0 use in [iroh-blobs] to
 The hazmat API gives you the ability to use the `Hasher` to compute the intermediate results for a subtree that does not start at offset 0. It does this by providing a way to [set the input offset](https://docs.rs/blake3/latest/blake3/hazmat/trait.HasherExt.html#tymethod.set_input_offset) and to [get the result as an intermediate `ChainingValue`](https://docs.rs/blake3/latest/blake3/hazmat/trait.HasherExt.html#tymethod.finalize_non_root).
 
 But the API still focuses around the `Hasher`, so it still works only for computing data for *individual* blobs.
+
+<Note>We have written about the [new hazmat API](https://www.iroh.computer/blog/blake3-hazmat-api) previously</Note>
 
 ## Using the internal platform API
 
