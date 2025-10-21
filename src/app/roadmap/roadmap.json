@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-08-01",
+  "last_updated": "2025-10-20",
   "milestones": [
     {
       "done": true,
@@ -204,6 +204,87 @@
     },
     { "version": "v0.91.0", "done": true, "released": "2025-07-30", "doc": "https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break" },
     {
+      "done": true,
+      "title": "mDNS passive mode",
+      "description": "Allow discovering local nodes without advertising your own.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "mDNS Expiry Events",
+      "description": "Emit expiry events in the `subscribe` stream.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.92.0", "done": true, "released": "2025-09-18", "doc": "https://www.iroh.computer/blog/iroh-0-92-mdns-improvements" },
+    {
+      "done": true,
+      "title": "`Endpoint::online`",
+      "description": "Add method for determining if your endpoint is \"online\".",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Dynamically add Discovery services",
+      "description": "Add discovery services to an already running endpoint",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.93.0", "done": true, "released": "2025-10-08", "doc": "https://www.iroh.computer/blog/iroh-0-93-iroh-online" },
+    {
+      "done": true,
+      "title": "Use `endpoint` instead of `node`",
+      "description": "Replace references to `node` with `endpoint` in methods, structs, docs, etc",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Dynamically add `RelayUrl`s",
+      "description": "Allow adding and removing `RelayUrl`s to your `RelayMap` in the endpoint",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Introduce endpoint presets",
+      "description": "Introducing presets, that allow you to easily set discovery and relay defaults for your project",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": false,
+      "title": "Move `Tickets` into their own crate",
+      "description": "Tickets now exist in `iroh-ticket`",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.94.0", "done": false, "released": "2025-10-20", "doc": "" },
+    {
+      "done": false,
+      "title": "Clean up errors",
+      "description": "",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": false,
+      "title": "Own all foreign types",
+      "description": "Any types that are from dependencies need to be owned or made private",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": false,
+      "title": "Make `Connection::alpn` and `Connection::remote_id` infallible",
+      "description": "",
+      "tracking_issue": null,
+      "doc": null
+    },
+    { "version": "v0.95.0", "done": false, "released": "2025-11-03", "doc": "" },
+    {
       "done": false,
       "title": "QUIC Multipath support",
       "description": "implement QUIC multipath",
@@ -220,6 +301,7 @@
       "description": "Using Quic to traverse NATs",
       "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
     },
+    { "version": "v0.96.0", "done": false, "released": "2025-11-17", "doc": "" },
     {
       "done": false,
       "title": "release candidate",
@@ -227,7 +309,7 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "version": "v0.99-rc", "done": false, "released": "", "link": "", "expected": "H2 2025" },
+    { "version": "v1.0.0-rc.0", "done": false, "released": "2025-12-01", "link": "" },
     { "ellipsis": true },
     {
       "done": false,
@@ -266,7 +348,7 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "version": "v1.0", "done": false, "released": "", "link": "", "expected": "H2 2025" },
+    { "version": "v1.0", "done": false, "released": "", "link": "", "expected": "Q1 2026" },
     { "all_done": false, "title": "Party", "description": "That's it. All done. no more work left to do, ever. :)", "link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
   ]
 }
