@@ -255,13 +255,13 @@
       "doc": null
     },
     {
-      "done": false,
+      "done": true,
       "title": "Move `Tickets` into their own crate",
       "description": "Tickets now exist in `iroh-ticket`",
       "tracking_issue": null,
       "doc": null
     },
-    { "version": "v0.94.0", "done": false, "released": "2025-10-20", "doc": "" },
+    { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" },
     {
       "done": false,
       "title": "Clean up errors",
