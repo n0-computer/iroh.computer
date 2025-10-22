@@ -65,7 +65,7 @@ DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'
 iroh = { version = "0.nn", features = ["discovery-pkarr-dht"] }
 ```
 
-Then configure your endpoint to use DHT discovery concurrently with mDNS discovery, but not with the default DNS discovery, use the `Endpoint::empty_builder` method. This requires specifiying a `RelayMode`, which in this example we will keep default.
+Then configure your endpoint to use DHT discovery concurrently with mDNS discovery, but not with the default DNS discovery, use the `Endpoint::empty_builder` method. This requires specifying a `RelayMode`, which in this example we will keep default.
 
 ```rust
 use iroh::Endpoint;
