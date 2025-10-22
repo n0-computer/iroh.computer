@@ -13,7 +13,7 @@ This gives you fast, reliable QUIC connections that are authenticated and encryp
 
 ## Iroh is "dial by public key"
 
-In the iroh world, you dial another endpoint by its `IdEndpoint`, a 32-byte ed25519 public key. Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself. It also doesn't change when you change networks.
+In the iroh world, you dial another endpoint by its `EndpointId`, a 32-byte ed25519 public key. Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself. It also doesn't change when you change networks.
 You won't have to think about NATs getting in your way, iroh traverses them for you.
 Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 

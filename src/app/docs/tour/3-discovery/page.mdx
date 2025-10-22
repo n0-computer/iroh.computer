@@ -15,9 +15,7 @@ use iroh::{Endpoint, RelayMode};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let builder = Endpoint::builder()
-        .relay_mode(RelayMode::Default)
-        .bind().await?;
+    let builder = Endpoint::.bind().await?;
 
     println!("endpoint id: {:?}", endpoint.id());
     Ok(())
@@ -44,7 +42,7 @@ rand = "0.8.5"
 tokio = "1.43.0"
 ```
 
-And with that we can set up local discovery:
+And with that we can set up local discovery, alongside our default discovery:
 
 ```rust
 use iroh::{Endpoint, RelayMode, SecretKey};
@@ -61,7 +59,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-Here we’ve added discovery to the endpoint constructor, passing in our two discovery services, and that’s it, iroh will now use these two services to get something it can dial for a given endpoint ID.
+Here we’ve added discovery to the endpoint constructor, passing in our two default and one custom discovery services, and that’s it, iroh will now use these three services to get something it can dial for a given endpoint ID.
 
 <Note>
     For an example of this in action, check out the [local discovery example](https://github.com/n0-computer/iroh/blob/main/iroh/examples/locally-discovered-nodes.rs).

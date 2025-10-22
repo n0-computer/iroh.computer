@@ -138,7 +138,7 @@ use iroh_gossip::{net::Gossip, proto::TopicId};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     println!("> our endpoint id: {}", endpoint.id());
     let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
@@ -332,7 +332,7 @@ use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     println!("> our endpoint id: {}", endpoint.id());
     let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
@@ -588,7 +588,7 @@ async fn main() -> Result<()> {
         }
     };
 
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     println!("> our endpoint id: {}", endpoint.id());
     let gossip = Gossip::builder().spawn(endpoint.clone()).await?;

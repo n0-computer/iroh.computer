@@ -36,7 +36,7 @@ The easiest way to start listening for incoming connections is by using iroh's [
 
 ```rs
 async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
-    let endpoint = iroh::Endpoint::builder().bind().await?;
+    let endpoint = iroh::Endpoint::.bind().await?;
 
     let router = iroh::protocol::Router::builder(endpoint)
         .spawn();
@@ -97,7 +97,7 @@ Now, we can modify our router so it handles incoming connections with our newly 
 
 ```rs
 async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
-    let endpoint = iroh::Endpoint::builder().bind().await?;
+    let endpoint = iroh::Endpoint::bind().await?;
 
     let router = iroh::protocol::Router::builder(endpoint)
         .accept(ALPN, Echo) // This makes the router handle incoming connections with our ALPN via Echo::accept!
@@ -120,7 +120,7 @@ impl ProtocolHandler for Echo {
     fn accept(&self, connection: Connection) -> BoxFuture<Result<()>> {
         Box::pin(async move {
             // We can get the remote's endpoint id from the connection.
-            let endpoint_id = connection.remote_endpoint_id()?;
+            let endpoint_id = connection.remote_id()?;
             println!("accepted connection from {endpoint_id}");
 
             // Our protocol is a simple request-response protocol, so we expect the
@@ -172,7 +172,7 @@ This is what that looks like:
 
 ```rs
 async fn connect_side(addr: EndpointAddr) -> Result<()> {
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     // Open a connection to the accepting endpoint
     let conn = endpoint.connect(addr, ALPN).await?;

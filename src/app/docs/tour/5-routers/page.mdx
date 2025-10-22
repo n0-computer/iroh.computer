@@ -19,7 +19,7 @@ use iroh_gossip::{net::Gossip, ALPN};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     let blobs = Blobs::memory().build(&endpoint);
 

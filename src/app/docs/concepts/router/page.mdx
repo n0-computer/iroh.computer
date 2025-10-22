@@ -17,7 +17,7 @@ use iroh_blobs::util::local_pool::LocalPool;
 #[tokio::main]
 async fn main() -> Result<()> {
     // Build an endpoint, defaulting to the public n0 relay network
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     // configure the blobs protocol to run in-memory
     let blobs = Blobs::memory().build(&endpoint);

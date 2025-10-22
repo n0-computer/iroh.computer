@@ -18,17 +18,19 @@ then adjust our code:
 
 ```rust
 use iroh::{protocol::Router, Endpoint};
-use iroh_blobs::net_protocol::Blobs;
+use iroh_blobs::{store::mem::MemStore, BlobsProtocol};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
-    let blobs = Blobs::memory().build(&endpoint);
+    let store = MemStore::new();
+    
+    let blobs = BlobsProtocol::new(&store, None);
 
     // build the router
     let router = Router::builder(endpoint)
-        .accept(iroh_blobs::ALPN, blobs.clone())
+        .accept(iroh_blobs::ALPN, blobs)
         .spawn();
 
     router.shutdown().await?;

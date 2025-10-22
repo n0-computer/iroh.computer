@@ -54,7 +54,7 @@ This is what manages the possibly changing network underneath, maintains a conne
 async fn main() -> anyhow::Result<()> {
     // Create an endpoint, it allows creating and accepting
     // connections in the iroh p2p world
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     // ...
 
@@ -85,7 +85,7 @@ It loads files from your file system and provides a protocol for seekable, resum
 async fn main() -> anyhow::Result<()> {
     // Create an endpoint, it allows creating and accepting
     // connections in the iroh p2p world
-    let endpoint = Endpoint::builder().bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     // We initialize an in-memory backing store for iroh-blobs
     let store = MemStore::new();
