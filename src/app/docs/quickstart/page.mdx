@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'Quickstart',
   description:
-    'Transfer a file peer-to-peer between nodes',
+    'Transfer a file peer-to-peer between endpoints',
 };
 
 
@@ -46,15 +46,15 @@ From here on we'll be working inside the `src/main.rs` file.
 
 ## Create an `iroh::Endpoint`
 
-To start interacting with other iroh nodes, we need to build an `iroh::Endpoint`.
-This is what manages the possibly changing network underneath, maintains a connection to the closest relay, and finds ways to address devices by `NodeId`.
+To start interacting with other iroh endpoints, we need to build an `iroh::Endpoint`.
+This is what manages the possibly changing network underneath, maintains a connection to the closest relay, and finds ways to address devices by `EndpointId`.
 
 ```rust
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Create an endpoint, it allows creating and accepting
     // connections in the iroh p2p world
-    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = Endpoint::builder().bind().await?;
 
     // ...
 
@@ -66,12 +66,12 @@ There we go, this is all we need to [open connections](https://docs.rs/iroh/late
 
 <Note>
 Here, we're specifically configuring the `Endpoint`'s builder to include "number 0 discovery".
-This makes it connect to DNS servers that [number 0](https://n0.computer) runs to find which relay to talk to for specific `NodeId`s.
+This makes it connect to DNS servers that [number 0](https://n0.computer) runs to find which relay to talk to for specific `EndpointId`s.
 It's a great default!
 But if you want to, you can add other discovery types like [`discovery_local_network`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_local_network) based on mDNS, or [`discovery_dht`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.discovery_dht) for discovery based on the bittorrent mainline DHT.
 
 If all of this is too much magic for your taste, it's possible for the endpoint to work entirely without any discovery services.
-In that case, you'll need to make sure you're not only dialing by `NodeId`, but also help the `Endpoint` out with giving it the whole [`NodeAddr`](https://docs.rs/iroh/latest/iroh/struct.NodeAddr.html) when connecting.
+In that case, you'll need to make sure you're not only dialing by `EndpointId`, but also help the `Endpoint` out with giving it the whole [`EndpointAddr`](https://docs.rs/iroh/latest/iroh/struct.EndpointAddr.html) when connecting.
 </Note>
 
 
@@ -85,7 +85,7 @@ It loads files from your file system and provides a protocol for seekable, resum
 async fn main() -> anyhow::Result<()> {
     // Create an endpoint, it allows creating and accepting
     // connections in the iroh p2p world
-    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = Endpoint::builder().bind().await?;
 
     // We initialize an in-memory backing store for iroh-blobs
     let store = MemStore::new();
@@ -104,7 +104,7 @@ Learn more about what we mean by "protocol" on the [protocol documentation page]
 
 With these two lines, we've initialized iroh-blobs and gave it access to our `Endpoint`.
 
-At this point what we want to do depends on whether we want to accept incoming iroh connections from the network or create outbound iroh connections to other nodes.
+At this point what we want to do depends on whether we want to accept incoming iroh connections from the network or create outbound iroh connections to other endpoints.
 Which one we want to do depends on if the executable was called with `send` as an argument or `receive`, so let's parse these two options out from the CLI arguments and match on them:
 
 ```rust
@@ -167,13 +167,13 @@ You can see other options available, such as [`add_slice`](https://docs.rs/iroh-
 Make sure to also check out the options you can pass and their documentation for some interesting tidbits on performance.
 </Note>
 
-The return value `tag` contains the final piece of information such that another node can fetch a blob from us.
+The return value `tag` contains the final piece of information such that another endpoint can fetch a blob from us.
 
-We'll use a `BlobTicket` to put the file's BLAKE3 hash and our endpoint's `NodeId` into a single copy-able string:
+We'll use a `BlobTicket` to put the file's BLAKE3 hash and our endpoint's `EndpointId` into a single copy-able string:
 
 ```rust
-let node_id = endpoint.node_id();
-let ticket = BlobTicket::new(node_id.into(), tag.hash, tag.format);
+let endpoint_id = endpoint.id();
+let ticket = BlobTicket::new(endpoint_id.into(), tag.hash, tag.format);
 
 println!("File hashed. Fetch this file by running:");
 println!(
@@ -200,7 +200,7 @@ let router = Router::builder(endpoint)
 
 tokio::signal::ctrl_c().await?;
 
-// Gracefully shut down the node
+// Gracefully shut down the endpoint
 println!("Shutting down.");
 router.shutdown().await?;
 ```
@@ -227,13 +227,13 @@ let abs_path = std::path::absolute(filename)?;
 let ticket: BlobTicket = ticket.parse()?;
 
 // For receiving files, we create a "downloader" that allows us to fetch files
-// from other nodes via iroh connections
+// from other endpoints via iroh connections
 let downloader = store.downloader(&endpoint);
 
 println!("Starting download.");
 
 downloader
-    .download(ticket.hash(), Some(ticket.node_addr().node_id))
+    .download(ticket.hash(), Some(ticket.endpoint_addr().id)
     .await?;
 
 println!("Finished download.");
@@ -266,7 +266,7 @@ We'll leave these changes as an exercise to the reader 😉
 Before we leave, we'll gracefully shut down our endpoint in the receive branch, too:
 
 ```rs
-// Gracefully shut down the node
+// Gracefully shut down the endpoint
 println!("Shutting down.");
 endpoint.close().await;
 ```

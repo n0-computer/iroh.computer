@@ -2,13 +2,13 @@ import { PageLink } from '@/components/PageNavigation';
 
 # 3. Discovery
 
-Discovery is the glue that connects a [Node Identifier](/docs/concepts/endpoint#node-identifiers) to something we can dial. There are a few different types of discovery services, but for all of them you put a `NodeID` in, and get back either the home relay of that node, or IP addresses to dial.
+Discovery is the glue that connects a [Endpoint Identifier](/docs/concepts/endpoint#endpoint-identifiers) to something we can dial. There are a few different types of discovery services, but for all of them you put a `EndpointID` in, and get back either the home relay of that endpoint, or IP addresses to dial.
 
-There are different implementations of the discovery service in iroh, the most popular of which are DNS & Local Discovery. DNS uses the same domain name system that connects "example.com" to an IP address to map node ids to relay servers, and local discovery uses your local network to find nodes to talk to on local WiFi, even if that WiFi network doesn’t have a wider internet connection.
+There are different implementations of the discovery service in iroh, the most popular of which are DNS & Local Discovery. DNS uses the same domain name system that connects "example.com" to an IP address to map endpoint ids to relay servers, and local discovery uses your local network to find endpoints to talk to on local WiFi, even if that WiFi network doesn’t have a wider internet connection.
 
 ### DNS Discovery
 
-First, let's add the n0 DNS discovery service as a default:
+Iroh endpoints come with some defaults that include using our public infrastructure to enable discovery:
 
 ```rust
 use iroh::{Endpoint, RelayMode};
@@ -17,20 +17,18 @@ use iroh::{Endpoint, RelayMode};
 async fn main() -> anyhow::Result<()> {
     let builder = Endpoint::builder()
         .relay_mode(RelayMode::Default)
-        .discovery_n0();
+        .bind().await?;
 
-    let endpoint = builder.bind().await?;
-
-    println!("node id: {:?}", endpoint.node_id());
+    println!("endpoint id: {:?}", endpoint.id());
     Ok(())
 }
 ```
 
-Now when this endpoint boots up, it will list itself on the n0 DNS service. From here we can pass along the node identifier, and other nodes can use the n0 DNS service to find the home relay of this node.
+Now when this endpoint boots up, it will list itself on the n0 DNS service. From here we can pass along the endpoint identifier, and other endpoints can use the n0 DNS service to find the home relay of this endpoint.
 
 ### Local Discovery
 
-Local discovery has the extra trick of being able to actually find new nodes on the local network. Before we can do that, we need to add the `discovery-local-network` feature to our `Cargo.toml` file:
+Local discovery has the extra trick of being able to actually find new endpoints on the local network. Before we can do that, we need to add the `discovery-local-network` feature to our `Cargo.toml` file:
 
 ```
 cargo add iroh --features discovery-local-network
@@ -53,18 +51,17 @@ use iroh::{Endpoint, RelayMode, SecretKey};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let mdns = iroh::discovery::mdns::MdnsDiscovery::builder();
     let builder = Endpoint::builder()
-        .relay_mode(RelayMode::Default)
-        .discovery_n0()
-        .discovery_local_network();
+        .discovery(mdns);
 
     let endpoint = builder.bind().await?;
-    println!("node id: {:?}", endpoint.node_id());
+    println!("endpoint id: {:?}", endpoint.id());
     Ok(())
 }
 ```
 
-Here we’ve added discovery to the endpoint constructor, passing in our two discovery services, and that’s it, iroh will now use these two services to get something it can dial for a given node ID.
+Here we’ve added discovery to the endpoint constructor, passing in our two discovery services, and that’s it, iroh will now use these two services to get something it can dial for a given endpoint ID.
 
 <Note>
     For an example of this in action, check out the [local discovery example](https://github.com/n0-computer/iroh/blob/main/iroh/examples/locally-discovered-nodes.rs).

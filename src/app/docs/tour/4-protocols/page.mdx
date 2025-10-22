@@ -22,7 +22,7 @@ use iroh_blobs::net_protocol::Blobs;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = Endpoint::builder().bind().await?;
 
     let blobs = Blobs::memory().build(&endpoint);
 
@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
   This code doesn't actually _do_ anything with the blobs protocol. For a real-world example, check out [sendme](https://github.com/n0-computer/sendme)
 </Note>
 
-This code sets up everything we need to both provide data we have locally when others request it, and ask other nodes that run the blobs protocol for data. Starting at the top, we first construct the endpoint, then we construct an instance of the blobs protocol, then add a _router_ (more on that in a minute) that listens for blobs protocol connections.
+This code sets up everything we need to both provide data we have locally when others request it, and ask other endpoints that run the blobs protocol for data. Starting at the top, we first construct the endpoint, then we construct an instance of the blobs protocol, then add a _router_ (more on that in a minute) that listens for blobs protocol connections.
 
 
 <div className='flex'>

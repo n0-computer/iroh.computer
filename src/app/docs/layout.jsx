@@ -29,7 +29,7 @@ export const navItems = [
       {title: 'Protocol', href: '/docs/concepts/protocol'},
       {title: 'Router', href: '/docs/concepts/router'},
       {title: 'Tickets', href: '/docs/concepts/tickets'},
-      {title: 'NodeAddr', href: '/docs/concepts/node-addr'},
+      {title: 'EndpointAddr', href: '/docs/concepts/endpoint-addr'},
     ],
   },
   {title: 'Resources',

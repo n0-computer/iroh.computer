@@ -13,7 +13,7 @@ export const protocols = [
     "featured": 2,
     "icon": "iconPlatforms",
     "title": "Gossip",
-    "tagline": "Broadcast messages to groups of nodes by topic.",
+    "tagline": "Broadcast messages to groups of endpoints by topic.",
     "slug": "iroh-gossip",
     "repository": "https://github.com/n0-computer/iroh-gossip",
     "documentation": "https://docs.rs/iroh-gossip/latest/iroh_gossip/",
@@ -60,7 +60,7 @@ export const protocols = [
   {
     "icon": "",
     "title": "Iroh ping",
-    "tagline": "A minimal protocol to ping iroh nodes.",
+    "tagline": "A minimal protocol to ping iroh endpoints.",
     "slug": "iroh-ping",
     "documentation": "https://docs.rs/iroh-ping/latest/iroh_ping/",
     "repository": "https://github.com/n0-computer/iroh-ping",

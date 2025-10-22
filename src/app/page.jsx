@@ -172,16 +172,16 @@ use iroh_ping::{ALPN as PingALPN, Ping};
 #[tokio::main]
 async fn main() -> Result<()> {
     // create the receive side
-    let recv_endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_endpoint = Endpoint::builder().bind().await?;
     let recv_router = Router::builder(recv_endpoint)
       .accept(PingALPN, Ping::new())
       .spawn();
 
     // get the receive side's address:
-    let addr = recv_router.endpoint().node_addr().await?;
+    let addr = recv_router.endpoint().addr().await?;
 
     // create the send side & send a ping!
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_ep = Endpoint::builder().bind().await?;
     let send_pinger = Ping::new();
     send_pinger.ping(&send_ep, addr).await?;
 

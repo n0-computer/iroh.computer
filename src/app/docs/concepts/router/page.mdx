@@ -17,7 +17,7 @@ use iroh_blobs::util::local_pool::LocalPool;
 #[tokio::main]
 async fn main() -> Result<()> {
     // Build an endpoint, defaulting to the public n0 relay network
-    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = Endpoint::builder().bind().await?;
 
     // configure the blobs protocol to run in-memory
     let blobs = Blobs::memory().build(&endpoint);
@@ -30,13 +30,13 @@ async fn main() -> Result<()> {
 
     // get our own address. At this point we have a running router 
     // that's ready to accept connections.
-    let addr = router.endpoint().node_addr().await?;
+    let addr = router.endpoint().addr().await?;
 
     // Wait for exit
     tokio::signal::ctrl_c().await?;
 
     // Gracefully close the endpoint & protocols.
-    // This makes sure that remote nodes are notified about possibly still open connections
+    // This makes sure that remote endpoints are notified about possibly still open connections
     // and any data is written to disk fully (or any other shutdown procedure for protocols).
     router.shutdown().await?;
 
