@@ -49,8 +49,8 @@ async fn main() -> anyhow::Result<()> {
     // bind it to a socket
     let endpoint = builder.bind().await?;
 
-    // print this endpoint's node id
-    println!("node id: {:?}", endpoint.node_id());
+    // print this endpoint's id
+    println!("endpoint id: {:?}", endpoint.id());
 
     // exit the program
     Ok(())
@@ -65,7 +65,7 @@ b5 at number-0 in ~/code/iroh-tour (main●)
 $ cargo run
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.80s
      Running `/Users/b5/.cargo/build/debug/iroh-tour`
-node id: PublicKey(95224c92856163add8a9cb68a81183aa5d9881c4def58625a9f4266a0743b479)
+endpoint id: PublicKey(95224c92856163add8a9cb68a81183aa5d9881c4def58625a9f4266a0743b479)
 ```
 
 <Note>
@@ -74,7 +74,7 @@ node id: PublicKey(95224c92856163add8a9cb68a81183aa5d9881c4def58625a9f4266a0743b
 
 The non-setup part of this program adds up to 3 lines of code, and one of them is a print statement! The first line constructs an endpoint. 99% of apps will have a single endpoint in the entire app, so you’ll build the endpoint once, and refer to it a bunch. Then we call *bind* to ask the operating system for a networking port. This calling bind will kick off work in the background that we’ll talk about in a bit.
 
-Those three lines are the beating heart of adding iroh to an app. Once the node ID prints we have an active endpoint that's ready to connect & (if configured to) accept connections. Everything else builds up from here.
+Those three lines are the beating heart of adding iroh to an app. Once the endpoint ID prints we have an active endpoint that's ready to connect & (if configured to) accept connections. Everything else builds up from here.
 
 <div className='flex'>
   <div className="flex flex-col items-start gap-3">

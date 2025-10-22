@@ -1,0 +1,234 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2025-10-22',
+  title: 'iroh 0.94.0 - The Endpoint Takeover',
+  description: 'Release of iroh v0.94',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
+
+We have a bunch of API changes and features for you in this one, all of which are part of the push toward a 1.0 API: 
+
+* We've completed the transition away from iroh `node`, now referring to everything as `endpoints`.
+
+* You can now add and remove `Relay`s to and from your endpoint dynamically, even after the endpoint has already been spawned.
+
+* A new `Presets` API for endpoint construction. 
+
+* New defaults for Discovery 
+
+* Updated `EndpointAddr` (rpPreviously `NodeAddr`) to support additional transports 
+
+* `iroh-base::ticket` has moved to its own `iroh-tickets` crate!
+
+**Public Relay Versions & Lifecycle:** 
+
+The current canary relays are on version `0.94`. These are compatible with `iroh` `0.93`. However, we *are* still running relays that are compatible with `0.91` and `0.92`, and the default relays for these versions are still valid. `0.90` is no longer supported. We will continue to run `0.35` nodes until 3 months after 1.0 comes out.
+
+Finally, we have some updates about the 1.0 roadmap at the [end of this post](#roadmap).
+
+## ➡️ Changing from `Node` to `Endpoint` everywhere
+
+We’ve officially made the decision to remove the word “node” from our vocabulary. It’s a hold over, from when `iroh` was trying to be more than just a networking library. `iroh` doesn’t have “nodes” anymore, `iroh` is represented by endpoints! 
+
+This shouldn’t be too big a shift if you think about the way you are currently using `iroh`; the main entry point into the codebase is `iroh::Endpoint`. However, although we changed from thinking about `iroh` in terms of endpoints rather than nodes a while back, we never changed much of our internal language to reflect that. 
+
+In preparation for 1.0, that has been rectified.
+
+For the most part, this is a search-and-replace change in our structs from using the word `Node` to using the word `Endpoint`, (eg, `NodeAddr` → `EndpointAddr`), and changing from `node_id` to `endpoint_id`.
+
+There are a few exceptions worth noting:
+
+- `RelayNode` is now `RelayConfig`, which honestly makes more sense anyway.
+- `Endpoint::node_id` is now `Endpoint::id` .
+- `Endpoint::node_addr` is now `Endpoint::addr` .
+
+For specific changes, check out the [breaking changes](#breaking-changes) section below.
+
+## 🌉 Dynamic `RelayMap`s!
+
+Previously, you could only add custom relays once, while building the `Endpoint`. Also, once they were set, they couldn’t be removed.
+
+Now we have `Endpoint::insert_relay`  and `Endpoint::remove_relay`  that allow you to dynamically adjust your relay map. This will trigger another net-report to allow your endpoint to gather new latency information from this relay.
+
+This prepares us for later features where relays are created or destroyed while an endpoint is running. Now that endpoints can modify their set of relays, we can build relay networks that dynamically scale.
+
+## 🕵️ `Discovery` defaults and Presets
+
+Previously, the `Endpoint::builder` was a blank canvas, and if you wanted to add a discovery service you needed to do it through one of our helper functions on the builder.
+
+A few things have changed since then. It is now WAY easier to add custom or n0-written discovery services, you can add them to the builder using `EndpointBuilder::discovery` or add them to the endpoint after it has been created using `Endpoint::discovery().add` (you can also remove all service using `Endpoint::discovery().empty` and add back the ones you want afterwards).
+
+So now, the `Endpoint::builder` will, by default, set you up with what was previously set when running `discovery_n0` (`PkarrDiscovery` and `DnsDiscovery`).
+
+But what if you don’t want the default? Easy! You have two options. You can build from the `Endpoint::empty_builder` or use the new `EndpointBuilder::presets` method and `Preset` trait.
+
+```rust
+// build your custom discovery service
+let cool_discovery = CoolDiscovery::new();
+let endpoint = Endpoint::empty_builder(RelayMode::Disabled)
+	.discovery(cool_discovery)
+	.bind()
+	.await?;
+```
+
+The `empty_builder` method requires a `RelayMode`. By default, `Endpoint::builder` sets the relay mode to `RelayMode::Default`, which uses the n0 public relays. You can also disable any relaying (`RelayMode::Disabled`), or add a set of custom relays (`RelayMode::Custom(_)` ).
+
+Let’s say you create a lot of endpoints, or you have a few different categories of the types of endpoints that you create (the most basic would be production vs testing, for example).
+
+You can use presets to write blanket configuration for a type of endpoint. You do this by implementing the `Preset` trait on a custom struct. Here is a simplified version of the `NO` preset that we use in our defaults:
+
+```rust
+use crate::discovery::pkarr::PkarrPublisher;
+use crate::discovery::dns::DnsDiscovery;
+
+#[derive(Debug, Copy, Clone, Default)]
+pub struct N0;
+
+impl Preset for N0 {
+    fn apply(self, mut builder: Builder) -> Builder {
+		// `Preset::apply` is additive, so any other presets added before
+		// will still exist, unless overridden.
+		builder = builder.clear_discovery();
+		// Publish using HTTPS requests to our DNS server's /pkarr path
+        builder = builder.discovery(PkarrPublisher::n0_dns());
+        // Resolve using DNS queries outside browsers.
+        builder = builder.discovery(DnsDiscovery::n0_dns());
+        builder = builder.relay_mode(RelayMode::Default);
+
+        builder
+    }
+}
+```
+
+Then, when you go to build the endpoint:
+
+```rust
+use iroh::presets::N0;
+
+let endpoint = Endpoint::builder().preset(NO).bind().await?;
+```
+
+And now you have an endpoint with all the endpoint configuration you want.
+
+**Presets are used for more than just `Discovery`, any config you normally add to the builder can be added in a preset!**
+
+## 🤖 Future proofing: Introducing `TransportAddr`
+
+Let’s talk about the future for a second, a future even beyond `iroh` `1.0`. We want to be able to add more transports than just UDP/IP traffic. WebRTC would be incredibly useful, for example. We will be able to develop this once we switch to QUIC multipath.
+
+But in order to pave the way for that future, we need to get our internals set up well now. One of those internals is how we represent addresses in our `EndpointAddr` (formerly `NodeAddr`). Before, we only had two hardcoded possibilities for transports. Your connection could be going over a relay, which we identify using `RelayUrl`s, or over UDP on IPv4 or Ipv6, which we identify using `SocketAddr`s. These were represented on the `EndpointAddr` as `EndpointAddr::relay_url: Option<RelayUrl>` and `EndpointAddr::direct_addresses: BTreeSet<SocketAddr>` .
+
+To combine them, and to allow for additions in the future, they are now represented as variants on a `TransportAddr`:
+
+```rust
+#[non_exhaustive]
+pub enum TransportAddr {
+    Relay(RelayUrl),
+    Ip(SocketAddr),
+}
+```
+
+This effects the `EndpointAddr`, which now only has two fields:
+
+```rust
+pub struct EndpointAddr {
+    pub id: PublicKey,
+    pub addrs: BTreeSet<TransportAddr>,
+}
+```
+
+To help ease the transition, we have two additional methods on `EndpointAddr`:
+
+```rust
+pub fn ip_addrs(&self) -> impl Iterator<Item = &SocketAddr>
+
+pub fn relay_urls(&self) -> impl Iterator<Item = &RelayUrl>
+```
+
+This replaces `NodeAddr::direct_addresses` almost directly and `NodeAddr::relay_url` pretty directly as well.
+
+Currently, your endpoint will only ever have one `RelayUrl`. This may change in the future (post 1.0) if we add relays with different transports or protocols. But, for now, any instance of `NodeAddr::relay_url() -> Option<RelayUrl>` , can be directly replaced with `EndpointAddr::relay_urls().next()`, which will return an `Option<RelayUrl>`.
+
+## 🎫 `iroh-tickets` - removing `Ticket` from `iroh-base`
+
+Ahhh, tickets. So convenient! We love using tickets in our `iroh-examples` and `iroh-experiments`, as well as in our protocols. We encourage folks to use them when needing to serialize the information your protocol or project needs to make sure you can get connections happening between your endpoints.
+
+However, they were not at the right level in our codebase, and are really something that builds on top of `iroh`, rather than something that belongs in `iroh-base`. They now have their own crate `iroh-tickets`!
+
+<a name="breaking-changes"></a>
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - renamed
+        - `iroh_relay::RelayNode` -> `RelayConfig`
+        - `iroh_base::NodeAddr` -> `EndpointAddr`
+        - `iroh_base::NodeAddr.node_id` -> `endpoint_id`
+        - `iroh_base::NodeId` -> `EndpointId`
+        - `iroh_base::NodeTicket` -> `EndpointTicket`
+        - `iroh::Endpoint::node_addr` -> `iroh::Endpoint::addr`
+        - `iroh::Endpoint::watch_node_addr` -> `iroh::Endpoint::watchaddr`
+        - `iroh::Endpoint::node_id` -> `iroh::Endpoint::id`
+        - `iroh_relay::RelayMap::urls`
+        - `iroh_relay::RelayMap::nodes`
+        - `iroh_relay::RelayMap::get_node`
+        - `direct_addresses` are now called `ip_addresses`
+        - `EndpointAddr` type is completely changed
+            - Use `EndpointAddr::ip_addrs` to get a list of ip addresses for this endpoint
+            - Use `EndpointAddr::relay_urls` to get a list of relay urls for this endpoint
+                - currently, there will only be one relay url per endpoint, but in the future, beyond 1.0, we will potentially have multiple
+        - APIs with `addresse(s)` are now normalized to `addr(s)` to be consistent in the code base
+    - removed
+        - `iroh::Endpoint::add_node_addr_with_source` is removed. Use a discovery service instead.
+    - added
+        - `iroh_base::Signature` which replaces `ed25519_dalek::Signature` in the public API of `iroh_base`
+        - `iroh::Endpoint::insert_relay`
+        - `iroh::Endpoint::remove_relay`
+        - `iroh::Endpoint::RelayMap::insert`
+        - `iroh::Endpoint::RelayMap::remove`
+- `iroh-relay`
+    - wire-level breaking change
+        - `iroh-relay` servers can no longer issue captive portal challenges to pre `0.93` iroh nodes
+- `iroh-base`
+    - changed
+        - `iroh_base` error types have changed
+    - removed
+        - `Into` and `From` conversions for `PublicKey` - `ed25519_dalek::VerifyingKey`
+        - `Into` and `From` conversions for `SecretKey` - `ed25519_dalek::SigningKey`
+        - removed `ticket` s from `iroh-base` , they are now in their own `iroh-ticket` crate
+
+<a name="roadmap"></a>
+## 🎉 The end of the (0.)90s is coming
+
+We are almost at the finish line folks and are excited to let you know that we expect only two more releases in the 9Xs canary series. `0.95` to round our our API changes and `0.96` to bring you multipath. Once all criticial issues are fixed, we expect to publish our first release candidate `1.0.0-rc.0` later this year
+
+All the nitty-gritty details can be found in the [updated roadmap](https://iroh.computer/roadmap), and in [our milestones on github](https://github.com/n0-computer/iroh/milestones), which we will keep updating as we go.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.94.0](https://github.com/n0-computer/iroh/releases/tag/v0.94.0).
+
+If you want to know what is coming up, check out the [v0.95.0 milestone](https://github.com/n0-computer/iroh/milestone/49), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things iroh, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).

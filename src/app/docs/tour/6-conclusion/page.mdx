@@ -4,14 +4,14 @@ import { PageLink } from '@/components/PageNavigation';
 
 Before we go, let’s talk through a little of what iroh *doesn’t* cover:
 
-### Magically keep nodes online
-First, iroh doesn’t magically ensure the device you’re trying to dial is online. It doesn’t buffer messages & wait until you turn your phone back on. The technical term for this is “network churn”, and programming around the reality that nodes can come online & go offline whenever they want is the core concern of all distributed systems programming.
+### Magically keep endpoints online
+First, iroh doesn’t magically ensure the device you’re trying to dial is online. It doesn’t buffer messages & wait until you turn your phone back on. The technical term for this is “network churn”, and programming around the reality that endpoints can come online & go offline whenever they want is the core concern of all distributed systems programming.
 
 ### Obscure your IP address
-Second, iroh doesn’t obscure your IP address. nodes accepting connections will know your IP address. This is one of the biggest reason we think that iroh should be a library that users build into apps that have an in-built sense of trust. Keep in mind: sharing IP addresses is common practice in the wild, nearly all of major video conferencing tools do this. Video games do this. Heck, Spotify used to do this. And keep in mind, seeing your IP address is a thing traditional servers *always* have access to.
+Second, iroh doesn’t obscure your IP address. endpoints accepting connections will know your IP address. This is one of the biggest reason we think that iroh should be a library that users build into apps that have an in-built sense of trust. Keep in mind: sharing IP addresses is common practice in the wild, nearly all of major video conferencing tools do this. Video games do this. Heck, Spotify used to do this. And keep in mind, seeing your IP address is a thing traditional servers *always* have access to.
 
 ### Peer Signaling
-Lastly, iroh doesn’t yet come with a built-in peer signaling mechanism, that is, a way to get alice’s node id to bob. This seems like a massive oversight, but it’s on purpose: different apps have different opinions about how peers should learn about each other. In some cases it’s as simple as storing NodeIDs in an app database & passing them out as API responses. In other cases it’s local discovery only, or using tickets to encode dialing details + protocol invocations in a single string. We'll talk through patterns for peer signaling in future docs.
+Lastly, iroh doesn’t yet come with a built-in peer signaling mechanism, that is, a way to get alice’s endpoint id to bob. This seems like a massive oversight, but it’s on purpose: different apps have different opinions about how peers should learn about each other. In some cases it’s as simple as storing EndpointIDs in an app database & passing them out as API responses. In other cases it’s local discovery only, or using tickets to encode dialing details + protocol invocations in a single string. We'll talk through patterns for peer signaling in future docs.
 
 ## Conclusion
 

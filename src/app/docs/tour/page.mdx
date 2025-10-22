@@ -26,7 +26,7 @@ Hello, world!
 
 Here's a high level overview of how everything fits together:
 
-Iroh is a library for establishing the most direct QUIC connection possible between two devices. Every _endpoint_ uses the public half of a cryptographic keypair to identify itself. Assuming at least one configured _relay server_ is reachable, an endpoint keeps exactly one TCP connection to a “home relay” that other nodes use for connection establishment, and as a fallback transport. Iroh uses a suite of _discovery services_ to resolve home relays & endpoint IDs. Connections between endpoints use QUIC ALPNs to distinguish between _protocols_, while _routers_ automate the endpoint accept loop for protocol multiplexing.{{ className: 'lead' }}
+Iroh is a library for establishing the most direct QUIC connection possible between two devices. Every _endpoint_ uses the public half of a cryptographic keypair to identify itself. Assuming at least one configured _relay server_ is reachable, an endpoint keeps exactly one TCP connection to a “home relay” that other endpoints use for connection establishment, and as a fallback transport. Iroh uses a suite of _discovery services_ to resolve home relays & endpoint IDs. Connections between endpoints use QUIC ALPNs to distinguish between _protocols_, while _routers_ automate the endpoint accept loop for protocol multiplexing.{{ className: 'lead' }}
 
 This paragraph touches on five key points worth understanding in iroh:
 

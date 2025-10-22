@@ -13,7 +13,7 @@ This gives you fast, reliable QUIC connections that are authenticated and encryp
 
 ## Iroh is "dial by public key"
 
-In the iroh world, you dial another node by its `NodeId`, a 32-byte ed25519 public key. Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself. It also doesn't change when you change networks.
+In the iroh world, you dial another endpoint by its `EndpointId`, a 32-byte ed25519 public key. Unlike IP addresses, this ID is globally unique, and instead of being assigned, you can cheaply generate as many as you want yourself. It also doesn't change when you change networks.
 You won't have to think about NATs getting in your way, iroh traverses them for you.
 Basing connections on asymmetric public keys is what allows iroh to *always* end-to-end encrypt and authenticate connections.
 
@@ -22,11 +22,11 @@ Basing connections on asymmetric public keys is what allows iroh to *always* end
 
 Iroh is built on peer-to-peer QUIC using both relays and holepunching.
 
-Peers must know the NodeId of a peer before connecting to it.
-They verify this NodeId during the connection handshake to provide end-to-end encryption and authentication.
+Peers must know the EndpointId of a peer before connecting to it.
+They verify this EndpointId during the connection handshake to provide end-to-end encryption and authentication.
 
 Peer to peer connectivity is established with the help of a relay server.
-On startup peers register their NodeId with a home relay server.
+On startup peers register their EndpointId with a home relay server.
 The relay server provides assistance to traverse firewalls,
 NATs or others alike.
 If no direct connection can be established,
@@ -48,7 +48,7 @@ This gives iroh super-powers:
   - stream priorities
   - one shared congestion controller
 - an encrypted, unreliable datagram transport
-- zero round trip time connection establishment if you've connected to another node before
+- zero round trip time connection establishment if you've connected to another endpoint before
 
 A single QUIC connection can power all of your protocol's complex interactions:
 - Stream both video and audio without video packet loss affecting audio. Prioritize audio by increasing that stream's priority.

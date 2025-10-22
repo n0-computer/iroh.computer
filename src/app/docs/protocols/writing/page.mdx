@@ -36,7 +36,7 @@ The easiest way to start listening for incoming connections is by using iroh's [
 
 ```rs
 async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
-    let endpoint = iroh::Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = iroh::Endpoint::.bind().await?;
 
     let router = iroh::protocol::Router::builder(endpoint)
         .spawn();
@@ -97,7 +97,7 @@ Now, we can modify our router so it handles incoming connections with our newly 
 
 ```rs
 async fn start_accept_side() -> anyhow::Result<iroh::protocol::Router> {
-    let endpoint = iroh::Endpoint::builder().discovery_n0().bind().await?;
+    let endpoint = iroh::Endpoint::bind().await?;
 
     let router = iroh::protocol::Router::builder(endpoint)
         .accept(ALPN, Echo) // This makes the router handle incoming connections with our ALPN via Echo::accept!
@@ -119,9 +119,9 @@ We'll do that by moving the connection to the future we return from `Echo::accep
 impl ProtocolHandler for Echo {
     fn accept(&self, connection: Connection) -> BoxFuture<Result<()>> {
         Box::pin(async move {
-            // We can get the remote's node id from the connection.
-            let node_id = connection.remote_node_id()?;
-            println!("accepted connection from {node_id}");
+            // We can get the remote's endpoint id from the connection.
+            let endpoint_id = connection.remote_id()?;
+            println!("accepted connection from {endpoint_id}");
 
             // Our protocol is a simple request-response protocol, so we expect the
             // connecting peer to open a single bi-directional stream.
@@ -171,10 +171,10 @@ Summarizing our protocol again, the connecting side will open a connection, send
 This is what that looks like:
 
 ```rs
-async fn connect_side(addr: NodeAddr) -> Result<()> {
-    let endpoint = Endpoint::builder().discovery_n0().bind().await?;
+async fn connect_side(addr: EndpointAddr) -> Result<()> {
+    let endpoint = Endpoint::bind().await?;
 
-    // Open a connection to the accepting node
+    // Open a connection to the accepting endpoint
     let conn = endpoint.connect(addr, ALPN).await?;
 
     // Open a bidirectional QUIC stream
@@ -207,7 +207,7 @@ async fn connect_side(addr: NodeAddr) -> Result<()> {
 
 In this example we simply hard-coded the echo message "Hello World!", and we'll assert that that's what we receive back.
 
-Note that we also take a `NodeAddr` as a parameter.
+Note that we also take a `EndpointAddr` as a parameter.
 This is the address of the accepting side, so we can use it to tell the `Endpoint` where in the world to connect to in the `endpoint.connect(addr, ALPN)` call.
 
 
@@ -222,9 +222,9 @@ In a simple `main` function we can start the accepting side and concurrently con
 #[tokio::main]
 async fn main() -> Result<()> {
     let router = start_accept_side().await?;
-    let node_addr = router.endpoint().node_addr().await?;
+    let endpoint_addr = router.endpoint().addr().await?;
 
-    connect_side(node_addr).await?;
+    connect_side(endpoint_addr).await?;
 
     // This makes sure the endpoint in the router is closed properly and connections close gracefully
     router.shutdown().await?;
@@ -259,7 +259,6 @@ Putting it all together, you only need to change the `start_accept_side` functio
 ```rs
 async fn start_accept_side() -> anyhow::Result<iroh::Endpoint> {
     let endpoint = Endpoint::builder()
-        .discovery_n0()
         // The accept side needs to opt-in to the protocols it accepts,
         // as any connection attempts that can't be found with a matching ALPN
         // will be rejected.

@@ -53,7 +53,7 @@ Document IDs are base32-lower serialization of the public key of the document. T
 
 When an author wants to sync with a document, they first find the document's current state, then they perform a [range-based set reconciliation](https://arxiv.org/abs/2212.13567) to fill in any changes in the keyspace.
 
-When two nodes want to sync, they perform a range-based set reconciliation to fill in any changes in the keyspace. Any node with the read key (document ID) can read & sync the latest state of the document. Having the read key denotes read access. All entries in the document are double-signed, once with an authorID (keypair) and the write key of the document.
+When two endpoints want to sync, they perform a range-based set reconciliation to fill in any changes in the keyspace. Any endpoint with the read key (document ID) can read & sync the latest state of the document. Having the read key denotes read access. All entries in the document are double-signed, once with an authorID (keypair) and the write key of the document.
 
 <Note>
 Check out our [youtube video](https://www.youtube.com/watch?v=_D_tbAMqADM) on how range-based set reconciliation works!
@@ -63,7 +63,7 @@ After this synchronization step, we know the hashes of all the content the docum
 
 ## Document PubSub
 
-Every document is its own pubsub swarm, keyed by the public key of the document using iroh-gossip. These swarms implement techniques described in [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf?ref=bartoszsypytkowski.com) & PlumTree to keep a bounded number of active nodes any one node in the swarm needs to push to.
+Every document is its own pubsub swarm, keyed by the public key of the document using iroh-gossip. These swarms implement techniques described in [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf?ref=bartoszsypytkowski.com) & PlumTree to keep a bounded number of active endpoints any one endpoint in the swarm needs to push to.
 
 <Note>
 Bartosz Sypytkowski has a great [blog post](https://www.bartoszsypytkowski.com/hyparview/) on HyParView & Plumtree, well worth reading.

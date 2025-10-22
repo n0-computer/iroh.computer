@@ -6,9 +6,9 @@ A bunch of things happen in the background when an endpoint binds. The first thi
 
 Relays are servers that help establish connections between devices. They’re the backbone of an iroh network. When your endpoint starts, it sends pings to all of the configured relays & measures how long the PONGs take to come back, also known as a measure of round trip latency. Relay servers are spread around the world, and the one with the lowest latency is usually the relay server you are physically closest to, but all we really care about is which one answers the fastest. Your endpoint will pick the relay with the lowest latency (the one that answered first) & use that as a *home relay.* With a home relay picked our endpoint opens a single WebSocket connection & work with the relay to figure out the details like our endpoint’s public IP address. At this point our endpoint is ready to dial & be dialed. This entire process happens in 0-3 seconds.
 
-Aside from being a public-facing home-base on the internet, relays have a second crucial role, which is to… relay. Meaning: when one node *doesn’t* have a direct connection to another node, it’ll use the relay to send data to that node. This means that even if we *can’t* establish a direct connection, data will still flow between the two devices. This is the part that let’s us say it’s “peer 2 peer that works”: sometimes peer-2-peer isn’t possible, so we have a seamless fallback baked in.
+Aside from being a public-facing home-base on the internet, relays have a second crucial role, which is to… relay. Meaning: when one endpoint *doesn’t* have a direct connection to another endpoint, it’ll use the relay to send data to that endpoint. This means that even if we *can’t* establish a direct connection, data will still flow between the two devices. This is the part that let’s us say it’s “peer 2 peer that works”: sometimes peer-2-peer isn’t possible, so we have a seamless fallback baked in.
 
-Keep in mind, connections are end-2-end encrypted, which means relays can’t read traffic, only pass along encrypted packets intended for the other side of the connection. Relays *do* know the list of node identifiers that are connected to it, and which nodes are connected to whom, but not what they are saying.
+Keep in mind, connections are end-2-end encrypted, which means relays can’t read traffic, only pass along encrypted packets intended for the other side of the connection. Relays *do* know the list of endpoint identifiers that are connected to it, and which endpoints are connected to whom, but not what they are saying.
 
 Coming back to our program, let’s add support for relays:
 
@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
         .relay_mode(iroh::RelayMode::Default);
 
     let endpoint = builder.bind().await?;
-    println!("node id: {:?}", endpoint.node_id());
+    println!("endpoint id: {:?}", endpoint.id());
 
     Ok(())
 }

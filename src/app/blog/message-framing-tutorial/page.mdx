@@ -48,7 +48,7 @@ Message framing is a generally applicable concept, and by no means limited to wo
 
 QUIC connections are made of streams and those streams can be bi-directional or uni-directional. Bi-directional streams are streams you can read from and write to in both directions. Uni-directional streams are streams that can only be written to on one side and read from by the other.
 
-A single QUIC connection to another node can have many streams, some uni-directional, some bi-directional.
+A single QUIC connection to another endpoint can have many streams, some uni-directional, some bi-directional.
 
 For the purposes of this tutorial, we are going to focus on a single, uni-directional stream, where one side *writes* to the stream and the other side *reads* from it.
 
@@ -107,19 +107,19 @@ const ALPN: &[u8] = b"iroh/smol/0";
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // create the receive side
-    let recv_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_ep = Endpoint::bind().await?;
     let recv_router = Router::builder(recv_ep).spawn();
-    let addr = recv_router.endpoint().node_addr().initialized().await;
+    let addr = recv_router.endpoint().endpoint_addr().initialized().await;
 
     // create a send side
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_ep = Endpoint::bind().await?;
     let conn = send_ep.connect(addr, ALPN).await?;
 
     Ok(())
 }
 ```
 
-The `iroh::Endpoint` is the endpoint on which we make connections. The `discovery_n0` method on the `iroh::EndpointBuilder` allows us to dial by `node_id` without having to manually send address information.
+The `iroh::Endpoint` is the endpoint on which we make connections. By default, an `iroh::Endpoint` allows us to dial by `endpoint_id` without having to manually send address information.
 
 We use the `EndpointBuilder` to create the receive endpoint, `recv_ep`.
 
@@ -129,7 +129,7 @@ The ALPN string is formatted based on the conventions we recommend. The first se
 
 We use the `RouterBuilder` to create the `recv_router`, which won't do much for us until we add our custom protocol later.
 
-The `addr` is the `NodeAddr` of the receive endpoint, which contains all the address information we know about ourselves, including our `node_id`. We will use the `addr` to connect from the send endpoint to the receive endpoint, using the `Endpoint::connect` method.
+The `addr` is the `endpointAddr` of the receive endpoint, which contains all the address information we know about ourselves, including our `endpoint_id`. We will use the `addr` to connect from the send endpoint to the receive endpoint, using the `Endpoint::connect` method.
 
 
 # Scaffolding out `write_frame` and `read_frame`
@@ -154,12 +154,12 @@ const ALPN: &[u8] = b"iroh/smol-msgs/0";
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // create the receive side
-    let recv_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_ep = Endpoint::bind().await?;
     let recv_router = Router::builder(recv_ep).spawn();
-    let addr = recv_router.endpoint().node_addr().initialized().await;
+    let addr = recv_router.endpoint().endpoint_addr().initialized().await;
 
     // create a send side & send some messages :)
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_ep = Endpoint::bind().await?;
     let conn = send_ep.connect(addr, ALPN).await?;
     let mut stream = conn.open_uni().await?;
 
@@ -253,12 +253,12 @@ const ALPN: &[u8] = b"iroh/smol/0";
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // create the receive side
-    let recv_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_ep = Endpoint::bind().await?;
     let recv_router = Router::builder(recv_ep).accept(ALPN, SmolProtocol).spawn();
-    let addr = recv_router.endpoint().node_addr().initialized().await;
+    let addr = recv_router.endpoint().endpoint_addr().initialized().await;
 
     // create a send side & send some messages :)
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_ep = Endpoint::bind().await?;
     let conn = send_ep.connect(addr, ALPN).await?;
     let mut stream = conn.open_uni().await?;
 
@@ -400,12 +400,12 @@ const ALPN: &[u8] = b"iroh/smol/0";
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // create the receive side
-    let recv_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let recv_ep = Endpoint::bind().await?;
     let recv_router = Router::builder(recv_ep).accept(ALPN, SmolProtocol).spawn();
-    let addr = recv_router.endpoint().node_addr().initialized().await;
+    let addr = recv_router.endpoint().endpoint_addr().initialized().await;
 
     // create a send side & send some messages :)
-    let send_ep = Endpoint::builder().discovery_n0().bind().await?;
+    let send_ep = Endpoint::bind().await?;
     let conn = send_ep.connect(addr, ALPN).await?;
     let mut stream = conn.open_uni().await?;
 

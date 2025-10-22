@@ -1,35 +1,35 @@
 # Discovery
 
-Discovery is the glue that connects a [Node Identifier](/docs/concepts/endpoint#node-identifiers) to something we can dial. Discovery services resolve NodeIds to either a home Relay URL or direct-dialing information. {{className: 'lead'}}
+Discovery is the glue that connects a [Endpoint Identifier](/docs/concepts/endpoint#endpoint-identifiers) to something we can dial. Discovery services resolve EndpointIds to either a home Relay URL or direct-dialing information. {{className: 'lead'}}
 
 <Note>
   More details on discovery in the discovery module [documentation](https://docs.rs/iroh/latest/iroh/discovery/index.html)
 </Note>
 
-Node discovery is an automated system for an [Endpoint](/docs/concepts/endpoint) to retrieve addressing information. Each iroh node will automatically publish their own addressing information with configured discovery services. Usually this means publishing which [Home Relay](/docs/concepts/relay#home-relay) a node is findable at, but they could also publish their direct addresses.
+Endpoint discovery is an automated system for an [Endpoint](/docs/concepts/endpoint) to retrieve addressing information. Each iroh endpoint will automatically publish their own addressing information with configured discovery services. Usually this means publishing which [Home Relay](/docs/concepts/relay#home-relay) an endpoint is findable at, but they could also publish their direct addresses.
 
 ## Discovery Services
 
-There are four different implementations of the discovery service in iroh, all of which map NodeIds to addresses:
+There are four different implementations of the discovery service in iroh, all of which map EndpointIds to addresses:
 
 | | Discovery Implementation | Description |
 | --- | --- | --- |
 | 1 | [DNS](#dns-discovery) | uses a custom Domain Name System server |
-| 2 | [Local](#local-discovery) | uses an mDNS-like system to find nodes on the local network |
+| 2 | [Local](#local-discovery) | uses an mDNS-like system to find endpoints on the local network |
 | 3 | [Pkarr](#pkarr-discovery) | uses Pkarr Servers over HTTP |
 | 4 | [DHT](#dht-discovery) | uses the BitTorrent Mainline DHT |
 
-By Default, iroh uses the DNS discovery system to resolve NodeIds to addresses. And can be configured to use any of the other discovery systems.
+By Default, iroh uses the DNS discovery system to resolve EndpointIds to addresses. And can be configured to use any of the other discovery systems.
 
 ## DNS Discovery
-DNS performs node lookups via the standard DNS systems. To publish to this DNS server a PkarrPublisher is needed. Number 0 runs a public instance of the DNS discovery system
+DNS performs endpoint lookups via the standard DNS systems. To publish to this DNS server a PkarrPublisher is needed. Number 0 runs a public instance of the DNS discovery system
 
 <Note>
     DNS Discovery has its own [blog post](/blog/iroh-dns)!
 </Note>
 
 ## Local Discovery
-Local discovery adds the ability to scan local networks for other iroh nodes, using Local Swarm Discovery. This is useful for local networks, or for bootstrapping a network before a relay is available.
+Local discovery adds the ability to scan local networks for other iroh endpoints, using Local Swarm Discovery. This is useful for local networks, or for bootstrapping a network before a relay is available.
 
 Local Discovery is _not_ enabled by default, and must be enabled by the user. You'll need to add the `discovery-local-network` feature flag to your `Cargo.toml` to use it.
 
@@ -39,14 +39,14 @@ Local Discovery is _not_ enabled by default, and must be enabled by the user. Yo
 iroh = { version = "0.nn", features = ["discovery-local-network"] }
 ```
 
-Then configure your endpoint to use local discovery concurrently with DNS discovery:
+Then configure your endpoint to use local discovery concurrently with the default DNS discovery:
 
 ```rust
 use iroh::Endpoint;
 
+let mdns = iroh::discovery::mdns::MdnsDiscovery::builder();
 let ep = Endpoint::builder()
-    .discovery_n0()
-    .discovery_local_network()
+    .discovery(mdns)
     .bind()
     .await?;
 ```
@@ -55,7 +55,7 @@ let ep = Endpoint::builder()
 The Pkarr resolver can perform lookups from designated [pkarr relay servers](https://github.com/Pubky/pkarr#servers) using HTTP. Read more about the pkarr project [here](https://github.com/Pubky/pkarr?tab=readme-ov-file#pkarr).
 
 ## DHT Discovery
-DHT discovery uses the [BitTorrent Mainline](https://en.wikipedia.org/wiki/Mainline_DHT) distributed hash table (DHT) to publish & resolve NodeIds.
+DHT discovery uses the [BitTorrent Mainline](https://en.wikipedia.org/wiki/Mainline_DHT) distributed hash table (DHT) to publish & resolve EndpointIds.
 
 DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'll need to add the `discovery-pkarr-dht` feature flag to your `Cargo.toml` to use it.
 
@@ -65,14 +65,16 @@ DHT Discovery is _not_ enabled by default, and must be enabled by the user. You'
 iroh = { version = "0.nn", features = ["discovery-pkarr-dht"] }
 ```
 
-Then configure your endpoint to use DHT discovery concurrently with DNS discovery:
+Then configure your endpoint to use DHT discovery concurrently with mDNS discovery, but not with the default DNS discovery, use the `Endpoint::empty_builder` method. This requires specifiying a `RelayMode`, which in this example we will keep default.
 
 ```rust
 use iroh::Endpoint;
 
-let ep = Endpoint::builder()
-    .discovery_n0()
-    .discovery_dht()
+let dht_discovery = iroh::discovery::dht::DhtDiscovery::builder();
+let mdns = iroh::discovery::mdns::MdnsDiscovery::builder();
+let ep = Endpoint::empty_builder(iroh::RelayMode::Default)
+    .discovery(dnt_discovery)
+    .discovery(mdns)
     .bind()
     .await?;
 ```

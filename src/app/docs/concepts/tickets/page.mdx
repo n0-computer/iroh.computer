@@ -1,12 +1,14 @@
 # Tickets
 
-Tickets are a way to share dialing information between iroh nodes. They're a single token that contains everything needed to connect to another node, or to fetch a blob or document. {{className: 'lead'}}
+Tickets are a way to share dialing information between iroh endpoints. They're a single token that contains everything needed to connect to another endpoint, or to fetch a blob or document. {{className: 'lead'}}
+
+You can use the default iroh endpoint tickets or build your own tickets using the `iroh-tickets` crate.
 
 <Note>
 Have a ticket? Try pasting it into the [iroh ticket explorer](https://ticket.iroh.computer) to break it down! Here's an [example](https://ticket.iroh.computer?ticket=docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6aaa)
 </Note>
 
-Tickets are a single serialized token containing everything needed to kick off an interaction with another node running iroh. Here's an example of one:
+Tickets are a single serialized token containing everything needed to kick off an interaction with another endpoint running iroh. Here's an example of one:
 
 ```text
 docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr4vxymgzqnctryyup327ct7iy4s5noxy6aaa
@@ -14,7 +16,7 @@ docaaacarwhmusoqf362j3jpzrehzkw3bqamcp2mmbhn3fmag3mzzfjp4beahj2v7aezhojvfqi5wltr
 
 Yes, they're long. 
 
-They're also very powerful. Tickets combine a piece of info with _dialing information for the node to fetch from_. We've seen numerous content-addressed systems force users to copy and paste long hashes around, and we figure if you're going to have to copy and paste something, it might as well contain both the hash and a hint about where to find the data. Tickets also work very well in QR codes!
+They're also very powerful. Tickets combine a piece of info with _dialing information for the endpoint to fetch from_. We've seen numerous content-addressed systems force users to copy and paste long hashes around, and we figure if you're going to have to copy and paste something, it might as well contain both the hash and a hint about where to find the data. Tickets also work very well in QR codes!
 
 In practice this is a _massive_ speed pickup for iroh. When you're given a ticket, you have everything you need to construct a request
 
@@ -24,9 +26,9 @@ Currently, there are three kinds of tickets:
 
 | Type | Description | Contents |
 | --- | --- | --- | 
-| `node` | A token for connecting to an iroh node | `Node Address` |
-| `blob` | A token for fetching a [blob](/docs/layers/blobs) or [collection](/docs/layers/blobs#collections) | `Hash`, `HashOrCollection`, `Node Address`  |
-| `document` | A read/write access token to a [document](/proto/iroh-docs), plus a node address | `DocID`, `Read/Write Capability`, `[Node Address]` |
+| `endpoint` | A token for connecting to an iroh endpoint | `Endpoint Address` |
+| `blob` | A token for fetching a [blob](/docs/layers/blobs) or [collection](/docs/layers/blobs#collections) | `Hash`, `HashOrCollection`, `Endpoint Address`  |
+| `document` | A read/write access token to a [document](/proto/iroh-docs), plus an endpoint address | `DocID`, `Read/Write Capability`, `[Endpoint Address]` |
 
 Tickets always start with an ascii string that describes the type of ticket (eg: `blob`), followed by a base32-lowercase-encoded payload. The payload is [postcard-encoded data](https://postcard.jamesmunns.com/wire-format.html) that contains the information needed to use the ticket. We chose postcard because it's extremely succinct.
 
@@ -43,4 +45,4 @@ When you create a document ticket, you're creating a secret that allows someone 
 ## Tickets in Apps
 Using tickets in your app comes down to what you're trying to accomplish. For short-lived sessions where both devices are online at the same time, tickets are an incredibly powerful way to bootstrap connections, and require no additional servers for coordination.
 
-If you have any means of automating (like, a central database or server to bootstrap from) we recommend you _do not_ use tickets in your app, and instead program around the idea that you can _dial by NodeID_. Tickets can contain information that can go stale quickly. instead focus on caching `nodeIDs`, and letting iroh transparently resolve dialing details at runtime.
+If you have any means of automating (like, a central database or server to bootstrap from) we recommend you _do not_ use tickets in your app, and instead program around the idea that you can _dial by EndpointID_. Tickets can contain information that can go stale quickly. instead focus on caching `endpointIDs`, and letting iroh transparently resolve dialing details at runtime.
