@@ -21,7 +21,7 @@ const koulen = localFont({
 
 export default function SendmePage() {
   const install = `curl -fsSL https://iroh.computer/sendme.sh | sh`
-  const install_win = `iwr https://iroh.computer/sendme.ps1 -useb | iex`
+  const install_win = `iwr https://www.iroh.computer/sendme.ps1 -useb | iex`
   const [copied, setCopied] = React.useState(false)
   const [copiedWin, setCopiedWin] = React.useState(false)
 
