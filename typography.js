@@ -40,6 +40,7 @@ module.exports = ({ theme }) => ({
       // Base
       color: 'var(--tw-prose-body)',
       fontSize: theme('fontSize.sm')[0],
+      ...theme('fontSize.sm')[1],
       lineHeight: theme('lineHeight.7'),
 
       // Layout
@@ -57,6 +58,7 @@ module.exports = ({ theme }) => ({
       // Text
       p: {
         fontSize: theme('fontSize.base')[0],
+        ...theme('fontSize.base')[1],
         marginTop: theme('spacing.6'),
         marginBottom: theme('spacing.6'),
       },
@@ -316,17 +318,20 @@ module.exports = ({ theme }) => ({
         paddingLeft: theme('padding[1.5]'),
         boxShadow: 'inset 0 0 0 1px var(--tw-prose-code-ring)',
         backgroundColor: 'var(--tw-prose-code-bg)',
-        fontSize: theme('fontSize.2xs'),
+        fontSize: theme('fontSize.2xs')[0],
+        ...theme('fontSize.2xs')[1],
       },
       ':is(a, h1, h2, h3, blockquote, thead th) code': {
         color: 'inherit',
       },
       'h2 code': {
         fontSize: theme('fontSize.base')[0],
+        ...theme('fontSize.base')[1],
         fontWeight: 'inherit',
       },
       'h3 code': {
         fontSize: theme('fontSize.sm')[0],
+        ...theme('fontSize.sm')[1],
         fontWeight: 'inherit',
       },
 
