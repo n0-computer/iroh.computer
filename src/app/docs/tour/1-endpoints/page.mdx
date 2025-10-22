@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
     let endpoint = builder.bind().await?;
 
     // print this endpoint's node id
-    println!("node id: {:?}", endpoint.node_id());
+    println!("node id: {:?}", endpoint.id());
 
     // exit the program
     Ok(())
