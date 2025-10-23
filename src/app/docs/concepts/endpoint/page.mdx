@@ -16,7 +16,7 @@ async fn main() {
 }
 ```
 
-Breaking that down the `builder` sets up configuration for the endpoint, and `bind` creates the endpoint and starts listening for incoming connections. The `await` keyword is used to wait for the endpoint to be created in an asynchronous context.
+Breaking that down, `bind` creates the endpoint and starts listening for incoming connections, while the `await` keyword is used to wait for the endpoint to be created in an asynchronous context.
 
 Once you have an endpoint, you can use it to create connections to other endpoints, or accept incoming connections from other endpoints.
 
