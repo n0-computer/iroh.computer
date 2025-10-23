@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import clsx from 'clsx';
 import { CheckCircleIcon, EllipsisHorizontalIcon, TrophyIcon } from '@heroicons/react/20/solid';
@@ -5,13 +7,14 @@ import { CheckCircleIcon, EllipsisHorizontalIcon, TrophyIcon } from '@heroicons/
 import roadmap from './roadmap.json';
 import { BlankLayout } from '@/components/BlankLayout';
 import { formatDate } from '@/lib/formatDate'
+import { useState } from 'react';
+import { ArrowDown, ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 
-export const metadata = {
-  title: 'Roadmap',
-  description:
-    'Iroh 1.0 roadmap. Here\'s where we\'re headed, and progress we made against our goal to date.',
-};
-
+// export const metadata = {
+//   title: 'Roadmap',
+//   description:
+//     'Iroh 1.0 roadmap. Here\'s where we\'re headed, and progress we made against our goal to date.',
+// };
 
 export default function Component() {
   const { last_updated } = roadmap;
@@ -26,17 +29,47 @@ export default function Component() {
           <h1 className='text-3xl font-bold font-space-mono text-iroh-gray-700 mb-4'></h1>
           <p className='text-iroh-gray-500'></p>
         </div>
-        {roadmap.milestones.map((milestone, i) => {
-          if (milestone.version) {
-            return <Release key={i} data={milestone} />
-          } else if (milestone.all_done === false || milestone.all_done === true) {
-            return <AllDone key={i} data={milestone} />
-          } else if (milestone.ellipsis) {
-            return <Ellipsis key={i} data={milestone} />
-          }
-          return <Milestone key={i} data={milestone} />
-        })}
+        <Milestones data={roadmap.milestones} />
     </BlankLayout>
+  )
+}
+
+function Milestones({ data }) {
+  return data.map((milestone, i) => {
+      if (milestone.section) {
+        return <Section key={i} data={milestone} />
+      } else if (milestone.version) {
+        return <Release key={i} data={milestone} />
+      } else if (milestone.all_done === false || milestone.all_done === true) {
+        return <AllDone key={i} data={milestone} />
+      } else if (milestone.ellipsis) {
+        return <Ellipsis key={i} data={milestone} />
+      }
+      return <Milestone key={i} data={milestone} />
+    })
+}
+
+function Section({ data }) {
+  const { section, startCollapsed, milestones } = data;
+  const [collapsed, setCollapsed] = useState(startCollapsed);
+  const first_release_string = formatDate(milestones.find((m) => m.released).released, true)
+  const last_release_string = formatDate(milestones.findLast((m) => m.released).released, true)
+
+  return (
+    <div>
+      <div style={{ marginLeft: '6.5rem' }} className='pr-5 relative flex gap-4 w-full'>
+        <button className='cursor-pointer border-1 border-iroh-purple-400 p-3 w-12 h-12 rounded-full' onClick={() => setCollapsed(!collapsed)}>
+          {collapsed? <ChevronRight /> : <ChevronDown /> }
+        </button>
+        <button className='text-left cursor-pointer' onClick={() => setCollapsed(!collapsed)}>
+          <h3 className='w-full text-xl leading-6 text-iroh-gray-600 font-space font-bold dark:text-iroh-gray-400'>{section}</h3>
+          <p className='text-xs text-iroh-gray-400 dark:text-iroh-gray-600'>
+            {milestones.filter((m) => m.version).length} releases: {first_release_string} - {last_release_string}
+          </p>
+        </button>
+      </div>
+      {!collapsed && <Milestones data={milestones} />}
+    </div>
   )
 }
 
@@ -62,6 +95,7 @@ function Release({ data }) {
     </div>
   )
 }
+
 
 function Milestone({ data }) {
   const { done, title, description, subtasks, tracking_issue, doc } = data;
