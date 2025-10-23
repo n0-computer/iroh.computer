@@ -1,236 +1,241 @@
 {
-  "last_updated": "2025-10-20",
+  "last_updated": "2025-10-23",
   "milestones": [
-    {
-      "done": true,
-      "title": "docs are disabled by default",
-      "description": "transition node builder away from assuming all users want the docs protocol",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/2748"
-    },
-    { "version": "v0.26.0", "done": true, "released": "2024-09-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
-    { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "https://www.iroh.computer/blog/iroh-0-27-0-Squashing-Bugs-And-Taking-Names" },
-    {
-      "done": true,
-      "title": "pull custom protocols out of iroh",
-      "description": "pull custom protocols out of iroh and into separate repositories",
-      "tracking_issue": null,
-      "subtasks": {
-        "iroh-blobs": true,
-        "iroh-docs": true,
-        "iroh-gossip": true
-      }
-    },
-    {
-      "done": true,
-      "title": "blobs, docs, and gossip are disabled by default",
-      "description": "protocols remain in the codebase but must be explicitly enabled",
-      "tracking_issue": null
-    },
-    {
-      "done": true,
-      "title": "Implement QUIC Address Discovery",
-      "description": "Add QUIC Address Discovery functionality to `iroh-quinn`",
-      "tracking_issue": "https://github.com/n0-computer/quinn/pull/12"
-    },
-    {
-      "done": true,
-      "title": "Iroh CLI Deprecation Warning",
-      "description": "warn users that the iroh CLI is deprecated and will be converted to an example in the next release",
-      "tracking_issue": null
-    },
-    {
-      "done": true,
-      "title": "Iroh client Deprecation Warning",
-      "description": "warn users that the iroh client is deprecated and will be converted to an example in the next release",
-      "tracking_issue": null
-    },
-    { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates" },
-    {
-      "done": true,
-      "title": "net-tools repo",
-      "description": "factor a number of networking tools out of iroh and into a separate repo",
-      "doc": "",
-      "subtasks": {
-        "netcheck": true,
-        "portmapper": true
-      }
-    },
-    {
-      "done": true,
-      "title": "Add QUIC Address Discovery to iroh-relay",
-      "description": "serve QUIC Address Discovery on the relay",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
-    },
-    {
-      "done": true,
-      "title": "blobs, docs, and gossip are removed from iroh",
-      "description": "protocols exist in their own repos and are published separately from iroh",
-      "tracking_issue": null
-    },
-    {
-      "done": true,
-      "title": "CLI is removed from iroh",
-      "description": "there is no more CLI or Node in iroh, look at the specific protocols to play with a CLI centered around that protocol",
-      "tracking_issue": null
-    },
-    {
-      "done": true,
-      "title": "iroh-net is now just iroh",
-      "description": "we no longer publish `iroh-net`, `iroh` contains all of `iroh-net`",
-      "tracking_issue": null
-    },
-    { "version": "v0.29.0", "done": true, "released": "2024-12-02", "doc": "https://www.iroh.computer/blog/iroh-0-29-net-is-the-new-iroh" },
-    {
-      "done": true,
-      "title": "Add QUIC Address Discovery to `iroh-net-report`",
-      "description": "net-report has QUIC Address Discovery probes",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
-    },
-    { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "https://www.iroh.computer/blog/iroh-0-30-0-slimming-down" },
-    {
-      "done": true,
-      "title": "Auth on Relays",
-      "description": "Blacklist or whitelist `NodeId`s on the relay",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3086"
-    },
-    {
-      "done": true,
-      "title": "Iroh Doctor CLI v0.1",
-      "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
-      "tracking_issue": null
-    },
-    { "version": "v0.31.0", "done": true, "released": "2025-01-14", "doc": "https://www.iroh.computer/blog/iroh-0-31-0-back-to-fighting-fit" },
-    {
-      "done": true,
-      "title": "Add QUIC Address Discovery to `iroh`",
-      "description": "iroh can launch QUIC Address Discovery probes",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3049"
-    },
-    { "version": "v0.32.0", "done": true, "released": "2025-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
-    {
-      "done": true,
-      "title": "browser support",
-      "description": "iroh compiles to web assembly and runs in the browser",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
-      "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
-    },
-    {
-      "done": true,
-      "title": "User-defined data in Discovery",
-      "description": "Allow users to publish and resolve a user-defined data.",
-      "tracing_issue": "https://github.com/n0-computer/iroh/pull/3176"
-    },
-    {
-      "done": true,
-      "title": "Discovery stream subscription",
-      "description": "Add simple API to allow users to subscribe to a stream of discoveries.",
-      "tracing_issue": "https://github.com/n0-computer/iroh/pull/3181"
-    },
-    {
-      "done": true,
-      "title": "QUIC connections: graceful shutdown",
-      "description": "finalize our APIs for graceful shutdown of QUIC connections",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3170"
-    },
-    {
-      "done": true,
-      "title": "0-RTT",
-      "description": "iroh QUIC connections can now leverage 0-RTT",
-      "tracking_issue": "https://github.com/n0-computer/iroh/pull/3163"
-    },
-    { "version": "v0.33.0", "done": true, "released": "2025-02-24", "doc": "https://iroh.computer/blog/iroh-0-33-0-browsers-and-discovery-and-0-RTT-oh-my" },
-    {
-      "done": true,
-      "title": "use Raw Public Keys (RFC 7250) in TLS",
-      "description": "use Raw Public Keys instead of self-signed certificates in TLS",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
-      "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
-    },
-    {
-      "done": true,
-      "title": "improved tags API for `iroh-blobs`",
-      "description": "expand tags API",
-      "tracking_issue": null
-    },
-    { "version": "v0.34.1", "done": true, "released": "2025-03-18", "doc": "https://www.iroh.computer/blog/iroh-0-34-0-raw-public-keys" },
-    {
-      "done": true,
-      "title": "relay connections over websockets",
-      "description": "Connections to the relay happen over websockets",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "metrics are collected per-endpoint",
-      "description": "Previously, metrics were collected globably. Now, each `iroh` endpoint collects metrics for itself.",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.35.0", "done": true, "released": "2025-05-12", "doc": "https://www.iroh.computer/blog/iroh-0-35-prepping-for-1-0" },
-    {
-      "done": true,
-      "title": "Formalize Error Responses",
-      "description": "transition from anyhow to thiserror in all critical code paths",
-      "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
-    },
-    {
-      "done": true,
-      "title": "iroh-blobs 1.0 candidate API",
-      "description": "Overhaul the blobs API",
-      "tracking_issue": null
-    },
-    {
-      "done": true,
-      "title": "iroh-blobs: multiprovider fan-in",
-      "description": "Download data from multiple providers using the `SplitStrategy` enum",
-      "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4",
-      "doc": "https://docs.rs/iroh-blobs/latest/iroh_blobs/api/downloader/enum.SplitStrategy.html"
-    },
-    { "version": "v0.90.0", "done": true, "released": "2025-06-27", "doc": "https://www.iroh.computer/blog/iroh-0-90-the-canary-series" },
-    {
-      "done": true,
-      "title": "deprecate TCP relay connections",
-      "description": "We no longer support connecting to the relays using raw TCP, only WebSockets",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "Overhaul the relay protocol",
-      "description": "Fix the relay handshake, clean up unused frames.",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.91.0", "done": true, "released": "2025-07-30", "doc": "https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break" },
-    {
-      "done": true,
-      "title": "mDNS passive mode",
-      "description": "Allow discovering local nodes without advertising your own.",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "mDNS Expiry Events",
-      "description": "Emit expiry events in the `subscribe` stream.",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.92.0", "done": true, "released": "2025-09-18", "doc": "https://www.iroh.computer/blog/iroh-0-92-mdns-improvements" },
-    {
-      "done": true,
-      "title": "`Endpoint::online`",
-      "description": "Add method for determining if your endpoint is \"online\".",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "Dynamically add Discovery services",
-      "description": "Add discovery services to an already running endpoint",
-      "tracking_issue": null,
-      "doc": null
+    { "section" : "past releases",
+      "startCollapsed": true,
+      "milestones": [
+        {
+          "done": true,
+          "title": "docs are disabled by default",
+          "description": "transition node builder away from assuming all users want the docs protocol",
+          "tracking_issue": "https://github.com/n0-computer/iroh/pull/2748"
+        },
+        { "version": "v0.26.0", "done": true, "released": "2024-09-30", "doc": "https://www.iroh.computer/blog/iroh-0-26-0-Say-Hello-to-Your-Neighbors" },
+        { "version": "v0.27.0", "done": true, "released": "2024-10-21", "doc": "https://www.iroh.computer/blog/iroh-0-27-0-Squashing-Bugs-And-Taking-Names" },
+        {
+          "done": true,
+          "title": "pull custom protocols out of iroh",
+          "description": "pull custom protocols out of iroh and into separate repositories",
+          "tracking_issue": null,
+          "subtasks": {
+            "iroh-blobs": true,
+            "iroh-docs": true,
+            "iroh-gossip": true
+          }
+        },
+        {
+          "done": true,
+          "title": "blobs, docs, and gossip are disabled by default",
+          "description": "protocols remain in the codebase but must be explicitly enabled",
+          "tracking_issue": null
+        },
+        {
+          "done": true,
+          "title": "Implement QUIC Address Discovery",
+          "description": "Add QUIC Address Discovery functionality to `iroh-quinn`",
+          "tracking_issue": "https://github.com/n0-computer/quinn/pull/12"
+        },
+        {
+          "done": true,
+          "title": "Iroh CLI Deprecation Warning",
+          "description": "warn users that the iroh CLI is deprecated and will be converted to an example in the next release",
+          "tracking_issue": null
+        },
+        {
+          "done": true,
+          "title": "Iroh client Deprecation Warning",
+          "description": "warn users that the iroh client is deprecated and will be converted to an example in the next release",
+          "tracking_issue": null
+        },
+        { "version": "v0.28.1", "done": true, "released": "2024-11-04", "doc": "https://iroh.computer/blog/iroh-0-28-let-them-have-crates" },
+        {
+          "done": true,
+          "title": "net-tools repo",
+          "description": "factor a number of networking tools out of iroh and into a separate repo",
+          "doc": "",
+          "subtasks": {
+            "netcheck": true,
+            "portmapper": true
+          }
+        },
+        {
+          "done": true,
+          "title": "Add QUIC Address Discovery to iroh-relay",
+          "description": "serve QUIC Address Discovery on the relay",
+          "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+        },
+        {
+          "done": true,
+          "title": "blobs, docs, and gossip are removed from iroh",
+          "description": "protocols exist in their own repos and are published separately from iroh",
+          "tracking_issue": null
+        },
+        {
+          "done": true,
+          "title": "CLI is removed from iroh",
+          "description": "there is no more CLI or Node in iroh, look at the specific protocols to play with a CLI centered around that protocol",
+          "tracking_issue": null
+        },
+        {
+          "done": true,
+          "title": "iroh-net is now just iroh",
+          "description": "we no longer publish `iroh-net`, `iroh` contains all of `iroh-net`",
+          "tracking_issue": null
+        },
+        { "version": "v0.29.0", "done": true, "released": "2024-12-02", "doc": "https://www.iroh.computer/blog/iroh-0-29-net-is-the-new-iroh" },
+        {
+          "done": true,
+          "title": "Add QUIC Address Discovery to `iroh-net-report`",
+          "description": "net-report has QUIC Address Discovery probes",
+          "tracking_issue": "https://github.com/n0-computer/iroh/issues/2842"
+        },
+        { "version": "v0.30.0", "done": true, "released": "2024-12-16", "doc": "https://www.iroh.computer/blog/iroh-0-30-0-slimming-down" },
+        {
+          "done": true,
+          "title": "Auth on Relays",
+          "description": "Blacklist or whitelist `NodeId`s on the relay",
+          "tracking_issue": "https://github.com/n0-computer/iroh/pull/3086"
+        },
+        {
+          "done": true,
+          "title": "Iroh Doctor CLI v0.1",
+          "description": "release the first version of the iroh doctor CLI as a standalone tool for diagnosing and reporting on connectivity",
+          "tracking_issue": null
+        },
+        { "version": "v0.31.0", "done": true, "released": "2025-01-14", "doc": "https://www.iroh.computer/blog/iroh-0-31-0-back-to-fighting-fit" },
+        {
+          "done": true,
+          "title": "Add QUIC Address Discovery to `iroh`",
+          "description": "iroh can launch QUIC Address Discovery probes",
+          "tracking_issue": "https://github.com/n0-computer/iroh/pull/3049"
+        },
+        { "version": "v0.32.0", "done": true, "released": "2025-02-03", "doc": "https://www.iroh.computer/blog/iroh-0-32-0-browser-alpha-qad-and-n0-future" },
+        {
+          "done": true,
+          "title": "browser support",
+          "description": "iroh compiles to web assembly and runs in the browser",
+          "tracking_issue": "https://github.com/n0-computer/iroh/issues/2799",
+          "doc": "https://www.iroh.computer/blog/iroh-and-the-web"
+        },
+        {
+          "done": true,
+          "title": "User-defined data in Discovery",
+          "description": "Allow users to publish and resolve a user-defined data.",
+          "tracing_issue": "https://github.com/n0-computer/iroh/pull/3176"
+        },
+        {
+          "done": true,
+          "title": "Discovery stream subscription",
+          "description": "Add simple API to allow users to subscribe to a stream of discoveries.",
+          "tracing_issue": "https://github.com/n0-computer/iroh/pull/3181"
+        },
+        {
+          "done": true,
+          "title": "QUIC connections: graceful shutdown",
+          "description": "finalize our APIs for graceful shutdown of QUIC connections",
+          "tracking_issue": "https://github.com/n0-computer/iroh/pull/3170"
+        },
+        {
+          "done": true,
+          "title": "0-RTT",
+          "description": "iroh QUIC connections can now leverage 0-RTT",
+          "tracking_issue": "https://github.com/n0-computer/iroh/pull/3163"
+        },
+        { "version": "v0.33.0", "done": true, "released": "2025-02-24", "doc": "https://iroh.computer/blog/iroh-0-33-0-browsers-and-discovery-and-0-RTT-oh-my" },
+        {
+          "done": true,
+          "title": "use Raw Public Keys (RFC 7250) in TLS",
+          "description": "use Raw Public Keys instead of self-signed certificates in TLS",
+          "tracking_issue": "https://github.com/n0-computer/iroh/issues/2798",
+          "doc": "https://datatracker.ietf.org/doc/html/rfc7250"
+        },
+        {
+          "done": true,
+          "title": "improved tags API for `iroh-blobs`",
+          "description": "expand tags API",
+          "tracking_issue": null
+        },
+        { "version": "v0.34.1", "done": true, "released": "2025-03-18", "doc": "https://www.iroh.computer/blog/iroh-0-34-0-raw-public-keys" },
+        {
+          "done": true,
+          "title": "relay connections over websockets",
+          "description": "Connections to the relay happen over websockets",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "metrics are collected per-endpoint",
+          "description": "Previously, metrics were collected globably. Now, each `iroh` endpoint collects metrics for itself.",
+          "tracking_issue": null,
+          "doc": null
+        },
+        { "version": "v0.35.0", "done": true, "released": "2025-05-12", "doc": "https://www.iroh.computer/blog/iroh-0-35-prepping-for-1-0" },
+        {
+          "done": true,
+          "title": "Formalize Error Responses",
+          "description": "transition from anyhow to thiserror in all critical code paths",
+          "tracking_issue": "https://github.com/n0-computer/iroh/issues/2741"
+        },
+        {
+          "done": true,
+          "title": "iroh-blobs 1.0 candidate API",
+          "description": "Overhaul the blobs API",
+          "tracking_issue": null
+        },
+        {
+          "done": true,
+          "title": "iroh-blobs: multiprovider fan-in",
+          "description": "Download data from multiple providers using the `SplitStrategy` enum",
+          "tracking_issue": "https://github.com/n0-computer/iroh-blobs/issues/4",
+          "doc": "https://docs.rs/iroh-blobs/latest/iroh_blobs/api/downloader/enum.SplitStrategy.html"
+        },
+        { "version": "v0.90.0", "done": true, "released": "2025-06-27", "doc": "https://www.iroh.computer/blog/iroh-0-90-the-canary-series" },
+        {
+          "done": true,
+          "title": "deprecate TCP relay connections",
+          "description": "We no longer support connecting to the relays using raw TCP, only WebSockets",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "Overhaul the relay protocol",
+          "description": "Fix the relay handshake, clean up unused frames.",
+          "tracking_issue": null,
+          "doc": null
+        },
+        { "version": "v0.91.0", "done": true, "released": "2025-07-30", "doc": "https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break" },
+        {
+          "done": true,
+          "title": "mDNS passive mode",
+          "description": "Allow discovering local nodes without advertising your own.",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "mDNS Expiry Events",
+          "description": "Emit expiry events in the `subscribe` stream.",
+          "tracking_issue": null,
+          "doc": null
+        },
+        { "version": "v0.92.0", "done": true, "released": "2025-09-18", "doc": "https://www.iroh.computer/blog/iroh-0-92-mdns-improvements" },
+        {
+          "done": true,
+          "title": "`Endpoint::online`",
+          "description": "Add method for determining if your endpoint is \"online\".",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "Dynamically add Discovery services",
+          "description": "Add discovery services to an already running endpoint",
+          "tracking_issue": null,
+          "doc": null
+        }
+      ]
     },
     { "version": "v0.93.0", "done": true, "released": "2025-10-08", "doc": "https://www.iroh.computer/blog/iroh-0-93-iroh-online" },
     {
