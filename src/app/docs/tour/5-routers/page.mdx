@@ -14,24 +14,26 @@ Then we can setup gossip & add it to our router:
 
 ```rust
 use iroh::{protocol::Router, Endpoint};
-use iroh_blobs::net_protocol::Blobs;
-use iroh_gossip::{net::Gossip, ALPN};
+use iroh_blobs::{store::mem::MemStore, BlobsProtocol};
+use iroh_gossip::Gossip;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let endpoint = Endpoint::bind().await?;
-
-    let blobs = Blobs::memory().build(&endpoint);
-
-    let gossip = Gossip::builder().spawn(endpoint.clone()).await?;
-
-    // build the router
-    let router = Router::builder(endpoint)
-        .accept(iroh_blobs::ALPN, blobs.clone())
-        .accept(iroh_gossip::ALPN, gossip.clone())
+    let endpoint= Endpoint::bind().await?;
+    let store=MemStore::new();
+    let blobs=BlobsProtocol::new(&store,None);
+    
+    let gossip=Gossip::builder().spawn(endpoint.clone());
+    
+    
+    //build the router
+    let router=Router::builder(endpoint)
+        .accept(iroh_blobs::ALPN, blobs)
+        .accept(iroh_gossip::ALPN, gossip)
         .spawn();
-
+    
     router.shutdown().await?;
+    
     Ok(())
 }
 ```

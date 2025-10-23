@@ -11,11 +11,11 @@ There are different implementations of the discovery service in iroh, the most p
 Iroh endpoints come with some defaults that include using our public infrastructure to enable discovery:
 
 ```rust
-use iroh::{Endpoint, RelayMode};
+use iroh::Endpoint;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let builder = Endpoint::.bind().await?;
+    let endpoint = Endpoint::bind().await?;
 
     println!("endpoint id: {:?}", endpoint.id());
     Ok(())
@@ -45,7 +45,7 @@ tokio = "1.43.0"
 And with that we can set up local discovery, alongside our default discovery:
 
 ```rust
-use iroh::{Endpoint, RelayMode, SecretKey};
+use iroh::Endpoint;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
