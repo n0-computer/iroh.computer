@@ -20,10 +20,10 @@ use iroh_gossip::Gossip;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let endpoint= Endpoint::bind().await?;
-    let store=MemStore::new();
-    let blobs=BlobsProtocol::new(&store,None);
+    let store = MemStore::new();
+    let blobs = BlobsProtocol::new(&store,None);
     
-    let gossip=Gossip::builder().spawn(endpoint.clone());
+    let gossip = Gossip::builder().spawn(endpoint.clone());
     
     
     //build the router
