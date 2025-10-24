@@ -1,6 +1,6 @@
 # Endpoint Addresses
 
-Endpoint Addresses or [`EndpointAddrs`](https://docs.rs/iroh/latest/iroh/struct.EndpointAddr.htm) are a common struct you'll interact when working with iroh to tell iroh what & where to dial. In rust they look like this:
+Endpoint Addresses or [`EndpointAddrs`](https://docs.rs/iroh/latest/iroh/struct.EndpointAddr.html) are a common struct you'll interact when working with iroh to tell iroh what & where to dial. In rust they look like this:
 
 ```rust
 pub struct Addr {
@@ -11,7 +11,7 @@ pub struct Addr {
 
 You'll interact with `EndpointAddr`s a fair amount when working with iroh. It's also quite normal to construct addresses manually from, say, endpoint identifiers stored in your application database.
 
-When we call [`connect`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Endpoint.html#method.connect) on an [Endpoint](http://localhost:3000/docs/concepts/endpoint), we need to pass either a `EndpointAddr`, or something that can turn into a `EndpointAddr`. In iroh `Endpoint`s will have different fields populated depending on where they came from, and the discovery services you've configured your endpoint with.
+When we call [`connect`](https://docs.rs/iroh/latest/iroh/endpoint/struct.Endpoint.html#method.connect) on an [Endpoint](https://www.iroh.computer/docs/concepts/endpoint), we need to pass either a `EndpointAddr`, or something that can turn into a `EndpointAddr`. In iroh `Endpoint`s will have different fields populated depending on where they came from, and the discovery services you've configured your endpoint with.
 
 ### Interaction with discovery
 From the above struct, the only _required_ field is the `id`. And because of this, there's an implementation of `From` that can turn `EndpointIDs` directly into EndpointAddrs. _but this will only work if you have a discovery service that can resolve EndpointIDs enabled_. Thankfully, we enable discovery by default:
