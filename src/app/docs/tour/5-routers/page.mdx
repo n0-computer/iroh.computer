@@ -19,7 +19,7 @@ use iroh_gossip::Gossip;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let endpoint= Endpoint::bind().await?;
+    let endpoint = Endpoint::bind().await?;
     let store = MemStore::new();
     let blobs = BlobsProtocol::new(&store,None);
     
@@ -27,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
     
     
     //build the router
-    let router=Router::builder(endpoint)
+    let router = Router::builder(endpoint)
         .accept(iroh_blobs::ALPN, blobs)
         .accept(iroh_gossip::ALPN, gossip)
         .spawn();
