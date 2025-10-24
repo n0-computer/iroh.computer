@@ -10,8 +10,7 @@ We use the term _router_ because it mimics what an HTTP server would do with an 
 use anyhow::Result;
 use iroh::protocol::Router;
 use iroh::Endpoint;
-use iroh_blobs::net_protocol::Blobs;
-use iroh_blobs::util::local_pool::LocalPool;
+use iroh_blobs::{store::mem::MemStore,BlobsProtocol};
 
 
 #[tokio::main]
@@ -19,8 +18,11 @@ async fn main() -> Result<()> {
     // Build an endpoint, defaulting to the public n0 relay network
     let endpoint = Endpoint::bind().await?;
 
-    // configure the blobs protocol to run in-memory
-    let blobs = Blobs::memory().build(&endpoint);
+    // We initialize an in-memory backing store for iroh-blobs
+    let store = MemStore::new();
+    
+    // Then we initialize a struct that can accept blobs requests over iroh connections
+    let blobs = BlobsProtocol::new(&store,None);
 
     // Build our router and add the blobs protocol, 
     // identified by its ALPN. Spawn the router to start listening.
@@ -30,7 +32,7 @@ async fn main() -> Result<()> {
 
     // get our own address. At this point we have a running router 
     // that's ready to accept connections.
-    let addr = router.endpoint().addr().await?;
+    let addr = router.endpoint().addr();
 
     // Wait for exit
     tokio::signal::ctrl_c().await?;
