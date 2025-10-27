@@ -22,7 +22,7 @@ async fn main() -> Result<()> {
     let store = MemStore::new();
     
     // Then we initialize a struct that can accept blobs requests over iroh connections
-    let blobs = BlobsProtocol::new(&store,None);
+    let blobs = BlobsProtocol::new(&store, None);
 
     // Build our router and add the blobs protocol, 
     // identified by its ALPN. Spawn the router to start listening.
