@@ -270,7 +270,7 @@ Then implement message reception. We are going to use a separate `subscribe_loop
 ```rust
 // at the top of the file add these imports:
 use std::collections::HashMap;
-use iroh_gossip::api::{GossipReceiver,Event};
+use iroh_gossip::api::{GossipReceiver, Event};
 use futures_lite::StreamExt;
 
 ...
@@ -325,7 +325,7 @@ use futures_lite::StreamExt;
 use iroh::protocol::Router;
 use iroh::{Endpoint, EndpointId};
 use iroh_gossip::{
-    api::{GossipReceiver,Event},
+    api::{GossipReceiver, Event},
     net::Gossip,
     proto::TopicId,
 };
@@ -536,7 +536,7 @@ use clap::Parser;
 use futures_lite::StreamExt;
 use iroh::{protocol::Router, Endpoint, EndpointAddr, EndpointId};
 use iroh_gossip::{
-    api::{GossipReceiver,Event},
+    api::{GossipReceiver, Event},
     net::Gossip,
     proto::TopicId,
 };
