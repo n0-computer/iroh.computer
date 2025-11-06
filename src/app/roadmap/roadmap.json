@@ -269,15 +269,8 @@
     { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" },
     {
       "done": false,
-      "title": "Clean up errors",
+      "title": "Switch to `n0-error`",
       "description": "",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": false,
-      "title": "Own all foreign types",
-      "description": "Any types that are from dependencies need to be owned or made private",
       "tracking_issue": null,
       "doc": null
     },
@@ -288,7 +281,14 @@
       "tracking_issue": null,
       "doc": null
     },
-    { "version": "v0.95.0", "done": false, "released": "2025-11-03", "doc": "" },
+    { "version": "v0.95.1", "done": true, "released": "2025-11-05", "doc": "" },
+    {
+      "done": false,
+      "title": "Own all foreign types",
+      "description": "Any types that are from dependencies need to be owned or made private",
+      "tracking_issue": null,
+      "doc": null
+    },
     {
       "done": false,
       "title": "QUIC Multipath support",
