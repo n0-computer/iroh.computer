@@ -268,12 +268,27 @@
     },
     { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" },
     {
-      "done": false,
-      "title": "Clean up errors",
+      "done": true,
+      "title": "Switch to `n0-error`",
+      "description": "Replace `snafu` and `n0-snafu` errors with `n0-error`",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Make `Connection::alpn` and `Connection::remote_id` infallible",
+      "description": "Also adds additional APIs for working with 0-RTT connections",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "`iroh-blobs` compiles to WASM",
       "description": "",
       "tracking_issue": null,
       "doc": null
     },
+    { "version": "v0.95.1", "done": true, "released": "2025-11-05", "doc": "" },
     {
       "done": false,
       "title": "Own all foreign types",
@@ -281,14 +296,6 @@
       "tracking_issue": null,
       "doc": null
     },
-    {
-      "done": false,
-      "title": "Make `Connection::alpn` and `Connection::remote_id` infallible",
-      "description": "",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.95.0", "done": false, "released": "2025-11-03", "doc": "" },
     {
       "done": false,
       "title": "QUIC Multipath support",
