@@ -268,15 +268,22 @@
     },
     { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" },
     {
-      "done": false,
+      "done": true,
       "title": "Switch to `n0-error`",
-      "description": "",
+      "description": "Replace `snafu` and `n0-snafu` errors with `n0-error`",
       "tracking_issue": null,
       "doc": null
     },
     {
-      "done": false,
+      "done": true,
       "title": "Make `Connection::alpn` and `Connection::remote_id` infallible",
+      "description": "Also adds additional APIs for working with 0-RTT connections",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "`iroh-blobs` compiles to WASM",
       "description": "",
       "tracking_issue": null,
       "doc": null
