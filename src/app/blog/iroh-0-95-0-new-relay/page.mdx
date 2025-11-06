@@ -62,7 +62,11 @@ We settled on writing our own crate, called `n0-error` that had two main focuses
     - be easy to use with `anyhow` for example crates and binaries
     - work well with IDEs, for example, making it easy to jump to definitions while coding
 
+One important thing to note: `n0-error`s implement `std::error::Error`, so you don't have to adopt `n0-error` in your codebase if you are using `iroh`, unless you need an advanced feature.
+
 Take a look at the [crate](https://crates.io/crates/n0-error) and [docs](https://docs.rs/n0-error/latest/n0_error/) for `n0-error` for more details.
+
+We will do a follow up blog post in the coming weeks that goes into more detail about `n0-error`.
 
 ### ❗ error basics
 
