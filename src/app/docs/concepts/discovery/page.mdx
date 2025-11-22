@@ -73,7 +73,7 @@ use iroh::Endpoint;
 let dht_discovery = iroh::discovery::dht::DhtDiscovery::builder();
 let mdns = iroh::discovery::mdns::MdnsDiscovery::builder();
 let ep = Endpoint::empty_builder(iroh::RelayMode::Default)
-    .discovery(dnt_discovery)
+    .discovery(dht_discovery)
     .discovery(mdns)
     .bind()
     .await?;
