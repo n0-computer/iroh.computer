@@ -39,7 +39,28 @@ If you're ever confused about what to import, take a look at the imports in the 
 
 We'll assume you've set up [rust](https://www.rust-lang.org/) and [cargo](https://doc.rust-lang.org/cargo/) on your machine.
 
-Initialize a new project by running `cargo init file-transfer`, then `cd file-transfer` and install all the packages we're going to use: `cargo add iroh iroh-blobs tokio anyhow`.
+Initialize a new project by running `cargo init file-transfer`, then 
+`cd file-transfer`.
+
+Then, install all the packages we're going to use: 
+
+`cargo add iroh iroh-blobs tokio anyhow bao-tree`
+
+Your Cargo.toml should look like this:
+
+```toml
+[package]
+name = "file-transfer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+iroh = "0.94.0" # make sure to use the latest version
+iroh-blobs = "0.96.0" # make sure to use the latest version
+bao-tree = { version = "0.15", features = ["fs"] }
+tokio = "1.48.0"
+```
 
 From here on we'll be working inside the `src/main.rs` file.
 
