@@ -44,9 +44,9 @@ export default function Page() {
               <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
                 <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
                   <h1 className="z-50 text-5xl font-bold leading-tight">
-                    p2p that just works
+                    fast, cheap, reliable connections  
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal">Iroh is a library for building on direct connections between devices, putting more control in the hands of your users.</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
                   <div className='flex mt-3'>
                     <a href="/docs/quickstart" className="my-4 p-3 px-4 transition bg-iroh-gray-800 text-iroh-purple-500 uppercase hover:bg-iroh-gray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
                     <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
@@ -82,8 +82,8 @@ export default function Page() {
           <section className='pt-10 pb-16 border border-iroh-gray-300 dark:border-iroh-gray-800'>
             <div className='max-w-6xl mx-auto px-4'>
               <div className='pb-10'>
-                <h3 className='text-3xl font-bold mb-2'>Compose your own tailor-made protocol stack</h3>
-                <p className='text-iroh-gray-600 dark:text-iroh-gray-400 text-lg'>An ecosystem of ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+                <h3 className='text-3xl font-bold mb-2'>Vibrant ecosystem of developers</h3>
+                <p className='text-iroh-gray-600 dark:text-iroh-gray-400 text-lg'>Open source ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
               </div>
               <ProtocolHeroList />
             </div>
@@ -92,8 +92,8 @@ export default function Page() {
           <section className='max-w-6xl mx-auto border-l border-r border-iroh-gray-300 dark:border-iroh-gray-800 md:grid md:grid-cols-4'>
             <div className='md:col-span-2 px-10 py-20 md:border-r border-iroh-gray-300 dark:border-iroh-gray-800'>
               <WrenchCodeIcon className='w-16 h-16 mb-8' />
-              <h3 className='text-3xl font-bold mb-4'>Build your own protocol</h3>
-              <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>Don&apos;t see a protocol you need? Build your own! Iroh gives you a reliable foundation for building distributed systems that reach the edge. The rest is up to you.</p>
+              <h3 className='text-3xl font-bold mb-4'>Modular toolkit</h3>
+              <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you.</p>
               <Link href="/docs/quickstart" className={clsx(
                 "my-4 p-3 transition bg-iroh-gray-800 shadow-xs text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
                 <span>Protocol Docs</span>

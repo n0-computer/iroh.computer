@@ -21,7 +21,7 @@ export const ProtocolHeroList = function ProtocolHeroList() {
   return (
     <div className='md:grid md:grid-cols-4 border-l border-t border-iroh-gray-300 dark:border-iroh-gray-800'>
       {protocols.filter((p) => !!p.featured).map((proto, i) => (
-        <Link href={`/proto/${proto.slug}`} key={i}>
+        <Link href={proto.href} key={i}>
         <GlowCard className='border-r border-b border-iroh-gray-300 dark:border-iroh-gray-800 p-5'>
           <Image
             src={icons[proto.icon]}
@@ -37,8 +37,8 @@ export const ProtocolHeroList = function ProtocolHeroList() {
         </Link>
       ))}
       <GlowCard className='border-r border-b border-iroh-gray-300 dark:border-iroh-gray-800 p-5'>
-        <Link href='/proto'>
-          <h1 className='text-2xl mb-2 text-iroh-gray-500'>Browse all protocols</h1>
+        <Link href='https://docs.iroh.computer/concepts/protocols' className='flex flex-col items-center justify-center h-full'>
+          <h1 className='text-2xl mb-2 text-iroh-gray-500'>Learn more</h1>
           <ArrowRightIcon className='w-10 h-10' />
         </Link>
       </GlowCard>

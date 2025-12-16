@@ -19,8 +19,8 @@ export default function Page() {
         <p className='text-iroh-gray-500 leading-relaxed'>Iroh Protocols are pluggable extensions that build on direct connections. Like HTTP server middleware on steroids! Mix & match for fast, flexible, functionality.</p>
       </div>
       <div className="mb-16 mt-6 flex gap-3">
-        <Button href="/docs/concepts/protocol" arrow="right">Protocols Overview</Button>
-        <Button href="/docs/protocols/writing" variant="outline">Write a protocol</Button>
+        <Button href="https://docs.iroh.computer/concepts/protocols" arrow="right">Protocols Overview</Button>
+        <Button href="https://docs.iroh.computer/protocols/writing-a-protocol" variant="outline">Write a protocol</Button>
       </div>
       <div>
         {protocols.map((proto, i) => <ProtocolCard key={proto.slug} data={proto} />)}
