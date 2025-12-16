@@ -48,8 +48,8 @@ export default function Page() {
                   </h1>
                   <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
                   <div className='flex mt-3'>
-                    <a href="/docs/quickstart" className="my-4 p-3 px-4 transition bg-iroh-gray-800 text-iroh-purple-500 uppercase hover:bg-iroh-gray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
-                    <a href="/docs" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-iroh-gray-800 text-iroh-purple-500 uppercase hover:bg-iroh-gray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
+                    <a href="https://docs.iroh.computer" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
                       <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
                       Documentation
                     </a>
@@ -94,7 +94,7 @@ export default function Page() {
               <WrenchCodeIcon className='w-16 h-16 mb-8' />
               <h3 className='text-3xl font-bold mb-4'>Modular toolkit</h3>
               <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you.</p>
-              <Link href="/docs/quickstart" className={clsx(
+              <Link href="https://docs.iroh.computer/concepts/protocols" className={clsx(
                 "my-4 p-3 transition bg-iroh-gray-800 shadow-xs text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
                 <span>Protocol Docs</span>
               </Link>
@@ -141,7 +141,7 @@ export default function Page() {
                   </div>
                 </div>
                 <h1 className='text-3xl font-bold mb-2'>Build something amazing, today.</h1>
-                <Link href='/docs/examples' className='inline-block my-4 p-3 px-4 bg-iroh-gray-800 text-iroh-purple-500 plausible-event-name=Home+Start+Building+Click'>
+                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 p-3 px-4 bg-iroh-gray-800 text-iroh-purple-500 plausible-event-name=Home+Start+Building+Click'>
                   Start Building
                 </Link>
               </div>
