@@ -44,7 +44,7 @@ export default function Page() {
               <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
                 <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
                   <h1 className="z-50 text-5xl font-bold leading-tight">
-                    fast, cheap, reliable connections  
+                    fast, efficient, reliable connections  
                   </h1>
                   <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
                   <div className='flex mt-3'>
