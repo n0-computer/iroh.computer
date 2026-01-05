@@ -1,0 +1,85 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-01-05',
+  title: 'A new API for unordered receive in iroh-quinn',
+  description:
+    'A new API for unordered receive in iroh-quinn',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+## Unordered receive in iroh-quinn
+
+Iroh-quinn is a QUIC implementation that strives to be idiomatic rust in terms
+of API. Once you have obtained a stream pair, reading and writing data is
+straightforward using RecvStream and SendStream, which implement the tokio
+AsyncRead and AsyncWrite traits.
+
+But iroh-quinn also provides access to advanced features or extensions
+of QUIC. For example both types have methods related to the lifecycle of the 
+stream pair, to perform proper [closing of a connection](https://www.iroh.computer/blog/closing-a-quic-connection).
+
+Another advanced feature is unordered reads. The API for unordered reads has undergone
+some changes.
+
+# Unordered reads
+
+The default and by far most common way to read from a QUIC stream is ordered reads.
+You only read until the highest contiguous offset sent by the remote. If there is any
+data beyond that offset after a gap of not yet received data, we will wait until
+the gap is filled to give this data to the user.
+
+```
+*****************____*****____*****
+                 ^ we read until here
+                     ^ this data is buffered until the gap is filled
+```
+
+This is the right approach for most use cases. You want a stream abstraction where the bytes
+come out in exactly the same order as they are being sent.
+
+But in some cases it makes sense to allow the user access to non-contiguous data. E.g. you are
+using iroh-quinn or iroh as a transport for a library that can deal with gaps and wants the data
+as soon as possible for latency.
+
+Our previous API for this was a method [RecvStream::read_chunk](https://docs.rs/iroh-quinn/0.14.0/iroh_quinn/struct.RecvStream.html#method.read_chunk)
+with a flag to allow unordered reads. You might think that this is fine for such a niche use case,
+but it turns out that this caused quite some weirdness.
+
+One thing that is true for both ordered and unordered reads is that you can never read the same offset twice.
+But this causes a problem. If you do a single unordered read after a gap, the data is gone. You can not read
+it again in ordered mode. So ordered reads might be permanently stuck.
+
+```
+*********************____*****
+                     |--| we already read this using an unordered read
+                     ^ ordered reads are permanently stuck here
+```
+
+Unordered reading is not a parameter for each read call, but a state of the reader that you can't
+get out of anymore. The current API solves this issue by throwing a [ReadError::IllegalOrderedRead](https://docs.rs/iroh-quinn/0.14.0/iroh_quinn/enum.ReadError.html#variant.IllegalOrderedRead),
+but that is really not nice.
+
+To better reflect the quirks of unordered reads, we have changed the API for unordered reading to a separate type UnorderedRecvStream. You can get an unordered recv stream using [RecvStream::into_unordered], but you can never go back.
+
+Since you can never go back, [ReadError::IllegalOrderedRead] can never happen and could be removed.
+
+UnorderedRecvStream has a single method read_chunk that reads the next unordered chunk, and copies the methods related
+to the stream state such as stop and received_reset.
+
+We have done a number of similar API changes related to the [0rtt API](https://www.iroh.computer/blog/iroh-0-95-0-new-relay).
+
+The common denominator is to make the state of iroh-quinn connections and streams visible in the type system
+instead of relying on documentation. Basically [making illegal states unrepresentable](https://www.youtube.com/watch?v=-J8YyfrSwTk&t=1080s).
+
+There has been some recent discussion about whether attempting to do this is worth it. And you definitely should not go overboard
+with type astronautics to do an extremely fine grained mapping of runtime state to types. But in this case and the case of keeping track of a 0rtt handshake, modeling the state in rust types is very easy and worth it.
