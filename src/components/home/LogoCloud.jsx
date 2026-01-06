@@ -65,12 +65,12 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
   return (
     <div>
       <div className="pl-5 md:pl-10 pt-8 lg:max-w-none">
-        <h1 className="text-lg font-medium text-iroh-gray-600 dark:text-iroh-gray-200">Trusted at scale by the world&apos;s most innovative teams</h1>
+        <h1 className="text-lg font-medium text-irohGray-600 dark:text-irohGray-200">Trusted at scale by the world&apos;s most innovative teams</h1>
       </div>
       <div className="relative w-full overflow-hidden py-4">
         {/* Gradient masks for fading edges */}
-        <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-iroh-gray-50 dark:from-iroh-gray-900 to-transparent"></div>
-        <div className="absolute right-0 top-0 z-10 h-full w-[100px] bg-linear-to-l from-iroh-gray-50 dark:from-iroh-gray-900 to-transparent"></div>
+        <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
+        <div className="absolute right-0 top-0 z-10 h-full w-[100px] bg-linear-to-l from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
 
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
@@ -98,9 +98,9 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
 
 // export function LogoCloud() {
 //   return (
-//     <section className='max-w-6xl mx-auto border-r border-t border-l border-iroh-gray-300 dark:border-iroh-gray-800 py-24 sm:py-10 md:flex'>
+//     <section className='max-w-6xl mx-auto border-r border-t border-l border-irohGray-300 dark:border-irohGray-800 py-24 sm:py-10 md:flex'>
 //       <div className="mx-auto max-w-2xl px-10 lg:max-w-none">
-//         <h1 className="text-lg font-semibold text-iroh-gray-600 dark:text-iroh-gray-200 md:mt-32">Trusted by the world’s most innovative teams</h1>
+//         <h1 className="text-lg font-semibold text-irohGray-600 dark:text-irohGray-200 md:mt-32">Trusted by the world’s most innovative teams</h1>
 //       </div>
 //       <div className="mx-auto mt-10 grid grid-cols-2 md:grid-cols-3 items-start gap-x-8 gap-y-10 sm:grid-cols-3 sm:gap-x-10 lg:mx-0 lg:grid-cols-3">
 //         {companies.map((co)=> (

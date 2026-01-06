@@ -57,7 +57,7 @@ const navigation = {
 
 export function FooterMarketing() {
   return (
-    <footer className="bg-iroh-gray-1000" aria-labelledby="footer-heading">
+    <footer className="bg-irohGray-1000" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>

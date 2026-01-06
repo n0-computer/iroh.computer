@@ -11,7 +11,7 @@ function ApiCommand({ command }) {
     >
       <div className="absolute inset-0 rounded-md ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
       <div className="relative rounded-md px-4 pb-4 pt-16">
-        <h3 className="mt-4 text-lg font-semibold font-space leading-7 text-iroh-purple-500">
+        <h3 className="mt-4 text-lg font-semibold font-space leading-7 text-irohPurple-500">
           <Link href={`/docs/api/${command.slug}`}>
             <span className="absolute inset-0 rounded-md" />
             {command.name}

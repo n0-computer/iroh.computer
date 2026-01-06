@@ -29,13 +29,13 @@ export default function Page() {
     <div>
       <HeaderSparse />
 
-      <div className="bg-iroh-gray-50 dark:bg-iroh-gray-900 text-iroh-gray-700 dark:text-iroh-gray-100 h-92 justify-between font-space">
+      <div className="bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
         <main className="mb-auto flex flex-col min-h-92">
           {/* hero */}
           <section className="min-h-92 pt-20 bg-cover" style={{ height: 600 }}>
             <div className='relative h-10 max-w-6xl mx-auto'>
-              <div className='absolute h-full top-0 left-0 bg-linear-to-t from-iroh-gray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }} />
-              <div className='absolute h-full top-0 right-0 bg-linear-to-t from-iroh-gray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
+              <div className='absolute h-full top-0 left-0 bg-linear-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }} />
+              <div className='absolute h-full top-0 right-0 bg-linear-to-t from-irohGray-300 dark:from-zinc-800 to-transparent' style={{ width: 1 }}  />
             </div>
             <div className='relative max-w-6xl mx-auto'>
               <div className='absolute z-10 overflow-hidden w-full'>
@@ -48,7 +48,7 @@ export default function Page() {
                   </h1>
                   <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
                   <div className='flex mt-3'>
-                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-iroh-gray-800 text-iroh-purple-500 uppercase hover:bg-iroh-gray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
                     <a href="https://docs.iroh.computer" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
                       <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
                       Documentation
@@ -59,66 +59,66 @@ export default function Page() {
             </div>
           </section>
 
-          <section className='max-w-6xl mx-auto border-l border-r border-iroh-gray-300 dark:border-iroh-gray-800 grid grid-cols-1 md:grid-cols-2 border-b border-iroh-gray-300 dark:border-iroh-gray-800'>
+          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 grid grid-cols-1 md:grid-cols-2 border-b border-irohGray-300 dark:border-irohGray-800'>
             <LogoCloud />
             <UseCaseScroller />
           </section>
 
 
-          <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-iroh-gray-300 dark:border-iroh-gray-800'>
-            <div className='md:col-span-3 px-5 py-20 border-r border-iroh-gray-300 dark:border-iroh-gray-800'>
+          <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
+            <div className='md:col-span-3 px-5 py-20 border-r border-irohGray-300 dark:border-irohGray-800'>
               <ConnectDevicesIllustration className='mb-12 max-w-xl' />
               <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
-              <p className='text-iroh-gray-600 dark:text-iroh-gray-200 max-w-2xl'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find &amp; maintain the fastest connection for you, regardless of where it is.</p>
+              <p className='text-irohGray-600 dark:text-irohGray-200 max-w-2xl'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find &amp; maintain the fastest connection for you, regardless of where it is.</p>
             </div>
             <div className="text-right mlw-xl px-5 py-20 md:col-span-1">
-              <p className='italic text-xl text-iroh-gray-600 dark:text-iroh-gray-400 mb-5'>&ldquo;In stark contrast to other p2p &amp; dweb technologies we&apos;ve played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
-              <p className=''>- <a className='text-iroh-purple-500' href="https://a.weird.one/">weird.one</a></p>
+              <p className='italic text-xl text-irohGray-600 dark:text-irohGray-400 mb-5'>&ldquo;In stark contrast to other p2p &amp; dweb technologies we&apos;ve played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
+              <p className=''>- <a className='text-irohPurple-500' href="https://a.weird.one/">weird.one</a></p>
             </div>
           </section>
 
 
           {/* iroh protocols */}
-          <section className='pt-10 pb-16 border border-iroh-gray-300 dark:border-iroh-gray-800'>
+          <section className='pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
             <div className='max-w-6xl mx-auto px-4'>
               <div className='pb-10'>
                 <h3 className='text-3xl font-bold mb-2'>Vibrant ecosystem of developers</h3>
-                <p className='text-iroh-gray-600 dark:text-iroh-gray-400 text-lg'>Open source ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+                <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>Open source ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
               </div>
               <ProtocolHeroList />
             </div>
           </section>
 
-          <section className='max-w-6xl mx-auto border-l border-r border-iroh-gray-300 dark:border-iroh-gray-800 md:grid md:grid-cols-4'>
-            <div className='md:col-span-2 px-10 py-20 md:border-r border-iroh-gray-300 dark:border-iroh-gray-800'>
+          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 md:grid md:grid-cols-4'>
+            <div className='md:col-span-2 px-10 py-20 md:border-r border-irohGray-300 dark:border-irohGray-800'>
               <WrenchCodeIcon className='w-16 h-16 mb-8' />
               <h3 className='text-3xl font-bold mb-4'>Modular toolkit</h3>
-              <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you.</p>
+              <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you.</p>
               <Link href="https://docs.iroh.computer/concepts/protocols" className={clsx(
-                "my-4 p-3 transition bg-iroh-gray-800 shadow-xs text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
+                "my-4 p-3 transition bg-irohGray-800 shadow-xs text-irohPurple-500 hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
                 <span>Protocol Docs</span>
               </Link>
             </div>
-            <div className='md:col-span-2 px-10 py-10 md:py-20 border-t md:border-none border-iroh-gray-300 dark:border-iroh-gray-800'>
+            <div className='md:col-span-2 px-10 py-10 md:py-20 border-t md:border-none border-irohGray-300 dark:border-irohGray-800'>
               <PerfChartIllustration />
               <h3 className='text-3xl font-bold mb-4'>Continuously Measured</h3>
-              <p className='mb-10 text-iroh-gray-600 dark:text-iroh-gray-400'>All commits to iroh&apos;s main branch run through a growing set of simulations &amp; tests</p>
+              <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of simulations &amp; tests</p>
               <Link href="https://perf.iroh.computer" className={clsx(
-                "my-4 p-3 transition bg-iroh-gray-800 text-iroh-purple-500 hover:bg-iroh-gray-700 hover:text-gray-200 text-lg")}>
+                "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
                 <span>Iroh Perf Site</span>
               </Link>
             </div>
           </section>
 
           {/* use cases */}
-          <section className='relative max-w-6xl w-full mx-auto border-l border-t border-r border-iroh-gray-300 dark:border-iroh-gray-800'>
+          <section className='relative max-w-6xl w-full mx-auto border-l border-t border-r border-irohGray-300 dark:border-irohGray-800'>
             <div className='absolute w-full h-full grid grid-cols-4'>
-              <div className='col-span-1 border-dotted border-r border-iroh-gray-300 dark:border-iroh-gray-800 h-full' />
-              <div className='col-span-1 border-dotted border-r border-iroh-gray-300 dark:border-iroh-gray-800' />
-              <div className='col-span-1 border-dotted border-r border-iroh-gray-300 dark:border-iroh-gray-800' />
+              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800 h-full' />
+              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
+              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
             </div>
             <div className='mb-4 md:w-1/2 p-10'>
-              <h3 className='text-3xl text-iroh-purple-500 font-bold'>Real World Use</h3>
+              <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
               <p>Iroh is running in production on <strong>millions</strong> of devices, on all major platforms.</p>
             </div>
             <div className='relative overflow-hidden' style={{ width: '100%', height: 350 }}>
@@ -128,7 +128,7 @@ export default function Page() {
 
           {/* build in your language */}
           <section>
-            <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10 border-r border-l border-t border-iroh-gray-300 dark:border-iroh-gray-800 py-20'>
+            <div className='max-w-6xl mx-auto px-4 lg:flex lg:space-x-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
               <div className='lg:w-1/3 mb-10'>
                 <div className='flex space-x-6 mb-6'>
                   <div className=''>
@@ -141,7 +141,7 @@ export default function Page() {
                   </div>
                 </div>
                 <h1 className='text-3xl font-bold mb-2'>Build something amazing, today.</h1>
-                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 p-3 px-4 bg-iroh-gray-800 text-iroh-purple-500 plausible-event-name=Home+Start+Building+Click'>
+                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
                   Start Building
                 </Link>
               </div>
@@ -150,9 +150,9 @@ export default function Page() {
               </div>
             </div>
           </section>
-          <section className='max-w-6xl w-full mx-auto px-10 border-r border-l border-t border-iroh-gray-300 dark:border-iroh-gray-800 py-20'>
+          <section className='max-w-6xl w-full mx-auto px-10 border-r border-l border-t border-irohGray-300 dark:border-irohGray-800 py-20'>
             <div className='w-full md:px-5'>
-              <h3 className='text-lg tracking-wider font-bold text-iroh-gray-600 dark:text-iroh-gray-400 uppercase'>From the Blog</h3>
+              <h3 className='text-lg tracking-wider font-bold text-irohGray-600 dark:text-irohGray-400 uppercase'>From the Blog</h3>
             </div>
             <FromTheBlog />
           </section>

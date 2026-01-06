@@ -46,7 +46,7 @@ export default function Protocol() {
       <Link
         href="/proto"
         aria-label="Go back to articles"
-        className="flex text-sm font-medium -ml-5 text-iroh-purple-500 mb-5"
+        className="flex text-sm font-medium -ml-5 text-irohPurple-500 mb-5"
       >
         <ChevronLeftIcon className="mr-1 mt-1 h-4 w-4" />
         All Protocols

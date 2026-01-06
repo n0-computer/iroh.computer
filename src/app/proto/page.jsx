@@ -16,7 +16,7 @@ export default function Page() {
     <div className='max-w-3xl mx-auto'>
       <div>
         <Heading size={1} className="text-4xl font-bold font-space mb-3">Protocols</Heading>
-        <p className='text-iroh-gray-500 leading-relaxed'>Iroh Protocols are pluggable extensions that build on direct connections. Like HTTP server middleware on steroids! Mix & match for fast, flexible, functionality.</p>
+        <p className='text-irohGray-500 leading-relaxed'>Iroh Protocols are pluggable extensions that build on direct connections. Like HTTP server middleware on steroids! Mix & match for fast, flexible, functionality.</p>
       </div>
       <div className="mb-16 mt-6 flex gap-3">
         <Button href="https://docs.iroh.computer/concepts/protocols" arrow="right">Protocols Overview</Button>

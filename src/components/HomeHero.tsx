@@ -106,7 +106,7 @@ export const HomeHero = function HomeHero({ className, style = {} }: { className
   return (
     <div className={clsx(className, "flex flex-col pointer-events-none")} style={{height: GRID_HEIGHT, ...style}}>
       <div
-        className="grid border-l border-r border-t border-iroh-gray-300 dark:border-iroh-gray-800"
+        className="grid border-l border-r border-t border-irohGray-300 dark:border-irohGray-800"
         style={{
           width: `${GRID_WIDTH}px`,
           gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
@@ -121,7 +121,7 @@ export const HomeHero = function HomeHero({ className, style = {} }: { className
           return (
             <div
               key={index}
-              className="p-2 border-r border-b border-iroh-gray-300 dark:border-iroh-gray-800"
+              className="p-2 border-r border-b border-irohGray-300 dark:border-irohGray-800"
               style={{
                 height: SQUARE_SIZE,
                 width: SQUARE_SIZE,
