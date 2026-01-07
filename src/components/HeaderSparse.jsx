@@ -57,7 +57,7 @@ export function HeaderSparse() {
   return (
     <nav id="navbar" className={clsx(
       "fixed w-full z-50",
-      "transition-colors ease-in duration-200 bg-irohGray-50 animate-all",
+      "transition-colors ease-in duration-200 bg-irohGray-50 dark:bg-irohGray-900 animate-all",
       mobileMenuOpen && 'backdrop-blur-md'
       )}
     >

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { BookOpenIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
@@ -48,11 +48,7 @@ export default function Page() {
                   </h1>
                   <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
                   <div className='flex mt-3'>
-                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Start Now</a>
-                    <a href="https://docs.iroh.computer" className="flex ml-5 my-4 p-3 px-4 bg-gray-300 text-gray-500 transition hover:bg-gray-400 hover:text-gray-200 uppercase plausible-event-name=Home+Hero+Documentation+Click">
-                      <BookOpenIcon className="h-5 w-5 mt-0.5 mr-2" />
-                      Documentation
-                    </a>
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
                 </div>
               </div>
@@ -142,7 +138,7 @@ export default function Page() {
                 </div>
                 <h1 className='text-3xl font-bold mb-2'>Build something amazing, today.</h1>
                 <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
-                  Start Building
+                  Read the Docs <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
               </div>
               <div className='lg:w-2/3 lg:mt-28'>
