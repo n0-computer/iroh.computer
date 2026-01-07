@@ -36,8 +36,8 @@ function InfoIcon(props) {
 
 export function Note({children}) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-2xl border border-iroh-purple-200 bg-iroh-purple-50 p-4 leading-6 text-iroh-purple-900 dark:border-iroh-purple-500/30 dark:bg-iroh-purple-500/5 dark:text-iroh-purple-200 dark:[--tw-prose-links-hover:theme(colors.irohPurple.300)] dark:[--tw-prose-links:var(--color-white)]">
-      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-iroh-purple-500 stroke-white dark:fill-iroh-purple-200/20 dark:stroke-iroh-purple-200" />
+    <div className="my-6 flex gap-2.5 rounded-2xl border border-irohPurple-200 bg-irohPurple-50 p-4 leading-6 text-irohPurple-900 dark:border-irohPurple-500/30 dark:bg-irohPurple-500/5 dark:text-irohPurple-200 dark:[--tw-prose-links-hover:theme(colors.irohPurple.300)] dark:[--tw-prose-links:var(--color-white)]">
+      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-irohPurple-500 stroke-white dark:fill-irohPurple-200/20 dark:stroke-irohPurple-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
       </div>
@@ -106,7 +106,7 @@ export function Concepts({children}) {
     <div className="my-6">
       <ul
         role="list"
-        className="m-0 max-w-[calc(var(--container-lg)-(--spacing(8)))] list-none divide-y divide-zinc-900/5 p-0 dark:divide-white/5 gap-0.5 justify-center overflow-hidden text-sm font-medium transition rounded-md bg-zinc-900 py-4 px-3 text-white dark:bg-iroh-purple-400/10 dark:text-iroh-purple-400 dark:ring-1 dark:ring-inset dark:ring-iroh-purple-400/20"
+        className="m-0 max-w-[calc(var(--container-lg)-(--spacing(8)))] list-none divide-y divide-zinc-900/5 p-0 dark:divide-white/5 gap-0.5 justify-center overflow-hidden text-sm font-medium transition rounded-md bg-zinc-900 py-4 px-3 text-white dark:bg-irohPurple-400/10 dark:text-irohPurple-400 dark:ring-1 dark:ring-inset dark:ring-irohPurple-400/20"
       >
         {children}
       </ul>

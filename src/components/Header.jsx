@@ -3,7 +3,7 @@
 import {forwardRef} from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import {motion, useScroll, useTransform} from 'framer-motion';
+import {motion} from 'framer-motion';
 
 import {Button} from '@/components/Button';
 import {Logotype} from '@/components/Logotype';
@@ -40,26 +40,16 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
   const {isOpen: mobileNavIsOpen} = useMobileNavigationStore();
   const isInsideMobileNavigation = useIsInsideMobileNavigation();
 
-  const {scrollY} = useScroll();
-  const bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
-  const bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8]);
-
   return (
     <motion.div
       ref={ref}
       className={clsx(
           className,
           'fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6 lg:left-72 lg:z-30 lg:px-8 xl:left-80',
+          'bg-white dark:bg-zinc-900',
           !isInsideMobileNavigation &&
           'backdrop-blur-sm dark:backdrop-blur lg:left-72 xl:left-80',
-        isInsideMobileNavigation ?
-          'bg-white dark:bg-zinc-900' :
-          'bg-white/(--bg-opacity-light) dark:bg-zinc-900/(--bg-opacity-dark)',
       )}
-      style={{
-        '--bg-opacity-light': bgOpacityLight,
-        '--bg-opacity-dark': bgOpacityDark,
-      }}
     >
       <div
         className={clsx(

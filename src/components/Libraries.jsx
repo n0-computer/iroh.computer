@@ -44,7 +44,7 @@ export function Libraries() {
                   <div key={i}>
                     <Button href={link.href} variant="text">
                       {link.title}
-                      {link.external && <ArrowTopRightOnSquareIcon className="text-iroh-gray-500 hover:text-iroh-purple-500 w-4 h-4 mt-1 ml-1" />}
+                      {link.external && <ArrowTopRightOnSquareIcon className="text-irohGray-500 hover:text-irohPurple-500 w-4 h-4 mt-1 ml-1" />}
                     </Button>
                   </div>
                 ))}

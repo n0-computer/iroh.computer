@@ -6,9 +6,9 @@ const variantStyles = {
 
 const colorStyles = {
   irohPurple: {
-    small: 'text-iroh-purple-500 dark:text-iroh-purple-400',
+    small: 'text-irohPurple-500 dark:text-irohPurple-400',
     medium:
-      'ring-iroh-purple-300 dark:ring-iroh-purple-400/30 bg-iroh-purple-400/10 text-iroh-purple-500 dark:text-iroh-purple-400',
+      'ring-irohPurple-300 dark:ring-irohPurple-400/30 bg-irohPurple-400/10 text-irohPurple-500 dark:text-irohPurple-400',
   },
   sky: {
     small: 'text-sky-500',

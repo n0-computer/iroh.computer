@@ -76,7 +76,7 @@ function TabGroupHeader({title, children, selectedIndex}) {
               className={clsx(
                   'border-b py-3 transition ui-not-focus-visible:outline-none',
                 childIndex === selectedIndex ?
-                  'border-iroh-purple-500 text-iroh-purple-400' :
+                  'border-irohPurple-500 text-irohPurple-400' :
                   'border-transparent text-zinc-400 hover:text-zinc-300',
               )}
             >

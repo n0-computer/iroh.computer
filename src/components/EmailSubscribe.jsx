@@ -19,7 +19,7 @@ export function EmailSubscribe() {
                 <Input type="email" name="EMAIL" id="mce-EMAIL" placeholder="you@email.com" required />
               </div>
               <div>
-                <input type="submit" className="rounded-sm bg-zinc-900 py-1.5 px-3 text-white hover:bg-zinc-700 dark:bg-iroh-purple-400/10 dark:text-iroh-purple-400 dark:ring-1 dark:ring-inset dark:ring-iroh-purple-400/20 dark:hover:bg-iroh-purple-400/10 dark:hover:text-iroh-purple-300 dark:hover:ring-iroh-purple-300" name="subscribe" id="mc-embedded-subscribe" value="Subscribe" />
+                <input type="submit" className="rounded-sm bg-zinc-900 py-1.5 px-3 text-white hover:bg-zinc-700 dark:bg-irohPurple-400/10 dark:text-irohPurple-400 dark:ring-1 dark:ring-inset dark:ring-irohPurple-400/20 dark:hover:bg-irohPurple-400/10 dark:hover:text-irohPurple-300 dark:hover:ring-irohPurple-300" name="subscribe" id="mc-embedded-subscribe" value="Subscribe" />
               </div>
             </div>
         </div>
