@@ -3,20 +3,20 @@
 import { useState, useEffect, useRef } from "react"
 
 const useCases = {
-  "Resilient Apps": [
-    "Delta Chat uses iroh to power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious."
+  "Streaming Video": [
+    "Rave uses iroh to stream video between millions of devices around the world every day.",
   ],
   "AI/ML": [
     "Nous uses iroh to train foundation LLMs with compute distributed around the world.",
-  ],
-  "Streaming Video": [
-    "Rave uses iroh to stream video between millions of devices around the world every day.",
   ],
   "Gaming": [
     "Shaga uses iroh to deliver ultra low latency gaming on any device, anywhere.\n\nSpicy Lobster uses iroh to ship unkillable games that don't need a server."
   ],
   "Data Transfer": [
     "Recall uses iroh to replicate massive amounts content-addressed data for validating AI Agents."
+  ],
+  "Resilient Apps": [
+    "Delta Chat uses iroh to power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious."
   ]
 }
 

@@ -10,13 +10,15 @@ import {UsersShowcase} from '@/components/UsersShowcase';
 import {FromTheBlog} from '@/components/FromTheBlog';
 import {WrenchCodeIcon} from '@/components/icons/WrenchCodeIcon';
 import {PerfChartIllustration} from '@/components/PerfChartIllustration';
-import {ConnectDevicesIllustration} from '@/components/ConnectDevicesIllustration';
+import {AnywhereIllustration} from '@/components/AnywhereIllustration';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
 import {UseCaseScroller} from '@/components/home/UseCases';
+import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
 
 import logoRust from '@/images/language-logos/rust.svg';
 import { CodeBlock } from '@/components/CodeBlock';
+import SolutionsPage from './solutions/page';
 
 export const metadata = {
   title: 'Iroh',
@@ -44,9 +46,9 @@ export default function Page() {
               <div className="absolute z-40 max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4">
                 <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
                   <h1 className="z-50 text-5xl font-bold leading-tight">
-                    fast, efficient, reliable connections  
+                    IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal">Iroh is a modular networking stack for building applications that work everywhere.</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Modular networking stack trusted by thousands of developers and millions of users worldwide.</h3>
                   <div className='flex mt-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
@@ -60,16 +62,37 @@ export default function Page() {
             <UseCaseScroller />
           </section>
 
+          <FeatureBentoGrid />
 
-          <section className='max-w-6xl mx-auto md:grid md:grid-cols-4 md:gap-4 border-l border-r border-irohGray-300 dark:border-irohGray-800'>
-            <div className='md:col-span-3 px-5 py-20 border-r border-irohGray-300 dark:border-irohGray-800'>
-              <ConnectDevicesIllustration className='mb-12 max-w-xl' />
-              <h3 className='text-4xl font-bold mb-4'>Connect any two devices on the planet</h3>
-              <p className='text-irohGray-600 dark:text-irohGray-200 max-w-2xl'>Iroh gives you an API for dialing by public key. You say “connect to that phone”, iroh will find &amp; maintain the fastest connection for you, regardless of where it is.</p>
-            </div>
-            <div className="text-right mlw-xl px-5 py-20 md:col-span-1">
-              <p className='italic text-xl text-irohGray-600 dark:text-irohGray-400 mb-5'>&ldquo;In stark contrast to other p2p &amp; dweb technologies we&apos;ve played with - which are exciting due to their implications for the future - <span className='font-bold'>Iroh brought instant gains in our present.&quot;</span></p>
-              <p className=''>- <a className='text-irohPurple-500' href="https://a.weird.one/">weird.one</a></p>
+          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 py-16 px-4'>
+            <div className='grid gap-6 grid-cols-1 md:grid-cols-2'>
+              <div className='relative'>
+                <div className='absolute inset-px rounded-lg bg-gradient-to-br' />
+                <AnywhereIllustration className='w-full max-w-lg' />
+              </div>
+              <div className='relative'>
+                <div className='absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20' />
+                <div className='relative flex h-full flex-col overflow-hidden rounded-lg'>
+                  <div className='px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10'>
+                    <p className='mt-6 text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>
+                      <span className='text-irohPurple-500'>Fast connections.</span>
+                      <br />
+                      Anywhere.
+                      <br />
+                      Forever.
+                    </p>
+                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
+                      Dial any endpoint running anywhere, big or small &mdash; cloud servers, tablets, or Raspberry Pis. When a direct connection isn&apos;t possible, <a href="https://docs.iroh.computer/concepts/relay" className='text-irohPurple-500 hover:underline'>relays</a> keep your app running smoothly.
+                    </p>
+                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>
+                      The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, and relays are stateless. That means you can pluralize with hosting across regions and clouds, or self-host anywhere in the world.
+                    </p>
+                    <Link href='https://docs.iroh.computer/concepts/relay' className='inline-block my-4 text-irohPurple-500 plausible-event-name=Home+Fast+Connections+Click'>
+                      Learn about Relays <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -78,47 +101,35 @@ export default function Page() {
           <section className='pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
             <div className='max-w-6xl mx-auto px-4'>
               <div className='pb-10'>
-                <h3 className='text-3xl font-bold mb-2'>Vibrant ecosystem of developers</h3>
-                <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>Open source ready-made, composable protocols are built on top of iroh. <br />Mix & match to get the feature set you need.</p>
+                <h3 className='text-3xl font-bold mb-2'>Modular toolkit</h3>
+                <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you. There are dozens of open source ready-made, composable protocols are built on top of iroh. Mix & match to get the feature set you need.</p>
               </div>
               <ProtocolHeroList />
             </div>
           </section>
 
-          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 md:grid md:grid-cols-4'>
-            <div className='md:col-span-2 px-10 py-20 md:border-r border-irohGray-300 dark:border-irohGray-800'>
-              <WrenchCodeIcon className='w-16 h-16 mb-8' />
-              <h3 className='text-3xl font-bold mb-4'>Modular toolkit</h3>
-              <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you.</p>
-              <Link href="https://docs.iroh.computer/concepts/protocols" className={clsx(
-                "my-4 p-3 transition bg-irohGray-800 shadow-xs text-irohPurple-500 hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
-                <span>Protocol Docs</span>
-              </Link>
-            </div>
-            <div className='md:col-span-2 px-10 py-10 md:py-20 border-t md:border-none border-irohGray-300 dark:border-irohGray-800'>
-              <PerfChartIllustration />
-              <h3 className='text-3xl font-bold mb-4'>Continuously Measured</h3>
-              <p className='mb-10 text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of simulations &amp; tests</p>
-              <Link href="https://perf.iroh.computer" className={clsx(
-                "my-4 p-3 transition bg-irohGray-800 text-irohPurple-500 hover:bg-irohGray-700 hover:text-gray-200 text-lg")}>
-                <span>Iroh Perf Site</span>
-              </Link>
-            </div>
-          </section>
+          <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 py-16 px-4'>
+            <div className='grid gap-6 grid-cols-1 md:grid-cols-2'>
+              <div className='relative'>
+                <div className='absolute inset-px rounded-lg bg-gradient-to-br' />
+                    <PerfChartIllustration />
+              </div>
+              <div className='relative'>
+                <div className='absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20' />
+                <div className='relative flex h-full flex-col overflow-hidden rounded-lg'>
+                  <div className='px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10'>
+                    <p className='mt-6 text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Deploy, Monitor, Fix</p>
+                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of <a href="https://perf.iroh.computer" target="_blank" className="text-irohPurple-500 hover:underline">simulations &amp; tests</a>. </p>
+                    
+                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>Get visibility into your endpoints &mdash; track connection health and throughput across all your devices and services. Build custom metrics specific for your app.</p>
 
-          {/* use cases */}
-          <section className='relative max-w-6xl w-full mx-auto border-l border-t border-r border-irohGray-300 dark:border-irohGray-800'>
-            <div className='absolute w-full h-full grid grid-cols-4'>
-              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800 h-full' />
-              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
-              <div className='col-span-1 border-dotted border-r border-irohGray-300 dark:border-irohGray-800' />
-            </div>
-            <div className='mb-4 md:w-1/2 p-10'>
-              <h3 className='text-3xl text-irohPurple-500 font-bold'>Real World Use</h3>
-              <p>Iroh is running in production on <strong>millions</strong> of devices, on all major platforms.</p>
-            </div>
-            <div className='relative overflow-hidden' style={{ width: '100%', height: 350 }}>
-              <UsersShowcase />
+                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
+                  Montior your App<ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
+                </Link>
+                    
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -137,7 +148,7 @@ export default function Page() {
                   </div>
                 </div>
                 <h1 className='text-3xl font-bold mb-2'>Build something amazing, today.</h1>
-                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 p-3 px-4 bg-irohGray-800 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
+                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4  text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
                   Read the Docs <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
               </div>

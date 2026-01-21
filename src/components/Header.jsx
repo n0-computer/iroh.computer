@@ -17,9 +17,9 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
-  {content: 'Blog', href: '/blog'},
+  {content: 'Solutions', href: '/solutions'},
   {content: 'Docs', href: '/docs'},
-  {content: 'Protocols', href: '/proto'},
+  {content: 'Blog', href: '/blog'},
   {content: 'Roadmap', href: '/roadmap'},
 ];
 
@@ -82,7 +82,7 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://iroh.computer/discord">Join Discord</Button>
+          <Button href="https://n0des.iroh.computer" variant="filled">Sign Up</Button>
         </div>
       </div>
     </motion.div>

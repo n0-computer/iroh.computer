@@ -30,7 +30,7 @@ export const ProtocolHeroList = function ProtocolHeroList() {
             unoptimized
             />
           <div className='pl-20 md:pl-0'>
-            <h2 className='text-2xl mb-2 md:mt-10 text-irohPurple-500 font-bold'>{proto.title}</h2>
+            <h2 className='text-2xl mb-2 md:mt-10 text-irohGray-900 dark:text-irohGray-100 font-bold'>{proto.title}</h2>
             <p className=''>{proto.tagline}</p>
           </div>
         </GlowCard>
