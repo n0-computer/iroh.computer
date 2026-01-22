@@ -1,0 +1,90 @@
+<svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="800" height="350" fill="#1a1a1a"/>
+
+  <!-- Cloud (Tor network) at top - single path cloud shape -->
+  <path d="M320,55
+           Q305,55 310,40
+           Q315,25 335,25
+           Q345,10 370,18
+           Q390,5 410,18
+           Q430,5 450,18
+           Q475,10 485,25
+           Q505,25 510,40
+           Q515,55 500,55
+           Q510,70 485,72
+           Q470,85 440,75
+           Q410,88 380,75
+           Q350,85 335,72
+           Q310,70 320,55
+           Z"
+        fill="none" stroke="#888" stroke-width="1.5"/>
+  <text x="410" y="47" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#a78bfa">Tor</text>
+  <text x="410" y="62" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#a78bfa">Network</text>
+
+  <!-- Left box (Device A) -->
+  <rect x="20" y="120" width="280" height="200" rx="5" fill="none" stroke="#555" stroke-width="1"/>
+  <text x="160" y="108" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">Device A</text>
+
+  <!-- Left app box -->
+  <rect x="35" y="140" width="130" height="160" rx="3" fill="none" stroke="#6366f1" stroke-width="1"/>
+  <text x="100" y="158" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">App</text>
+
+  <!-- Left Endpoint inside app -->
+  <rect x="45" y="170" width="110" height="55" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="100" y="193" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">Endpoint</text>
+  <text x="100" y="215" text-anchor="middle" font-family="'Space Mono', monospace" font-size="7" fill="#666">4d5fde</text>
+
+  <!-- Left Tor box -->
+  <rect x="190" y="150" width="100" height="110" rx="3" fill="none" stroke="#a78bfa" stroke-width="1"/>
+  <text x="240" y="168" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#a78bfa">Tor</text>
+
+  <!-- Left onion service inside Tor -->
+  <rect x="200" y="182" width="80" height="65" rx="2" fill="none" stroke="#c4b5fd" stroke-width="1"/>
+  <text x="240" y="203" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#c4b5fd">onion</text>
+  <text x="240" y="215" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#c4b5fd">service</text>
+  <text x="240" y="238" text-anchor="middle" font-family="'Space Mono', monospace" font-size="6" fill="#666">4d5fde.onion</text>
+
+  <!-- Left connections (to onion service box) -->
+  <line x1="155" y1="185" x2="200" y2="195" stroke="#fff" stroke-width="1"/>
+  <text x="175" y="178" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fff">Control</text>
+
+  <line x1="155" y1="215" x2="200" y2="225" stroke="#fff" stroke-width="1"/>
+  <text x="175" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fff">SOCKS5</text>
+
+  <!-- Line from left Tor to cloud -->
+  <line x1="240" y1="150" x2="340" y2="85" stroke="#a78bfa" stroke-width="1"/>
+
+  <!-- Right box (Device B) -->
+  <rect x="500" y="120" width="280" height="200" rx="5" fill="none" stroke="#555" stroke-width="1"/>
+  <text x="640" y="108" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">Device B</text>
+
+  <!-- Right Tor box -->
+  <rect x="510" y="150" width="100" height="110" rx="3" fill="none" stroke="#a78bfa" stroke-width="1"/>
+  <text x="560" y="168" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#a78bfa">Tor</text>
+
+  <!-- Right onion service inside Tor -->
+  <rect x="520" y="182" width="80" height="65" rx="2" fill="none" stroke="#c4b5fd" stroke-width="1"/>
+  <text x="560" y="203" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#c4b5fd">onion</text>
+  <text x="560" y="215" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#c4b5fd">service</text>
+  <text x="560" y="238" text-anchor="middle" font-family="'Space Mono', monospace" font-size="6" fill="#666">9dc52a.onion</text>
+
+  <!-- Right app box -->
+  <rect x="635" y="140" width="130" height="160" rx="3" fill="none" stroke="#6366f1" stroke-width="1"/>
+  <text x="700" y="158" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">App</text>
+
+  <!-- Right Endpoint inside app -->
+  <rect x="645" y="170" width="110" height="55" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="700" y="193" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">Endpoint</text>
+  <text x="700" y="215" text-anchor="middle" font-family="'Space Mono', monospace" font-size="7" fill="#666">9dc52a</text>
+
+  <!-- Right connections (to onion service box) -->
+  <line x1="600" y1="195" x2="645" y2="185" stroke="#fff" stroke-width="1"/>
+  <text x="625" y="178" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fff">Control</text>
+
+  <line x1="600" y1="225" x2="645" y2="215" stroke="#fff" stroke-width="1"/>
+  <text x="625" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fff">SOCKS5</text>
+
+  <!-- Line from right Tor to cloud -->
+  <line x1="560" y1="150" x2="460" y2="85" stroke="#a78bfa" stroke-width="1"/>
+</svg>

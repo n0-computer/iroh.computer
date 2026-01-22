@@ -129,6 +129,8 @@ pub trait CustomEndpoint: std::fmt::Debug + Send + Sync + 'static {
 
 When the iroh endpoint is created by the endpoint builder, it will internally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
 
+![Endpoint transports](/blog/tor-custom-transport/endpoint-transports-diagram.svg)
+
 ## CustomSender trait
 
 The custom sender trait has a predicate to decide which addresses the transport wants to handle, and a poll based send function to send the actual data.
@@ -203,6 +205,8 @@ So it should be easy to use tor onion services for a tor custom transport withou
 The tor custom transport requires a tor daemon to run in the background, which does all the heavy lifting. If configured, a tor daemon has a control port over which onion services can be created. It also provides a [SOCKS5] TCP proxy for data connections.
 
 Our custom transport will talk to the local Tor daemon and create an onion service. To do this, it needs an Ed25519 private key. We can use the same private key that we use to create the iroh endpoint.
+
+![Tor transport architecture](/blog/tor-custom-transport/tor-transport-diagram.svg)
 
 Then it will keep the control connection alive as long as the custom transport lives. Unless the service is created with the detach flag, its lifetime is bound to the lifetime of the control connection.
 
