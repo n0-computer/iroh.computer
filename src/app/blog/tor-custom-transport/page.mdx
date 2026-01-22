@@ -5,9 +5,9 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2026-01-22',
-  title: 'Iroh TOR custom transport',
+  title: 'Iroh Tor custom transport',
   description:
-    'Iroh now works over TOR',
+    'Iroh now works over Tor',
 }
 
 export const metadata = {
@@ -47,7 +47,7 @@ It turns out that there are a lot of potential candidates for this. Just from th
 - Shared memory
 - Local sockets (Unix or windows)
 - [InfiniBand]
-- TOR
+- Tor
 
 This is both a big promise and a problem. We have decided to implement one custom transport under the hood, our relay connections that are used both for hole punching and as a fallback in the unlikely case that holepunching is not possible.
 
@@ -63,7 +63,7 @@ Projects using iroh in data centers might want to add high performance transport
 
 Projects using iroh for chat on mobile devices might want to use Bluetooth for local communication.
 
-And projects that care very much about privacy might want to opt out of our built in transports entirely and instead use private overlay networks such as [TOR] or [NYM].
+And projects that care very much about privacy might want to opt out of our built in transports entirely and instead use private overlay networks such as [Tor] or [NYM].
 
 # The custom transport API
 
@@ -178,20 +178,20 @@ Packet loss is not a problem - QUIC will deal with re-sending lost packets.
 
 High latency also isn't a problem. Iroh will choose a better transport if available.
 
-# The TOR custom transport
+# The Tor custom transport
 
 To develop the custom transport feature, the first thing we implemented was an in-memory transport. This is very useful for testing protocols without having system call overhead, but other than that not that useful for real applications.
 
 So we started searching for a transport that would be easy to implement but nevertheless useful for real applications. Bluetooth would be useful, but it is _anything but_ simple to implement and also highly platform dependant.
 
-## Brief intro to TOR
+## Brief intro to Tor
 
-TOR is a project to use the internet with a high degree of anonymity.
+Tor is a project to use the internet with a high degree of anonymity.
 
 Most end users will use it via a browser such as [Tor Browser] or [Brave], but there is also a daemon that you can run in the background, and an entire system called [onion services] that allows you to provide an anonymous API endpoint to the entire world under an onion address.
 
 <Note>
-This is actually a pretty comprehensive system with built in address lookup via a directory built into TOR. It is somewhat similar to iroh, but with different goals. Where iroh gets the best possible performance via hole punching and direct connections, TOR hides the user location via its onion routing system to provide maximum privacy.
+This is actually a pretty comprehensive system with built in address lookup via a directory built into Tor. It is somewhat similar to iroh, but with different goals. Where iroh gets the best possible performance via hole punching and direct connections, Tor hides the user location via its onion routing system to provide maximum privacy.
 </Note>
 
 Fortunately, since 2017 onion services are addressed via Ed25519 public keys just like iroh endpoints.
@@ -202,17 +202,17 @@ So it should be easy to use tor onion services for a tor custom transport withou
 
 The tor custom transport requires a tor daemon to run in the background, which does all the heavy lifting. If configured, a tor daemon has a control port over which onion services can be created. It also provides a [SOCKS5] TCP proxy for data connections.
 
-Our custom transport will talk to the local TOR daemon and create an onion service. To do this, it needs an Ed25519 private key. We can use the same private key that we use to create the iroh endpoint.
+Our custom transport will talk to the local Tor daemon and create an onion service. To do this, it needs an Ed25519 private key. We can use the same private key that we use to create the iroh endpoint.
 
 Then it will keep the control connection alive as long as the custom transport lives. Unless the service is created with the detach flag, its lifetime is bound to the lifetime of the control connection.
 
 When the custom endpoint is created, we use the data port to both _wait_ for incoming connections and to _create_ new outgoing connections.
 
-Unlike sending UDP packets, a TOR connection is very expensive to set up. So the endpoint will keep connections open as long as the higher level iroh connection is open.
+Unlike sending UDP packets, a Tor connection is very expensive to set up. So the endpoint will keep connections open as long as the higher level iroh connection is open.
 
 ## Encoding transmits
 
-A TOR connection is a TCP connection, so we need to define a simple protocol to encode the `Transmit`s. In addition to the data in the transmit, this only contains the source endpoint id, which can be converted to an onion addr.
+A Tor connection is a TCP connection, so we need to define a simple protocol to encode the `Transmit`s. In addition to the data in the transmit, this only contains the source endpoint id, which can be converted to an onion addr.
 
 ```rust
 pub(crate) struct TorPacket {
@@ -229,7 +229,7 @@ This data then is serialized and sent over the wire, currently via a custom enco
 
 ## How to deal with packet based transports
 
-The TOR transport is a TCP stream, so we can just send the entire transmit.
+The Tor transport is a TCP stream, so we can just send the entire transmit.
 
 For other transports you might only have the ability to send individual small packets. In that case you would split up the transmit into segments.
 
@@ -241,13 +241,13 @@ QUIC will then reduce packet size down to the minimum of 1200 bytes using [QUIC 
 
 For most transports including the built in relay and IP transports, you can not dial by endpoint id without an AddressLookup service that finds relay URLs or IP addresses for an endpoint id.
 
-In case of the TOR transport, due to the fact that an onion service url is just the encoded Ed25519 public key, this is just a mechanical translation.
+In case of the Tor transport, due to the fact that an onion service url is just the encoded Ed25519 public key, this is just a mechanical translation.
 
 Nevertheless this is implemented as an AddressLookup service. We get an ed key and just convert it into a CustomAddr with the address type `0x544f52` ("TOR") and the Ed25519 public key as data.
 
-We have to either add this AddressLookup service in the endpoint builder, or manually create TOR custom addresses when dialing.
+We have to either add this AddressLookup service in the endpoint builder, or manually create Tor custom addresses when dialing.
 
-The [`Preset`] of the TOR custom transport adds both the custom transport itself and the AddressLookup.
+The [`Preset`] of the Tor custom transport adds both the custom transport itself and the AddressLookup.
 
 ## Trying it out
 
@@ -255,9 +255,9 @@ We have gone into a lot of detail about he implementation. If you want even more
 
 But now it's time to try it out.
 
-To use this, you need a TOR daemon running with the control port enabled and (as of now) the cookie authentication disabled.
+To use this, you need a Tor daemon running with the control port enabled and (as of now) the cookie authentication disabled.
 
-The TOR daemon is available on all major platforms. Mac: `brew install tor`
+The Tor daemon is available on all major platforms. Mac: `brew install tor`
 Debian/Ubuntu Linux: `sudo apt install tor`
 
 Note that if you install it on debian linux it will be enabled by default, so you have to stop it using `sudo systemctl stop tor` before starting it manually with different options.
@@ -297,6 +297,8 @@ As mentioned before, both custom transports and the tor custom transport are exp
 
 For the tor transport, we need to add auth support so you can use the tor transport with a tor daemon running in the background (you probably don't want to configure it without cookie auth).
 
+We also need to track the liveness of the TCP connections to the Tor daemon. Currently if the Tor daemon is killed while a program using it is running, the transport will not recover. Connection cleanup also needs some work.
+
 For the custom transport feature in iroh itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
 
 The current example disables all transports except the custom transport. But in real world applications you will usually want to use either _multiple_ custom transports (e.g. bluetooth and tor for a private chat), or combine a custom transport with the built in transports IPV4, IPV6 and relay.
@@ -306,7 +308,7 @@ If you have multiple transports, we have to implement logic to decide which tran
 To allow all of this, we need to refactor and generalize the path selection logic in iroh and allow config hooks to configure bias per address type.
 
 [`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
-[TOR]: https://www.torproject.org/
+[Tor]: https://www.torproject.org/
 [Tor Browser]: https://tb-manual.torproject.org/about/
 [Brave]: https://support.brave.com/hc/en-us/articles/360018121491-What-is-a-Private-Window-with-Tor-Connectivity
 [NYM]: https://nymtech.net/
