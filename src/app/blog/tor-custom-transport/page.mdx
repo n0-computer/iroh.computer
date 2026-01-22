@@ -247,7 +247,7 @@ QUIC will then reduce packet size down to the minimum of 1200 bytes using [QUIC 
 
 ## Address translation
 
-For most transports including the built in relay and IP transports, you can not dial by endpoint id without an AddressLookup service that finds relay URLs or IP addresses for an endpoint id.
+For most transports, including the built-in relay and IP transports, you can not dial by endpoint id without an `AddressLookup` service that finds relay URLs or IP addresses for an endpoint id.
 
 In case of the Tor transport, due to the fact that an onion service url is just the encoded Ed25519 public key, this is just a mechanical translation.
 
