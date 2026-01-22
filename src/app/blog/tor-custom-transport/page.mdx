@@ -127,7 +127,7 @@ pub trait CustomEndpoint: std::fmt::Debug + Send + Sync + 'static {
 }
 ```
 
-When the iroh endpoint is created by the endpoint builder, it will internally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
+When the `iroh` endpoint is created by the endpoint builder, it will internally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
 
 ![Endpoint transports](/blog/tor-custom-transport/endpoint-transports-diagram.svg)
 
