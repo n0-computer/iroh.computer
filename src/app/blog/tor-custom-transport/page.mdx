@@ -282,6 +282,7 @@ Now we got the tor daemon running in the background and listening on the control
 The iroh-tor transport comes with a simple echo example. We need to first start a server that is awaiting incoming echo requests:
 
 ```
+> git clone https://github.com/n0-computer/iroh-tor.git
 > cargo run --example echo accept
 EndpointId: 4d5fde95182c535f711d7a76e7f7eac0a22e36cb1336b1f5c2f867964064ebea
 Set IROH_SECRET=8f0fbd5890161a796ac6b9b82205b419e3c44edd3ca8465241cbb34bbcc1eb2d to reuse this endpoint id.
@@ -314,12 +315,15 @@ Finally, the current implementation requires users to install and run a separate
 
 For the custom transport feature in iroh itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
 
-The current example disables all transports except the custom transport. But in real world applications you will usually want to use either _multiple_ custom transports (e.g. bluetooth and tor for a private chat), or combine a custom transport with the built in transports IPV4, IPV6 and relay.
+The current example disables all transports except the custom transport. But in most real world applications you will usually want to use either _multiple_ custom transports (e.g. bluetooth and tor for a private chat), or combine a custom transport with the built in transports IPV4, IPV6 and relay.
 
 If you have multiple transports, we have to implement logic to decide which transport to use. Some transports such as BLE might be transports of last resort that you want to move away from as soon as possible as soon as you have anything else. In other cases you might want the custom transport to compete with the built in IP transport by roundtrip time, or you might even want to bias the custom transport so that it is preferred.
 
 To allow all of this, we need to refactor and generalize the path selection logic in iroh and allow config hooks to configure bias per address type.
 
+If you want to try out the tor transport or take a look at the implementation, it is at [n0-computer/iroh-tor](https://github.com/n0-computer/iroh-tor).
+
+It is not on crates.io because it is using a git dependency to the [branch](https://github.com/n0-computer/iroh/tree/feat-user-transport-2) where the custom transport feature is being developed.
 
 [Arti]: https://gitlab.torproject.org/tpo/core/arti
 [`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
