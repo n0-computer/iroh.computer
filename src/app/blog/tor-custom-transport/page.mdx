@@ -289,6 +289,22 @@ Set IROH_SECRET=04b9e35bfdb5774afd716da5f224a3a5364489ccb28efea5ee0cb8c1c27fc063
 Echo response: hello tor user transport
 ```
 
+Using this locally is a bit boring. It will work between any two devices worldwide that have a connection to the internet. Tor even has a feature called [bridges] that allows to use tor in countries with firewalled internet connectivity.
+
+# Remaining work
+
+As mentioned before, both custom transports and the tor custom transport are experimental at this time.
+
+For the tor transport, we need to add auth support so you can use the tor transport with a tor daemon running in the background (you probably don't want to configure it without cookie auth).
+
+For the custom transport feature in iroh itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
+
+The current example disables all transports except the custom transport. But in real world applications you will usually want to use either _multiple_ custom transports (e.g. bluetooth and tor for a private chat), or combine a custom transport with the built in transports IPV4, IPV6 and relay.
+
+If you have multiple transports, we have to implement logic to decide which transport to use. Some transports such as BLE might be transports of last resort that you want to move away from as soon as possible as soon as you have anything else. In other cases you might want the custom transport to compete with the built in IP transport by roundtrip time, or you might even want to bias the custom transport so that it is preferred.
+
+To allow all of this, we need to refactor and generalize the path selection logic in iroh and allow config hooks to configure bias per address type.
+
 [`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
 [TOR]: https://www.torproject.org/
 [Tor Browser]: https://tb-manual.torproject.org/about/
@@ -298,4 +314,5 @@ Echo response: hello tor user transport
 [SOCKS5]: https://datatracker.ietf.org/doc/html/rfc1928
 [QUIC Path MTU Discovery]: https://www.rfc-editor.org/rfc/rfc9000.html#section-14
 [the code]: https://github.com/n0-computer/iroh-tor
+[bridges]: https://tb-manual.torproject.org/bridges/
 [^1]: We might have an upper limit for the address size in the future. So far the largest we have seen is 32 bytes.
