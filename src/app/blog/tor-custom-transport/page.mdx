@@ -233,7 +233,7 @@ pub(crate) struct TorPacket {
 
 This data then is serialized and sent over the wire, currently via a custom encoding. We might switch to postcard later for simplicity.
 
-## How to deal with packet based transports
+## How to deal with packet-based transports
 
 The Tor transport is a TCP stream, so we can just send the entire transmit.
 
