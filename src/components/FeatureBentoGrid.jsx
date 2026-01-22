@@ -27,7 +27,7 @@ export function FeatureBentoGrid() {
                   </a>
                   , a modular networking stack in Rust.
                    When a direct connection
-                  isn't possible,{" "}
+                  isn&apos;t possible,{" "}
                   <a
                     href="https://docs.iroh.computer/iroh-online/relays"
                     className="text-irohPurple-500 hover:underline"
