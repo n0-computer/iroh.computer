@@ -153,7 +153,7 @@ pub trait CustomSender: std::fmt::Debug + Send + Sync + 'static {
 
 Each transport will have an idiomatic way to define addresses. E.g. bluetooth addresses are MAC addresses, formatted as `00:1A:7D:DA:71:13`. Tor hidden service addresses are onion addresses, formatted as `vyj3sx7glv7ydiqn2giszacswg6stwlcn5tqtnwwdlh6adfza5if3gad.onion`.
 
-But we want to have the custom address type in the iroh codebase and don't want to provide custom formatting by default.
+But we want to have the custom address type in the `iroh` codebase and don't want to provide custom formatting by default.
 
 So the `CustomAddr` is generic. It has an u64 address type and an arbitrary size data blob.[^1].
 
