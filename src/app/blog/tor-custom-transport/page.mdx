@@ -196,7 +196,7 @@ Most end users will use it via a browser such as [Tor Browser] or [Brave], but t
 This is actually a pretty comprehensive system with built in address lookup via a directory built into Tor. It is somewhat similar to iroh, but with different goals. Where iroh gets the best possible performance via hole punching and direct connections, Tor hides the user location via its onion routing system to provide maximum privacy.
 </Note>
 
-Fortunately, since 2017 onion services are addressed via Ed25519 public keys just like iroh endpoints.
+Fortunately, since 2017 onion services are addressed via [Ed25519] public keys just like iroh endpoints.
 
 So it should be easy to use tor onion services for a tor custom transport without having either a complex address lookup system or having to use tickets!
 
@@ -215,6 +215,8 @@ When the custom endpoint is created, we use the data port to both _wait_ for inc
 Unlike sending UDP packets, a Tor connection is very expensive to set up. So the endpoint will keep connections open as long as the higher level iroh connection is open.
 
 ## Encoding transmits
+
+![Transmit structure](/blog/tor-custom-transport/transmit-diagram.svg)
 
 A Tor connection is a TCP connection, so we need to define a simple protocol to encode the `Transmit`s. In addition to the data in the transmit, this only contains the source endpoint id, which can be converted to an onion addr.
 
@@ -241,6 +243,8 @@ In case one of the segments exceeds the maximum MTU of your packet based transpo
 
 QUIC will then reduce packet size down to the minimum of 1200 bytes using [QUIC Path MTU Discovery].
 
+<Note>If your transport has a lower MTU than 1200 bytes, you will have to send multiple packets and assemble them on the receive side.</Note>
+
 ## Address translation
 
 For most transports including the built in relay and IP transports, you can not dial by endpoint id without an AddressLookup service that finds relay URLs or IP addresses for an endpoint id.
@@ -261,8 +265,9 @@ But now it's time to try it out.
 
 To use this, you need a Tor daemon running with the control port enabled and (as of now) the cookie authentication disabled.
 
-The Tor daemon is available on all major platforms. Mac: `brew install tor`
-Debian/Ubuntu Linux: `sudo apt install tor`
+The Tor daemon is available on all major platforms:
+- Mac: `brew install tor`
+- Debian/Ubuntu Linux: `sudo apt install tor`
 
 Note that if you install it on debian linux it will be enabled by default, so you have to stop it using `sudo systemctl stop tor` before starting it manually with different options.
 
@@ -295,6 +300,8 @@ Echo response: hello tor user transport
 
 Using this locally is a bit boring. It will work between any two devices worldwide that have a connection to the internet. Tor even has a feature called [bridges] that allows to use tor in countries with firewalled internet connectivity.
 
+<Note>The error log line is an error from deep inside iroh. This is a current issue with the iroh custom transports implementation that we need to fix before releasing it. But it does not seem to affect the functionality</Note>
+
 # Remaining work
 
 As mentioned before, both custom transports and the tor custom transport are experimental at this time.
@@ -302,6 +309,8 @@ As mentioned before, both custom transports and the tor custom transport are exp
 For the tor transport, we need to add auth support so you can use the tor transport with a tor daemon running in the background (you probably don't want to configure it without cookie auth).
 
 We also need to track the liveness of the TCP connections to the Tor daemon. Currently if the Tor daemon is killed while a program using it is running, the transport will not recover. Connection cleanup also needs some work.
+
+Finally, the current implementation requires users to install and run a separate Tor daemon. In the future, we could use [Arti], the Tor Project's official Rust implementation of Tor, to embed Tor directly into the application. This would make the transport zero-configuration for end users.
 
 For the custom transport feature in iroh itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
 
@@ -311,6 +320,8 @@ If you have multiple transports, we have to implement logic to decide which tran
 
 To allow all of this, we need to refactor and generalize the path selection logic in iroh and allow config hooks to configure bias per address type.
 
+
+[Arti]: https://gitlab.torproject.org/tpo/core/arti
 [`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
 [Tor]: https://www.torproject.org/
 [Tor Browser]: https://tb-manual.torproject.org/about/
@@ -327,4 +338,5 @@ To allow all of this, we need to refactor and generalize the path selection logi
 [Bluetooth]: https://www.bluetooth.com/specifications/specs/
 [Wifi Aware]: https://www.wi-fi.org/discover-wi-fi/wi-fi-aware
 [InfiniBand]: https://www.infinibandta.org/
+[Ed25519]: https://datatracker.ietf.org/doc/html/rfc8032
 [^1]: We might have an upper limit for the address size in the future. So far the largest we have seen is 32 bytes.
