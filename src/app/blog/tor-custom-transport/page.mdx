@@ -19,7 +19,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # What are iroh custom transports anyway?
 
-The biggest change in the upcoming iroh 1.0 release is that iroh is now using QUIC multipath under the hood. See [iroh on QUIC multipath](/blog/iroh-on-QUIC-multipath) for details.
+The biggest change in the upcoming `iroh` 1.0 release is that `iroh` is now using QUIC multipath under the hood. See [iroh on QUIC multipath](/blog/iroh-on-QUIC-multipath) for details.
 
 This gives us a lot of options to optimize things. E.g. each path gets its own congestion controller, so we don't have to reset the congestion controller when switching paths.
 
