@@ -77,7 +77,7 @@ Using a custom transport is very simple. Custom transports have to be added usin
 
 ```rust
 Endpoint::builder()
-    .add_user_transport(my_transport)
+    .add_custom_transport(my_transport)
     .bind().await?
 ```
 
