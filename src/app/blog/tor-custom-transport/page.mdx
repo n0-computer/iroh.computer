@@ -251,7 +251,7 @@ For most transports, including the built-in relay and IP transports, you can not
 
 In case of the Tor transport, due to the fact that an onion service url is just the encoded Ed25519 public key, this is just a mechanical translation.
 
-Nevertheless this is implemented as an AddressLookup service. We get an ed key and just convert it into a CustomAddr with the address type `0x544f52` ("TOR") and the Ed25519 public key as data.
+Nevertheless this is implemented as an address lookup service. We get an ed key and just convert it into a `CustomAddr` with the address type `0x544f52` ("TOR") and the Ed25519 public key as data.
 
 We have to either add this AddressLookup service in the endpoint builder, or manually create Tor custom addresses when dialing.
 
