@@ -68,7 +68,8 @@ export default function OpenSourceSolutionPage() {
                   <div>
                     <h3 className="text-lg font-medium mb-2">Relay Access</h3>
                     <p className="text-irohGray-600 dark:text-irohGray-300">
-                      Access to our global relay network so your users stay connected, even when direct connections aren&apos;t possible.
+                      Free public relays for development and testing, with options to self-host or use managed relays for production.{' '}
+                      <Link href="/features/relays" className="text-irohPurple-500 hover:underline">Learn more →</Link>
                     </p>
                   </div>
                 </div>

@@ -17,7 +17,11 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
-  {content: 'Solutions', href: '/#solutions', dropdown: [
+  {content: 'Features', href: '/#features', dropdown: [
+    {label: 'Relays', href: '/features/relays'},
+    {label: 'Metrics', href: '/features/metrics'},
+  ]},
+  {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Resilient Apps', href: '/solutions/delta-chat'},
