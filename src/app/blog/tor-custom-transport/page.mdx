@@ -52,7 +52,7 @@ It turns out that there are a lot of potential candidates for this. Just from th
 This is both a big promise and a problem. We have decided to implement one custom transport under the hood: our relay connections, that are used both for holepunching and as a fallback in the unlikely case that holepunching is not possible.
 
 <Note>
-Currently the relay transport is special because it is the transport that will be used to initiate hole punching attempts. That is unlikely to change until 1.0, but we might allow using custom transports for hole punching in the future.
+Currently the relay transport is special because it is the transport that will be used to initiate holepunching attempts. That is unlikely to change until 1.0, but we might allow using custom transports for holepunching in the future.
 </Note>
 
 But we do not want to add additional transports to the iroh codebase. That would make the code very complex with a maze of feature flags, add a lot of dependencies that most of our customers don't need, and it likely _still_ would not cover all transports that people might want.
