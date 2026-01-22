@@ -155,7 +155,7 @@ Each transport will have an idiomatic way to define addresses. E.g. bluetooth ad
 
 But we want to have the custom address type in the iroh codebase and don't want to provide custom formatting by default.
 
-So the CustomAddr is generic. It has an u64 address type and an arbitrary size data blob.[^1].
+So the `CustomAddr` is generic. It has an u64 address type and an arbitrary size data blob.[^1].
 
 It implements `Display` and `FromStr`, but this is using generic formatting - currently just the hex encoded address type followed by the hex encoded user data.
 
