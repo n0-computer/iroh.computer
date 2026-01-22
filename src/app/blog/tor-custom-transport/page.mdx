@@ -260,7 +260,7 @@ To use this, you need a TOR daemon running with the control port enabled and (as
 The TOR daemon is available on all major platforms. Mac: `brew install tor`
 Debian/Ubuntu Linux: `sudo apt install tor`
 
-Note that if you install it on debian linux it will be enabled by default, so you have to stop it using `sudo systemctl stop tor` before starting it manually.
+Note that if you install it on debian linux it will be enabled by default, so you have to stop it using `sudo systemctl stop tor` before starting it manually with different options.
 
 Then start it in a separate terminal window, with the default control port and cookie authentication disabled:
 
@@ -268,7 +268,26 @@ Then start it in a separate terminal window, with the default control port and c
 tor --ControlPort 9051 --CookieAuthentication 0
 ```
 
+Now we got the tor daemon running in the background and listening on the control port without auth.
 
+The iroh-tor transport comes with a simple echo example. We need to first start a server that is awaiting incoming echo requests:
+
+```
+> cargo run --example echo accept
+EndpointId: 4d5fde95182c535f711d7a76e7f7eac0a22e36cb1336b1f5c2f867964064ebea
+Set IROH_SECRET=8f0fbd5890161a796ac6b9b82205b419e3c44edd3ca8465241cbb34bbcc1eb2d to reuse this endpoint id.
+Accepting connections (Ctrl-C to exit)...
+```
+
+In yet another terminal window, we start the connect side:
+
+```
+❯ cargo run --example echo connect 4d5fde95182c535f711d7a76e7f7eac0a22e36cb1336b1f5c2f867964064ebea
+EndpointId: 9dc52a915a0c01c87d3a598cfb304b9736497f3ac1c7ea1ec4ea7c0dd62d502e
+Set IROH_SECRET=04b9e35bfdb5774afd716da5f224a3a5364489ccb28efea5ee0cb8c1c27fc063 to reuse this endpoint id.
+2026-01-22T12:54:36.699064Z ERROR iroh::magicsock::mapped_addrs: Failed to convert addr to transport addr: Unknown relay mapped addr
+Echo response: hello tor user transport
+```
 
 [`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
 [TOR]: https://www.torproject.org/
