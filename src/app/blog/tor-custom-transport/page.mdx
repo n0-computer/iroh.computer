@@ -313,7 +313,7 @@ We also need to track the liveness of the TCP connections to the Tor daemon. Cur
 
 Finally, the current implementation requires users to install and run a separate Tor daemon. In the future, we could use [Arti], the Tor Project's official Rust implementation of Tor, to embed Tor directly into the application. This would make the transport zero-configuration for end users.
 
-For the custom transport feature in iroh itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
+For the custom transport feature in `iroh` itself, we need to settle on final names for all the components. But there are also a few more interesting things left to be done:
 
 The current example disables all transports except the custom transport. But in most real world applications you will usually want to use either _multiple_ custom transports (e.g. bluetooth and tor for a private chat), or combine a custom transport with the built in transports IPV4, IPV6 and relay.
 
