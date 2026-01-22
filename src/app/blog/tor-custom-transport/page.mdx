@@ -319,7 +319,7 @@ The current example disables all transports except the custom transport. But in 
 
 If you have multiple transports, we have to implement logic to decide which transport to use. Some transports such as BLE might be transports of last resort that you want to move away from as soon as possible as soon as you have anything else. In other cases you might want the custom transport to compete with the built in IP transport by roundtrip time, or you might even want to bias the custom transport so that it is preferred.
 
-To allow all of this, we need to refactor and generalize the path selection logic in iroh and allow config hooks to configure bias per address type.
+To allow all of this, we need to refactor and generalize the path selection logic in `iroh` and allow config hooks to configure bias per address type.
 
 If you want to try out the tor transport or take a look at the implementation, it is at [n0-computer/iroh-tor](https://github.com/n0-computer/iroh-tor).
 
