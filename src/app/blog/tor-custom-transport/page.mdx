@@ -49,7 +49,7 @@ It turns out that there are a lot of potential candidates for this. Just from th
 - [InfiniBand]
 - Tor
 
-This is both a big promise and a problem. We have decided to implement one custom transport under the hood, our relay connections that are used both for hole punching and as a fallback in the unlikely case that holepunching is not possible.
+This is both a big promise and a problem. We have decided to implement one custom transport under the hood: our relay connections, that are used both for holepunching and as a fallback in the unlikely case that holepunching is not possible.
 
 <Note>
 Currently the relay transport is special because it is the transport that will be used to initiate hole punching attempts. That is unlikely to change until 1.0, but we might allow using custom transports for hole punching in the future.
