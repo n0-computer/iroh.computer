@@ -55,7 +55,7 @@ This is both a big promise and a problem. We have decided to implement one custo
 Currently the relay transport is special because it is the transport that will be used to initiate hole punching attempts. That is unlikely to change until 1.0, but we might allow using custom transports for hole punching in the future.
 </Note>
 
-But we do not want to add additonal transports to the iroh codebase. That would make the code very complex with a maze of feature flags, add a lot of dependencies that most of our customers don't need, and it likely _still_ would not cover all transports that people might want.
+But we do not want to add additional transports to the iroh codebase. That would make the code very complex with a maze of feature flags, add a lot of dependencies that most of our customers don't need, and it likely _still_ would not cover all transports that people might want.
 
 So instead we decided to add pluggable custom transports so each of our users can just plug in just what they need for their application.
 
@@ -127,7 +127,7 @@ pub trait CustomEndpoint: std::fmt::Debug + Send + Sync + 'static {
 }
 ```
 
-Wnen the iroh endpoint is created by the endpoint builder, it will interally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
+When the iroh endpoint is created by the endpoint builder, it will internally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
 
 ## CustomSender trait
 
