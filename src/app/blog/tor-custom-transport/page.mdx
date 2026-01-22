@@ -1,0 +1,282 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-01-22',
+  title: 'Iroh TOR custom transports',
+  description:
+    'Iroh now works over TOR',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# What are iroh custom transports anyway?
+
+The biggest change in the upcoming iroh 1.0 release is that iroh is now using QUIC multipath under the hood. See [iroh on QUIC multipath](/blog/iroh-on-QUIC-multipath) for details.
+
+This gives us a lot of options to optimize things. E.g. each path gets its own congestion controller, so we don't have to reset the congestion controller when switching paths.
+
+We might be able to use multiple paths in parallel for high bandwidth datacenter connections in the future.
+
+But none of that is exposed to the user. It just makes iroh work better.
+
+But we can do more with multipath.
+
+As far as our QUIC stack is concerned, any way to send packets from one endpoint to another is just a path. IPV4, IPV6, our relay. No matter if the path has high latency or high packet loss, QUIC will adapt to it.
+
+<Note>
+Currently we are using simple heuristics based on roundtrip time to choose the best path. This logic will become more refined in the future.
+</Note>
+
+But what if I have additional ways to get data from one endpoint to another? Wouldn't it be nice if I could use them as well?
+
+It turns out that there are a lot of potential candidates for this. Just from the top of my head:
+
+WebTransport
+WebRTC
+Bluetooth
+Wifi Aware
+IP over carrier pigeons
+Shared memory
+Local sockets (Unix or windows)
+InfiniBand
+TOR
+
+This is both a big promise and a problem. We have decided to implement one custom transport under the hood, our relay connections that are used both for hole punching and as a fallback in the unlikely case that holepunching is not possible.
+
+<Note>
+Currently the relay transport is special because it is the transport that will be used to initiate hole punching attempts. That is unlikely to change until 1.0, but we might allow using custom transports for hole punching in the future.
+</Note>
+
+But we do not want to add additonal transports to the iroh codebase. That would make the code very complex with a maze of feature flags, add a lot of dependencies that most of our customers don't need, and it likely still would not cover all transports that people might want.
+
+So instead we decided to add pluggable custom transports so each of our users can just plug in just what they need for their application.
+
+Projects using iroh in data centers might want to add high performance transports such as InfiniBand.
+
+Projects using iroh for chat on mobile devices might want to use Bluetooth for local communication.
+
+And projects that care very much about privacy might want to opt out of our built in transports entirely and instead use private overlay networks such as [TOR] or [NYM].
+
+# The custom transport API
+
+<Note>
+The custom transport API is experimental and not yet merged to iroh main. It will very likely undergo some changes. But the basic concepts very likely will remain.
+</Note>
+
+## Using a custom transport
+
+Using a custom transport is very simple. Custom transports have to be added using the endpoint builder before the iroh endpoint is created.
+
+```rust
+Endpoint::builder()
+    .add_user_transport(my_transport)
+    .bind().await?
+```
+
+Some transports also need a specialized address lookup. In this case a custom transport should use the new [`Preset`] feature to add everything it needs to the builder.
+
+```rust
+Endpoint::builder()
+    .preset(transport.preset())
+    .bind().await?
+```
+
+## Implementing a custom transport
+
+Implementing a custom transport is not quite as simple. But it also isn't extremely complex. Dealing with the quirks of the actual transport will certainly be more work than wiring it up into iroh.
+
+The custom transport API consists of a number of dynable traits.
+
+## CustomTransport trait
+
+The entry point is the CustomTransport trait
+
+```rust
+pub trait CustomTransport: std::fmt::Debug + Send + Sync + 'static {
+    /// Create a custom endpoint
+    fn bind(&self) -> io::Result<Box<dyn CustomEndpoint>>;
+}
+```
+
+## CustomEndpoint trait
+
+The custom endpoint represents an endpoint for the custom transport. It has one or more local address, can receive data, and can produce a sender to send data.
+
+```rust
+pub trait CustomEndpoint: std::fmt::Debug + Send + Sync + 'static {
+    /// Watch local addrs
+    fn watch_local_addrs(&self) -> n0_watcher::Direct<Vec<CustomAddr>>;
+    /// Create a sender
+    fn create_sender(&self) -> Arc<dyn CustomSender>;
+    /// Poll recv
+    fn poll_recv(
+        &mut self,
+        cx: &mut Context,
+        bufs: &mut [io::IoSliceMut<'_>],
+        metas: &mut [quinn_udp::RecvMeta],
+        source_addrs: &mut [Addr],
+    ) -> Poll<io::Result<usize>>;
+}
+```
+
+Wnen the iroh endpoint is created by the endpoint builder, it will interally create the custom endpoint for each custom transport, in addition to the UDP endpoint for direct connections and the TCP endpoint for relay connections.
+
+## CustomSender trait
+
+The custom sender trait has a predicate to decide which addresses the transport wants to handle, and a poll based send function to send the actual data.
+
+```rust
+pub trait CustomSender: std::fmt::Debug + Send + Sync + 'static {
+    /// is addr valid for this transport?
+    fn is_valid_send_addr(&self, addr: &UserAddr) -> bool;
+    /// poll_send
+    fn poll_send(
+        &self,
+        cx: &mut std::task::Context,
+        dst: UserAddr,
+        transmit: &Transmit<'_>,
+    ) -> Poll<io::Result<()>>;
+}
+```
+
+## Custom addresses
+
+Each transport will have an idiomatic way to define addresses. E.g. bluetooth addresses are MAC addresses, formatted as `00:1A:7D:DA:71:13`. Tor hidden service addresses are onion addresses, formatted as `vyj3sx7glv7ydiqn2giszacswg6stwlcn5tqtnwwdlh6adfza5if3gad.onion`.
+
+But we want to have the custom address type in the iroh codebase and don't want to provide custom formatting by default.
+
+So the CustomAddr is generic. It has an u64 address type and an arbitrary size data blob.[^1].
+
+It implements `Display` and `FromStr`, but this is using generic formatting - currently just the hex encoded address type followed by the hex encoded user data.
+
+So the two addrs above would look like this:
+
+```
+01-001A7DDA7113
+02-4d5fde95182c535f711d7a76e7f7eac0a22e36cb1336b1f5c2f867964064ebea
+```
+
+<Note>
+For experiments you can just choose a random transport id - but your code should properly handle if the blob is not of the expected size. For published transports, we will have a TRANSPORTS.md in the iroh repo where you can request a number via PR
+</Note>
+
+## What are we sending?
+
+As you can see from the traits, what we are sending are low level packets. A transmit consists of bytes to be sent and and an optional field describing how the bytes should be split up.
+
+**Anything** can be a transport provided that it can send packets of >= 1200 bytes, the minimum MTU for QUIC.
+
+Packet loss is not a problem - QUIC will deal with re-sending lost packets.
+
+High latency also isn't a problem. Iroh will choose a better transport if available.
+
+# The TOR custom transport
+
+To develop the custom transport feature, the first thing we implemented was an in-memory transport. This is very useful for testing protocols without having system call overhead, but other than that not that useful for real applications.
+
+So we started searching for a transport that would be easy to implement but nevertheless useful for real applications. Bluetooth would be useful, but it is _anything but_ simple to implement and also highly platform dependant.
+
+## Brief intro to TOR
+
+TOR is a project to use the internet with a high degree of anonymity.
+
+Most end users will use it via a browser such as [Tor Browser] or [Brave], but there is also a daemon that you can run in the background, and an entire system called [onion services] that allows you to provide an anonymous API endpoint to the entire world under an onion address.
+
+<Note>
+This is actually a pretty comprehensive system with built in address lookup via a directory built into TOR. It is somewhat similar to iroh, but with different goals. Where iroh gets the best possible performance via hole punching and direct connections, TOR hides the user location via its onion routing system to provide maximum privacy.
+</Note>
+
+Fortunately, since 2017 onion services are addressed via Ed25519 public keys just like iroh endpoints.
+
+So it should be easy to use tor onion services for a tor custom transport without having either a complex address lookup system or having to use tickets!
+
+## The tor custom transport
+
+The tor custom transport requires a tor daemon to run in the background, which does all the heavy lifting. If configured, a tor daemon has a control port over which onion services can be created. It also provides a [SOCKS5] TCP proxy for data connections.
+
+Our custom transport will talk to the local TOR daemon and create an onion service. To do this, it needs an Ed25519 private key. We can use the same private key that we use to create the iroh endpoint.
+
+Then it will keep the control connection alive as long as the custom transport lives. Unless the service is created with the detach flag, its lifetime is bound to the lifetime of the control connection.
+
+When the custom endpoint is created, we use the data port to both _wait_ for incoming connections and to _create_ new outgoing connections.
+
+Unlike sending UDP packets, a TOR connection is very expensive to set up. So the endpoint will keep connections open as long as the higher level iroh connection is open.
+
+## Encoding transmits
+
+A TOR connection is a TCP connection, so we need to define a simple protocol to encode the `Transmit`s. In addition to the data in the transmit, this only contains the source endpoint id, which can be converted to an onion addr.
+
+```rust
+pub(crate) struct TorPacket {
+    /// Source endpoint id (32 bytes).
+    pub from: EndpointId,
+    /// Raw packet payload.
+    pub data: Bytes,
+    /// Segment size to split up data (optional).
+    pub segment_size: Option<u16>,
+}
+```
+
+This data then is serialized and sent over the wire, currently via a custom encoding. We might switch to postcard later for simplicity.
+
+## How to deal with packet based transports
+
+The TOR transport is a TCP stream, so we can just send the entire transmit.
+
+For other transports you might only have the ability to send individual small packets. In that case you would split up the transmit into segments.
+
+In case one of the segments exceeds the maximum MTU of your packet based transport, you would just drop the segment.
+
+QUIC will then reduce packet size down to the minimum of 1200 bytes using [QUIC Path MTU Discovery].
+
+## Address translation
+
+For most transports including the built in relay and IP transports, you can not dial by endpoint id without an AddressLookup service that finds relay URLs or IP addresses for an endpoint id.
+
+In case of the TOR transport, due to the fact that an onion service url is just the encoded Ed25519 public key, this is just a mechanical translation.
+
+Nevertheless this is implemented as an AddressLookup service. We get an ed key and just convert it into a CustomAddr with the address type `0x544f52` ("TOR") and the Ed25519 public key as data.
+
+We have to either add this AddressLookup service in the endpoint builder, or manually create TOR custom addresses when dialing.
+
+The [`Preset`] of the TOR custom transport adds both the custom transport itself and the AddressLookup.
+
+## Trying it out
+
+We have gone into a lot of detail about he implementation. If you want even more, in particular the reading part, look at [the code].
+
+But now it's time to try it out.
+
+To use this, you need a TOR daemon running with the control port enabled and (as of now) the cookie authentication disabled.
+
+The TOR daemon is available on all major platforms. Mac: `brew install tor`
+Debian/Ubuntu Linux: `sudo apt install tor`
+
+Note that if you install it on debian linux it will be enabled by default, so you have to stop it using `sudo systemctl stop tor` before starting it manually.
+
+Then start it in a separate terminal window, with the default control port and cookie authentication disabled:
+
+```
+tor --ControlPort 9051 --CookieAuthentication 0
+```
+
+
+
+[`Preset`]: https://docs.rs/iroh/latest/iroh/endpoint/presets/trait.Preset.html
+[TOR]: https://www.torproject.org/
+[Tor Browser]: https://tb-manual.torproject.org/about/
+[Brave]: https://support.brave.com/hc/en-us/articles/360018121491-What-is-a-Private-Window-with-Tor-Connectivity
+[NYM]: https://nymtech.net/
+[onion services]: https://community.torproject.org/onion-services/
+[SOCKS5]: https://datatracker.ietf.org/doc/html/rfc1928
+[QUIC Path MTU Discovery]: https://www.rfc-editor.org/rfc/rfc9000.html#section-14
+[the code]: https://github.com/n0-computer/iroh-tor
+[^1]: We might have an upper limit for the address size in the future. So far the largest we have seen is 32 bytes.
