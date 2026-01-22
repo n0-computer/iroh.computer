@@ -133,7 +133,7 @@ When the iroh endpoint is created by the endpoint builder, it will internally cr
 
 ## CustomSender trait
 
-The custom sender trait has a predicate to decide which addresses the transport wants to handle, and a poll based send function to send the actual data.
+The custom sender trait has a predicate to decide which addresses the transport wants to handle, and a poll-based send function to send the actual data.
 
 ```rust
 pub trait CustomSender: std::fmt::Debug + Send + Sync + 'static {
