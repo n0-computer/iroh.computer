@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 
 const useCases = {
   "Streaming Video": [
@@ -71,7 +72,7 @@ export function UseCaseScroller() {
   return (
     <div className="w-full max-w-3xl mx-auto px-5 md:pt-16 pb-8 flex flex-col">
       {/* Sentence display */}
-      <div className="relative h-20 md:h-36 lg:h-24 flex mb-10">
+      <div className="relative h-20 md:h-36 lg:h-24 flex flex-col mb-10">
         <p
           className={`text-xl font-semibold md:text-2xl transition-opacity duration-500 text-irohGray-700 dark:text-irohGray-200 ${
             isVisible ? "opacity-100" : "opacity-0"
@@ -79,6 +80,21 @@ export function UseCaseScroller() {
         >
           {sentences[currentSentenceIndex]}
         </p>
+        {selectedCategory === "Streaming Video" && (
+          <Link href="/solutions/rave" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+            Read the Rave case study →
+          </Link>
+        )}
+        {selectedCategory === "AI/ML" && (
+          <Link href="/solutions/nous" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+            Read the Nous case study →
+          </Link>
+        )}
+        {selectedCategory === "Resilient Apps" && (
+          <Link href="/solutions/delta-chat" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+            Read the Delta Chat case study →
+          </Link>
+        )}
       </div>
 
       {/* Pagination dots */}

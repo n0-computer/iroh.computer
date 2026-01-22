@@ -63,6 +63,27 @@ export default function Page() {
           </section>
 
           <FeatureBentoGrid />
+          <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
+            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+            <div className="mx-auto max-w-2xl lg:max-w-4xl">
+              <img src="/img/user-logos/nous.png" alt="Nous" className="mx-auto h-12" />
+              <figure className="mt-10">
+                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
+                  <p>&ldquo;Doubling the network speed halves our compute budget. That&apos;s the difference between a $1M model and a $500K model.&rdquo;</p>
+                </blockquote>
+                <figcaption className="mt-10">
+                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
+                    <div className="font-semibold text-white">Ari Lotter</div>
+                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
+                      <circle r="1" cx="1" cy="1" />
+                    </svg>
+                    <div className="text-gray-400">Prinicpal Engineer at Nous</div>
+                  </div>
+                </figcaption>
+              </figure>
+            </div>
+          </section>
 
           <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 py-16 px-4'>
             <div className='grid gap-6 grid-cols-1 md:grid-cols-2'>
@@ -82,8 +103,9 @@ export default function Page() {
                       Forever.
                     </p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
-                      Dial any endpoint running anywhere, big or small &mdash; cloud servers, tablets, or Raspberry Pis. When a direct connection isn&apos;t possible, <a href="https://docs.iroh.computer/concepts/relay" className='text-irohPurple-500 hover:underline'>relays</a> keep your app running smoothly.
-                    </p>
+                      Dial any endpoint running anywhere, big or small &mdash;
+                      cloud servers, tablets, or Raspberry Pis. 
+                      </p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>
                       The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, and relays are stateless. That means you can pluralize with hosting across regions and clouds, or self-host anywhere in the world.
                     </p>
@@ -102,8 +124,11 @@ export default function Page() {
             <div className='max-w-6xl mx-auto px-4'>
               <div className='pb-10'>
                 <h3 className='text-3xl font-bold mb-2'>Modular toolkit</h3>
-                <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>Iroh provides a reliable connectivity API for building systems that reach any device, anywhere. The rest is up to you. There are dozens of open source ready-made, composable protocols are built on top of iroh. Mix & match to get the feature set you need.</p>
-              </div>
+                <p className='text-irohGray-600 dark:text-irohGray-400
+                text-lg'>
+                There are dozens of open source ready-made, composable protocols
+                are built on top of iroh. Mix & match to get the feature set you
+                need.</p> </div>
               <ProtocolHeroList />
             </div>
           </section>
@@ -121,7 +146,12 @@ export default function Page() {
                     <p className='mt-6 text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Deploy, Monitor, Fix</p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of <a href="https://perf.iroh.computer" target="_blank" className="text-irohPurple-500 hover:underline">simulations &amp; tests</a>. </p>
                     
-                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>Get visibility into your endpoints &mdash; track connection health and throughput across all your devices and services. Build custom metrics specific for your app.</p>
+                    <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>
+                      When you build your app, iroh provides opt-in 
+                      <a href="https://docs.iroh.computer/iroh-online/metrics/custom" className="text-irohPurple-500 hover:underline"> observability</a> and
+                      <a href="https://docs.iroh.computer/metrics/custom" className="text-irohPurple-500 hover:underline"> custom metrics</a> specific for your app. Get visibility into your endpoints &mdash; track connection health and throughput across all your devices and services.
+                      
+                      </p>
 
                 <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
                   Montior your App<ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />

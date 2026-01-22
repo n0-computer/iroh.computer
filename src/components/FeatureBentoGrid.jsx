@@ -26,6 +26,15 @@ export function FeatureBentoGrid() {
                     iroh
                   </a>
                   , a modular networking stack in Rust.
+                   When a direct connection
+                  isn't possible,{" "}
+                  <a
+                    href="https://docs.iroh.computer/iroh-online/relays"
+                    className="text-irohPurple-500 hover:underline"
+                  >
+                    relays
+                  </a>{" "}
+                  keep your app running smoothly.
                 </p>
               </div>
             </div>
@@ -119,7 +128,7 @@ export function FeatureBentoGrid() {
                 <p className="mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400">
                   Run your own{" "}
                   <a
-                    href="https://docs.iroh.computer/concepts/relay"
+                    href="https://n0des.iroh.computer"
                     className="text-irohPurple-500 hover:underline"
                   >
                     relay server

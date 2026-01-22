@@ -16,8 +16,12 @@ export default function DeltaChatSolutionPage() {
 
       <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100">
         {/* Hero Section */}
-        <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl pt-12">
+        <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800 relative overflow-hidden">
+          {/* Background Logo */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-10 pointer-events-none">
+            <img src="/img/user-logos/delta_chat.png" alt="" className="w-full h-full object-contain" />
+          </div>
+          <div className="container mx-auto max-w-6xl pt-12 relative z-10">
             <div className="max-w-3xl">
               <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Solution: Resilient Apps</p>
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
