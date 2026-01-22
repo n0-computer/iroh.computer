@@ -5,9 +5,6 @@ export function FeatureBentoGrid() {
   return (
     <section className="max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 py-16 px-4">
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-        <p className="mx-auto mt-2 max-w-2xl text-balance text-center text-4xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">
-          Fast, reliable, and efficient connections
-        </p>
         <div className="mt-10 grid gap-6 sm:mt-16 grid-cols-1 md:grid-cols-2">
           <div className="relative">
             <div className="absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20" />

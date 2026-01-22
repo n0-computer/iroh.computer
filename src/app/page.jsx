@@ -18,7 +18,6 @@ import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
 
 import logoRust from '@/images/language-logos/rust.svg';
 import { CodeBlock } from '@/components/CodeBlock';
-import SolutionsPage from './solutions/page';
 
 export const metadata = {
   title: 'Iroh',
@@ -62,29 +61,6 @@ export default function Page() {
             <UseCaseScroller />
           </section>
 
-          <FeatureBentoGrid />
-          <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
-            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-            <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <img src="/img/user-logos/nous.png" alt="Nous" className="mx-auto h-12" />
-              <figure className="mt-10">
-                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
-                  <p>&ldquo;Doubling the network speed halves our compute budget. That&apos;s the difference between a $1M model and a $500K model.&rdquo;</p>
-                </blockquote>
-                <figcaption className="mt-10">
-                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-white">Ari Lotter</div>
-                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
-                      <circle r="1" cx="1" cy="1" />
-                    </svg>
-                    <div className="text-gray-400">Prinicpal Engineer at Nous</div>
-                  </div>
-                </figcaption>
-              </figure>
-            </div>
-          </section>
-
           <section className='max-w-6xl mx-auto border-l border-r border-irohGray-300 dark:border-irohGray-800 py-16 px-4'>
             <div className='grid gap-6 grid-cols-1 md:grid-cols-2'>
               <div className='relative'>
@@ -118,6 +94,28 @@ export default function Page() {
             </div>
           </section>
 
+          <FeatureBentoGrid />
+          <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
+            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+            <div className="mx-auto max-w-2xl lg:max-w-4xl">
+              <img src="/img/user-logos/nous.png" alt="Nous" className="mx-auto h-12" />
+              <figure className="mt-10">
+                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
+                  <p>&ldquo;Doubling the network speed halves our compute budget. That&apos;s the difference between a $1M model and a $500K model.&rdquo;</p>
+                </blockquote>
+                <figcaption className="mt-10">
+                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
+                    <div className="font-semibold text-white">Ari Lotter</div>
+                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
+                      <circle r="1" cx="1" cy="1" />
+                    </svg>
+                    <div className="text-gray-400">Prinicpal Engineer at Nous</div>
+                  </div>
+                </figcaption>
+              </figure>
+            </div>
+          </section>
 
           {/* iroh protocols */}
           <section className='pt-10 pb-16 border border-irohGray-300 dark:border-irohGray-800'>
@@ -130,6 +128,52 @@ export default function Page() {
                 are built on top of iroh. Mix & match to get the feature set you
                 need.</p> </div>
               <ProtocolHeroList />
+            </div>
+          </section>
+
+          {/* Solutions */}
+          <section id="solutions" className='max-w-6xl mx-auto border-l border-r border-b border-irohGray-300 dark:border-irohGray-800 py-16 px-4'>
+            <div className='md:px-5 mb-10'>
+              <h3 className='text-3xl font-bold mb-2'>Solutions</h3>
+              <p className='text-irohGray-600 dark:text-irohGray-400 text-lg'>See how companies use iroh to build fast, reliable, distributed applications.</p>
+            </div>
+            <div className='space-y-6 px-0 md:px-5'>
+              <Link href="/solutions/nous" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-irohPurple-500 font-medium mb-2 uppercase tracking-wide">AI/ML</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Distributed AI Training</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <img src="/img/user-logos/nous.png" alt="Nous logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
+              <Link href="/solutions/rave" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-irohPurple-500 font-medium mb-2 uppercase tracking-wide">Streaming Video</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Video Streaming at Global Scale</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Stream video between millions of devices around the world every day, with over 1 million concurrent connections per relay.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <img src="/img/user-logos/rave.png" alt="Rave logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
+              <Link href="/solutions/delta-chat" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-irohPurple-500 font-medium mb-2 uppercase tracking-wide">Resilient Apps</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Resilient Messaging & P2P Web Apps</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <img src="/img/user-logos/delta_chat.png" alt="Delta Chat logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
             </div>
           </section>
 
