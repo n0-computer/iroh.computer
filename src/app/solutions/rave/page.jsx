@@ -30,7 +30,8 @@ export default function RaveSolutionPage() {
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                 Rave uses iroh to stream video between millions of devices around the world every day,
-                with over 1 million concurrent connections per relay.
+                with over 1 million concurrent connections per relay. They self-host these relays using
+                iroh&apos;s open source software, ensuring low-latency and reliable video delivery to their users.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer/signup">
@@ -111,7 +112,7 @@ export default function RaveSolutionPage() {
               Ready to Stream at Scale?
             </h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-              Get started with managed relays and monitoring through iroh-online.
+              Get started with managed relays and monitoring through iroh online.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="https://n0des.iroh.computer/signup">
@@ -119,7 +120,7 @@ export default function RaveSolutionPage() {
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up for iroh-online
+                  Sign Up for iroh online
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">

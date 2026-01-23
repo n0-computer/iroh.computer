@@ -28,7 +28,7 @@ export const navItems = [
     {label: 'Enterprise', href: '/enterprise'},
     {label: 'Open source', href: '/solutions/open-source'}
   ]},
-  {content: 'Docs', href: '/docs'},
+  {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
   {content: 'Roadmap', href: '/roadmap'},
 ];

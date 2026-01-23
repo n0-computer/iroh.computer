@@ -196,7 +196,7 @@ export default function NousUseCasePage() {
                 <h2 className="text-3xl font-bold mb-6">Managed Relays & Monitoring</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   The <a href="https://n0.computer" className="text-irohPurple-500 hover:underline">n0.computer</a> team
-                  hosts relays for Nous through the <a href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline">iroh-online</a> service.
+                  hosts relays for Nous through the <a href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline">iroh online</a> service.
                   This provides reliable relay infrastructure without Nous having to manage it themselves.
                 </p>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
@@ -233,7 +233,7 @@ export default function NousUseCasePage() {
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up for iroh-online
+                  Sign Up for iroh online
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">
