@@ -1,0 +1,246 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2026-01-27',
+  title: 'iroh 0.96.0 - The Multipaths to 1.0',
+  description: 'Release of iroh v0.96',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
+
+This is it - iroh 0.96 represents one of the last major wire-breaking changes before 1.0. We're shipping QUIC multipath support, a fundamental architectural shift that enables `iroh` to maintain multiple network paths simultaneously within a single QUIC connection. This change has been months in the making and unlocks significant improvements to connection reliability and performance.
+
+Along with multipath comes our adoption of QUIC-NAT-Traversal (QNT), an emerging IETF standard that replaces our custom holepunching protocol. By moving holepunching into the QUIC layer, we gain built-in encryption, loss recovery, and congestion control for connection establishment - all while building on the lessons we learned from our custom implementation.
+
+We've also refined the connection lifecycle API, introduced a new hook system for connection interception, and renamed the `Discovery` trait to `AddressLookup` to better reflect what it actually does. Each of these changes brings us closer to a stable, production-ready 1.0 API.
+
+## 🛤️ Multipath
+
+Iroh 0.96 includes our implementation of QUIC multipath support! This is a major milestone that enables `iroh` to retain multiple network paths simultaneously within a single QUIC connection. It also represents one of the last major wire-breaking changes that we will have in `iroh`.
+
+ For a deep-dive into our reasoning for switching to QUIC multipath implementation, check out our dedicated blog post: [Iroh on QUIC Multipath](https://www.iroh.computer/blog/iroh-on-QUIC-multipath)
+
+## 🧗 QUIC NAT Traversal
+
+In this release, we've completed the switch from our custom holepunching protocol to QUIC-NAT-Traversal, an emerging IETF standard. This change represents a fundamental shift in how `iroh` handles holepunching and connection establishment.
+
+The QUIC-NAT-Traversal protocol integrates holepunching into the QUIC layer, replacing the previous out-of-band-in-iroh approach. This gives us a few advantages over the previous protocol: holepunching packets now benefit from QUIC's built-in encryption, loss recovery mechanisms, congestion control, and DDoS protection.
+
+However, we learned many lessons from our custom holepunching work, and want to integrate those changes with the QNT draft. Hopefully, as we prove our changes are successful, they can maybe be adopted by the QNT draft. Here is a rundown of the largest changes:
+
+**No Address Pairings**: Unlike the draft, endpoints are not required to control the source address of their sent packets for NAT traversal purposes.
+
+**Multipath is Required**: Because we require multipath support, our implementation differs in several key ways:
+- Server sends `ADD_ADDRESS` frames to advertise its addresses
+- Client sends `PATH_CHALLENGE` to each received address on a new `PathId`
+- Client sends `REACH_OUT` frames (our renamed `PUNCH_ME_NOW`) for each local candidate address
+- Server receives `REACH_OUT` and sends `PATH_CHALLENGE` using connection IDs from an already open `PathId` to each address
+
+**Simplified Round Handling**: We don't perform multiple "rounds" within a round. The draft considers a maximum number of simultaneous attempts to handle large candidate lists, but since we keep candidates minimal, we don't need this complexity. When new addresses become available, we abort previous rounds rather than doing incremental holepunching. This means our transport parameter has a completely different meaning - it specifies how many addresses each endpoint is willing to keep for the other endpoint, rather than controlling simultaneous attempt limits.
+
+**Different Transport Negotiation**: Our approach requires different transport parameter numbers, meanings, and error handling compared to the draft specification.
+
+## ⚡ 0-RTT and the Connection API changes
+
+We've simplified how `iroh` handles connections in different states by introducing a type parameter on the `Connection` type. Rather than having completely separate `OutgoingZeroRttConnection` and `IncomingZeroRttConnection` types that duplicate the entire connection API, we now have a unified `Connection<T>` type where `T` describes the connection state:
+
+- `Connection<HandshakeCompleted>` - the default, fully authenticated connection (this is what you get from a normal `connect()` or `accept()` call)
+- `Connection<OutgoingZeroRtt>` - a client-side 0-RTT connection (replaces `OutgoingZeroRttConnection`)
+- `Connection<IncomingZeroRtt>` - a server-side 0-RTT connection (replaces `IncomingZeroRttConnection`)
+
+Before we added separate `OutgoingZeroRttConnection` and `IncomingZeroRttConnection` structs, you could use `Connection`s that were 0-RTT in the same code paths as non-0-RTT connections. This recent refactors allows you to add some, of that logic back.
+
+The exception is around methods `remote_id` and `alpn`. For fully established connections (`Connection<HandshakeCompleted>`), methods like `remote_id()` and `alpn()` return values directly since the handshake has completed. For 0-RTT connections, these methods have different signatures that reflect the connection's not-yet-fully-authenticated state.
+
+So, not only have we added back flexibility, but we've de-duplicated a bunch of code that was the same over the three different variaties of connections.
+
+## 🪝 Endpoint Hooks
+
+We've introduced a new hook system for the `iroh` endpoint that allows you to intercept connection establishment. Hooks are structs that implement the `EndpointHooks` trait, giving you another opportunity to control which connections are accepted or rejected, as well as an opportunity to catch all connections that are created, even the ones with very short life-spans.
+
+You can add multiple hooks to an endpoint, and they'll be invoked in the order they were added. The `EndpointHooks` trait currently provides two key interception points:
+
+* `before_connect` is invoked before an outgoing connection is started, letting you inspect or reject connection attempts before any network activity occurs.
+* `after_handshake` is invoked for both incoming and outgoing connections once the TLS handshake has completed, allowing you to make decisions based on the established connection's properties.
+
+Both methods return an `Outcome` that can be either `Accept` or `Reject`. If any hook returns `Reject`, the connection or connection attempt will be immediately rejected.
+
+Alongside the hooks system, we've added `ConnectionInfo`, a lightweight struct that provides information about a connection without keeping the connection itself alive. You can inspect connection stats and paths, and there's a `closed()` method that returns a future which completes once the connection closes - all without preventing the connection from being garbage collected when no longer in use.
+
+We've included two examples to demonstrate what you can do with this new system:
+
+* [`auth-hook`](https://github.com/n0-computer/iroh/blob/main/iroh/examples/auth-hook.rs) shows how to implement authentication for `iroh` protocols through middleware and a separate authentication protocol. This approach means individual protocols don't need to handle authentication themselves - it's all managed at the connection layer.
+* [`monitor-connections`](https://github.com/n0-computer/iroh/blob/main/iroh/examples/monitor-connections.rs) demonstrates monitoring incoming and outgoing connections, printing detailed connection statistics when each connection closes.
+
+This hook system opens up new possibilities for implementing concerns like authentication, authorization, rate limiting, and observability at the connection layer, keeping your protocol implementations focused on their core logic. If you have use cases for additional hooks that cannot be solved using the two given hooks, please reach out so we can understand.
+
+## 🚚 `TransportAddr` rather than `conn_type` and `ConnectionType`
+
+Internally, we have been discussing the concept of "Custom Transports" in `iroh`, and allowing users to add additional ways to connect to other endpoints, rather than just TCP (relay) and UDP (direct) - think bluetooth or webRTC. Since we already know that is a direction we want to go, we need to make sure that `iroh` 1.0 can handle supporting different kinds of addresses, other than just relay addresses or IP socket addresses. To handle that, we've added the `TransportAddr` enum, a non-exhaustive enum that allows you to talk about all of the different kinds of addresses that an `iroh` endpoint can talk on. For now, that enum has two variants `TransportAddr::Relay` and `TransportAddr:Ip`.
+
+If you have worked with the `Endpoint::conn_type` method and the `ConnectionType` struct before, the previous two variants may seem familiar. They are very similar to the `ConnectionType::Relay` and `ConnectionType::Direct` variants.
+
+We have removed the `conn_type` method and `ConnectionType` struct. Understanding the connection type for a connection on multipath is conseptually different than it was previously in `iroh`. Before, `iroh` was the one controlling which path to send on. Now, with QUIC multipath, QUIC is able to handle multiple paths, and chooses itself with path to send on.
+
+Instead of querying the endpoint for a connection type, you now directly inspect the paths being used by a connection through `Connection::paths()`. This returns a `Watcher` of `PathInfoList`, which updates every time a new path is open or closed, OR the "selected" path has changed. If the selected `PathInfo` has `PathInfo::remote_addr` of type `TransportAddr::Relay`, than you have a relay connection, or of `TransportAddr::Ip`, then you have a holepunched direct connection.
+
+Here is an example of how to understand when your connection type has changed:
+
+```rust
+// note: you will need to import the `Watcher` trait to use the `Connection::paths` method
+use iroh::Watcher;
+
+...
+
+// assume we've already built an endpoint `ep` and want to talk to remote endpoint `remote_id`
+let conn = ep.connect(remote_id.into(), MY_TEST_ALPN).await?;
+
+let paths_watcher = conn.paths();
+
+let paths_task = tokio::task::spawn(async move {
+    let stream = paths_watcher.stream();
+    // lets keep track of the previously selected path:
+    let previous: Option<TransportAddr> = None;
+
+    // we will get a new entry on the stream each time a new path is added, removed, or selected
+    while let Some(paths) = stream.next().await {
+        // get the currently selected path:
+        if let Some(current) = path.iter().find(|p| p.is_selected()) {
+            if Some(current) == previous.as_ref() {
+                // the paths watcher can change if a new path is added or removed, not
+                // only if a new path was selected, so it's possible we can get an update that we
+                // want to ignore
+                continue;
+            }
+            // not that it is possible in this case to change from one IP address
+            // to a different IP address, or to change from Relay and IP
+            println!("Connection type changed to: {:?}", path.remote_addr());
+            previous = Some(current.clone());
+        } else if !paths.is_empty() {
+            // if no paths are selected BUT we do have paths to the remote endpoint
+            // then we are currently in a state where we are sending on multiple paths
+            // until one proves the best.
+            println!("Connection type changed to mixed");
+            previous = None;
+        } else {
+            // either no paths to this remote have been verified yet or all paths have been closed
+            println!("Connection type changed to none (no active transmission paths)")
+        }
+    }
+});
+
+// do fun protocol stuff with the conn
+
+...
+```
+
+## 🔍 `Discovery` renamed to `AddressLookup`
+
+In this release, we've renamed the `Discovery` trait and related modules to `AddressLookup` to better reflect what this component actually does. The name "discovery" was causing confusion because it implied that the system was used for discovering new endpoints you could talk to in the "wild" - like finding peers you've never encountered before. However, the actual purpose of this trait is much more specific: it resolves known endpoint IDs into addresses `iroh` understands how to dial.
+
+The new name `AddressLookup` more accurately describes this purpose: given an endpoint ID you already know about, look up the addresses where that endpoint can be reached.
+
+This is a straightforward rename that affects the following:
+* The `Discovery` trait is now `AddressLookup`
+* The `discovery` module is now `address_lookup`
+* Related types have been updated accordingly (e.g., `DnsDiscovery` → `DnsAddressLookup`, `MdnsDiscovery` → `MdnsAddressLookup`)
+* Examples have been renamed for clarity (e.g., `dht_discovery.rs` → `dht_address_lookup.rs`, `locally-discovered-nodes.rs` → `mdns_address_lookup.rs`)
+
+It's worth noting that one of our address lookup services, `MdnsAddressLookup`, actually does perform both functions: it discovers new endpoints on the local network *and* resolves their addresses. However, the discovery part of that system is not part of the `AddressLookup` trait itself - the trait is purely focused on address resolution for known endpoint IDs.
+
+If you're implementing custom discovery mechanisms or using the discovery APIs, you'll need to update your imports and type references. The functionality remains the same - only the names have changed to improve clarity and reduce confusion about the system's purpose.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+  - removed
+    - enum `iroh::endpoint::AddEndpointAddrError`
+    - enum `iroh::endpoint::GetMappingAddressError`
+    - mod `iroh::net_report`:
+      - struct `iroh::net_report::Metrics`
+      - enum `iroh::net_report::Probe`
+      - struct `iroh::net_report::RelayLatencies`
+      - struct `iroh::net_report::Options`
+      - struct `iroh::net_report::QuicConfig`
+    - enum `iroh::endpoint::ConnectionType` was removed, the closest equivalent is `iroh::TransportAddr`, which has variants `Relay` and `Ip`,- note: now that we can have multiple paths per connection, these types now describe *paths* not *connections*. Look at the `iroh::endpoint::Connection::paths` method and the `iroh::endpoint::PathInfo` struct for more details on how you can learn the type of the currently selected path.
+    - enum `iroh::endpoint::ControlMsg`
+    - enum `iroh::endpoint::AuthenticationError`
+    - enum `iroh::endpoint::AddEndpointAddrError`
+    - enum `iroh::endpoint::DirectAddrInfo`
+    - enum `iroh::endpoint::GetMappingAddressError`
+    - struct `iroh::endpoint::CryptoServerConfig`
+    - struct `iroh::endpoint::RetryError`
+    - struct `iroh::endpoint::WeakConnectionHandle`
+    - fn `iroh::endpoint::AuthenticationError::from(source: iroh_quinn_proto::connection::ConnectionError) -> Self`
+    - fn `iroh::endpoint::Endpoint::conn_type(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<n0_watcher::Direct<iroh::endpoint::ConnectionType>>`
+    - fn `iroh::endpoint::Endpoint::latency(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<core::time::Duration>`
+    - variant `iroh::endpoint::AuthenticationErrro::ConnectionError`
+    - variant `iroh::endpoint::ConnectWithOptsError::AddEndpointAddr`
+    - variant `iroh::endpoint::Source::Saved`
+
+  - changed
+    - struct `iroh::endpoint::Connection` now has a type parameter:
+      - `iroh::endpoint::Connection` is aliased from `Connection<HandshakeCompleted>`
+      - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<IncomingZeroRtt>`
+      - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<OutgoingZeroRtt>`
+    - struct `iroh::net_report::Report` is now `iroh::NetReport`
+    - const `iroh::net_report::TIMEOUT` is now `iroh::NET_REPORT_TIMEOUT`
+    - struct `iroh::endpoint::ServerConfig`, use the `iroh::endpoint::Endpoint::create_server_config_builder` to get a `ServerConfigBuilder`, which allows you to add custom configuration for when the endpoint acts as a server that accepts connections
+    - struct `iroh::endpoint::TransportConfig` is now `iroh::endpoint::QuicTransportConfig`, use the `iroh::endpoint::QuicTransportConfig::builder` method to get a `QuicTransportConfigBuilder` to add custom configuration for the QUIC transport
+    - `iroh::endpoint::Builder::bind_addr_v4(self, addr: SocketAddrV4)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
+    - `iroh::endpoint::Builder::bind_addr_v6(self, addr: SocketAddrV6)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
+    - fn `iroh::endpoint::Builder::transport_config(self, transport_config: iroh_quinn_proto::config::transport::TransportConfig) -> Self` changed to `fn iroh::endpoint::Builder::transport_config(self, transport_config: iroh::endpoint::QuicTransportConfig) -> Self`
+    - fn `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh_quinn_proto::config::ServerConfig>) -> Result<iroh::endpoint::Accepting, iroh_quinn_proto::connection::ConnectionError>` changed to
+    `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh::endpoint::ServerConfig) -> Result<iroh::endpoint::Accepting, iroh::endpoint::ConnectionError>`
+    - fn `iroh::endpoint::Incoming::retry(self) -> core::result::Result<(), iroh_quinn::incoming::RetryError>` changed to `iroh::endpoint::Incoming::retry(self) -> Result<(), iroh::endpoin::RetryError>`
+    - variant `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::endpoint::GetMappingAddressError` changed to `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::discovery::DiscoveryError`
+    - `iroh::metrics::MagicsockMetrics` has entirely new set of fields
+    - module `iroh::discovery` renamed to `iroh::address_lookup`
+    - trait `iroh::discovery::Discovery` renamed to `iroh::address_lookup::AddressLookup`
+    - fn `iroh::endpoint::Endpoint::discovery` renamed to `iroh::endpoint::Endpoint::address_lookup`
+    - fn `iroh::endpoint::Builder::set_user_data_for_discovery` renamed to `iroh::endpoint::Builder::set_user_data_for_address_lookup`
+    - fn `iroh::endpoint::Builder::discovery` renamed to `iroh::endpoint::Builder::address_lookup`
+    - struct `iroh::discovery::MdnsDiscovery` renamed to `iroh::address_lookup::MdnsAddressLookup`
+    - struct `iroh::discovery::DhtDiscovery` renamed to `iroh::address_lookup::DhtAddressLookup`
+    - struct `iroh::discovery::StaticDiscovery` renamed to `iroh::address_lookup::MemoryLookup`
+    - trait `iroh::discovery::DynIntoDiscovery` renamed to `iroh::address_lookup::DynIntoAddressLookup`
+    - trait `iroh::discovery::IntoDiscovery` renamed to `iroh::address_lookup::IntoAddressLookup`
+    - struct `iroh::discovery::DnsDiscovery` renamed to `iroh::address_lookup::DnsAddressLookup`
+    - enum `iroh::discovery::DiscoveryError` renamed to `iroh::address_lookup::AddressLookupError`
+    - enum `iroh::discovery::IntoDiscoveryError` renamed to `iroh::address_lookup::IntoAddressLookupError`
+    - struct `iroh::discovery::DiscoveryItem` renamed to `iroh::address_lookup::AddressLookupItem`
+    - struct `iroh::discovery::ConcurrentDiscovery` renamed to `iroh::address_lookup::ConcurrentAddressLookup`
+    - feature `discovery-local-network` renamed to `address-lookup-mdns`
+    - feature `discovery-pkarr-dht` renamed to `address-lookup-pkarr-dht`
+
+## 🎉 Almost There - The Road to 1.0
+
+With `iroh` 0.96 bringing multipath support, we've completed the last major wire-breaking change before 1.0. Our next release will be 0.97, focused on polish, bug fixes, and ensuring everything is rock-solid. Our goal is to make 0.97 so clean that `1.0.0-rc.0` will be just a version number change.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.96.0](https://github.com/n0-computer/iroh/releases/tag/v0.96.0).
+
+If you want to know what is coming up, check out the [v0.97.0 milestone](https://github.com/n0-computer/iroh/milestone/52), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
