@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
 
-This is it - iroh 0.96 represents one of the last major wire-breaking changes before 1.0. We're shipping QUIC multipath support, a fundamental architectural shift that enables `iroh` to maintain multiple network paths simultaneously within a single QUIC connection. This change has been months in the making and unlocks significant improvements to connection reliability and performance.
+This is it - iroh 0.96 represents one of the last major wire-breaking changes before 1.0. We're shipping QUIC multipath support, a fundamental architectural shift that enables `iroh` to maintain multiple network paths simultaneously within a single QUIC connection. This change has been months in the making and unlocks not only some very needed features that our users have been asking for, it also lays the groundwork for significant improvements to connection reliability and performance.
 
 Along with multipath comes our adoption of QUIC-NAT-Traversal (QNT), an emerging IETF standard that replaces our custom holepunching protocol. By moving holepunching into the QUIC layer, we gain built-in encryption, loss recovery, and congestion control for connection establishment - all while building on the lessons we learned from our custom implementation.
 
