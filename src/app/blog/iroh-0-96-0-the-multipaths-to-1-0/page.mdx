@@ -5,7 +5,7 @@ export const post = {
   draft: false,
   author: 'ramfox',
   date: '2026-01-27',
-  title: 'iroh 0.96.0 - The Multipaths to 1.0',
+  title: 'iroh 0.96.0 - The QUIC Multipaths to 1.0',
   description: 'Release of iroh v0.96',
 }
 
@@ -48,17 +48,16 @@ In this release, we've completed the switch from our custom holepunching protoco
 
 The QUIC-NAT-Traversal protocol integrates holepunching into the QUIC layer, replacing the previous out-of-band-in-iroh approach. This gives us a few advantages over the previous protocol: holepunching packets now benefit from QUIC's built-in encryption, loss recovery mechanisms, congestion control, and DDoS protection.
 
-However, we learned many lessons from our custom holepunching work, and want to integrate those changes with the QNT draft. Hopefully, as we prove our changes are successful, they can maybe be adopted by the QNT draft. Here is a rundown of the largest changes:
+However, we learned many lessons from our custom holepunching work, and want to integrate those changes with the QNT draft. Hopefully, as we prove our changes are successful, they can be adopted by the QNT draft. Here is a rundown of the largest changes:
 
 **No Address Pairings**: Unlike the draft, endpoints are not required to control the source address of their sent packets for NAT traversal purposes.
 
 **Multipath is Required**: Because we require multipath support, our implementation differs in several key ways:
-- Server sends `ADD_ADDRESS` frames to advertise its addresses
 - Client sends `PATH_CHALLENGE` to each received address on a new `PathId`
 - Client sends `REACH_OUT` frames (our renamed `PUNCH_ME_NOW`) for each local candidate address
 - Server receives `REACH_OUT` and sends `PATH_CHALLENGE` using connection IDs from an already open `PathId` to each address
 
-**Simplified Round Handling**: We don't perform multiple "rounds" within a round. The draft considers a maximum number of simultaneous attempts to handle large candidate lists, but since we keep candidates minimal, we don't need this complexity. When new addresses become available, we abort previous rounds rather than doing incremental holepunching. This means our transport parameter has a completely different meaning - it specifies how many addresses each endpoint is willing to keep for the other endpoint, rather than controlling simultaneous attempt limits.
+**Simplified Round Handling**: We don't perform multiple "rounds" within a round. The draft considers a maximum number of simultaneous attempts to handle large candidate lists, but since limit how many addresses we handle for the remote, we don't need this complexity. When new addresses become available, we abort previous rounds rather than doing incremental holepunching. This means our transport parameter has a completely different meaning - it specifies how many addresses each endpoint is willing to keep for the other endpoint, rather than controlling simultaneous attempt limits.
 
 **Different Transport Negotiation**: Our approach requires different transport parameter numbers, meanings, and error handling compared to the draft specification.
 
@@ -70,7 +69,7 @@ We've simplified how `iroh` handles connections in different states by introduci
 - `Connection<OutgoingZeroRtt>` - a client-side 0-RTT connection (replaces `OutgoingZeroRttConnection`)
 - `Connection<IncomingZeroRtt>` - a server-side 0-RTT connection (replaces `IncomingZeroRttConnection`)
 
-Before we added separate `OutgoingZeroRttConnection` and `IncomingZeroRttConnection` structs, you could use `Connection`s that were 0-RTT in the same code paths as non-0-RTT connections. This recent refactors allows you to add some, of that logic back.
+Before we added separate `OutgoingZeroRttConnection` and `IncomingZeroRttConnection` structs, you could use `Connection`s that were 0-RTT in the same code paths as non-0-RTT connections. These recent refactors allow you to add some, of that logic back.
 
 The exception is around methods `remote_id` and `alpn`. For fully established connections (`Connection<HandshakeCompleted>`), methods like `remote_id()` and `alpn()` return values directly since the handshake has completed. For 0-RTT connections, these methods have different signatures that reflect the connection's not-yet-fully-authenticated state.
 
@@ -102,9 +101,9 @@ Internally, we have been discussing the concept of "Custom Transports" in `iroh`
 
 If you have worked with the `Endpoint::conn_type` method and the `ConnectionType` struct before, the previous two variants may seem familiar. They are very similar to the `ConnectionType::Relay` and `ConnectionType::Direct` variants.
 
-We have removed the `conn_type` method and `ConnectionType` struct. Understanding the connection type for a connection on multipath is conseptually different than it was previously in `iroh`. Before, `iroh` was the one controlling which path to send on. Now, with QUIC multipath, QUIC is able to handle multiple paths, and chooses itself with path to send on.
+We have removed the `conn_type` method and `ConnectionType` struct. Understanding the connection type for a connection on multipath is conceptually different than it was previously in `iroh`. Before, `iroh` was the one controlling which path to send on. Now, with QUIC multipath, QUIC is able to handle multiple paths, and chooses itself with path to send on.
 
-Instead of querying the endpoint for a connection type, you now directly inspect the paths being used by a connection through `Connection::paths()`. This returns a `Watcher` of `PathInfoList`, which updates every time a new path is open or closed, OR the "selected" path has changed. If the selected `PathInfo` has `PathInfo::remote_addr` of type `TransportAddr::Relay`, than you have a relay connection, or of `TransportAddr::Ip`, then you have a holepunched direct connection.
+Instead of querying the endpoint for a connection type, you now directly inspect the paths being used by a connection through `Connection::paths()`. This returns a `Watcher` of `PathInfoList`, which updates every time a new path is opened or closed, or when the "selected" path has changed. If the selected `PathInfo` has `PathInfo::remote_addr` of type `TransportAddr::Relay`, than you have a relay connection, or of `TransportAddr::Ip`, then you have a holepunched direct connection.
 
 Here is an example of how to understand when your connection type has changed:
 
@@ -237,7 +236,7 @@ If you're implementing custom discovery mechanisms or using the discovery APIs, 
 
 ## 🎉 Almost There - The Road to 1.0
 
-With `iroh` 0.96 bringing multipath support, we've completed the last major wire-breaking change before 1.0. Our next release will be 0.97, focused on polish, bug fixes, and ensuring everything is rock-solid. Our goal is to make 0.97 so clean that `1.0.0-rc.0` will be just a version number change.
+With `iroh` 0.96 bringing multipath support, we've completed our last planned wire-breaking change before 1.0. Our next release will be 0.97, focused on polish, bug fixes, and ensuring everything is rock-solid. Our goal is to make 0.97 so clean that `1.0.0-rc.0` will be just a version number change.
 
 ### But wait, there's more!
 
