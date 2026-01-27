@@ -96,7 +96,7 @@ export default function OpenSourceSolutionPage() {
                     <span className="text-irohPurple-500">✓</span> Dedicated support
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Permissive licensing
+                    <span className="text-irohPurple-500">✓</span> Custom protocol development
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs
