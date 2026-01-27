@@ -20,13 +20,13 @@ export const navItems = [
   {content: 'Features', href: '/#features', dropdown: [
     {label: 'Relays', href: '/features/relays'},
     {label: 'Metrics', href: '/features/metrics'},
+    {label: 'Open source', href: '/features/open-source'}
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Resilient Apps', href: '/solutions/delta-chat'},
     {label: 'Enterprise', href: '/enterprise'},
-    {label: 'Open source', href: '/solutions/open-source'}
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},

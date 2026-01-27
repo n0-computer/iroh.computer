@@ -112,7 +112,7 @@ export default function RaveSolutionPage() {
               Ready to Stream at Scale?
             </h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-              Get started with managed relays and monitoring through iroh online.
+              Get started with managed relays and monitoring through iroh services.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="https://n0des.iroh.computer/signup">
@@ -120,7 +120,7 @@ export default function RaveSolutionPage() {
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up for iroh online
+                  Sign Up for iroh services
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">

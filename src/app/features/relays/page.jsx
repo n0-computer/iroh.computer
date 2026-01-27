@@ -4,6 +4,8 @@ import { FooterMarketing } from "@/components/FooterMarketing"
 import { RelayIllustration } from "@/components/RelayIllustration"
 import Link from "next/link"
 import { Globe, Server } from "lucide-react"
+import { GithubIcon } from '@/components/icons/GithubIcon';
+
 
 export const metadata = {
   title: 'Relays | Iroh',
@@ -20,7 +22,6 @@ export default function RelaysPage() {
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl pt-12">
             <div className="max-w-3xl">
-              <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Product</p>
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
                 Relays
               </h1>
@@ -29,14 +30,14 @@ export default function RelaysPage() {
                 Choose from free public relays for development or dedicated relays for production.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://docs.iroh.computer/concepts/relays">
-                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
-                    Read the Docs
+                <Link href="https://n0des.iroh.computer">
+                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                    Get started
                   </Button>
                 </Link>
-                <Link href="https://github.com/n0-computer/iroh/tree/main/iroh-relay" target="_blank" rel="noopener noreferrer">
+                <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" rel="noopener noreferrer">
                   <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
-                    Open Source
+                    Read the docs
                   </Button>
                 </Link>
               </div>
@@ -54,10 +55,6 @@ export default function RelaysPage() {
                   Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
                   isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
                   to ensure your users stay connected.
-                </p>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                  Relay code is fully open source. You can run your own relay server, use a hosting provider, 
-                  or take advantage of the public relays provided by the n0 team.
                 </p>
               </div>
               <div className="flex items-center justify-center">
@@ -84,8 +81,7 @@ export default function RelaysPage() {
                 <h3 className="text-xl font-bold mb-2">Public Relays</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">Free</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  Iroh comes configured with public relays provided by the n0 team that are free to use. 
-                  Traffic is rate-limited to prevent abuse and ensure availability for everyone.
+                  By default, iroh endpoints will use relays provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>. 
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
@@ -115,62 +111,63 @@ export default function RelaysPage() {
                 <h3 className="text-xl font-bold mb-2">Dedicated Relays</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">$199<span className="text-base font-normal text-irohGray-500">/month</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  For production use, dedicated relays&mdash;either self-hosted or as a managed service&mdash;provide 
-                  better performance, security, and uptime guarantees.
+                  For production applications ready to scale with low latency.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
+
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Better performance
+                    <span className="text-irohPurple-500">✓</span> Multi-region deployment
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Uptime guarantees
+                    <span className="text-irohPurple-500">✓</span> Fully managed infrastructure
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Enhanced security
+                    <span className="text-irohPurple-500">✓</span> Dedicated bandwidth
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Self-host or managed service
+                    <span className="text-irohPurple-500">✓</span>Early access to new features 
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Relay code is open source
+                    <span className="text-irohPurple-500">✓</span> Uptime SLAs available
                   </li>
                 </ul>
                 <Link href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline font-medium">
                   Sign up →
                 </Link>
               </div>
-            </div>
-          </div>
-        </section>
 
+              {/* Open Source */}
+                      <div className="p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
+                      <GithubIcon className="h-10 w-10 text-irohPurple-500 mb-4" />
+                      <h3 className="text-xl font-bold mb-2">Open Source</h3>
+                      <p className="text-irohGray-600 dark:text-irohGray-300 mb-6">
+                        Self-host your relays for free. Forever.
+                      </p>
+                      <Link href="https://github.com/n0-computer/iroh/tree/main/iroh-relay" className="text-irohPurple-500 hover:underline font-medium inline-flex items-center gap-2">
+                        View on GitHub  →
+                      </Link>
+                      </div>
+                    </div>
+                    </div>
+                  </section>
 
-        {/* CTA */}
+                  {/* CTA */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-bold mb-6">
-              Ready to Get Started?
+              Deploy a Relay today
             </h2>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-              Start with the public relays for free, or explore dedicated options for production workloads.
-            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://docs.iroh.computer/iroh-online/quickstart">
-                <Button
-                  arrow="none"
-                  className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
-                >
-                  Get Started
-                </Button>
-              </Link>
-              <Link href="https://github.com/n0-computer/iroh/tree/main/iroh-relay">
-                <Button
-                  arrow="none"
-                  variant="outline"
-                  className="border-irohGray-300 dark:border-irohGray-600 hover:bg-irohGray-100 dark:hover:bg-irohGray-800 px-8 py-3 bg-transparent"
-                >
-                    Open Source
-                </Button>
-              </Link>
+                <Link href="https://n0des.iroh.computer">
+                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                    Get started
+                  </Button>
+                </Link>
+                <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" rel="noopener noreferrer">
+                  <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
+                    Read the docs
+                  </Button>
+                </Link>
             </div>
           </div>
         </section>

@@ -125,7 +125,7 @@ export function FeatureBentoGrid() {
                 <p className="mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400">
                   Run your own{" "}
                   <a
-                    href="https://n0des.iroh.computer"
+                    href="/features/relays"
                     className="text-irohPurple-500 hover:underline"
                   >
                     relay server

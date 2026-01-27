@@ -3,7 +3,7 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from "@/components/FooterMarketing"
 import { MetricsIllustration } from "@/components/MetricsIllustration"
 import Link from "next/link"
-import { BarChart3, Activity, Shield, Gauge } from "lucide-react"
+import { BarChart3, Activity, Shield } from "lucide-react"
 
 export const metadata = {
   title: 'Metrics | Iroh',
@@ -30,11 +30,11 @@ export default function MetricsPage() {
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
-                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
+                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Get Started
                   </Button>
                 </Link>
-                <Link href="https://docs.iroh.computer">
+                <Link href="https://docs.iroh.computer/iroh-services/metrics">
                   <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
                     Read the Docs
                   </Button>
@@ -57,7 +57,14 @@ export default function MetricsPage() {
                 </p>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
                   All endpoints added to your network can have these metrics collected and reported to 
-                  the Iroh Online project dashboard.
+                  the web dashboard.
+                </p>
+
+                <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mb-4">
+                  For a list of all metrics, see the{' '}
+                  <Link href="https://docs.iroh.computer/iroh-online/metrics/glossary" className="text-irohPurple-500 hover:underline">
+                    metrics glossary
+                  </Link>.
                 </p>
               </div>
               <div className="flex items-center justify-center">
@@ -67,86 +74,7 @@ export default function MetricsPage() {
           </div>
         </section>
 
-        {/* Built-in Metrics */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Built-in Metrics</h2>
-              <p className="text-lg text-irohGray-600 dark:text-irohGray-300 max-w-2xl mx-auto">
-                Create behavioral aggregations to monitor the health of your software.
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              {/* Project-level */}
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Gauge className="h-5 w-5 text-irohPurple-500" />
-                  Project-level Metrics
-                  <span className="text-xs bg-irohPurple-500 text-white px-2 py-1 rounded">Free</span>
-                </h3>
-                <ul className="space-y-4">
-                  <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Connections</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                      The number of successful and active connections made through the relay servers.
-                    </p>
-                  </li>
-                  <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Latency</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                      The time it takes for a request to travel from one endpoint to another.
-                    </p>
-                  </li>
-                  <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Throughput</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                      The amount of data processed by the relay server in a given time period.
-                    </p>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Relay-level */}
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-irohPurple-500" />
-                  Relay-level Metrics
-                  <span className="text-xs bg-irohGray-600 text-white px-2 py-1 rounded">Pro</span>
-                </h3>
-                <ul className="space-y-4">
-
-                  <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Holepunching Rate</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                      The success rate of holepunching attempts made by the relay server.
-                    </p>
-                  </li>
-                  <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Uptime</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                      The amount of time the relay server is operational and available to handle requests.
-                    </p>
-                  </li>
-                   <li className="p-4 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                    <p className="font-medium mb-1">Error reporting</p>
-                    <p className="text-sm text-irohGray-600 dark:text-irohGray-400">
-                        Information about any UPnP probes or NAT traversal failures that occur.
-                    </p>
-                  </li>
-                </ul>
-                <p className="mt-4 text-sm text-irohGray-600 dark:text-irohGray-400">
-                  For a list of all metrics, see the{' '}
-                  <Link href="https://docs.iroh.computer/iroh-online/metrics/glossary" className="text-irohPurple-500 hover:underline">
-                    metrics glossary
-                  </Link>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Metrics Types */}
+        {/* Choose Your Metrics Option */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
@@ -163,58 +91,63 @@ export default function MetricsPage() {
                 <h3 className="text-xl font-bold mb-2">Project Metrics</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">Free</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  Iroh Online aggregates metrics at the project level, to provide insights into 
+                  Iroh aggregates metrics at the project level, to provide insights into 
                   overall network performance. This aggregated data helps in understanding trends and 
                   patterns without exposing individual endpoint details.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Free to use
+                    <span className="text-irohPurple-500">✓</span> Network-wide insights
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> No setup required
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Network-wide insights
+                    <span className="text-irohPurple-500">✓</span> Connections, latency, and throughput
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Custom metrics support
                   </li>
                 </ul>
-                <Link href="https://docs.iroh.computer/iroh-online/metrics/custom" className="text-irohPurple-500 hover:underline font-medium">
-                  Read more about custom metrics →
+                                <Link href="https://n0des.iroh.computer">
+                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                    Get Started
+                  </Button>
                 </Link>
               </div>
 
-              {/* Endpoint Metrics */}
+              {/* Granular Metrics */}
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Activity className="h-10 w-10 text-irohPurple-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Endpoint Metrics</h3>
+                <h3 className="text-xl font-bold mb-2">Granular Metrics</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">$49<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  Detailed metrics are available for each endpoint added to the
-                  network. These metrics are available at the endpoint level, so
+                  Detailed metrics are available for each relay or endpoint added to the
+                  network. These metrics are available at a more granular level, so
                   you can drill down into specific behaviors to better 
                   understand performance issues.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Per-endpoint analytics
+                    <span className="text-irohPurple-500">✓</span> Per-relay and per-endpoint analytics
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Drill-down diagnostics
+                    <span className="text-irohPurple-500">✓</span> Holepunching Rate, Uptime, Error Reporting
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Performance insights
+                    <span className="text-irohPurple-500">✓</span> Drill down into specific behaviors
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Extended data retention plans available
                   </li>
                 </ul>
-                <Link href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline font-medium">
-                  Sign up →
+                                <Link href="https://n0des.iroh.computer">
+                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                    Get Started
+                  </Button>
                 </Link>
               </div>
+              
             </div>
           </div>
         </section>
@@ -231,7 +164,7 @@ export default function MetricsPage() {
                     <div>
                       <p className="text-irohGray-600 dark:text-irohGray-300">
                         Once an iroh endpoint is integrated in your Rust program, add an <code className="text-irohPurple-500">iroh_n0des::Client</code> to 
-                        begin sending metrics to the Iroh Online platform.
+                        begin sending metrics to the platform.
                       </p>
                     </div>
                   </li>
@@ -266,7 +199,7 @@ export default function MetricsPage() {
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-irohPurple-500 text-white flex items-center justify-center font-bold">5</span>
                     <div>
                       <p className="text-irohGray-600 dark:text-irohGray-300">
-                        Every 10 seconds, the Iroh Online platform will aggregate key project-level metrics 
+                        Every 10 seconds, the platform will aggregate key project-level metrics 
                         which are visible in the project dashboard.
                       </p>
                     </div>
@@ -313,24 +246,6 @@ async fn main() -> anyhow::Result<()> {
                   <Link href="/legal" className="text-irohPurple-500 hover:underline">
                     privacy policy
                   </Link>.
-                </p>
-              </div>
-              <div className="p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
-                <h3 className="text-xl font-bold mb-4">Metrics Retention</h3>
-                <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  Project-level metrics are retained based on your events plan. Please refer to the{' '}
-                  <Link href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline">
-                    pricing page
-                  </Link>{' '}
-                  for more details on plan features and benefits.
-                </p>
-                <p className="text-irohGray-600 dark:text-irohGray-300">
-                  Endpoint level metrics are only available on Pro and Enterprise. For projects on these plans, 
-                  the amount of endpoint-level raw data retained is calculated on your purchased metrics package.{' '}
-                  <Link href="mailto:hello@iroh.computer" className="text-irohPurple-500 hover:underline">
-                    Contact us
-                  </Link>{' '}
-                  if you need custom support.
                 </p>
               </div>
             </div>
