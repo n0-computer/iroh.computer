@@ -1,0 +1,49 @@
+<svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background for light/dark mode compatibility -->
+
+  <!-- Internet cloud at top -->
+  <path d="M220,45
+           Q205,45 210,30
+           Q215,15 235,15
+           Q245,0 270,8
+           Q290,-5 310,8
+           Q330,-5 350,8
+           Q375,0 385,15
+           Q405,15 410,30
+           Q415,45 400,45
+           Q410,60 385,62
+           Q370,75 340,65
+           Q310,78 280,65
+           Q250,75 235,62
+           Q210,60 220,45
+           Z"
+        fill="none" stroke="#888" stroke-width="1.5"/>
+  <text x="310" y="42" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">Internet</text>
+
+  <!-- Outer Iroh Endpoint box -->
+  <rect x="30" y="120" width="540" height="170" rx="5" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="300" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="14" fill="#6366f1">Iroh Endpoint</text>
+
+  <!-- UDP socket box -->
+  <rect x="60" y="165" width="140" height="105" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="130" y="195" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">UDP</text>
+  <text x="130" y="210" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">Socket</text>
+  <text x="130" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">(direct)</text>
+
+  <!-- TCP socket box -->
+  <rect x="230" y="165" width="140" height="105" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="300" y="195" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">TCP</text>
+  <text x="300" y="210" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#818cf8">Socket</text>
+  <text x="300" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">(relay)</text>
+
+  <!-- Custom Endpoint box -->
+  <rect x="400" y="165" width="140" height="105" rx="3" fill="none" stroke="#a78bfa" stroke-width="1"/>
+  <text x="470" y="195" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#a78bfa">Custom</text>
+  <text x="470" y="210" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#a78bfa">Endpoint</text>
+  <text x="470" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">(Tor, BLE...)</text>
+
+  <!-- Lines from endpoints to cloud -->
+  <line x1="130" y1="165" x2="250" y2="75" stroke="#818cf8" stroke-width="1"/>
+  <line x1="300" y1="165" x2="310" y2="75" stroke="#818cf8" stroke-width="1"/>
+  <line x1="470" y1="165" x2="370" y2="75" stroke="#a78bfa" stroke-width="1"/>
+</svg>
