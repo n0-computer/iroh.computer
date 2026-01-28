@@ -52,7 +52,7 @@ The QNT protocol integrates holepunching into the QUIC layer, replacing the prev
 
 **Note:** There is a known regression where holepunching is not re-triggered when network conditions change in most circumstances. If you lose a direct connection due to a network change, you will likely see lower latency/throughput as the rest of the connection will occur over the relays. We are working on a fix for this.
 
-However, we learned many lessons from our custom holepunching work, and want to integrate those changes with the QNT draft. Hopefully, as we prove our changes are successful, they can be adopted by the QNT draft. Here is a rundown of the largest changes:
+We learned many lessons from our custom holepunching work and have integrated them into our implementation. We are planning to propose these changes to the IETF. Here is a rundown of the largest changes:
 
 **No Address Pairings**: Unlike the draft, endpoints are not required to control the source address of their sent packets for NAT traversal purposes.
 
@@ -177,66 +177,75 @@ If you're implementing custom discovery mechanisms or using the discovery APIs, 
 
 ## ⚠️ Breaking Changes
 
-- `iroh`
-  - removed
-    - enum `iroh::endpoint::AddEndpointAddrError`
-    - enum `iroh::endpoint::GetMappingAddressError`
-    - mod `iroh::net_report`:
-      - struct `iroh::net_report::Metrics`
-      - enum `iroh::net_report::Probe`
-      - struct `iroh::net_report::RelayLatencies`
-      - struct `iroh::net_report::Options`
-      - struct `iroh::net_report::QuicConfig`
-    - enum `iroh::endpoint::ConnectionType` was removed, the closest equivalent is `iroh::TransportAddr`, which has variants `Relay` and `Ip`,- note: now that we can have multiple paths per connection, these types now describe *paths* not *connections*. Look at the `iroh::endpoint::Connection::paths` method and the `iroh::endpoint::PathInfo` struct for more details on how you can learn the type of the currently selected path.
-    - enum `iroh::endpoint::ControlMsg`
-    - enum `iroh::endpoint::AuthenticationError`
-    - enum `iroh::endpoint::AddEndpointAddrError`
-    - enum `iroh::endpoint::DirectAddrInfo`
-    - enum `iroh::endpoint::GetMappingAddressError`
-    - struct `iroh::endpoint::CryptoServerConfig`
-    - struct `iroh::endpoint::RetryError`
-    - struct `iroh::endpoint::WeakConnectionHandle`
-    - fn `iroh::endpoint::AuthenticationError::from(source: iroh_quinn_proto::connection::ConnectionError) -> Self`
-    - fn `iroh::endpoint::Endpoint::conn_type(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<n0_watcher::Direct<iroh::endpoint::ConnectionType>>`
-    - fn `iroh::endpoint::Endpoint::latency(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<core::time::Duration>`
-    - variant `iroh::endpoint::AuthenticationErrro::ConnectionError`
-    - variant `iroh::endpoint::ConnectWithOptsError::AddEndpointAddr`
-    - variant `iroh::endpoint::Source::Saved`
+### removed
+- enum `iroh::endpoint::AddEndpointAddrError`
+- enum `iroh::endpoint::GetMappingAddressError`
+- mod `iroh::net_report`:
+  - struct `iroh::net_report::Metrics`
+  - enum `iroh::net_report::Probe`
+  - struct `iroh::net_report::RelayLatencies`
+  - struct `iroh::net_report::Options`
+  - struct `iroh::net_report::QuicConfig`
+- enum `iroh::endpoint::ConnectionType` was removed, the closest equivalent is `iroh::TransportAddr`, which has variants `Relay` and `Ip`,- note: now that we can have multiple paths per connection, these types now describe *paths* not *connections*. Look at the `iroh::endpoint::Connection::paths` method and the `iroh::endpoint::PathInfo` struct for more details on how you can learn the type of the currently selected path.
+- enum `iroh::endpoint::ControlMsg`
+- enum `iroh::endpoint::AuthenticationError`
+- enum `iroh::endpoint::AddEndpointAddrError`
+- enum `iroh::endpoint::DirectAddrInfo`
+- enum `iroh::endpoint::GetMappingAddressError`
+- struct `iroh::endpoint::CryptoServerConfig`
+- struct `iroh::endpoint::RetryError`
+- struct `iroh::endpoint::WeakConnectionHandle`
+- fn `iroh::endpoint::AuthenticationError::from(source: iroh_quinn_proto::connection::ConnectionError) -> Self`
+- fn `iroh::endpoint::Endpoint::conn_type(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<n0_watcher::Direct<iroh::endpoint::ConnectionType>>`
+- fn `iroh::endpoint::Endpoint::latency(&self, endpoint_id: iroh_base::key::EndpointId) -> Option<core::time::Duration>`
+- variant `iroh::endpoint::AuthenticationErrro::ConnectionError`
+- variant `iroh::endpoint::ConnectWithOptsError::AddEndpointAddr`
+- variant `iroh::endpoint::Source::Saved`
 
-  - changed
-    - struct `iroh::endpoint::Connection` now has a type parameter:
-      - `iroh::endpoint::Connection` is aliased from `Connection<HandshakeCompleted>`
-      - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<IncomingZeroRtt>`
-      - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<OutgoingZeroRtt>`
-    - struct `iroh::net_report::Report` is now `iroh::NetReport`
-    - const `iroh::net_report::TIMEOUT` is now `iroh::NET_REPORT_TIMEOUT`
-    - struct `iroh::endpoint::ServerConfig`, use the `iroh::endpoint::Endpoint::create_server_config_builder` to get a `ServerConfigBuilder`, which allows you to add custom configuration for when the endpoint acts as a server that accepts connections
-    - struct `iroh::endpoint::TransportConfig` is now `iroh::endpoint::QuicTransportConfig`, use the `iroh::endpoint::QuicTransportConfig::builder` method to get a `QuicTransportConfigBuilder` to add custom configuration for the QUIC transport
-    - `iroh::endpoint::Builder::bind_addr_v4(self, addr: SocketAddrV4)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
-    - `iroh::endpoint::Builder::bind_addr_v6(self, addr: SocketAddrV6)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
-    - fn `iroh::endpoint::Builder::transport_config(self, transport_config: iroh_quinn_proto::config::transport::TransportConfig) -> Self` changed to `fn iroh::endpoint::Builder::transport_config(self, transport_config: iroh::endpoint::QuicTransportConfig) -> Self`
-    - fn `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh_quinn_proto::config::ServerConfig>) -> Result<iroh::endpoint::Accepting, iroh_quinn_proto::connection::ConnectionError>` changed to
-    `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh::endpoint::ServerConfig) -> Result<iroh::endpoint::Accepting, iroh::endpoint::ConnectionError>`
-    - fn `iroh::endpoint::Incoming::retry(self) -> core::result::Result<(), iroh_quinn::incoming::RetryError>` changed to `iroh::endpoint::Incoming::retry(self) -> Result<(), iroh::endpoin::RetryError>`
-    - variant `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::endpoint::GetMappingAddressError` changed to `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::discovery::DiscoveryError`
-    - `iroh::metrics::MagicsockMetrics` has entirely new set of fields
-    - module `iroh::discovery` renamed to `iroh::address_lookup`
-    - trait `iroh::discovery::Discovery` renamed to `iroh::address_lookup::AddressLookup`
-    - fn `iroh::endpoint::Endpoint::discovery` renamed to `iroh::endpoint::Endpoint::address_lookup`
-    - fn `iroh::endpoint::Builder::set_user_data_for_discovery` renamed to `iroh::endpoint::Builder::set_user_data_for_address_lookup`
-    - fn `iroh::endpoint::Builder::discovery` renamed to `iroh::endpoint::Builder::address_lookup`
-    - struct `iroh::discovery::MdnsDiscovery` renamed to `iroh::address_lookup::MdnsAddressLookup`
-    - struct `iroh::discovery::DhtDiscovery` renamed to `iroh::address_lookup::DhtAddressLookup`
-    - struct `iroh::discovery::StaticDiscovery` renamed to `iroh::address_lookup::MemoryLookup`
-    - trait `iroh::discovery::DynIntoDiscovery` renamed to `iroh::address_lookup::DynIntoAddressLookup`
-    - trait `iroh::discovery::IntoDiscovery` renamed to `iroh::address_lookup::IntoAddressLookup`
-    - struct `iroh::discovery::DnsDiscovery` renamed to `iroh::address_lookup::DnsAddressLookup`
-    - enum `iroh::discovery::DiscoveryError` renamed to `iroh::address_lookup::AddressLookupError`
-    - enum `iroh::discovery::IntoDiscoveryError` renamed to `iroh::address_lookup::IntoAddressLookupError`
-    - struct `iroh::discovery::DiscoveryItem` renamed to `iroh::address_lookup::AddressLookupItem`
-    - struct `iroh::discovery::ConcurrentDiscovery` renamed to `iroh::address_lookup::ConcurrentAddressLookup`
-    - feature `discovery-local-network` renamed to `address-lookup-mdns`
-    - feature `discovery-pkarr-dht` renamed to `address-lookup-pkarr-dht`
+### Changed
+**Connection Changes**
+- struct `iroh::endpoint::Connection` now has a type parameter:
+  - `iroh::endpoint::Connection` is aliased from `Connection<HandshakeCompleted>`
+  - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<IncomingZeroRtt>`
+  - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<OutgoingZeroRtt>`
+- fn `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh_quinn_proto::config::ServerConfig>) -> Result<iroh::endpoint::Accepting, iroh_quinn_proto::connection::ConnectionError>` changed to `iroh::endpoint::Incoming::accept_with(self, server_config: Arc<iroh::endpoint::ServerConfig) -> Result<iroh::endpoint::Accepting, iroh::endpoint::ConnectionError>`
+- fn `iroh::endpoint::Incoming::retry(self) -> core::result::Result<(), iroh_quinn::incoming::RetryError>` changed to `iroh::endpoint::Incoming::retry(self) -> Result<(), iroh::endpoin::RetryError>`
+- variant `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::endpoint::GetMappingAddressError` changed to `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::discovery::DiscoveryError`
+
+**Net Report**
+- struct `iroh::net_report::Report` is now `iroh::NetReport`
+- const `iroh::net_report::TIMEOUT` is now `iroh::NET_REPORT_TIMEOUT`
+
+**Server & Transport Config**
+- struct `iroh::endpoint::ServerConfig`, use the `iroh::endpoint::Endpoint::create_server_config_builder` to get a `ServerConfigBuilder`, which allows you to add custom configuration for when the endpoint acts as a server that accepts connections
+- struct `iroh::endpoint::TransportConfig` is now `iroh::endpoint::QuicTransportConfig`, use the `iroh::endpoint::QuicTransportConfig::builder` method to get a `QuicTransportConfigBuilder` to add custom configuration for the QUIC transport
+- fn `iroh::endpoint::Builder::transport_config(self, transport_config: iroh_quinn_proto::config::transport::TransportConfig) -> Self` changed to `fn iroh::endpoint::Builder::transport_config(self, transport_config: iroh::endpoint::QuicTransportConfig) -> Self`
+
+**Bind Address**
+- `iroh::endpoint::Builder::bind_addr_v4(self, addr: SocketAddrV4)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
+- `iroh::endpoint::Builder::bind_addr_v6(self, addr: SocketAddrV6)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
+
+**Metrics**
+- `iroh::metrics::MagicsockMetrics` has entirely new set of fields
+
+**Discovery → AddressLookup**
+- module `iroh::discovery` renamed to `iroh::address_lookup`
+- trait `iroh::discovery::Discovery` renamed to `iroh::address_lookup::AddressLookup`
+- fn `iroh::endpoint::Endpoint::discovery` renamed to `iroh::endpoint::Endpoint::address_lookup`
+- fn `iroh::endpoint::Builder::set_user_data_for_discovery` renamed to `iroh::endpoint::Builder::set_user_data_for_address_lookup`
+- fn `iroh::endpoint::Builder::discovery` renamed to `iroh::endpoint::Builder::address_lookup`
+- struct `iroh::discovery::MdnsDiscovery` renamed to `iroh::address_lookup::MdnsAddressLookup`
+- struct `iroh::discovery::DhtDiscovery` renamed to `iroh::address_lookup::DhtAddressLookup`
+- struct `iroh::discovery::StaticDiscovery` renamed to `iroh::address_lookup::MemoryLookup`
+- trait `iroh::discovery::DynIntoDiscovery` renamed to `iroh::address_lookup::DynIntoAddressLookup`
+- trait `iroh::discovery::IntoDiscovery` renamed to `iroh::address_lookup::IntoAddressLookup`
+- struct `iroh::discovery::DnsDiscovery` renamed to `iroh::address_lookup::DnsAddressLookup`
+- enum `iroh::discovery::DiscoveryError` renamed to `iroh::address_lookup::AddressLookupError`
+- enum `iroh::discovery::IntoDiscoveryError` renamed to `iroh::address_lookup::IntoAddressLookupError`
+- struct `iroh::discovery::DiscoveryItem` renamed to `iroh::address_lookup::AddressLookupItem`
+- struct `iroh::discovery::ConcurrentDiscovery` renamed to `iroh::address_lookup::ConcurrentAddressLookup`
+- feature `discovery-local-network` renamed to `address-lookup-mdns`
+- feature `discovery-pkarr-dht` renamed to `address-lookup-pkarr-dht`
 
 ## 🎉 The Road to 1.0
 
