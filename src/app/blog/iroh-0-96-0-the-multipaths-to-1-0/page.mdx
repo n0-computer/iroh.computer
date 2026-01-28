@@ -30,23 +30,27 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
 
-This is it - iroh 0.96 represents one of the last major wire-breaking changes before 1.0. We're shipping QUIC multipath support, a fundamental architectural shift that enables `iroh` to maintain multiple network paths simultaneously within a single QUIC connection. This change has been months in the making and unlocks not only some very needed features that our users have been asking for, it also lays the groundwork for significant improvements to connection reliability and performance.
+**This is a major breaking change release.** Iroh 0.96 represents one of the last major wire-breaking changes before 1.0. We're excited to get this release into your hands so you can start building with the new APIs and provide feedback as we work toward a stable 1.0.
 
-Along with multipath comes our adoption of QUIC-NAT-Traversal (QNT), an emerging IETF standard that replaces our custom holepunching protocol. By moving holepunching into the QUIC layer, we gain built-in encryption, loss recovery, and congestion control for connection establishment - all while building on the lessons we learned from our custom implementation.
+This release includes QUIC multipath support and our adoption of QUIC-NAT-Traversal (QNT), an emerging IETF standard that replaces our custom holepunching protocol. These are significant architectural changes that lay the groundwork for future improvements to connection reliability and performance. We're eager to see how these features work in real-world usage and continue iterating based on your feedback.
+
+**Known Issue:** There is a regression in this release where holepunching is not re-triggered when your network conditions change in most circumstances. We are actively working on a fix.
 
 We've also refined the connection lifecycle API, introduced a new hook system for connection interception, and renamed the `Discovery` trait to `AddressLookup` to better reflect what it actually does. Each of these changes brings us closer to a stable, production-ready 1.0 API.
 
 ## 🛤️ Multipath
 
-Iroh 0.96 includes our implementation of QUIC multipath support! This is a major milestone that enables `iroh` to retain multiple network paths simultaneously within a single QUIC connection. It also represents one of the last major wire-breaking changes that we will have in `iroh`.
+Iroh 0.96 includes our implementation of QUIC multipath support. This enables `iroh` to retain multiple network paths simultaneously within a single QUIC connection. It also represents one of the last major wire-breaking changes before 1.0.
 
- For a deep-dive into our reasoning for switching to QUIC multipath implementation, check out our dedicated blog post: [Iroh on QUIC Multipath](https://www.iroh.computer/blog/iroh-on-QUIC-multipath)
+For a deep-dive into our reasoning for switching to QUIC multipath, check out our dedicated blog post: [Iroh on QUIC Multipath](https://www.iroh.computer/blog/iroh-on-QUIC-multipath)
 
 ## 🧗 QUIC NAT Traversal
 
-In this release, we've completed the switch from our custom holepunching protocol to QUIC-NAT-Traversal, an emerging IETF standard. This change represents a fundamental shift in how `iroh` handles holepunching and connection establishment.
+In this release, we've completed the switch from our custom holepunching protocol to QUIC-NAT-Traversal (QNT), an emerging IETF standard.
 
-The QUIC-NAT-Traversal protocol integrates holepunching into the QUIC layer, replacing the previous out-of-band-in-iroh approach. This gives us a few advantages over the previous protocol: holepunching packets now benefit from QUIC's built-in encryption, loss recovery mechanisms, congestion control, and DDoS protection.
+The QNT protocol integrates holepunching into the QUIC layer, replacing the previous out-of-band approach in `iroh`. Holepunching packets now benefit from QUIC's built-in encryption, loss recovery mechanisms, congestion control, and DDoS protection.
+
+**Note:** There is a known regression where holepunching is not re-triggered when network conditions change in most circumstances. If you lose a direct connection due to a network change, you will likely see lower latency/throughput as the rest of the connection will occur over the relays. We are working on a fix for this.
 
 However, we learned many lessons from our custom holepunching work, and want to integrate those changes with the QNT draft. Hopefully, as we prove our changes are successful, they can be adopted by the QNT draft. Here is a rundown of the largest changes:
 
@@ -234,9 +238,9 @@ If you're implementing custom discovery mechanisms or using the discovery APIs, 
     - feature `discovery-local-network` renamed to `address-lookup-mdns`
     - feature `discovery-pkarr-dht` renamed to `address-lookup-pkarr-dht`
 
-## 🎉 Almost There - The Road to 1.0
+## 🎉 The Road to 1.0
 
-With `iroh` 0.96 bringing multipath support, we've completed our last planned wire-breaking change before 1.0. Our next release will be 0.97, focused on polish, bug fixes, and ensuring everything is rock-solid. Our goal is to make 0.97 so clean that `1.0.0-rc.0` will be just a version number change.
+With `iroh` 0.96 bringing multipath support, we've completed our last planned wire-breaking change before 1.0. We hope to fix the known holepunching regression in a patch release soon, now that we understand the cause of the issue. Our next minor release will be 0.97, which will include new features, API changes, and bug fixes as we continue working toward a stable 1.0.
 
 ### But wait, there's more!
 
