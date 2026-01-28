@@ -203,7 +203,8 @@ If you're implementing custom discovery mechanisms or using the discovery APIs, 
 - variant `iroh::endpoint::Source::Saved`
 
 ### Changed
-**Connection Changes**
+
+Connection Changes
 - struct `iroh::endpoint::Connection` now has a type parameter:
   - `iroh::endpoint::Connection` is aliased from `Connection<HandshakeCompleted>`
   - `iroh::endpoint::IncomingZeroRttConnection` is aliased from `Connection<IncomingZeroRtt>`
@@ -212,23 +213,23 @@ If you're implementing custom discovery mechanisms or using the discovery APIs, 
 - fn `iroh::endpoint::Incoming::retry(self) -> core::result::Result<(), iroh_quinn::incoming::RetryError>` changed to `iroh::endpoint::Incoming::retry(self) -> Result<(), iroh::endpoin::RetryError>`
 - variant `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::endpoint::GetMappingAddressError` changed to `iroh::endpoint::ConnectWithOptsError::NoAddress: source iroh::discovery::DiscoveryError`
 
-**Net Report**
+Net Report
 - struct `iroh::net_report::Report` is now `iroh::NetReport`
 - const `iroh::net_report::TIMEOUT` is now `iroh::NET_REPORT_TIMEOUT`
 
-**Server & Transport Config**
+Server & Transport Config
 - struct `iroh::endpoint::ServerConfig`, use the `iroh::endpoint::Endpoint::create_server_config_builder` to get a `ServerConfigBuilder`, which allows you to add custom configuration for when the endpoint acts as a server that accepts connections
 - struct `iroh::endpoint::TransportConfig` is now `iroh::endpoint::QuicTransportConfig`, use the `iroh::endpoint::QuicTransportConfig::builder` method to get a `QuicTransportConfigBuilder` to add custom configuration for the QUIC transport
 - fn `iroh::endpoint::Builder::transport_config(self, transport_config: iroh_quinn_proto::config::transport::TransportConfig) -> Self` changed to `fn iroh::endpoint::Builder::transport_config(self, transport_config: iroh::endpoint::QuicTransportConfig) -> Self`
 
-**Bind Address**
+Bind Address
 - `iroh::endpoint::Builder::bind_addr_v4(self, addr: SocketAddrV4)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
 - `iroh::endpoint::Builder::bind_addr_v6(self, addr: SocketAddrV6)` was replaced by `iroh::endpoint::Builder::bind_addr(self, addr: ToSocketAddr)-> Result<Self, InvalidSocketAddr>`
 
-**Metrics**
+Metrics
 - `iroh::metrics::MagicsockMetrics` has entirely new set of fields
 
-**Discovery → AddressLookup**
+Discovery → AddressLookup
 - module `iroh::discovery` renamed to `iroh::address_lookup`
 - trait `iroh::discovery::Discovery` renamed to `iroh::address_lookup::AddressLookup`
 - fn `iroh::endpoint::Endpoint::discovery` renamed to `iroh::endpoint::Endpoint::address_lookup`
