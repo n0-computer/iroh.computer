@@ -8,11 +8,11 @@ import { GithubIcon } from '@/components/icons/GithubIcon';
 
 
 export const metadata = {
-  title: 'Relays | Iroh',
-  description: 'Keep your users connected with iroh relays. Free public relays for development, dedicated relays for production.',
+  title: 'Hosting | Iroh',
+  description: 'Keep your endpoints connected. Free public relays for development, dedicated relays for production.',
 }
 
-export default function RelaysPage() {
+export default function HostingPage() {
   return (
     <div>
       <HeaderSparse />
@@ -23,11 +23,11 @@ export default function RelaysPage() {
           <div className="container mx-auto max-w-6xl pt-12">
             <div className="max-w-3xl">
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                Relays
+                Hosting
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                Relays keep your users connected when direct peer-to-peer connections aren&apos;t possible. 
-                Choose from free public relays for development or dedicated relays for production.
+                By default, iroh uses Relays and DNS servers to get connected quickly and reliably.
+                When deploying iroh to production, you will want to deploy dedicated infrastructure for your application. 
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
@@ -55,6 +55,13 @@ export default function RelaysPage() {
                   Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
                   isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
                   to ensure your users stay connected.
+                </p>
+
+                <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mb-4">
+                  To learn more about how relays work, check out our 
+                  <Link href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">
+                  how it works documentation
+                  </Link>.
                 </p>
               </div>
               <div className="flex items-center justify-center">

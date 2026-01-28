@@ -20,20 +20,17 @@ export default function OpenSourceSolutionPage() {
           <div className="container mx-auto max-w-6xl pt-12">
             <div className="max-w-3xl">
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                Open Source, Forever
+                Professional Services & Support
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                Iroh is fully open source under MIT/Apache 2.0 licenses. 
+                While iroh is fully open source, we understand that sometimes you need a helping hand.
+
+
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="mailto:hello@iroh.computer">
+                <Link href="https://cal.com/team/number-0/n0-protocol-services">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
-                    Contact Us
-                  </Button>
-                </Link>
-                <Link href="https://github.com/n0-computer/iroh" target="_blank" rel="noopener noreferrer">
-                  <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
-                    View on GitHub
+                    Book a meeting
                   </Button>
                 </Link>
               </div>
@@ -61,9 +58,6 @@ export default function OpenSourceSolutionPage() {
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Public infrastructure with rate limits
-                  </li>
-                  <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Self-host on your own infrastructure
                   </li>
                   <li className="flex items-center gap-2">
@@ -83,8 +77,8 @@ export default function OpenSourceSolutionPage() {
               {/* Fully Managed Cloud */}
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Cloud className="h-10 w-10 text-irohPurple-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Enterprise</h3>
-                <p className="text-2xl font-bold text-irohPurple-500 mb-3">Contact us<span className="text-base font-normal text-irohGray-500"></span></p>
+                <h3 className="text-xl font-bold mb-2">Enterprise Support</h3>
+                <p className="text-m font-bold text-irohPurple-500 mb-3">Monthly contract<span className="text-base font-normal text-irohGray-500"></span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   Let us handle the infrastructure so you can focus on building.
                 </p>
@@ -94,6 +88,9 @@ export default function OpenSourceSolutionPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Dedicated support
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-irohPurple-500">✓</span> Code reviews and security audits
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Custom protocol development

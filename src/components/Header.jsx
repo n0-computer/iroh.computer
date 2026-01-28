@@ -17,10 +17,10 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
-  {content: 'Features', href: '/#features', dropdown: [
-    {label: 'Relays', href: '/features/relays'},
-    {label: 'Metrics', href: '/features/metrics'},
-    {label: 'Open source', href: '/features/open-source'}
+  {content: 'Services', href: '/#services', dropdown: [
+    {label: 'Hosting', href: '/services/hosting'},
+    {label: 'Observability', href: '/services/observability'},
+    {label: 'Professional Support', href: '/services/support'}
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Distributed AI', href: '/solutions/nous'},
