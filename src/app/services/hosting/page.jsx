@@ -26,8 +26,8 @@ export default function HostingPage() {
                 Hosting
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                By default, iroh uses Relays and DNS servers to get connected quickly and reliably.
-                When deploying iroh to production, you will want to deploy dedicated infrastructure for your application. 
+                By default, iroh uses publically-run infrastructure to get connected quickly and reliably.
+                In production, you will want to deploy dedicated infrastructure.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
@@ -50,18 +50,27 @@ export default function HostingPage() {
           <div className="container mx-auto max-w-6xl">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold mb-6">How Relays Work</h2>
+                <h2 className="text-3xl font-bold mb-6">Relays</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
                   isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
-                  to ensure your users stay connected.
+                  to ensure data continues flowing.
+                  <br></br>
+
+                  <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link> 
                 </p>
 
-                <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mb-4">
-                  To learn more about how relays work, check out our 
-                  <Link href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">
-                  how it works documentation
-                  </Link>.
+                <h2 className="text-3xl font-bold mb-6">DNS</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  Iroh can use standard DNS servers to publish and resolve
+                  EndpointIds. This allows clients to be discoverable globally.
+                  <br></br> 
+                  
+                  <Link href="https://docs.iroh.computer/concepts/discovery" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link> 
                 </p>
               </div>
               <div className="flex items-center justify-center">
@@ -71,15 +80,12 @@ export default function HostingPage() {
           </div>
         </section>
 
+
         {/* Relay Options */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Choose Your Relay Option</h2>
-              <p className="text-lg text-irohGray-600 dark:text-irohGray-300 max-w-2xl mx-auto">
-                Whether you&apos;re just getting started or running production workloads, 
-                there&apos;s a relay option that fits your needs.
-              </p>
+              <h2 className="text-3xl font-bold mb-4">Get Started</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               {/* Public Relays */}
