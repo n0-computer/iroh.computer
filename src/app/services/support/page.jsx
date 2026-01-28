@@ -33,6 +33,11 @@ export default function OpenSourceSolutionPage() {
                     Book a meeting
                   </Button>
                 </Link>
+                <Link href="https://n0.computer/team">
+                  <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
+                    Meet the team
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
