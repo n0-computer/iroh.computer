@@ -124,35 +124,28 @@ let paths_watcher = conn.paths();
 
 let paths_task = tokio::task::spawn(async move {
     let stream = paths_watcher.stream();
-    // lets keep track of the previously selected path:
-    let previous: Option<TransportAddr> = None;
+        let mut stream = paths_watcher.stream();
+	    // lets keep track of the previously selected path:
+        let mut previous = None;
 
-    // we will get a new entry on the stream each time a new path is added, removed, or selected
-    while let Some(paths) = stream.next().await {
-        // get the currently selected path:
-        if let Some(current) = path.iter().find(|p| p.is_selected()) {
-            if Some(current) == previous.as_ref() {
-                // the paths watcher can change if a new path is added or removed, not
-                // only if a new path was selected, so it's possible we can get an update that we
-                // want to ignore
+		// we will get a new entry on the stream each time a new path is added, removed, or selected
+        while let Some(paths) = stream.next().await {
+	        // get the currently selected path:
+            let path = paths
+                .into_iter()
+                .find(|p| p.is_selected())
+                .expect("expected to always have a selected path");
+            // We can get path updates without the selected path changing. We don't want to log again in that case.
+            if Some(&path) == previous.as_ref() {
                 continue;
             }
-            // not that it is possible in this case to change from one IP address
-            // to a different IP address, or to change from Relay and IP
-            println!("Connection type changed to: {:?}", path.remote_addr());
-            previous = Some(current.clone());
-        } else if !paths.is_empty() {
-            // if no paths are selected BUT we do have paths to the remote endpoint
-            // then we are currently in a state where we are sending on multiple paths
-            // until one proves the best.
-            println!("Connection type changed to mixed");
-            previous = None;
-        } else {
-            // either no paths to this remote have been verified yet or all paths have been closed
-            println!("Connection type changed to none (no active transmission paths)")
+            print(SelectedPath {
+                addr: path.remote_addr().clone(),
+                rtt: path.rtt(),
+            });
+            previous = Some(path);
         }
-    }
-});
+    });
 
 // do fun protocol stuff with the conn
 
