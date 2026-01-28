@@ -91,7 +91,7 @@ export default function HostingPage() {
               {/* Public Relays */}
               <div className="p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800">
                 <Globe className="h-10 w-10 text-irohPurple-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Public Relays</h3>
+                <h3 className="text-xl font-bold mb-2">Public</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">Free</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   By default, iroh endpoints will use relays provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>. 
@@ -121,21 +121,21 @@ export default function HostingPage() {
               {/* Dedicated Relays */}
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Server className="h-10 w-10 text-irohPurple-500 mb-4" />
-                <h3 className="text-xl font-bold mb-2">Dedicated Relays</h3>
-                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$199<span className="text-base font-normal text-irohGray-500">/month</span></p>
+                <h3 className="text-xl font-bold mb-2">Cloud</h3>
+                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$199<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   For production applications ready to scale with low latency.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
 
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Multi-region deployment
+                    <span className="text-irohPurple-500">✓</span>Multi-region or multi-cloud deployment
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Fully managed infrastructure
+                    <span className="text-irohPurple-500">✓</span>Fully managed infrastructure
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Dedicated bandwidth
+                    <span className="text-irohPurple-500">✓</span>Negotiated bandwidth
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span>Early access to new features 
