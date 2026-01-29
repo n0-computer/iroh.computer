@@ -27,7 +27,7 @@ export default function Component() {
                 Deliver fast, complaint, battle-tested networking into the enterprise with iroh.
               </p>
               <div className="flex gap-4">
-                <Link href="https://cal.com/team/number-0/n0des-enterprise">
+                <Link href="https://cal.com/team/number-0/iroh-services">
                   <Button arrow="none" className="bg-gray-900 hover:bg-gray-800 px-6 py-2 text-sm font-medium cursor-pointer">
                     Chat with us
                   </Button>
@@ -195,7 +195,7 @@ export default function Component() {
               Compose what&apos;s needed instead of building from scratch.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://cal.com/team/number-0/n0des-enterprise">
+              <Link href="https://cal.com/team/number-0/iroh-services">
                 <Button
                   arrow="none"
                   variant="outline"
