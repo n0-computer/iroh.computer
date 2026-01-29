@@ -233,7 +233,7 @@ export default function NousUseCasePage() {
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up for iroh services
+                  Sign Up 
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">
