@@ -88,7 +88,7 @@ export default function RaveSolutionPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">Global Reach</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
-                    Relays in Saudi Arabia, Russia, Frankfurt, Amsterdam, and Chicago serving users worldwide.
+                    Relays in 5 countries, serving users worldwide.
                   </p>
                 </div>
               </div>
