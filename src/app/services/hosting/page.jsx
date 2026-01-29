@@ -26,8 +26,7 @@ export default function HostingPage() {
                 Hosting
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                By default, iroh uses publically-run infrastructure to get connected quickly and reliably.
-                In production, you will want to deploy dedicated infrastructure.
+                Keep your endpoints connected with iroh&apos;s global discovery and relay infrastructure. 
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
@@ -45,42 +44,6 @@ export default function HostingPage() {
           </div>
         </section>
 
-        {/* How Relays Work */}
-        <section className="py-20 px-6">
-          <div className="container mx-auto max-w-6xl">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold mb-6">Relays</h2>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
-                  Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
-                  isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
-                  to ensure data continues flowing.
-                  <br></br>
-
-                  <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" className="text-irohPurple-500 hover:underline">
-                  Read more.
-                  </Link> 
-                </p>
-
-                <h2 className="text-3xl font-bold mb-6">DNS</h2>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
-                  Iroh can use standard DNS servers to publish and resolve
-                  EndpointIds. This allows clients to be discoverable globally.
-                  <br></br> 
-                  
-                  <Link href="https://docs.iroh.computer/concepts/discovery" target="_blank" className="text-irohPurple-500 hover:underline">
-                  Read more.
-                  </Link> 
-                </p>
-              </div>
-              <div className="flex items-center justify-center">
-                <RelayIllustration className="w-full max-w-xl" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-
         {/* Relay Options */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
@@ -94,7 +57,7 @@ export default function HostingPage() {
                 <h3 className="text-xl font-bold mb-2">Public</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">Free</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  By default, iroh endpoints will use relays provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>. 
+                  By default, iroh endpoints use infrastructure provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>. 
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
@@ -163,6 +126,42 @@ export default function HostingPage() {
                     </div>
                     </div>
                   </section>
+
+        {/* How Relays Work */}
+        <section className="py-20 px-6">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold mb-6">Relays</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
+                  isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
+                  to ensure data continues flowing.
+                  <br></br>
+
+                  <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link> 
+                </p>
+
+                <h2 className="text-3xl font-bold mb-6">DNS Discovery</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  Iroh can use standard DNS servers to publish, discover, and resolve
+                  EndpointIds. This allows clients to be discoverable globally.
+                  <br></br> 
+                  
+                  <Link href="https://docs.iroh.computer/concepts/discovery" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link> 
+                </p>
+              </div>
+              <div className="flex items-center justify-center">
+                <RelayIllustration className="w-full max-w-xl" />
+              </div>
+            </div>
+          </div>
+        </section>
+
 
                   {/* CTA */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">

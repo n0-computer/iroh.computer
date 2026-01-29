@@ -20,12 +20,11 @@ export default function MetricsPage() {
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl pt-12">
             <div className="max-w-3xl">
-              <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Product</p>
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                Metrics
+                Observability
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                Monitor your network with comprehensive metrics collection. Track connections, 
+                Monitor the health of your network with comprehensive metrics collection. Track connections, 
                 latency, throughput, and custom application-specific metrics.
               </p>
               <div className="flex gap-4 flex-wrap">
@@ -78,10 +77,9 @@ export default function MetricsPage() {
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Choose Your Metrics Option</h2>
+              <h2 className="text-3xl font-bold mb-4">Scales with you</h2>
               <p className="text-lg text-irohGray-600 dark:text-irohGray-300 max-w-2xl mx-auto">
-                Whether you&apos;re just getting started or need detailed endpoint analytics, 
-                there&apos;s a metrics option that fits your needs.
+                Start for free, and then grow as your application needs.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
