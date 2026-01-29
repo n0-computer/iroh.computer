@@ -290,30 +290,55 @@
     },
     { "version": "v0.95.1", "done": true, "released": "2025-11-05", "doc": "" },
     {
+      "done": true,
+      "title": "QUIC Multipath support",
+      "description": "implement QUIC multipath",
+      "tracking_issue": "",
+      "subtasks": {
+        "quinn iroh fork": true,
+        "plumb into iroh": true
+      }
+    },
+    {
+      "done": true,
+      "title": "QUIC NAT traversal",
+      "description": "Using Quic to traverse NATs",
+      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
+    },
+    {
+      "done": true,
+      "title": "Add `EndpointHooks` to enable auth and connection inspection",
+      "description": "`EndpointHooks` allow adding callbacks to specific moments in a connection lifecycle, to give users more control over what happens during the connection and storing both incoming/outgoing connection information",
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Rename `Discovery` to `AddressLookup`",
+      "description": "Use `AddressLookup` rather than `Discovery` for clarity",
+      "doc": null
+    },
+    { "version": "v0.96.0", "done": true, "released": "2026-01-27", "doc": "" },
+    {
+      "done": false,
+      "title": "Address prioritization in `AddressLookup`",
+      "description": "Allow users to prioritize which addresses get published in the address lookup system.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": false,
+      "title": "Custom Transports",
+      "description": "Allow users to add custom transports.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
       "done": false,
       "title": "Own all foreign types",
       "description": "Any types that are from dependencies need to be owned or made private",
       "tracking_issue": null,
       "doc": null
     },
-    {
-      "done": false,
-      "title": "QUIC Multipath support",
-      "description": "implement QUIC multipath",
-      "tracking_issue": "",
-      "subtasks": {
-        "quinn iroh fork": false,
-        "plumb into iroh": false,
-        "upstream to quinn": false
-      }
-    },
-    {
-      "done": false,
-      "title": "QUIC NAT traversal",
-      "description": "Using Quic to traverse NATs",
-      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
-    },
-    { "version": "v0.96.0", "done": false, "released": "2025-11-17", "doc": "" },
     {
       "done": false,
       "title": "release candidate",

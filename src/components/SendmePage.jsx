@@ -51,7 +51,7 @@ export default function SendmePage() {
         <div className='max-w-5xl mx-auto text-center mt-20'>
           <p className='text-lg text-zinc-500 font-koulen'>Need to send files? Try</p>
           <h1 className='text-5xl lg:text-7xl font-koulen'>Sendme</h1>
-          <p className='text-lg text-zinc-500'>Free. No account required.</p>
+          <p className='text-lg text-zinc-500'>Free. Open source. No account required.</p>
         </div>
         <Image src="/img/sendme/sendme_hero_1.svg" alt='one computer sending files to another computer through a pipe' width='1600' height='900' className='md:-mt-20' />
 
@@ -164,7 +164,7 @@ export default function SendmePage() {
 
           <div className='border-t border-b bg-iroh-kv-1 p-5 py-20'>
             <h2 className='text-2xl font-bold font-space-mono'>Sendme is built on <Link href="/" className='text-irohPurple-500'>iroh</Link></h2>
-            <p className='md:max-w-lg mt-5'>Just like <Link className='text-irohPurple-500' href="https://dumbpipe.dev">dumbpipe</Link>, sendme is built on iroh. Sendme uses <Link className='text-irohPurple-700' href='/docs/overview'>iroh</Link> to establish direct links between devices for data transfer, and <Link className='text-irohPurple-700' href="/proto/iroh-blobs">iroh-blobs</Link> to send and verify your files</p>
+            <p className='md:max-w-lg mt-5'>Just like <Link className='text-irohPurple-500' href="https://dumbpipe.dev">dumbpipe</Link>, sendme is built on iroh. Sendme uses <Link className='text-irohPurple-700' href='/docs/overview'>iroh</Link> to establish direct links between devices for data transfer, and <Link className='text-irohPurple-700' href="/proto/iroh-blobs">iroh-blobs</Link> to send and verify your files. Check out the sendme <Link className='text-irohPurple-700' href="https://github.com/n0-computer/sendme">repository</Link>.</p>
             <Button href='/' variant='filled' className='mt-5 plausible-event-name=Sendme+Iroh+CTA+Click'>BUILD ON IROH</Button>
           </div>
         </div>
