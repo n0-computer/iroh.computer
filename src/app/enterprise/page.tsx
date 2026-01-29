@@ -120,7 +120,7 @@ export default function Component() {
               <div>
                 <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">An SLA with <i className="italic">so</i> many nines</h2>
                 <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                  When servers can run on the edge, reliability goes up. As the makers of iroh, the n0 team can deliver unprecedented avilability backed by a contractual guarantee.
+                  When servers can run on the edge, reliability goes up. As the makers of iroh, <a href="https://n0.computer" className="text-irohPurple-500">n0.computer</a> can deliver avilability backed by a contractual guarantee.
                 </p>
               </div>
               <div className="relative">
