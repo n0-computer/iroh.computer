@@ -54,7 +54,7 @@ export default function RaveSolutionPage() {
           <div className="container mx-auto max-w-5xl">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <p className="text-5xl font-bold text-irohPurple-500 mb-2">1M+</p>
+                <p className="text-5xl font-bold text-irohPurple-500 mb-2">600k</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300">Concurrent connections per relay</p>
               </div>
               <div>

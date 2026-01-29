@@ -29,7 +29,7 @@ export default function Component() {
               <div className="flex gap-4">
                 <Link href="https://cal.com/team/number-0/n0des-enterprise">
                   <Button arrow="none" className="bg-gray-900 hover:bg-gray-800 px-6 py-2 text-sm font-medium cursor-pointer">
-                    CONTACT SALES
+                    Chat with us
                   </Button>
                 </Link>
               </div>
@@ -143,6 +143,15 @@ export default function Component() {
                   each of your target verticals. As the team behind a ground-up networking stack, we have a deep well of
                   knowledge of the technical fundamentals that underpin enterprise design decisions.
                 </p>
+                <Link href="https://n0.computer/team">
+                  <Button
+                    arrow="none"
+                    variant="outline"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent"
+                  >
+                    Meet the team →
+                  </Button>
+                </Link>
               </div>
 
               <div>
@@ -152,7 +161,7 @@ export default function Component() {
                   encryption, streaming, broadcast, leader election, replication, and more. Iroh means composing what&apos;s
                   needed instead of building from scratch.
                 </p>
-                <Link href="/proto">
+                <Link href="https://github.com/n0-computer">
                   <Button
                     arrow="none"
                     variant="outline"
@@ -192,7 +201,7 @@ export default function Component() {
                   variant="outline"
                   className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 px-8 py-3 bg-transparent"
                 >
-                  Contact Sales
+                  Chat with us
                 </Button>
               </Link>
             </div>

@@ -28,7 +28,7 @@ export default function OpenSourceSolutionPage() {
 
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://cal.com/team/number-0/n0-protocol-services">
+                <Link href="https://cal.com/team/number-0/n0des-enterprise">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
                     Book a meeting
                   </Button>
@@ -104,7 +104,7 @@ export default function OpenSourceSolutionPage() {
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs
                   </li>
                 </ul>
-                <Link href="https://cal.com/team/number-0/n0-protocol-services">
+                <Link href="https://cal.com/team/number-0/n0des-enterprise">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Book a meeting
                   </Button>
