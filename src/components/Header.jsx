@@ -1,6 +1,6 @@
 'use client'
 
-import {forwardRef} from 'react';
+import {forwardRef, useState, useRef, useEffect} from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import {motion} from 'framer-motion';
@@ -17,9 +17,19 @@ import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
+  {content: 'Services', href: '/#services', dropdown: [
+    {label: 'Hosting', href: '/services/hosting'},
+    {label: 'Observability', href: '/services/observability'},
+    {label: 'Professional Support', href: '/services/support'}
+  ]},
+  {content: 'Use Cases', href: '/#solutions', dropdown: [
+    {label: 'Distributed AI', href: '/solutions/nous'},
+    {label: 'Video Streaming', href: '/solutions/rave'},
+    {label: 'Resilient Apps', href: '/solutions/delta-chat'},
+    {label: 'Enterprise', href: '/enterprise'},
+  ]},
+  {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
-  {content: 'Docs', href: '/docs'},
-  {content: 'Protocols', href: '/proto'},
   {content: 'Roadmap', href: '/roadmap'},
 ];
 
@@ -32,6 +42,48 @@ export function TopLevelNavItem({href, children}) {
       >
         {children}
       </Link>
+    </li>
+  );
+}
+
+function DropdownNavItem({ label, items }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <li className="relative flex items-center" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white inline-flex items-center gap-1"
+      >
+        {label}
+        <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-zinc-800 rounded-md shadow-lg border border-zinc-200 dark:border-zinc-700 py-1 z-50">
+          {items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block px-4 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-irohPurple-500"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </li>
   );
 }
@@ -69,6 +121,9 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
         <nav className="hidden lg:block">
           <ul role="list" className="flex items-center gap-8">
             {navItems.map((item, i ) => {
+              if (item.dropdown) {
+                return <DropdownNavItem key={i} label={item.content} items={item.dropdown} />;
+              }
               return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
             })}
             <li className='mt-2.5'>
@@ -82,7 +137,7 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://iroh.computer/discord">Join Discord</Button>
+          <Button href="https://n0des.iroh.computer" variant="filled">Sign Up</Button>
         </div>
       </div>
     </motion.div>
