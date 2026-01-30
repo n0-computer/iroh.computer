@@ -124,7 +124,7 @@ export default function Component() {
                 </p>
               </div>
               <div className="relative">
-                <h1 className="text-9xl text-gray-600/50">99.9999</h1>
+                <h1 className="text-9xl text-gray-600/50">99.99</h1>
                 <div className="absolute right-0 top-0 z-10 h-full w-[200px] bg-linear-to-l from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
               </div>
             </div>
