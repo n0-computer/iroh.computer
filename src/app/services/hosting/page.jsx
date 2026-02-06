@@ -31,7 +31,7 @@ export default function HostingPage() {
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Get started
+                    Start 30 day trial
                   </Button>
                 </Link>
                 <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" rel="noopener noreferrer">
@@ -108,7 +108,7 @@ export default function HostingPage() {
                   </li>
                 </ul>
                 <Link href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline font-medium">
-                  Sign up →
+                  Start 30 day trial →
                 </Link>
               </div>
 
@@ -172,7 +172,7 @@ export default function HostingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="https://n0des.iroh.computer">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Get started
+                    Start 30 day trial
                   </Button>
                 </Link>
                 <Link href="https://docs.iroh.computer/concepts/relays" target="_blank" rel="noopener noreferrer">

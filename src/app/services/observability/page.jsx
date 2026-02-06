@@ -30,7 +30,7 @@ export default function MetricsPage() {
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://n0des.iroh.computer">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Get Started
+                    Start 30 Day Trial
                   </Button>
                 </Link>
                 <Link href="https://docs.iroh.computer/iroh-services/metrics">
@@ -107,10 +107,8 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Custom metrics support
                   </li>
                 </ul>
-                                <Link href="https://n0des.iroh.computer">
-                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Get Started
-                  </Button>
+                    <Link href="https://n0des.iroh.computer"className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 font-medium">
+                    Sign up →
                 </Link>
               </div>
 
@@ -118,7 +116,7 @@ export default function MetricsPage() {
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Activity className="h-10 w-10 text-irohPurple-500 mb-4" />
                 <h3 className="text-xl font-bold mb-2">Granular Metrics</h3>
-                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$49<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
+                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$19<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   Detailed metrics are available for each relay or endpoint added to the
                   network. These metrics are available at a more granular level, so
@@ -130,7 +128,7 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Per-relay and per-endpoint analytics
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Holepunching Rate, Uptime, Error Reporting
+                    <span className="text-irohPurple-500">✓</span> Direct Data Rate, Error Reports, and more
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Drill down into specific behaviors
@@ -141,11 +139,11 @@ export default function MetricsPage() {
                 </ul>
                                 <Link href="https://n0des.iroh.computer">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Get Started
+                    Start 30 Day Trial
                   </Button>
                 </Link>
               </div>
-              
+
             </div>
           </div>
         </section>
@@ -265,7 +263,7 @@ async fn main() -> anyhow::Result<()> {
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Get Started
+                  Start 30 Day Trial
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer">
