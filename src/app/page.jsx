@@ -80,7 +80,7 @@ export default function Page() {
                     </p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
                       Dial any endpoint running anywhere, big or small &mdash;
-                      cloud servers, tablets, or Raspberry Pis. 
+                      cloud servers, tablets, or Raspberry Pis.
                       </p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>
                       The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, and relays are stateless. That means you can pluralize with hosting across regions and clouds, or self-host anywhere in the world.
@@ -189,18 +189,18 @@ export default function Page() {
                   <div className='px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10'>
                     <p className='mt-6 text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Deploy, Monitor, Fix</p>
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of <a href="https://perf.iroh.computer" target="_blank" className="text-irohPurple-500 hover:underline">simulations &amp; tests</a>. </p>
-                    
+
                     <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mb-8'>
-                      When you build your app, iroh provides opt-in 
+                      When you build your app, iroh provides opt-in
                       <a href="https://docs.iroh.computer/iroh-online/metrics/custom" className="text-irohPurple-500 hover:underline"> observability</a> and
                       <a href="https://docs.iroh.computer/metrics/custom" className="text-irohPurple-500 hover:underline"> custom metrics</a> specific for your app. Get visibility into your endpoints &mdash; track connection health and throughput across all your devices and services.
-                      
+
                       </p>
 
                 <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block my-4 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
                   Montior your App<ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
-                    
+
                   </div>
                 </div>
               </div>
@@ -248,24 +248,23 @@ export default function Page() {
 const codeSample = `// a program that creates two endpoints & sends a ping between them
 use anyhow::Result;
 use iroh::{Endpoint, protocol::Router};
-use iroh_ping::{ALPN as PingALPN, Ping};
+use iroh_ping::Ping;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     // create the receive side
-    let recv_endpoint = Endpoint::bind().await?;
-    let recv_router = Router::builder(recv_endpoint)
-      .accept(PingALPN, Ping::new())
-      .spawn();
+    let recv_ep = Endpoint::builder().bind().await?;
+    let recv_router = Router::builder(recv_ep.clone())
+        .accept(iroh_ping::ALPN, Ping::new())
+        .spawn();
+    recv_ep.online().await;
+    let addr = recv_router.endpoint().addr();
 
-    // get the receive side's address:
-    let addr = recv_router.endpoint().addr().await?;
-
-    // create the send side & send a ping!
-    let send_ep = Endpoint::bind().await?;
+    // create a send side & send a ping
+    let send_ep = Endpoint::builder().bind().await?;
     let send_pinger = Ping::new();
-    send_pinger.ping(&send_ep, addr).await?;
+    let rtt = send_pinger.ping(&send_ep, addr).await?;
+    println!("ping took: {rtt:?} to complete");
 
-    // ok!
     Ok(())
 }`
