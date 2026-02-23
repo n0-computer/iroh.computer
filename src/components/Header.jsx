@@ -137,7 +137,7 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://n0des.iroh.computer" variant="filled">Sign Up</Button>
+          <Button href="https://n0des.iroh.computer?utm_source=website&utm_content=nav-signup" variant="filled">Sign Up</Button>
         </div>
       </div>
     </motion.div>

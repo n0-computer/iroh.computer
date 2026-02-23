@@ -228,12 +228,12 @@ export default function NousUseCasePage() {
               Get started with iroh in minutes. No complex configuration required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer/signup">
+              <Link href="https://n0des.iroh.computer/signup?utm_source=website&utm_content=nous-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up 
+                  Sign Up
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">

@@ -26,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
-Here we've set the relay mode to `Default`, but this hasn't actually changed anything. Our prior code had `relay_mode` implicitly set to `Default`, and this works because iroh comes with a set of free-to-use public relays by default, run by the number 0 team. You’re more than welcome to run your own relays, use the number 0 hosted solution [n0des.iroh.computer](https://n0des.iroh.computer), run your own, or, ideally all of the above! The code for relay servers is in the main iroh repo, and we release compiled binaries for relays on each release of iroh.
+Here we've set the relay mode to `Default`, but this hasn't actually changed anything. Our prior code had `relay_mode` implicitly set to `Default`, and this works because iroh comes with a set of free-to-use public relays by default, run by the number 0 team. You’re more than welcome to run your own relays, use the number 0 hosted solution [n0des.iroh.computer](https://n0des.iroh.computer?utm_source=website&utm_content=tour-relays), run your own, or, ideally all of the above! The code for relay servers is in the main iroh repo, and we release compiled binaries for relays on each release of iroh.
 
 And we’ll encounter our first surprise: the initial bytes of our connection will almost *always* flow over the relay, while the direct connection is established *in parallel.* Then once the direct connection is established, we switch to it. The reason for this is simple: keep initial connection times fast.
 

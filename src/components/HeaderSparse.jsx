@@ -65,7 +65,7 @@ function SignUpLink(props) {
   return (
     <li>
       <Link
-        href="https://n0des.iroh.computer"
+        href="https://n0des.iroh.computer?utm_source=website&utm_content=nav-signup"
         className='px-3 py-2 flex text-sm bg-irohPurple-500 text-white transition hover:bg-irohPurple-400 rounded'>
         Sign Up
       </Link>
