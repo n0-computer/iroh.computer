@@ -34,7 +34,7 @@ export default function RaveSolutionPage() {
                 iroh&apos;s open source software, ensuring low-latency and reliable video delivery to their users.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer/signup">
+                <Link href="https://n0des.iroh.computer/signup?utm_source=website&utm_content=rave-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
                     Get Started
                   </Button>
@@ -115,12 +115,12 @@ export default function RaveSolutionPage() {
               Get started with managed relays and monitoring through iroh services.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer/signup">
+              <Link href="https://n0des.iroh.computer/signup?utm_source=website&utm_content=rave-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up 
+                  Sign Up
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">

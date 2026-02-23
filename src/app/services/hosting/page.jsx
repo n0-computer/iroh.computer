@@ -29,7 +29,7 @@ export default function HostingPage() {
                 Keep your endpoints connected with iroh&apos;s global discovery and relay infrastructure. 
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer">
+                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=hosting-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 day trial
                   </Button>
@@ -107,7 +107,7 @@ export default function HostingPage() {
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs available
                   </li>
                 </ul>
-                <Link href="https://n0des.iroh.computer" className="text-irohPurple-500 hover:underline font-medium">
+                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=hosting-cloud" className="text-irohPurple-500 hover:underline font-medium">
                   Start 30 day trial →
                 </Link>
               </div>
@@ -170,7 +170,7 @@ export default function HostingPage() {
               Deploy a Relay today
             </h2>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="https://n0des.iroh.computer">
+                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=hosting-cta">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 day trial
                   </Button>

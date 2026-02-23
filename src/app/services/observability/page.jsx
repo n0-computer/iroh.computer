@@ -28,7 +28,7 @@ export default function MetricsPage() {
                 latency, throughput, and custom application-specific metrics.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer">
+                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 Day Trial
                   </Button>
@@ -107,7 +107,7 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Custom metrics support
                   </li>
                 </ul>
-                    <Link href="https://n0des.iroh.computer"className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 font-medium">
+                    <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-project"className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 font-medium">
                     Sign up →
                 </Link>
               </div>
@@ -137,7 +137,7 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Extended data retention plans available
                   </li>
                 </ul>
-                                <Link href="https://n0des.iroh.computer">
+                                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-granular">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 Day Trial
                   </Button>
@@ -258,7 +258,7 @@ async fn main() -> anyhow::Result<()> {
               Get started with free project-level metrics, or upgrade to Pro for detailed endpoint analytics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer">
+              <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
