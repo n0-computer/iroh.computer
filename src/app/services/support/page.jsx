@@ -92,13 +92,13 @@ export default function OpenSourceSolutionPage() {
                     <span className="text-irohPurple-500">✓</span> Fully managed, single tenant or on-prem
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Dedicated support
+                    <span className="text-irohPurple-500">✓</span> Long-term support of older iroh versions
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Code reviews and security audits
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span> Custom protocol development
+                    <span className="text-irohPurple-500">✓</span> Custom development
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs
