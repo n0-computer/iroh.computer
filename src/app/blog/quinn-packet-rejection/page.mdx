@@ -51,7 +51,7 @@ There are a small number of long header packet types. The very first packet when
 
 ![Initial packet](/blog/quinn-packet-rejection/initial-packet.svg)
 
-Initial packets contain encrypted data, the packet number (PN) and a ClientHello. But since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
+Initial packets contain encrypted data: the packet number (PN) and a ClientHello. But since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
 
 ![Initial packet detail](/blog/quinn-packet-rejection/initial-packet-detail.svg)
 
