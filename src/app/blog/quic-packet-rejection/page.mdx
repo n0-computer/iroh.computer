@@ -5,9 +5,9 @@ export const post = {
   draft: true,
   author: 'Rüdiger Klaehn',
   date: '2026-02-23',
-  title: 'How quinn deals with rejecting garbage packets',
+  title: 'How QUIC allows rejecting garbage packets',
   description:
-    'A look at how quinn efficiently rejects invalid packets before they waste resources.',
+    'A look at how QUIC allows efficient rejection of invalid packets before they waste resources.',
 }
 
 export const metadata = {
@@ -17,23 +17,25 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-# How quinn rejects garbage packets
+# How noq rejects garbage packets
 
-Permissionless peer to peer systems frequently need to remain open to the world at least to some degree so that peers can join. But an endpoint that is open to the world is vulnerable to being subject to accidental or malicious spamming with random or even carefully crafted traffic.
+Permissionless peer to peer systems frequently need to remain open to the world at least to some degree so that peers can join. But an endpoint that is open to the world is vulnerable to accidental or malicious spamming with random or even carefully crafted traffic.
 
-This blog post explains how QUIC, and in particular our QUIC implementation iroh-quinn, deals with various malicious packets.
+This blog post explains how QUIC, and in particular our QUIC implementation noq, deals with various malicious packets.
 
-At the wire level, disregarding relays and custom transports for a bit, QUIC is using UDP datagrams. Quinn is reading individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
+At the wire level, disregarding relays and custom transports for a bit, QUIC is using UDP datagrams. Noq is reading individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
 
 Each datagram can contain one or more QUIC packets.
 
 ## Packet types
 
-QUIC distinguishes between two kinds of packets. Those with a long header that have more information in the unencrypted part of the packet, and those with a short header that have very minimal information in the unencrypted part.
+QUIC distinguishes between two kinds of packets.
 
-The former are used for initiating new connections, the latter are used for existing connections.
+Long header packets are used for initiating new connections, short header packets are used for existing connections.
 
-With just a very brief inspection of a packet, it is possible for quinn to distinguish between datagrams that don't contain valid QUIC packets, long header packets and short header packets.
+![First byte interpretation](/blog/quic-packet-rejection/first-byte.svg)
+
+With just a very brief inspection of a packet, it is possible to distinguish between datagrams that don't contain valid QUIC packets, long header packets and short header packets.
 
 Completely random packets can be quickly dismissed, but of course an attacker could craft packets that look like valid QUIC packets to a stateless firewall.
 
@@ -43,17 +45,15 @@ This inspection requires just looking at a few bits in an individual UDP datagra
 
 ## Long header packets
 
-![Long header packet](/blog/quinn-packet-rejection/long-header.svg)
+![Long header packet](/blog/quic-packet-rejection/long-header.svg)
 
 ### Initial packets
 
-There are a small number of long header packet types. The very first packet when initiating a new connection has packet type *initial* (00). Initial packets must have a length of at least 1200 bytes.
+There are a four long header packet types. The very first packet when initiating a new connection has packet type *initial* (00). Initial packets must arrive in a datagram of at least 1200 bytes.
 
-![Initial packet](/blog/quinn-packet-rejection/initial-packet.svg)
+Initial packets contain encrypted data: the packet number (PN) and a ClientHello. Since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
 
-Initial packets contain encrypted data: the packet number (PN) and a ClientHello. But since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
-
-![Initial packet detail](/blog/quinn-packet-rejection/initial-packet-detail.svg)
+![Initial packet detail](/blog/quic-packet-rejection/initial-packet-detail.svg)
 
 An initial packet that contains a valid ClientHello is a valid connection attempt, so we can not just ignore it if we want to be open to connection attempts.
 
@@ -65,7 +65,7 @@ We can of course still decide to filter by it, but this has the risk of an attac
 
 QUIC contains an optional mechanism to solve this: We can decide to ask the sender to retry (11) with a server-generated token. This retry packet will then be sent to the sender address *we got from the UDP datagram*.
 
-![Retry packet](/blog/quinn-packet-rejection/retry-packet.svg)
+![Retry packet](/blog/quic-packet-rejection/retry-packet.svg)
 
 The client then has to send another initial packet containing the same ClientHello with the token added to the header part. If the sender address was forged, this will never happen. If we do get a second initial packet with the right data, we can continue, now knowing that the source IP address is correct.
 
@@ -78,6 +78,8 @@ But since the retry packet is smaller than the initial packet, this does not cau
 </Note>
 
 ### Handshake packets
+
+![Handshake packet](/blog/quic-packet-rejection/handshake-packet.svg)
 
 The next step for requests that passed the initial filter is to send an initial (00) packet to the client containing a ServerHello, immediately followed by a handshake (10) packet containing EncryptedExtensions, Certificate, CertificateVerify, Finished to complete the server part of the handshake.
 
@@ -95,12 +97,15 @@ There is one additional form of long header packet. 0-rtt packets (01). The purp
 
 ## Short header packets
 
-![Short header packet](/blog/quinn-packet-rejection/short-header.svg)
+![Short header packet](/blog/quic-packet-rejection/short-header.svg)
 
 Short header packets are used for already established connections. They contain almost no unencrypted information, so they are basically opaque to stateless firewalls. The only available information is the destination connection id. You might think that a stateful firewall could keep track of established connections and e.g. reject packets with an unknown destination connection id (DCID). But this is not the case. Either side of an established connection can decide to issue a new connection id, and this happens within the encrypted part of the communication, invisible to a firewall.
 
+So while firewalls can help a bit with managing long header packets, rejecting short header packets is more easily done by the QUIC endpoint.
 
-So while firewalls can help a bit with managing long header packets, rejecting short header packets has to be done by the QUIC endpoint.
+<Note>
+Since the destination connection ids are assigned by the endpoint, you could use a scheme that allows the firewall to check for valid connection ids.
+</Note>
 
 ### DCID check
 
@@ -110,7 +115,7 @@ The first thing a QUIC endpoint can do when receiving a packet is to make sure t
 
 The next step is to decrypt the packet number. The packet number is encrypted with a simple scheme and sits directly after the unencrypted part. To decrypt it, you take a part of the encrypted payload and combine it with a common secret that was negotiated during the handshake. This gives a bitmask that can be used to decrypt first the header byte (to get the packet number length) and then the packet number itself (1 to 4 bytes)
 
-![Header protection](/blog/quinn-packet-rejection/header-protection.svg)
+![Header protection](/blog/quic-packet-rejection/header-protection.svg)
 
 The exact details don't matter that much. The important takeaway is that this is a scheme that is very cheap - much cheaper than decrypting the entire packet - and that allows the endpoint to get the packet number while preventing a listener that does not know the connection secrets to read it.
 
@@ -120,9 +125,9 @@ Once the packet number is known, it is used to filter out packets. We can dismis
 
 At this point we have exhausted all the really cheap options to check packet validity, so we need to actually decrypt the packet.
 
-We will only get to this point if either the packet is valid, or an attacker has guessed a valid destination connection id and managed to get a packet number in the valid range. Connection ids are random values (quinn uses 8 bytes), so guessing them correctly is extremely unlikely. The most realistic chance to guess them is to listen in to valid traffic.
+We will only get to this point if either the packet is valid, or an attacker has guessed a valid destination connection id and managed to get a packet number in the valid range. Connection ids are random values (noq uses 8 bytes), so guessing them correctly is extremely unlikely. The most realistic chance to guess them is to listen in to valid traffic.
 
-During decryption, we check the AEAD auth tag to make sure the content is valid. The auth tag proves both data integrity and that the data was written by the owner of the encryption key.
+During decryption, we check the AEAD auth tag to make sure the content is valid. The auth tag proves both data integrity and that the data was written by the owner of the encryption key. *At this point we know that the packet contents are real.*
 
 Once the packet is decrypted it gets processed. If it contains user data the data is forwarded to the user or added to a stream-specific buffer for assembly into a contiguous stream.
 
@@ -132,7 +137,7 @@ There is not a single opportunity here for user provided filter hooks.
 
 So far we have covered QUIC packets that arrive via UDP datagrams. Iroh has an additional transport where packets arrive via relays. Relay clients are identified by endpoint id, so for a relay connection we know the identity of the peer very early, long before the full handshake is complete.
 
-For connections established via relays it is therefore possible to filter or rate limit very early based on the endpoint id.
+For connections established via relays it is therefore possible to filter or rate limit very early based on the endpoint id we get from the relay.
 
 ## Firewall recommendations
 
@@ -146,10 +151,17 @@ Datagrams that don't contain valid QUIC packets can be immediately dropped. As w
 
 Datagrams that contain short header packets should be very moderately rate limited. Again, dismissing short header packets is very cheap, so this rule is also optional.
 
-Datagrams that contain long header packets are where you can add more complexity.
+Datagrams that contain long header packets are where you get the most benefit:
 
-First of all, they should be more strongly rate limited. There will be many more short header packets (ongoing connections) than long header packets (connection attempts), so rate limiting long header packets heavily will protect the endpoint from potentially having to execute many handshakes while having almost no effect on established connections.
+- Long header packets of type initial (00) with a length less than 1200 bytes can be immediately dropped.
 
-Second, a firewall can use source ip based rate limiting or filtering. The source ip can be spoofed, but the endpoint itself has a very cheap way to detect spoofs, the retry mechanism. Expensive attacks such as fake ClientHello require a valid source ip, so we can use per-ip rate limiting and even region blocking in the firewall.
+- They should be more strongly rate limited. There will be many more short header packets (ongoing connections) than long header packets (connection attempts), so rate limiting long header packets heavily will protect the endpoint from potentially having to execute many handshakes while having almost no effect on established connections.
 
-The last option would be to decode the initial packets in the firewall and do rate limiting or filtering based on ALPN. This won't help against an attacker (they can choose whatever ALPN they want), but will help in case of an endpoint that offers many different services of varying priority.
+- A firewall can use source ip based rate limiting or filtering. The source ip can be spoofed, but the endpoint itself has a very cheap way to detect spoofs, the retry mechanism. Expensive attacks such as fake ClientHello require a valid source ip, so we can use per-ip rate limiting and even region blocking in the firewall.
+
+- A firewall could decode the initial packets in the firewall and do rate limiting or filtering based on ALPN. This won't help against an attacker (they can choose whatever ALPN they want), but will help in case of an endpoint that offers many different services of varying priority.
+
+## Iroh filtering and rate limiting API
+
+![Connection filter pipeline](/blog/quic-packet-rejection/connection-filter.svg)
+

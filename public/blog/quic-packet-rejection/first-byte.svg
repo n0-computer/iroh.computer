@@ -1,0 +1,83 @@
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="350" y="18" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">First Byte Interpretation</text>
+
+  <!-- Bit position labels -->
+  <text x="140" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">7</text>
+  <text x="195" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">6</text>
+  <text x="250" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">5</text>
+  <text x="305" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">4</text>
+  <text x="360" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">3</text>
+  <text x="415" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">2</text>
+  <text x="470" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">1</text>
+  <text x="525" y="40" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">0</text>
+
+  <!-- Long header row -->
+  <text x="70" y="68" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#6366f1">Long</text>
+
+  <!-- bit 7: Header Form = 1 -->
+  <rect x="112" y="50" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="140" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
+
+  <!-- bit 6: Fixed = 1 -->
+  <rect x="167" y="50" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="195" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
+
+  <!-- bits 5-4: Packet Type -->
+  <rect x="222" y="50" width="110" height="30" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <text x="277" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#d97706">Type</text>
+
+  <!-- bits 3-0 -->
+  <rect x="332" y="50" width="220" height="30" rx="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="442" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">masked (unused for Retry)</text>
+
+  <!-- Type legend (no boxes, just text) -->
+  <text x="580" y="56" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">00</text>
+  <text x="600" y="56" font-family="'Space Mono', monospace" font-size="8" fill="#888">Initial</text>
+  <text x="580" y="66" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">01</text>
+  <text x="600" y="66" font-family="'Space Mono', monospace" font-size="8" fill="#888">0-RTT</text>
+  <text x="580" y="76" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">10</text>
+  <text x="600" y="76" font-family="'Space Mono', monospace" font-size="8" fill="#888">Handshake</text>
+  <text x="580" y="86" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">11</text>
+  <text x="600" y="86" font-family="'Space Mono', monospace" font-size="8" fill="#888">Retry</text>
+
+  <!-- Short header row -->
+  <text x="70" y="128" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#6366f1">Short</text>
+
+  <!-- bit 7: Header Form = 0 -->
+  <rect x="112" y="110" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="140" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">0</text>
+
+  <!-- bit 6: Fixed = 1 -->
+  <rect x="167" y="110" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="195" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
+
+  <!-- bit 5: Spin Bit -->
+  <rect x="222" y="110" width="55" height="30" rx="3" fill="none" stroke="#10b981" stroke-width="1.5"/>
+  <text x="250" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#10b981">Spin</text>
+
+  <!-- bits 4-0 -->
+  <rect x="277" y="110" width="275" height="30" rx="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="414" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">masked</text>
+
+  <!-- Invalid row -->
+  <text x="70" y="188" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#ef4444">Invalid</text>
+
+  <!-- bit 7: any -->
+  <rect x="112" y="170" width="55" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="140" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#ef4444">*</text>
+
+  <!-- bit 6: Fixed = 0 -->
+  <rect x="167" y="170" width="55" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="195" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#ef4444">0</text>
+
+  <!-- rest -->
+  <rect x="222" y="170" width="330" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="387" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#ef4444">not a valid QUIC packet</text>
+
+  <!-- Bottom annotations (plain text, no boxes) -->
+  <text x="140" y="230" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Header</text>
+  <text x="140" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Form</text>
+  <text x="195" y="230" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Fixed</text>
+  <text x="195" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Bit</text>
+</svg>
