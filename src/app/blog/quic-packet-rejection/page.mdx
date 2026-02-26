@@ -132,7 +132,7 @@ During decryption, we check the AEAD auth tag to make sure the content is valid.
 
 Once the packet is decrypted it gets processed. If it contains user data the data is forwarded to the user or added to a stream-specific buffer for assembly into a contiguous stream.
 
-There is not a single opportunity here for user provided filter hooks.
+There no need for user provided filter hooks here, since for existing connections there isn't much to decide. QUIC does a good job making the test **is this packet for one of my current connections** cheap.
 
 ## Relay connections
 
