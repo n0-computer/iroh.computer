@@ -18,7 +18,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 # How QUIC rejects garbage packets
 
-Permissionless peer to peer systems frequently need to remain open to the world at least to some degree so that peers can join. But an endpoint that is open to the world is vulnerable to accidental or malicious spamming with random or even carefully crafted traffic.
+Any QUIC endpoint that accepts traffic must be open for the world to access, at least to some degree. But an endpoint that is open to the world is vulnerable to accidental or malicious spamming with random or even carefully crafted traffic.
 
 This blog post explains how QUIC, and in particular our QUIC implementation, deals with various malicious packets.
 
