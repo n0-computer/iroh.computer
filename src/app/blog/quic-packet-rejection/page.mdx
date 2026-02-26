@@ -22,7 +22,7 @@ Any QUIC endpoint that accepts traffic must be open for the world to access, at 
 
 This blog post explains how QUIC, and in particular our QUIC implementation, deals with various malicious packets.
 
-At the wire level, disregarding relays and custom transports for a bit, QUIC is using UDP datagrams. QUIC is reading individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
+Disregarding relays and custom transports for a bit, At the wire level QUIC uses UDP datagrams. It reads individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
 
 Each datagram can contain one or more QUIC packets.
 
