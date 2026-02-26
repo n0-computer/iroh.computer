@@ -50,11 +50,11 @@ This inspection requires just looking at a few bits in an individual UDP datagra
 
 There are a four long header packet types. The very first packet when initiating a new connection has packet type *initial* (00). Initial packets must arrive in a datagram of at least 1200 bytes.
 
-Initial packets contain encrypted data: the packet number (PN) and a ClientHello. Since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
+Initial packets contain encrypted data: the packet number (PN) and a `ClientHello`. Since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
 
 ![Initial packet detail](/blog/quic-packet-rejection/initial-packet-detail.svg)
 
-An initial packet that contains a valid ClientHello is a valid connection attempt, so we can not just ignore it if we want to be open to connection attempts.
+An initial packet that contains a valid `ClientHello` is a valid connection attempt, so we can not just ignore it if we want to be open to connection attempts.
 
 For packets that arrive via UDP, we have the sender IP address. This is useful if we want to filter or rate limit based on IP address. But we don't really know if it is a valid sender address yet. The sender of a UDP datagram can be easily spoofed.
 
@@ -66,7 +66,7 @@ QUIC contains an optional mechanism to solve this: We can decide to ask the send
 
 ![Retry packet](/blog/quic-packet-rejection/retry-packet.svg)
 
-The client then has to send another initial packet containing the same ClientHello with the token added to the header part. If the sender address was forged, this will never happen. If we do get a second initial packet with the right data, we can continue, now knowing that the source IP address is correct.
+The client then has to send another initial packet containing the same `ClientHello` with the token added to the header part. If the sender address was forged, this will never happen. If we do get a second initial packet with the right data, we can continue, now knowing that the source IP address is correct.
 
 This is the first point where we can do user defined filtering. E.g. we can do region based filtering or simply rate limiting by IP address. For rejecting requests at this point, we have the option to just silently ignore the packet or to refuse them, which sends a CONNECTION_CLOSE frame.
 
@@ -80,9 +80,9 @@ But since the retry packet is smaller than the initial packet, this does not cau
 
 ![Handshake packet](/blog/quic-packet-rejection/handshake-packet.svg)
 
-The next step for requests that passed the initial filter is to send an initial (00) packet to the client containing a ServerHello, immediately followed by a handshake (10) packet containing EncryptedExtensions, Certificate, CertificateVerify, Finished to complete the server part of the handshake.
+The next step for requests that passed the initial filter is to send an initial (00) packet to the client containing a `ServerHello`, immediately followed by a handshake (10) packet containing `EncryptedExtensions`, `Certificate`, `CertificateVerify`, `Finished` to complete the server part of the handshake.
 
-The client then answers with a handshake (10) packet containing Certificate, CertificateVerify and Finished. At this point the handshake is complete and the server knows not just the ip address but also the identity of the client.
+The client then answers with a handshake (10) packet containing `Certificate`, `CertificateVerify` and `Finished`. At this point the handshake is complete and the server knows not just the ip address but also the identity of the client.
 
 This is the second opportunity for filtering. We can now do endpoint id based filtering. For example, we could prioritize known good peers but still allow new connections by having different rate limits for known good endpoint ids and unknown endpoint ids.
 
@@ -144,7 +144,7 @@ A well implemented QUIC endpoint can handle a significant amount of spam on its 
 
 As we have seen, QUIC hides a lot of detail from middleboxes such as firewalls. But it still exposes enough information to let a simple stateless firewall help with managing load spikes and even ddos attacks.
 
-A simple firewall setup for a QUIC or iroh endpoint would have separate rules for long header packets and short header packets (Long header and short header packets [must not be mixed](https://datatracker.ietf.org/doc/html/rfc9000#section-12.2)).
+A simple firewall setup for a QUIC or iroh endpoint would have separate rules for long header packets and short header packets.
 
 Datagrams that don't contain valid QUIC packets can be immediately dropped. As we have seen, dismissing these packets has a very low cost for the endpoint, so this rule isn't that important.
 
@@ -156,7 +156,7 @@ Datagrams that contain long header packets are where you get the most benefit:
 
 - They should be more strongly rate limited. There will be many more short header packets (ongoing connections) than long header packets (connection attempts), so rate limiting long header packets heavily will protect the endpoint from potentially having to execute many handshakes while having almost no effect on established connections.
 
-- A firewall can use source ip based rate limiting or filtering. The source ip can be spoofed, but the endpoint itself has a very cheap way to detect spoofs, the retry mechanism. Expensive attacks such as fake ClientHello require a valid source ip, so we can use per-ip rate limiting and even region blocking in the firewall.
+- A firewall can use source ip based rate limiting or filtering. The source ip can be spoofed, but the endpoint itself has a very cheap way to detect spoofs, the retry mechanism. Expensive attacks such as fake `ClientHello` require a valid source ip, so we can use per-ip rate limiting and even region blocking in the firewall.
 
 - A firewall could decode the initial packets in the firewall and do rate limiting or filtering based on ALPN. This won't help against an attacker (they can choose whatever ALPN they want), but will help in case of an endpoint that offers many different services of varying priority.
 
