@@ -32,6 +32,8 @@ QUIC distinguishes between two kinds of packets.
 
 Long header packets are used for initiating new connections, short header packets are used for existing connections.
 
+<span id="first-byte"/>
+
 ![First byte interpretation](/blog/quic-packet-rejection/first-byte.svg)
 
 With just a very brief inspection of a packet, it is possible to distinguish between datagrams that don't contain valid QUIC packets, long header packets and short header packets.
@@ -48,7 +50,7 @@ This inspection requires just looking at a few bits in an individual UDP datagra
 
 ### Initial packets
 
-There are a four long header packet types. The very first packet when initiating a new connection has packet type *initial* (00). Initial packets must arrive in a datagram of at least 1200 bytes.
+There are a four long header packet types. The very first packet when initiating a new connection has packet type *initial* ([00](#first-byte)). Initial packets must arrive in a datagram of at least 1200 bytes.
 
 Initial packets contain encrypted data: the packet number (PN) and a `ClientHello`. Since there was not yet an opportunity to establish a common secret, these are encrypted using *initial keys* that can be derived from the unencrypted packet contents (the destination connection id). So they are basically unencrypted, it just takes a bit more computational effort to decode them.
 
@@ -62,7 +64,7 @@ We can of course still decide to filter by it, but this has the risk of an attac
 
 ### Retry packets
 
-QUIC contains an optional mechanism to solve this: We can decide to ask the sender to retry (11) with a server-generated token. This retry packet will then be sent to the sender address *we got from the UDP datagram*.
+QUIC contains an optional mechanism to solve this: We can decide to ask the sender to retry ([11](#first-byte)) with a server-generated token. This retry packet will then be sent to the sender address *we got from the UDP datagram*.
 
 ![Retry packet](/blog/quic-packet-rejection/retry-packet.svg)
 
@@ -80,9 +82,9 @@ But since the retry packet is smaller than the initial packet, this does not cau
 
 ![Handshake packet](/blog/quic-packet-rejection/handshake-packet.svg)
 
-The next step for requests that passed the initial filter is to send an initial (00) packet to the client containing a `ServerHello`, immediately followed by a handshake (10) packet containing `EncryptedExtensions`, `Certificate`, `CertificateVerify`, `Finished` to complete the server part of the handshake.
+The next step for requests that passed the initial filter is to send an initial ([00](#first-byte)) packet to the client containing a `ServerHello`, immediately followed by a handshake ([10](#first-byte)) packet containing `EncryptedExtensions`, `Certificate`, `CertificateVerify`, `Finished` to complete the server part of the handshake.
 
-The client then answers with a handshake (10) packet containing `Certificate`, `CertificateVerify` and `Finished`. At this point the handshake is complete and the server knows not just the ip address but also the identity of the client.
+The client then answers with a handshake ([10](#first-byte)) packet containing `Certificate`, `CertificateVerify` and `Finished`. At this point the handshake is complete and the server knows not just the ip address but also the identity of the client.
 
 This is the second opportunity for filtering. We can now do endpoint id based filtering. For example, we could prioritize known good peers but still allow new connections by having different rate limits for known good endpoint ids and unknown endpoint ids.
 
@@ -92,7 +94,7 @@ However, it should be noted that at this point the benefit of filtering is modes
 
 ### 0-rtt packets
 
-There is one additional form of long header packet. 0-rtt packets (01). The purpose of 0-rtt packets is to send application data before the handshake has completed. 0-rtt is a complex topic on it's own. For details see the [0-RTT blog post](/blog/0rtt-api).
+There is one additional form of long header packet. 0-rtt packets ([01](#first-byte)). The purpose of 0-rtt packets is to send application data before the handshake has completed. 0-rtt is a complex topic on it's own. For details see the [0-RTT blog post](/blog/0rtt-api).
 
 ## Short header packets
 
@@ -152,7 +154,7 @@ Datagrams that contain short header packets should be very moderately rate limit
 
 Datagrams that contain long header packets are where you get the most benefit:
 
-- Long header packets of type initial (00) with a length less than 1200 bytes can be immediately dropped.
+- Long header packets of type initial ([00](#first-byte)) with a length less than 1200 bytes can be immediately dropped.
 
 - They should be more strongly rate limited. There will be many more short header packets (ongoing connections) than long header packets (connection attempts), so rate limiting long header packets heavily will protect the endpoint from potentially having to execute many handshakes while having almost no effect on established connections.
 
