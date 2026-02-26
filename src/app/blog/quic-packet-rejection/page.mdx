@@ -140,6 +140,10 @@ So far we have covered QUIC packets that arrive via UDP datagrams. Iroh has an a
 
 For connections established via relays it is therefore possible to filter or rate limit very early based on the endpoint id we get from the relay.
 
+<Note>
+Filtering on the endpoint ids provided by the relay connection is a bit like filtering on an unvalidated sender address. This might be a spoofed endpoint id if the relay is lying to us. We have the opportunity later to filter on the verified endpoint id once the handshake is complete.
+</Note>
+
 ## Firewall recommendations
 
 A well implemented QUIC endpoint can handle a significant amount of spam on its own without breaking a sweat. But for a high throughput endpoint it is nevertheless helpful to set up a firewall to help drop packets even earlier.
