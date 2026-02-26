@@ -161,7 +161,8 @@ Datagrams that contain long header packets are where you get the most benefit:
 
 - A firewall could decode the initial packets in the firewall and do rate limiting or filtering based on ALPN. This won't help against an attacker (they can choose whatever ALPN they want), but will help in case of an endpoint that offers many different services of varying priority.
 
-## Iroh filtering and rate limiting API
+# Next steps
 
-![Connection filter pipeline](/blog/quic-packet-rejection/connection-filter.svg)
+In the next blog post we will implement a small iroh echo server and torture it with random and specially crafted UDP spam to see how all of this works in the real world!
 
+{/* [QUIC packet rejection in practice](/blog/quic-packet-rejection-in-practice) */}
