@@ -4,7 +4,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 export const post = {
   author: 'Rüdiger Klaehn',
   date: '2026-02-23',
-  title: 'How QUIC allows rejecting garbage packets',
+  title: 'How QUIC rejects garbage packets',
   description:
     'A look at how QUIC allows efficient rejection of invalid packets before they waste resources.',
 }
@@ -16,13 +16,13 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-# How noq rejects garbage packets
+# How QUIC rejects garbage packets
 
 Permissionless peer to peer systems frequently need to remain open to the world at least to some degree so that peers can join. But an endpoint that is open to the world is vulnerable to accidental or malicious spamming with random or even carefully crafted traffic.
 
-This blog post explains how QUIC, and in particular our QUIC implementation noq, deals with various malicious packets.
+This blog post explains how QUIC, and in particular our QUIC implementation, deals with various malicious packets.
 
-At the wire level, disregarding relays and custom transports for a bit, QUIC is using UDP datagrams. Noq is reading individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
+At the wire level, disregarding relays and custom transports for a bit, QUIC is using UDP datagrams. QUIC is reading individual datagrams from the operating system and then interprets them as higher level QUIC primitives, connections and streams.
 
 Each datagram can contain one or more QUIC packets.
 
@@ -124,7 +124,7 @@ Once the packet number is known, it is used to filter out packets. We can dismis
 
 At this point we have exhausted all the really cheap options to check packet validity, so we need to actually decrypt the packet.
 
-We will only get to this point if either the packet is valid, or an attacker has guessed a valid destination connection id and managed to get a packet number in the valid range. Connection ids are random values (noq uses 8 bytes), so guessing them correctly is extremely unlikely. The most realistic chance to guess them is to listen in to valid traffic.
+We will only get to this point if either the packet is valid, or an attacker has guessed a valid destination connection id and managed to get a packet number in the valid range. Connection ids are random values (many implemens use 8 bytes), so guessing them correctly is extremely unlikely. The most realistic chance to guess them is to listen in to valid traffic.
 
 During decryption, we check the AEAD auth tag to make sure the content is valid. The auth tag proves both data integrity and that the data was written by the owner of the encryption key. *At this point we know that the packet contents are real.*
 
