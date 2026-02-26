@@ -1,4 +1,4 @@
-<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
   <!-- Title -->
   <text x="350" y="18" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">First Byte Interpretation</text>
 
@@ -19,7 +19,7 @@
   <rect x="112" y="50" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
   <text x="140" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
 
-  <!-- bit 6: Fixed = 1 -->
+  <!-- bit 6: QUIC Bit = 1 -->
   <rect x="167" y="50" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
   <text x="195" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
 
@@ -48,7 +48,7 @@
   <rect x="112" y="110" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
   <text x="140" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">0</text>
 
-  <!-- bit 6: Fixed = 1 -->
+  <!-- bit 6: QUIC Bit = 1 -->
   <rect x="167" y="110" width="55" height="30" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
   <text x="195" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1</text>
 
@@ -60,24 +60,9 @@
   <rect x="277" y="110" width="275" height="30" rx="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/>
   <text x="414" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">masked</text>
 
-  <!-- Invalid row -->
-  <text x="70" y="188" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#ef4444">Invalid</text>
-
-  <!-- bit 7: any -->
-  <rect x="112" y="170" width="55" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="140" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#ef4444">*</text>
-
-  <!-- bit 6: Fixed = 0 -->
-  <rect x="167" y="170" width="55" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="195" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#ef4444">0</text>
-
-  <!-- rest -->
-  <rect x="222" y="170" width="330" height="30" rx="3" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="387" y="190" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#ef4444">not a valid QUIC packet</text>
-
   <!-- Bottom annotations (plain text, no boxes) -->
-  <text x="140" y="230" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Header</text>
-  <text x="140" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Form</text>
-  <text x="195" y="230" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Fixed</text>
-  <text x="195" y="240" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Bit</text>
+  <text x="140" y="170" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Header</text>
+  <text x="140" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Form</text>
+  <text x="195" y="170" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">QUIC</text>
+  <text x="195" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Bit</text>
 </svg>

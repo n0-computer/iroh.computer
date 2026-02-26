@@ -36,7 +36,7 @@ Long header packets are used for initiating new connections, short header packet
 
 With just a very brief inspection of a packet, it is possible to distinguish between datagrams that don't contain valid QUIC packets, long header packets and short header packets.
 
-Completely random packets can be quickly dismissed, but of course an attacker could craft packets that look like valid QUIC packets to a stateless firewall.
+Invalid long header packets can be quickly dismissed, but of course an attacker could craft packets that look like valid QUIC packets to a stateless firewall.
 
 <Note>
 This inspection requires just looking at a few bits in an individual UDP datagram in isolation, so it can also be done by a simple stateless firewall.
