@@ -1,0 +1,160 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2024-11-27',
+  title: 'Own your future!',
+  description:
+    'How to write somewhat ergonomic async callbacks with current async rust',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# Futures thoughts
+
+Futures want to be owned. This is not strictly speaking necessary, but the ergonomics of non-owned futures are horrible. People have been thinking about improving ergonomics for a while, and there are some [interesting proposals](https://smallcultfollowing.com/babysteps/blog/2024/06/26/claim-followup-1/) to improve things. But we will have to live with the current state for a while and possibly forever.
+
+Let's say you have a place you want to be able to customize using some sort of async callback. Here is a very simple version. Usually you got some boxing in there as well, but let's just use this.
+
+```rust
+async fn use_cb<F, Fut, T>(f: F) -> T
+where
+    F: Fn() -> Fut,
+    Fut: Future<Output = T> + 'static,
+{
+    f().await
+}
+```
+
+Now let's define a few callbacks and see how the above use_cb needs to be called. The struct on which we have the callbacks is called `Protocol` because this problem came up implementing an [iroh protocol](https://www.iroh.computer/blog/iroh-0-25-0-custom-protocols-for-all). But in async programming this situation comes up all the time.
+
+```rust
+struct Protocol { ... }
+
+impl Protocol {
+    async fn cb_by_ref(&self) -> String {
+        "async_cb_1".to_string()
+    }
+
+    async fn cb_by_val(self) -> String {
+        "async_cb_2".to_string()
+    }
+
+    async fn cb_by_arc(self: Arc<Self>) -> String {
+        "async_cb_3".to_string()
+    }
+}
+```
+
+# Async fn that takes self by ref
+
+```rust
+    // using a callback by reference
+    let proto2 = proto.clone();
+    use_cb(move || {
+        let proto3 = proto2.clone();
+        async move { proto3.cb_by_ref().await }
+    })
+    .await;
+```
+
+We need to use `move` for the function, since the callback needs to produce a future that is `'static` (self-contained). To do this and still have `proto` available later we need to make a clone `proto2`.
+
+Now, we need to await the callback in an async block, again so the resulting future is self-contained. If we would not do this, the future would contain a reference to the closure in which it is created.
+
+And last but not least we need to use `async move` so `proto2` is actually moved into the returned future, again to make it self contained.
+
+So why do we need `proto3`? You could say that without that it won't compile, but that explanation is a bit unsatisfactory. The issue is that our `use_cb` takes a `Fn`, not a `FnOnce`. So this must be a fn that can be called any number of times. And moving `proto2` out of the closure would make it single-use.
+
+This is **horrible**. None of the individual steps are particularly complex. But - I don't know about you, but when I have to figure this all out I have probably forgotten about the thing I was going to do in the first place. Often when in a hurry I find myself just splattering `move` and `.clone()` all over the place so I can move on while still remembering the actual problem.
+
+And I don't even want to think about how this looks to rust beginners if you show it to them in a workshop. I love rust, but this is embarrassing to explain.
+
+All of this would become much easier if our use_cb was not required to return a `'static` future, or at least if it was just taking a `FnOnce`. But in many cases, especially when spawning with a multithreaded, work-stealing based task scheduler like the ubiquitous `tokio` one, there is no escaping the `'static`.
+
+Even without `tokio::spawn`, in callbacks you often want to just require `'static` to avoid creating complex lifetime dependencies. Self-referential structs and futures are a complex topic on its own.
+
+Whether you need `FnOnce` or `Fn` of course depends on your use case, but in the case that prompted me to write this, I do need the `Fn`.
+
+# Async fn that takes self by value
+
+```rust
+    // using a callback by value
+    use_cb(|| proto.clone().cb_by_val()).await;
+```
+
+Since the callback takes proto by value, we have to call `.clone()` if we want proto to be available after wiring up the callback. But other than that, this is it. Since the async fn takes self, the returned future is already self-contained and can just be directly returned.
+
+# Async fn that takes an Arc<Self>
+
+Let's assume that your `Protocol` is not cloneable or at least not cheaply cloneable, but it is wrapped in an `Arc`.
+
+```rust
+    let arc_proto = Arc::new(proto.clone());
+```
+
+Now calling use_cb becomes just as simple as in the case above.
+
+```rust
+    // using a callback by Arc
+    use_cb(|| arc_proto.clone().cb_by_arc()).await;
+```
+
+However, there are two downsides here. Always having `Protocol` wrapped in an Arc makes declaring the fn more verbose and also adds a burden to the user.
+
+## Function declaration
+
+```rust
+    async fn cb_by_arc(self: Arc<Self>) -> String {
+        "async_cb_3".to_string()
+    }
+```
+
+## Use in a fn
+
+```rust
+async fn use_proto(proto1: Arc<Proto1>, proto2: Arc<Proto2>) { ...
+```
+
+## Calling the fn
+
+```rust
+use_proto(proto1.clone(), proto2.clone()).await
+```
+
+Also, the Arc tends to infect even internal code. You can't call functions that take an Arc<Self> if you have a &self, unless you make Self itself cheaply `Clone`able. But if you do the latter, you have double indirection and having the outer `Arc` is a bit pointless.
+
+Last but not least, this function signature boxes you in to use one particular kind of refcounting pointer, [Arc](https://doc.rust-lang.org/std/sync/struct.Arc.html). Maybe you know that your code is used from a single thread and want to use [Rc](https://doc.rust-lang.org/std/rc/struct.Rc.html). Or maybe you want to really optimize things and use a non-std arc that omits the weak refcount, like [Arc de triomphe](https://docs.rs/triomphe/latest/triomphe/). Or you are writing a library crate and leave the exact choice of refcounting pointer up to the user, using a crate like [archery](https://crates.io/crates/archery).
+
+With `Arc` in the fn signature, you have none of these options compared to if you just require `Self` to be cheaply cloneable in *some way*.
+
+# Making self `Copy`
+
+This is pretty rare, but sometimes it is possible to make self implement `Copy` instead of just `Clone`. This makes some things a bit nicer, but not as much as you might think.
+
+Using the callback that takes a reference now looks like this:
+
+```rust
+    // using a callback by reference
+    use_cb(move || async move { copy_proto.cb_by_ref().await }).await;
+```
+
+All the `.clone()`s are gone, but it is still not very nice. If you were to try to completely omit the whole ceremony, you would get this:
+
+```rust
+76 |     use_cb(|| copy_proto.cb_by_ref()).await;
+   |            -- ^^^^^^^^^^------------
+   |            |  |
+   |            |  borrowed value does not live long enough
+```
+
+Rustc *could* copy copy_proto into the generated future to make it self-contained. But it does not do so automatically. Which is a good thing. Just because something is `Copy` does not mean that copying is free, e.g. for a large `struct IAmCopy([u8;4096])`.
+
+One big downside of trying to make `Protocol` copy is the following though. If for whatever reason you have to do a change that means that `Protocol` can no longer be `Copy`, it will send shockwaves though the entire codebase. You might have to touch a lot of places. And if `Protocol` was in a library crate, your crate users will probably hate you.
