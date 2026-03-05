@@ -11,7 +11,7 @@ const companies = [
   "shaga",
   "rave",
   "delta_chat",
-  "recall"
+  "holochain",
 ];
 
 // interface LogoCloudProps {
@@ -64,9 +64,6 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
 
   return (
     <div>
-      <div className="pl-5 md:pl-10 pt-8 lg:max-w-none">
-        <h1 className="text-lg font-medium text-irohGray-600 dark:text-irohGray-200">Trusted at scale by the world&apos;s most innovative teams</h1>
-      </div>
       <div className="relative w-full overflow-hidden py-4">
         {/* Gradient masks for fading edges */}
         <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
@@ -84,7 +81,7 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
                   lightSrc={`/img/user-logos/${co}.png`}
                   width={height * 1.4}
                   height={height}
-                  className="object-contain"
+                  className="object-contain max-h-12 w-auto"
                 />
               </div>
             ))}

@@ -32,7 +32,7 @@ export default function DeltaChatSolutionPage() {
                 powering in-chat apps for hundreds of thousands of devices around the world.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer/signup?utm_source=website&utm_content=delta-chat-hero">
+                <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=delta-chat-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
                     Get Started
                   </Button>
@@ -108,7 +108,7 @@ export default function DeltaChatSolutionPage() {
               Get started with iroh and build apps that work everywhere.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer/signup?utm_source=website&utm_content=delta-chat-cta">
+              <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=delta-chat-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
