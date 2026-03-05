@@ -170,8 +170,6 @@ It exists **just for this experiment** and won't be updated, but we will make su
 
 Now let's do a minimal iroh endpoint setup and see what happens. An esp32 is an incredibly constrained environment. Every thread requires its own stack, so we will manually set up a single threaded tokio runtime instead of using `async fn main()`.
 
-We are not going to need *file* io, so we just enable timers, but not io, for the tokio runtime.
-
 Inside the runtime, we will just create an endpoint and do nothing with it.
 
 ```rust
@@ -262,7 +260,7 @@ abort() was called at PC 0x40350e8e on core 0
 
 ```
 
-What is it this time? Asking your favourtie coding LLM reveals that we need to register an eventfd VFS, which is used by the tokio runtime.
+What is it this time? Asking your favourite coding LLM reveals that we need to register an eventfd VFS, which is used by the tokio runtime.
 
 ```rust
 // Register eventfd VFS — needed by mio's poll implementation which powers tokio I/O
@@ -334,7 +332,7 @@ abort() was called at PC 0x40350e7a on core 0
     at ??:??
 ```
 
-Published iroh by default uses [ring] as the crypto provider. But ring is a C dependency with lots of operating system specific assembly code, which does not work on esp32.
+Published iroh by default uses [ring] as the crypto provider. But ring is a C dependency with lots of platform-specific assembly code, which does not work on esp32.
 
 There is an alternative crypto provider [aws-lc-rs], but it has the same problem — it wraps AWS-LC, a C library with platform-specific assembly that does not support the Xtensa architecture.
 
