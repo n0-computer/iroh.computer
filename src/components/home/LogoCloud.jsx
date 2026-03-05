@@ -4,14 +4,13 @@ import React from 'react';
 import {ThemeImage} from '@/components/ThemeImage'
 import { useEffect, useRef } from "react"
 
-// each of these has a png at /img/user-logos/${COMPANY}.png
 const companies = [
-  "spacedrive",
-  "nous",
-  "shaga",
-  "rave",
-  "delta_chat",
-  "holochain",
+  { name: "spacedrive", ext: "png" },
+  { name: "nous", ext: "png" },
+  { name: "shaga", ext: "png" },
+  { name: "rave", ext: "png" },
+  { name: "delta_chat", ext: "png" },
+  { name: "holochain", ext: "svg" },
 ];
 
 // interface LogoCloudProps {
@@ -72,13 +71,12 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map((co, index) => (
-              <div key={`${co}-${index}`} style={{ height, width: height * 1.4 }} className="flex items-center justify-center px-4">
+            {companies.map(({ name, ext }, index) => (
+              <div key={`${name}-${index}`} style={{ height, width: height * 1.4 }} className="flex items-center justify-center px-4">
                 <ThemeImage
-                  key={co}
-                  alt={`${co} logo`}
-                  darkSrc={`/img/user-logos/${co}.png`}
-                  lightSrc={`/img/user-logos/${co}.png`}
+                  alt={`${name} logo`}
+                  darkSrc={`/img/user-logos/${name}.${ext}`}
+                  lightSrc={`/img/user-logos/${name}.${ext}`}
                   width={height * 1.4}
                   height={height}
                   className="object-contain max-h-12 w-auto"
