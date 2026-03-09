@@ -20,25 +20,23 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Iroh works very well on modern hardware of various sizes, from smartphones to big multicore servers. But what if you want to use it in an embedded context?
 
-I have a little hobby project for home automation. A small box that controls a fan in a humid basement of my old house. The idea is to measure temperature and humidity inside and outside, and then run the fan only when getting outside air in would be a net benefit for humidity.
+I have a little hobby project for home automation. Naturally I thought about putting iroh on it.
 
-![Humid basement](/blog/iroh-on-esp32/basement.jpg)
+Of course it would be easy to just get a [Raspberry Pi] and put iroh on it. But that would double the cost of the project and also not be very elegant.
 
-I would like to have some remote control and monitoring abilities for this box. Naturally I thought about putting iroh on it.
+So let's instead try to get iroh to work on some really cheap embedded device, an ESP32. More specifically an [Espressif ESP32 WROVER][esp32-wrover] chip that is the part of many cheap ESP32 dev kits.
 
-Of course it would be easy to just get a raspberry pi and put iroh on it. But that would double the cost of the project and also not be very elegant.
+You might think that it is impossible to get a complete QUIC stack including TLS to run on such a small device. But on the other hand, this CPU is about as powerful as the first 32 bit computer I owned, an AMD 386DX40 with 4 MiB of RAM. Back in 1992 this was considered a very powerful computer. It even ran DOOM.
 
-The ESP32 on the other hand is about as powerful as the first 32 bit computer I ever owned, an AMD 386DX40 with 4 MiB of RAM. Surely it should be possible to run iroh on that...
+Surely it should be possible to run iroh on that...
 
-![Raspberry Pi vs ESP32 size comparison](/blog/iroh-on-esp32/pi_vs_esp.jpg)
-
-So let's instead try to get iroh to work on some really cheap embedded device, an ESP32. More specifically an Espressif ESP32 WROVER chip that is the part of many cheap ESP32 dev kits.
+![Raspberry Pi vs ESP32 size comparison](/blog/iroh-on-esp32/pi_vs_esp32.jpg)
 
 <Note>
 While just a bare Pi4 is about 100 EUR, you get an entire ESP32 dev kit including camera, sensors, actuators, breadboard and extension board for less than half.
 </Note>
 
-Of course the ESP32 is a very limited environment compared to even the smallest raspberry pi. You get around 4MiB of application memory and ~500 KiB of internal memory. For some variants, like the one we are working with, you get some additional memory.
+Of course the ESP32 is a very limited environment compared to even the smallest Raspberry Pi. You get around 4MiB of flash for the application binary and ~500 KiB of internal RAM. For some variants, like the one we are working with, you get some additional memory.
 
 So it is going to be a tight fit.
 
@@ -50,10 +48,10 @@ We are not going to spend too much time with the main point of an ESP32, input a
 
 To set up a simple hello world project, there is a [project template][esp-idf-template].
 
-This will give you a rust project that uses a proper operating system ([FreeRTOS][freertos]). This is required since iroh needs std and TCP/IP and wifi support.
+This will give you a rust project that uses a proper operating system ([FreeRTOS]). This is required since iroh needs std and TCP/IP and WiFi support.
 
 <Note>
-For minimal projects that don't need wifi you can even run on bare metal. I have used this successfully for smaller projects. It's fun!
+For minimal projects that don't need WiFi you can even run on bare metal. I have used this successfully for smaller projects.
 </Note>
 
 ```
@@ -72,13 +70,11 @@ For minimal projects that don't need wifi you can even run on bare metal. I have
 
 ```
 
-We now have a minimal hello world project with the esp32 tool chain set up, and can run it.
+We now have a minimal hello world project with the ESP32 tool chain set up, and can run it.
 
-Building this will download a lot of things for the custom toolchain.
+Building this for the first time will download a custom toolchain. Some variants of the ESP32 use a [RISC-V] architecture, which does not require a custom toolchain.
 
-Running it will try to flash it on a connected device, so you need an esp32 connected to your development machine via USBC.
-
-Sometimes it does not find the device: unplugging and plugging in often helps.
+Running it will try to flash it on a connected device, so you need an ESP32 connected to your development machine via USB-C Sometimes it does not find the device: unplugging and plugging in often helps.
 
 ```
 ❯ cargo run
@@ -158,19 +154,21 @@ I (444) esp32_blog_post: Hello, world!
 I (444) main_task: Returned from app_main()
 ```
 
-If we just do the naive thing and `cargo add iroh`, we get a lot of compile errors. It turns out that while the esp32 platform `espidf` is an `unix`, it does not support some advanced features like [cmsg]. Several symbols in the esp32 specific libc are just not there.
+If we just do the naive thing and `cargo add iroh`, we get a lot of compile errors. It turns out that while the ESP32 platform `espidf` is an `unix`, it does not support some advanced features like [cmsg]. Several symbols in the ESP32 specific libc are just not there. Also, many 32 bit architectures used for embedded devices don't have 64 bit atomic support.
 
-We will make sure to have special support, but for now you will have to use a special branch of iroh.
+We will make sure to support ESP32 from iroh main in the future, but for now you will have to use a special branch of iroh.
 
 <Note>
 This branch of iroh is using a branch of our QUIC implementation noq, as well as various other changes.
 
-It exists **just for this experiment** and won't be updated, but we will make sure to have proper esp32 support in iroh later.
+It exists **just for this experiment** and won't be updated.
 </Note>
 
-Now let's do a minimal iroh endpoint setup and see what happens. An esp32 is an incredibly constrained environment. Every thread requires its own stack, so we will manually set up a single threaded tokio runtime instead of using `async fn main()`.
+Now let's do a minimal iroh endpoint setup and see what happens. An ESP32 is an incredibly constrained environment. Every thread requires its own stack, so we will manually set up a single threaded tokio runtime instead of using `async fn main()`.
 
-Inside the runtime, we will just create an endpoint and do nothing with it.
+There is some setup needed before the runtime can even start, so using tokio::main is not an option even if you configure a single threaded runtime.
+
+Inside the runtime, we will just create an endpoint.
 
 ```rust
     let rt = tokio::runtime::Builder::new_current_thread()
@@ -183,13 +181,13 @@ Inside the runtime, we will just create an endpoint and do nothing with it.
             .bind()
             .await
             .expect("unable to bind endpoint");
-        info!("Hello, world!");
+        info!("Hello, iroh!");
     });
 ```
 
 # Missing symbols
 
-When we compile this, we get a linker error. Esp32 does not provide a symbol that one of the iroh dependencies needs.
+When we compile this, we get a linker error. ESP32 does not provide a symbol that one of the iroh dependencies needs.
 
 ```
 undefined reference to `gethostname'
@@ -210,11 +208,11 @@ unsafe extern "C" fn gethostname(name: *mut core::ffi::c_char, len: usize) -> co
 
 Once we do that, compilation proceeds a bit further. We get to linking. But the troubles don't stop.
 
+# Binary size issues
+
 ```
 region `iram0_2_seg' overflowed by 168642 bytes
 ```
-
-# Binary size issues
 
 Our binary is too large even in release mode to fit on the ESP32. But not by much. So we can just enable link time optimizations for release builds to get below the limit in `Cargo.toml`. While we are at it, we also optimize for size.
 
@@ -228,10 +226,10 @@ codegen-units = 1
 ```
 
 <Note>
-Binary size is a constant issue during development for small embedded devices. There are various ways in the iroh branch we are using to deduce code size and dependencies to reduce this problem.
+Binary size is a constant issue during development for small embedded devices. There are various ways in the iroh branch we are using to reduce code size and dependencies to solve this problem.
 </Note>
 
-After the lto change, we finally get to flash the program on the ESP32, which takes a while. We are almost at the size limit (88.53%).
+After enabling [lto], we finally get to flash the program on the ESP32, which takes a while. We are almost at the size limit (88.53%).
 
 Once flashing is complete we are greeted with a runtime error:
 
@@ -273,7 +271,7 @@ unsafe { esp_idf_svc::sys::esp_vfs_eventfd_register(&eventfd_config) };
 
 # Memory
 
-After flashing this change, we get a little bit further. This time we have a problem with malloc failing.
+After flashing this change, we get a little bit further. This time we have a problem with malloc failing. [Guru Meditation] Error? Somebody likes Amiga it seems...
 
 ```
 Guru Meditation Error: Core  0 panic'ed (LoadProhibited). Exception was unhandled.
@@ -284,7 +282,7 @@ PC      : 0x400897b9  PS      : 0x00060733  A0      : 0x800892c0  A1      : 0x3f
     at ??:??
 ```
 
-The default configuration uses only the internal memory of the esp32. But that is very little. You can see a list of memory ranges during startup:
+The default configuration uses only the internal memory of the ESP32. But that is very little. You can see a list of memory ranges during startup:
 
 ```
 I (1413) heap_init: Initializing. RAM available for dynamic allocation:
@@ -308,7 +306,7 @@ CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=0
 CONFIG_SPIRAM_MALLOC_RESERVE_INTERNAL=0
 ```
 
-We have configured all dynamic allocation to use the external SPIRAM, and this has allowed us to increase the stack size generously.
+We have configured all dynamic allocation to use the external [SPIRAM], and this has allowed us to increase the stack size generously.
 
 Enabling external memory makes our memory problems go away for now:
 
@@ -332,13 +330,13 @@ abort() was called at PC 0x40350e7a on core 0
     at ??:??
 ```
 
-Published iroh by default uses [ring] as the crypto provider. But ring is a C dependency with lots of platform-specific assembly code, which does not work on esp32.
+Published iroh by default uses [ring] as the crypto provider. But ring is a C dependency with lots of platform-specific assembly code, which does not work on ESP32.
 
 There is an alternative crypto provider [aws-lc-rs], but it has the same problem — it wraps AWS-LC, a C library with platform-specific assembly that does not support the Xtensa architecture.
 
 So what do we do? Rustls provides pluggable crypto providers, and the latest version of iroh makes sure to always use the configured provider.
 
-So now we would have two options. Implement a rust only crypto provider, or implement a crypto provider that uses the esp32 built in hardware acceleration.
+So now we would have two options. Implement a rust only crypto provider, or implement a crypto provider that uses the ESP32 built in hardware acceleration.
 
 The latter would be the right thing to do for a production system, but for now we are going to just do a pure rust version.
 
@@ -379,13 +377,60 @@ At this point the endpoint setup works. Now all that remains to be done is to ad
 
 Also we will use a compile time environment variable IROH_SECRET to allow configuring the endpoint id.
 
+We also have the endpoint print a short and long ticket on the debug output, so we can try dialing it either using an ip address or address lookup.
 
+```
+I (7567) esp32_blog_post: Iroh endpoint bound
+I (7567) esp32_blog_post:   Listening on: 192.168.0.186:62781
+I (7567) esp32_blog_post:   Endpoint ID: 88096ffd6d3048ad7c1050645ae5b8fbf731963d892abe282736a7fbabd8f212
+I (7587) esp32_blog_post:   Short ticket: endpointaceas375nuyerll4cbigiwxfxd57ommwhwesvprie43kp65l3dzbeaa
+I (7597) esp32_blog_post:   Long ticket:  endpointaceas375nuyerll4cbigiwxfxd57ommwhwesvprie43kp65l3dzbeaibadakqaf2xxvag
+I (7607) esp32_blog_post: Router started, accepting connections
+```
+
+To test this, we have a client in the repo for this blog post that uses published iroh from crates.io.
+
+```
+esp32-blog-post/client on  main is 📦 v0.1.0 via 🦀 v1.93.1 took 12s 
+❯ cargo run endpointaceas375nuyerll4cbigiwxfxd57ommwhwesvprie43kp65l3dzbeaa
+Connecting to ESP32...
+Connected!
+Sent: Hello from iroh (crates.io)!
+Received: Hello from iroh (crates.io)!
+Echo OK — crates.io iroh <-> ESP32!
+```
+
+And that's it! We got an almost complete iroh endpoint running on a tiny device, that we can talk to from *any* iroh endpoint.
+
+# Next steps
+
+For my home automation project, the next step is to finally wire up some sensors and actuators. I am using two [DHT22] temperature and humidity sensors for the sensor part, a LED display, and a solid state relay to switch a 220V load.
+
+This is where the ESP32 shines: you can wire up all kinds of sensors and actuators in minutes to the numerous GPIO ports. For example you can drive most servos directly from the ESP32, which has built in [PWM support][ledc].
+
+And ESP32 boards are cheap and small enough that you can fit a complete project in a tiny box.
+
+For the iroh project, this experiment revealed a number of places where we can reduce dependencies, several of which already made it to iroh main. We will make sure that iroh main compiles on 32 bit embedded architectures, and that expensive dependencies are optional.
+
+In this project we succeeded in running iroh on an ESP32 with just 4 MiB of flash and 4 MiB of SPIRAM. But [more powerful variants][esp32-s3] are also available and cheap, if you need some heavy non-iroh dependencies or memory for e.g. image processing.
+
+For a hobby project I would suggest getting one of the more powerful variants. Playing with sensors is fun, waiting for lto compilation for every build is not.
 
 [esp-rs-book]: https://docs.esp-rs.org/book/
 [esp-idf-template]: https://github.com/esp-rs/esp-idf-template
-[freertos]: https://www.freertos.org/
+[FreeRTOS]: https://www.freertos.org/
 [cmsg]: https://man7.org/linux/man-pages/man3/cmsg.3.html
 [ring]: https://github.com/briansmith/ring
 [aws-lc-rs]: https://github.com/aws/aws-lc-rs
 [rustls-rustcrypto]: https://docs.rs/rustls-rustcrypto
 [rustls-rustcrypto-fork]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
+[Raspberry Pi]: https://www.raspberrypi.com/
+[SPIRAM]: https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/external-ram.html
+[ledc]: https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/ledc.html
+[DHT22]: https://www.adafruit.com/product/385
+[esp32-wrover]: https://www.espressif.com/en/products/modules/esp32
+[lto]: https://doc.rust-lang.org/cargo/reference/profiles.html#lto
+[Guru Meditation]: https://en.wikipedia.org/wiki/Guru_Meditation
+[RISC-V]: https://en.wikipedia.org/wiki/RISC-V
+[esp32-s3]: https://www.espressif.com/en/products/socs/esp32-s3
+
