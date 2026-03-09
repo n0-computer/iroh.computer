@@ -400,21 +400,31 @@ Received: Hello from iroh (crates.io)!
 Echo OK — crates.io iroh <-> ESP32!
 ```
 
-And that's it! We got an almost complete iroh endpoint running on a tiny device, that we can talk to from *any* iroh endpoint.
+And that's it! We got a complete iroh endpoint running on a tiny device, that we can talk to from *any* iroh endpoint.
 
 # Next steps
 
 For my home automation project, the next step is to finally wire up some sensors and actuators. I am using two [DHT22] temperature and humidity sensors for the sensor part, a LED display, and a solid state relay to switch a 220V load.
 
+![Sensor project](/blog/iroh-on-esp32/sensorproject.jpg)
+
 This is where the ESP32 shines: you can wire up all kinds of sensors and actuators in minutes to the numerous GPIO ports. For example you can drive most servos directly from the ESP32, which has built in [PWM support][ledc].
 
 And ESP32 boards are cheap and small enough that you can fit a complete project in a tiny box.
+
+![Project in a box](/blog/iroh-on-esp32/inabox.jpg)
 
 For the iroh project, this experiment revealed a number of places where we can reduce dependencies, several of which already made it to iroh main. We will make sure that iroh main compiles on 32 bit embedded architectures, and that expensive dependencies are optional.
 
 In this project we succeeded in running iroh on an ESP32 with just 4 MiB of flash and 4 MiB of SPIRAM. But [more powerful variants][esp32-s3] are also available and cheap, if you need some heavy non-iroh dependencies or memory for e.g. image processing.
 
+# Trying it out
+
 For a hobby project I would suggest getting one of the more powerful variants. Playing with sensors is fun, waiting for lto compilation for every build is not.
+
+The project for this blog post is https://github.com/n0-computer/iroh-esp32-example. It uses a patched version of iroh and its dependencies that works for this example. We will gradually add stable embedded systems support to iroh.
+
+If you have a special requirement for a commercial project, talk to us.
 
 [esp-rs-book]: https://docs.esp-rs.org/book/
 [esp-idf-template]: https://github.com/esp-rs/esp-idf-template
