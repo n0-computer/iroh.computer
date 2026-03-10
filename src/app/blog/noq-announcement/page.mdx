@@ -48,9 +48,11 @@ Our fork started small.
 We wanted to track upstream Quinn closely, contribute back where we could, and keep our diff minimal.
 That was the right call at the time.
 But as we pushed further into QUIC multipath, NAT traversal, and our own relay-as-a-path architecture,
-the development velocity of the two projects drifted into iteration cycles that didn't match,
-which would lead to an unreasonable review burden for Quinn maintainers.
-The n0 team wanted to try deeper, structural changes to our QUIC implementation, and it would have been unfair to foist the consequences of those changes onto all Quinn users. We think a hard fork with a continued commitment to collaboration makes more sense all around. 
+the development velocity of the two projects drifted into iteration cycles that didn't match.
+All our constant changed would lead to an unreasonable review burden for the Quinn maintainers.
+The n0 team wanted to try deeper, structural changes to our QUIC implementation,
+and it would have been unfair to foist the consequences of those changes onto all Quinn users.
+We think a hard fork with a continued commitment to collaboration makes more sense all around. 
 
 So we went all the way.
 We explained our thinking [in the Quinn multipath issue thread](https://github.com/quinn-rs/quinn/issues/224#issuecomment-3842537530).
@@ -64,7 +66,8 @@ is the honest path forward.
 ## QUIC Multipath
 
 The headline feature is a full implementation of the [QUIC Multipath spec](https://quicwg.org/multipath/draft-ietf-quic-multipath.html).
-This is where the real architectural shift happened.
+This is where the real architectural shift happened,
+both inside Quinn/noq and for iroh's use.
 Before multipath, iroh managed multiple paths (relay, direct IPv4, direct IPv6) as a kind of sleight of hand below the QUIC layer.
 Quinn thought it was talking to the other endpoint via just one IP address while we shuffled packets across whichever path was working best.
 Kind of like iroh's own small NAT around Quinn.
@@ -76,14 +79,22 @@ QUIC knows about all of them, maintains per-path congestion state,
 and can reason about which one to use.
 This means the latency improvements we had to hack in via congestion controller resets are now handled correctly and systematically.
 
+The multipath implementation is generic though,
+it does not only serve iroh.
+It aims at being a full implementation of the [QUIC Multipath spec],
+for any purpose.
+The implementation is still young however,
+so if you need more APIs from it, let us know.
+
 ## QUIC NAT Traversal
 
 We've implemented our own interpretation of the [QUIC NAT traversal draft](https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/).
-To our knowledge, we're the first to do this in a production-grade, robust way.
+To our knowledge we're the first to do this in a production-grade, robust way.
 NAT traversal is notoriously finicky,
 getting it right across the full range of NAT behaviors in the wild is a hard problem,
 and we've been battle-testing our approach across the hundreds of thousands of devices already running iroh.
 Though this is in no way a settled spec yet, we will keep iterating.
+
 Expressing NAT traversal hole-punching directly as a QUIC-level operation,
 rather than something happening beneath it,
 is cleaner and more reliable,
@@ -91,10 +102,11 @@ because it makes the QUIC congestion controller aware of it and allows better lo
 
 ## QUIC Address Discovery
 
-iroh has been using our implementation of [QUIC Address Discovery](https://datatracker.ietf.org/doc/draft-ietf-quic-address-discovery/) (QAD) with QUIC connections to iroh relays to learn about public IP addresses of clients since iroh version 0.32.
-Previously we were using STUN for this,
-but QUIC enables encrypting these packets without sacrificing round-trips compared to STUN,
-preventing protocol ossification and enhancing user privacy. 
+iroh has been using out implementation of [QUIC Address Discovery](https://datatracker.ietf.org/doc/draft-ietf-quic-address-discovery/) (QAD) since iroh version 0.32.
+QAD uses QUIC connections to learn about public IP addresses of clients,
+which was previously done using STUN.
+QUIC enables encrypting these packets without sacrificing round-trips compared to STUN,
+preventing protocol ossification and enhanced user privacy.
 
 # Already in production
 
