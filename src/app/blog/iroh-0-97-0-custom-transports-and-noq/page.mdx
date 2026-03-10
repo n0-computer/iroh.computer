@@ -30,7 +30,9 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
 
-You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
+You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of Quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
+
+**Important:** Starting with this release, the `Endpoint` no longer attempts to close connections gracefully when dropped. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application.
 
 Here's the rundown:
 
@@ -76,9 +78,9 @@ Checkout [PR #3845](https://github.com/n0-computer/iroh/pull/3845) for more deta
 
 ## 📦 Hello, noq
 
-If you've been following along, you know that `iroh` has been built on a fork of the [`quinn`](https://github.com/quinn-rs/quinn) QUIC implementation. Over time, our fork diverged significantly as we added multipath support, QUIC NAT traversal, and other features that `iroh` needs.
+If you've been following along, you know that `iroh` has been built on a fork of the [`Quinn`](https://github.com/quinn-rs/quinn) QUIC implementation. Over time, our fork diverged significantly as we added multipath support, QUIC NAT traversal, and other features that `iroh` needs.
 
-With this release, our fork has graduated into its own project: [`noq`](https://github.com/n0-computer/noq). This isn't just a rename - it reflects the reality that our QUIC implementation has its own direction and focus. All internal references have been updated from `quinn` to `noq`, and types are now re-exported from `noq` directly.
+With this release, our fork has graduated into its own project: [`noq`](https://github.com/n0-computer/noq). This isn't just a rename - it reflects the reality that our QUIC implementation has its own direction and focus. All internal references have been updated from `Quinn` to `noq`, and types are now re-exported from `noq` directly.
 
 For most users, this is a search-and-replace change: anywhere you were using `iroh_quinn` or `iroh_quinn_proto` types, you'll now find them under `noq` and `noq_proto`.
 
@@ -108,7 +110,7 @@ let endpoint = Endpoint::builder()
     .await?;
 ```
 
-Options include embedded WebPKI roots (the default), the operating system's roots, a custom list of roots, or any combination with additional extra roots. The `insecure_skip_verify` option is still available but is now gated behind the `test-utils` feature where it belongs.
+Options include embedded WebPKI roots (the default), the operating system's roots, a custom list of roots, or any combination with additional extra roots. The `insecure_skip_verify` option is still available as `CaRootsConfig::insecure_skip_verify()`, gated behind the `test-utils` feature as before.
 
 Checkout [PR #3973](https://github.com/n0-computer/iroh/pull/3973) for more details.
 
@@ -125,14 +127,14 @@ Endpoint::builder()
             addrs.iter()
                 .filter(|a| !matches!(a, TransportAddr::Custom(_)))
                 .cloned()
-                .collect::<Vec<_>>()
+                .collect()
         })))
     .address_lookup(MyBluetoothLookup::new())
     .bind()
     .await?;
 ```
 
-The filter runs first, then the lookup service's own internal filtering runs second. This gives you fine-grained control over what gets published where.
+The `AddrFilter` runs before the addresses are passed to the lookup service. Some services may do additional filtering internally afterwards, but the `AddrFilter` always runs first.
 
 Checkout [PR #3960](https://github.com/n0-computer/iroh/pull/3960) and [PR #3987](https://github.com/n0-computer/iroh/pull/3987) for more details.
 
@@ -142,7 +144,7 @@ We've made several improvements to how `Endpoint` behaves when closed or dropped
 
 **Sensible return values after close.** Methods like `Endpoint::address_lookup()`, `Endpoint::dns_resolver()`, and `Endpoint::socket()` now return `Result<_, EndpointError>` instead of potentially returning stale values or panicking after the endpoint has been closed. A new `EndpointError::Closed` variant makes it easy to handle this case. We also added `Endpoint::last_net_report()` which returns the most recent `NetReport` as an `Option`.
 
-**Explicit close is now required.** The `Endpoint` no longer makes any best-effort attempt to close connections gracefully when dropped. If you drop an endpoint without calling `Endpoint::close`, resources are cleaned up immediately but connections will not be closed gracefully. This makes it even more important to call `Endpoint::close` in all cases. An error will be logged if you forget.
+**Explicit close is now required.** The `Endpoint` no longer makes any best-effort attempt to close connections gracefully when dropped. If you drop an endpoint without calling `Endpoint::close`, resources are cleaned up immediately but connections will not be closed gracefully. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application. An error will be logged if you forget.
 
 **Relay connection stability.** The relay server no longer kills existing connections when the same endpoint ID reconnects. Instead, the new connection becomes the active target for messages while the old connection is moved to an inactive state. When the active client disconnects, the latest inactive client is promoted back. This prevents the infinite reconnect loop that could occur previously.
 
