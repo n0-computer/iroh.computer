@@ -90,6 +90,8 @@ The `iroh-relay` crate has always let you run a standalone relay server, but wha
 
 `RelayService` is now public, and the relay internals have been refactored to be generic over stream types. This means you can integrate the relay server into your own `axum` application, adding relay capabilities alongside your existing HTTP endpoints. All the types you need for external integration are now public and documented.
 
+Thanks to [Nicolas Luck](https://github.com/lucksus) for contributing this feature!
+
 Checkout [PR #3832](https://github.com/n0-computer/iroh/pull/3832) for more details.
 
 ## 🔐 Customizable TLS Trust Roots
@@ -132,7 +134,7 @@ Endpoint::builder()
 
 The filter runs first, then the lookup service's own internal filtering runs second. This gives you fine-grained control over what gets published where.
 
-Checkout [PR #3960](https://github.com/n0-computer/iroh/pull/3960) for more details.
+Checkout [PR #3960](https://github.com/n0-computer/iroh/pull/3960) and [PR #3987](https://github.com/n0-computer/iroh/pull/3987) for more details.
 
 ## 🏗️ Endpoint Lifecycle Improvements
 
