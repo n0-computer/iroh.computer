@@ -30,12 +30,12 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a library for building direct connections between devices, putting more control in the hands of your users.
 
-This release delivers on a promise we've been building toward: custom transports are here. You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
+You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
 
 Here's the rundown:
 
 - **Custom Transports**: Define your own transport implementations beyond UDP/IP
-- **noq**: Our QUIC implementation is now a standalone project, and `iroh` fully uses it
+- **noq**: Our QUIC implementation is now a standalone project
 - **Embeddable Relay Server**: `RelayService` is now public for library embedding
 - **Customizable TLS Trust Roots**: Control certificate verification for non-iroh TLS connections
 - **Address Filtering**: Filter and reorder addresses published by address lookup services
@@ -72,19 +72,25 @@ As the name suggests, the custom transport API is unstable and will remain so fo
 
 There is a limited API to configure preferences for custom transports. This is an area that we expect to refine and improve in the future.
 
+Checkout [PR #3845](https://github.com/n0-computer/iroh/pull/3845) for more details.
+
 ## 📦 Hello, noq
 
 If you've been following along, you know that `iroh` has been built on a fork of the [`quinn`](https://github.com/quinn-rs/quinn) QUIC implementation. Over time, our fork diverged significantly as we added multipath support, QUIC NAT traversal, and other features that `iroh` needs.
 
-With this release, our fork has graduated into its own project: [`noq`](https://github.com/n0-computer/noq). This isn't just a rename - it reflects the reality that our QUIC implementation has its own direction and goals. All internal references have been updated from `quinn` to `noq`, and types are now re-exported from `noq` directly.
+With this release, our fork has graduated into its own project: [`noq`](https://github.com/n0-computer/noq). This isn't just a rename - it reflects the reality that our QUIC implementation has its own direction and focus. All internal references have been updated from `quinn` to `noq`, and types are now re-exported from `noq` directly.
 
 For most users, this is a search-and-replace change: anywhere you were using `iroh_quinn` or `iroh_quinn_proto` types, you'll now find them under `noq` and `noq_proto`.
+
+Checkout [PR #4005](https://github.com/n0-computer/iroh/pull/4005) for more details.
 
 ## 🏠 Embeddable Relay Server
 
 The `iroh-relay` crate has always let you run a standalone relay server, but what if you want to embed relay functionality directly into your own application? Now you can.
 
 `RelayService` is now public, and the relay internals have been refactored to be generic over stream types. This means you can integrate the relay server into your own `axum` application, adding relay capabilities alongside your existing HTTP endpoints. All the types you need for external integration are now public and documented.
+
+Checkout [PR #3832](https://github.com/n0-computer/iroh/pull/3832) for more details.
 
 ## 🔐 Customizable TLS Trust Roots
 
@@ -101,6 +107,8 @@ let endpoint = Endpoint::builder()
 ```
 
 Options include embedded WebPKI roots (the default), the operating system's roots, a custom list of roots, or any combination with additional extra roots. The `insecure_skip_verify` option is still available but is now gated behind the `test-utils` feature where it belongs.
+
+Checkout [PR #3973](https://github.com/n0-computer/iroh/pull/3973) for more details.
 
 ## 🔍 Address Filtering for Address Lookup Services
 
@@ -124,6 +132,8 @@ Endpoint::builder()
 
 The filter runs first, then the lookup service's own internal filtering runs second. This gives you fine-grained control over what gets published where.
 
+Checkout [PR #3960](https://github.com/n0-computer/iroh/pull/3960) for more details.
+
 ## 🏗️ Endpoint Lifecycle Improvements
 
 We've made several improvements to how `Endpoint` behaves when closed or dropped:
@@ -134,15 +144,21 @@ We've made several improvements to how `Endpoint` behaves when closed or dropped
 
 **Relay connection stability.** The relay server no longer kills existing connections when the same endpoint ID reconnects. Instead, the new connection becomes the active target for messages while the old connection is moved to an inactive state. When the active client disconnects, the latest inactive client is promoted back. This prevents the infinite reconnect loop that could occur previously.
 
+Checkout [PR #3924](https://github.com/n0-computer/iroh/pull/3924), [PR #3879](https://github.com/n0-computer/iroh/pull/3879), and [PR #3921](https://github.com/n0-computer/iroh/pull/3921) for more details.
+
 ## 📊 Improved Incoming Connection Info
 
 `Incoming::remote_addr` (renamed from `remote_address`) now returns an `IncomingAddr` enum instead of a raw socket address. Previously, relay connections exposed a synthetic IPv6 address that wasn't useful for making decisions. Now you get all available information about the incoming connection, making it easy to implement rate limiting or access control at the connection layer.
+
+Checkout [PR #3949](https://github.com/n0-computer/iroh/pull/3949) for more details.
 
 ## 📈 Path Watcher Stats Retention
 
 `Connection::paths` and `ConnectionInfo::paths` now return a `PathWatcher`, a named struct that still implements `n0_watcher::Watcher`. Stats for abandoned or closed paths are retained as long as there are active watchers subscribed. This means you won't lose visibility into path statistics just because a path was closed, which is useful for monitoring and debugging multipath connections.
 
 Note that `PathInfo::stats` and `PathInfo::rtt` now return `Option`, returning `None` if the underlying connection has been dropped.
+
+Checkout [PR #3899](https://github.com/n0-computer/iroh/pull/3899) for more details.
 
 ## ⚠️ Breaking Changes
 
