@@ -69,7 +69,7 @@ export default function Page() {
                 <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
                   The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and relays are stateless — host across regions and clouds, or self-host anywhere.
                 </p>
-                <Link href='https://docs.iroh.computer/concepts/relay' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Fast+Connections+Click'>
+                <Link href='https://docs.iroh.computer/concepts/relays' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Fast+Connections+Click'>
                   Learn about Relays <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
               </div>
