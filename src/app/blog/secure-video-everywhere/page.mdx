@@ -31,7 +31,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 This security camera is a prototype involving a Raspberry Pi, a camera, and more tape than I'd care to admit. If I had to pick between this and a proprietary commercial security camera product right now, I would take the bundle of plastic and tape hands down.
 
-That's because the tech running on Tape Boy over here is a glimpse of the future. It's a new stack in the world of streaming video: iroh and Media over QUIC (MoQ).
+That's because the tech running on Tape Boy over here is a glimpse of the future. It's a new stack in the world of streaming video: iroh and [Media over QUIC (MoQ)](https://doc.moq.dev/).
 
 <div className="not-prose">
   <img src="/blog/secure-video-everywhere/tapeboy.png"  width={1200} height={754} alt="A Raspberry Pi with a camera taped to it, next to a security camera" />
@@ -66,7 +66,7 @@ Iroh with MoQ looks a little different.
 
 *Our little camera won't  generate any video at all unless someone is connected.*
 
-This is the first really big win of MoQ: **it's poll-based**. Streams are only
+This is the first really big win of [MoQ](https://doc.moq.dev/): **it's poll-based**. Streams are only
 created when someone asks for them. And this one incredibly simple difference is
 the biggest win for video efficiency generally. It's less strain on batteries.
 It's less data over the network, which leaves more room for doom-scrolling,
@@ -74,7 +74,7 @@ encoding other things, whatever you want to do.
 
 But to get there, we have a problem: how do we connect to the camera to tell it to start sending video in the first place?
 
-Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming)
+Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming) or the [MoQ documentation](https://doc.moq.dev/).
 
 ## That's where iroh comes in
 
@@ -83,7 +83,7 @@ your phone can reach out to a camera in your house, your car, your conference
 room, film set, football stadium—wherever you want it to go. Iroh will create an
 encrypted connection directly between the camera and your device.
 
-So iroh gives us QUIC connections that work everywhere, and MoQ gives us
+So iroh gives us QUIC connections that work everywhere, and [MoQ](https://doc.moq.dev/) gives us
 first-class streaming tools purpose-built for QUIC. If you look at how well all
 this lines up, you'd think we planned it all out in advance. But delightfully,
 this is just another win for open standards, all coalescing around QUIC.
@@ -115,4 +115,4 @@ For now, this is just a taste of where we'd like to go with video and iroh.
 Hopefully you find this interesting. Stay tuned for more, and [join us on
 Discord](https://discord.gg/iroh) to come hang.
 
-Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming)
+Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming) or the [MoQ documentation](https://doc.moq.dev/).
