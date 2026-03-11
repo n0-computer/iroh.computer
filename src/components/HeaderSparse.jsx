@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
+import { Button } from './Button';
 
 function TopLevelNavItem({ href, children }) {
   return (
@@ -85,9 +86,15 @@ export function HeaderSparse() {
                 {navItems.map((item, i ) => {
                   return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
                 })}
-                <DiscordLink />
                 <li className='mt-0.5'>
                   <GithubStars />
+                </li>
+                <li>
+                  <Link
+                    href="https://iroh.computer/discord"
+                    className='px-3 py-2 -mt-2 flex text-sm bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 transition hover:text-irohPurple-500 dark:hover:text-irohPurple-500 hover:bg-black/10 rounded'>
+                      Signup
+                  </Link>
                 </li>
               </ul>
             </div>
