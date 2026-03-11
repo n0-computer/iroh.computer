@@ -1,0 +1,70 @@
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- Initial Packet -->
+  <text x="350" y="18" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">Initial Packet</text>
+
+  <!-- First byte -->
+  <rect x="10" y="35" width="70" height="50" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="45" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1100mmmm</text>
+  <text x="45" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">1 byte</text>
+
+  <!-- Version -->
+  <rect x="80" y="35" width="80" height="50" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="120" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#6366f1">Version</text>
+  <text x="120" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">4 bytes</text>
+
+  <!-- DCID Len + DCID -->
+  <rect x="160" y="35" width="80" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="200" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Dest CID</text>
+  <text x="200" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- SCID Len + SCID -->
+  <rect x="240" y="35" width="80" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="280" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Src CID</text>
+  <text x="280" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- Token -->
+  <rect x="320" y="35" width="70" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="355" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Token</text>
+  <text x="355" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- Length -->
+  <rect x="390" y="35" width="50" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="415" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Length</text>
+  <text x="415" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">var int</text>
+
+  <!-- Encrypted: Packet Number + CRYPTO frame + Padding -->
+  <rect x="440" y="35" width="250" height="50" rx="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="565" y="52" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">PN + CRYPTO frame</text>
+  <text x="565" y="64" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">(ClientHello) + Padding</text>
+  <text x="565" y="76" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">encrypted</text>
+
+  <!-- Annotations -->
+  <text x="215" y="110" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">&#x2190; unencrypted &#x2192;</text>
+
+  <!-- Connector line from encrypted box down to detail box -->
+  <line x1="565" y1="85" x2="565" y2="120" stroke="#888" stroke-width="1" stroke-dasharray="3 2"/>
+  <line x1="565" y1="120" x2="350" y2="135" stroke="#888" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- ClientHello detail box -->
+  <rect x="100" y="140" width="500" height="130" rx="5" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="350" y="158" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">ClientHello contents (iroh)</text>
+
+  <!-- Detail items -->
+  <text x="130" y="178" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Supported Cipher Suites</text>
+  <text x="430" y="178" font-family="'Space Mono', monospace" font-size="8" fill="#888">AES-128-GCM, AES-256-GCM, ...</text>
+
+  <text x="130" y="195" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Key Shares</text>
+  <text x="430" y="195" font-family="'Space Mono', monospace" font-size="8" fill="#888">X25519</text>
+
+  <text x="130" y="212" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">ALPN</text>
+  <text x="430" y="212" font-family="'Space Mono', monospace" font-size="8" fill="#888">user-defined</text>
+
+  <text x="130" y="229" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Supported TLS Versions</text>
+  <text x="430" y="229" font-family="'Space Mono', monospace" font-size="8" fill="#888">TLS 1.3</text>
+
+  <text x="130" y="246" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Signature Algorithms</text>
+  <text x="430" y="246" font-family="'Space Mono', monospace" font-size="8" fill="#888">Ed25519</text>
+
+  <text x="130" y="263" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Certificate Type</text>
+  <text x="430" y="263" font-family="'Space Mono', monospace" font-size="8" fill="#888">Raw Public Key (RFC 7250)</text>
+</svg>

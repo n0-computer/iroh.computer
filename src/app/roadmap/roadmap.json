@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-10-23",
+  "last_updated": "2026-02-09",
   "milestones": [
     { "section" : "past releases",
       "startCollapsed": true,
@@ -234,39 +234,39 @@
           "description": "Add discovery services to an already running endpoint",
           "tracking_issue": null,
           "doc": null
-        }
+        },
+        { "version": "v0.93.0", "done": true, "released": "2025-10-08", "doc": "https://www.iroh.computer/blog/iroh-0-93-iroh-online" },
+        {
+          "done": true,
+          "title": "Use `endpoint` instead of `node`",
+          "description": "Replace references to `node` with `endpoint` in methods, structs, docs, etc",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "Dynamically add `RelayUrl`s",
+          "description": "Allow adding and removing `RelayUrl`s to your `RelayMap` in the endpoint",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "Introduce endpoint presets",
+          "description": "Introducing presets, that allow you to easily set discovery and relay defaults for your project",
+          "tracking_issue": null,
+          "doc": null
+        },
+        {
+          "done": true,
+          "title": "Move `Tickets` into their own crate",
+          "description": "Tickets now exist in `iroh-ticket`",
+          "tracking_issue": null,
+          "doc": null
+        },
+        { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" }
       ]
     },
-    { "version": "v0.93.0", "done": true, "released": "2025-10-08", "doc": "https://www.iroh.computer/blog/iroh-0-93-iroh-online" },
-    {
-      "done": true,
-      "title": "Use `endpoint` instead of `node`",
-      "description": "Replace references to `node` with `endpoint` in methods, structs, docs, etc",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "Dynamically add `RelayUrl`s",
-      "description": "Allow adding and removing `RelayUrl`s to your `RelayMap` in the endpoint",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "Introduce endpoint presets",
-      "description": "Introducing presets, that allow you to easily set discovery and relay defaults for your project",
-      "tracking_issue": null,
-      "doc": null
-    },
-    {
-      "done": true,
-      "title": "Move `Tickets` into their own crate",
-      "description": "Tickets now exist in `iroh-ticket`",
-      "tracking_issue": null,
-      "doc": null
-    },
-    { "version": "v0.94.0", "done": true, "released": "2025-10-20", "doc": "" },
     {
       "done": true,
       "title": "Switch to `n0-error`",
@@ -290,30 +290,56 @@
     },
     { "version": "v0.95.1", "done": true, "released": "2025-11-05", "doc": "" },
     {
+      "done": true,
+      "title": "QUIC Multipath support",
+      "description": "implement QUIC multipath",
+      "tracking_issue": "",
+      "subtasks": {
+        "quinn iroh fork": true,
+        "plumb into iroh": true
+      }
+    },
+    {
+      "done": true,
+      "title": "QUIC NAT traversal",
+      "description": "Using Quic to traverse NATs",
+      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
+    },
+    {
+      "done": true,
+      "title": "Add `EndpointHooks` to enable auth and connection inspection",
+      "description": "`EndpointHooks` allow adding callbacks to specific moments in a connection lifecycle, to give users more control over what happens during the connection and storing both incoming/outgoing connection information",
+      "doc": null
+    },
+    {
+      "done": true,
+      "title": "Rename `Discovery` to `AddressLookup`",
+      "description": "Use `AddressLookup` rather than `Discovery` for clarity",
+      "doc": null
+    },
+    { "version": "v0.96.0", "done": true, "released": "2026-01-27", "doc": "" },
+    {
+      "done": false,
+      "title": "Address prioritization in `AddressLookup`",
+      "description": "Allow users to prioritize which addresses get published in the address lookup system.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
+      "done": false,
+      "title": "Custom Transports",
+      "description": "Allow users to add custom transports.",
+      "tracking_issue": null,
+      "doc": null
+    },
+    {
       "done": false,
       "title": "Own all foreign types",
       "description": "Any types that are from dependencies need to be owned or made private",
       "tracking_issue": null,
       "doc": null
     },
-    {
-      "done": false,
-      "title": "QUIC Multipath support",
-      "description": "implement QUIC multipath",
-      "tracking_issue": "",
-      "subtasks": {
-        "quinn iroh fork": false,
-        "plumb into iroh": false,
-        "upstream to quinn": false
-      }
-    },
-    {
-      "done": false,
-      "title": "QUIC NAT traversal",
-      "description": "Using Quic to traverse NATs",
-      "doc": "https://www.ietf.org/archive/id/draft-seemann-quic-nat-traversal-01.html"
-    },
-    { "version": "v0.96.0", "done": false, "released": "2025-11-17", "doc": "" },
+    { "version": "v0.97.0", "done": false, "expected": "2026-02-23", "doc": "" },
     {
       "done": false,
       "title": "release candidate",
@@ -321,7 +347,7 @@
       "tracking_issue": "",
       "doc": ""
     },
-    { "version": "v1.0.0-rc.0", "done": false, "released": "2025-12-01", "link": "" },
+    { "version": "v1.0.0-rc.0", "done": false, "expected": "Q1 2026", "link": "" },
     { "ellipsis": true },
     {
       "done": false,

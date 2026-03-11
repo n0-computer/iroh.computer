@@ -1,0 +1,43 @@
+<svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+  <!-- Initial Packet -->
+  <text x="350" y="18" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">Initial Packet (min 1200 bytes)</text>
+
+  <!-- First byte -->
+  <rect x="10" y="35" width="70" height="50" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="45" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">1100xxxx</text>
+  <text x="45" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">1 byte</text>
+
+  <!-- Version -->
+  <rect x="80" y="35" width="80" height="50" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="120" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#6366f1">Version</text>
+  <text x="120" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">4 bytes</text>
+
+  <!-- DCID Len + DCID -->
+  <rect x="160" y="35" width="80" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="200" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Dest CID</text>
+  <text x="200" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- SCID Len + SCID -->
+  <rect x="240" y="35" width="80" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="280" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Src CID</text>
+  <text x="280" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- Token -->
+  <rect x="320" y="35" width="70" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="355" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Token</text>
+  <text x="355" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">len + data</text>
+
+  <!-- Length -->
+  <rect x="390" y="35" width="50" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="415" y="58" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#818cf8">Length</text>
+  <text x="415" y="70" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">var int</text>
+
+  <!-- Encrypted: Packet Number + CRYPTO frame + Padding -->
+  <rect x="440" y="35" width="250" height="50" rx="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="565" y="52" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">PN + CRYPTO frame</text>
+  <text x="565" y="64" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">(ClientHello) + Padding</text>
+  <text x="565" y="76" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">encrypted</text>
+
+  <!-- Annotations -->
+  <text x="215" y="110" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">&#x2190; unencrypted &#x2192;</text>
+</svg>

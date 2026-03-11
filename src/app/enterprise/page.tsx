@@ -27,9 +27,9 @@ export default function Component() {
                 Deliver fast, complaint, battle-tested networking into the enterprise with iroh.
               </p>
               <div className="flex gap-4">
-                <Link href="https://cal.com/team/number-0/n0des-enterprise">
+                <Link href="https://cal.com/team/number-0/iroh-services">
                   <Button arrow="none" className="bg-gray-900 hover:bg-gray-800 px-6 py-2 text-sm font-medium cursor-pointer">
-                    CONTACT SALES
+                    Chat with us
                   </Button>
                 </Link>
               </div>
@@ -120,11 +120,11 @@ export default function Component() {
               <div>
                 <h2 className="text-4xl font-normal mb-8 text-gray-900 dark:text-white">An SLA with <i className="italic">so</i> many nines</h2>
                 <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                  When servers can run on the edge, reliability goes up. As the makers of iroh, the n0 team can deliver unprecedented avilability backed by a contractual guarantee.
+                  When servers can run on the edge, reliability goes up. As the makers of iroh, <a href="https://n0.computer" className="text-irohPurple-500">n0.computer</a> can deliver avilability backed by a contractual guarantee.
                 </p>
               </div>
               <div className="relative">
-                <h1 className="text-9xl text-gray-600/50">99.9999</h1>
+                <h1 className="text-9xl text-gray-600/50">99.99</h1>
                 <div className="absolute right-0 top-0 z-10 h-full w-[200px] bg-linear-to-l from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
               </div>
             </div>
@@ -143,6 +143,15 @@ export default function Component() {
                   each of your target verticals. As the team behind a ground-up networking stack, we have a deep well of
                   knowledge of the technical fundamentals that underpin enterprise design decisions.
                 </p>
+                <Link href="https://n0.computer/team">
+                  <Button
+                    arrow="none"
+                    variant="outline"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent"
+                  >
+                    Meet the team →
+                  </Button>
+                </Link>
               </div>
 
               <div>
@@ -152,7 +161,7 @@ export default function Component() {
                   encryption, streaming, broadcast, leader election, replication, and more. Iroh means composing what&apos;s
                   needed instead of building from scratch.
                 </p>
-                <Link href="/proto">
+                <Link href="https://github.com/n0-computer">
                   <Button
                     arrow="none"
                     variant="outline"
@@ -186,13 +195,13 @@ export default function Component() {
               Compose what&apos;s needed instead of building from scratch.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://cal.com/team/number-0/n0des-enterprise">
+              <Link href="https://cal.com/team/number-0/iroh-services">
                 <Button
                   arrow="none"
                   variant="outline"
                   className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 px-8 py-3 bg-transparent"
                 >
-                  Contact Sales
+                  Chat with us
                 </Button>
               </Link>
             </div>

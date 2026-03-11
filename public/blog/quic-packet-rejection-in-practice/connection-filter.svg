@@ -1,0 +1,95 @@
+<svg viewBox="0 0 780 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#6366f1"/>
+    </marker>
+    <marker id="arr-r" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#ef4444"/>
+    </marker>
+    <marker id="arr-a" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="390" y="18" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">Iroh Connection Filter Pipeline</text>
+
+  <!-- Incoming box -->
+  <rect x="300" y="35" width="180" height="40" rx="5" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="390" y="60" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">Incoming</text>
+
+  <!-- Branch: UDP vs Relay -->
+  <line x1="340" y1="75" x2="220" y2="105" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="440" y1="75" x2="560" y2="105" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="260" y="88" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">UDP</text>
+  <text x="520" y="88" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#888">Relay</text>
+
+  <!-- accept_addr box (left branch) -->
+  <rect x="100" y="108" width="240" height="36" rx="5" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <text x="220" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#d97706">accept_addr(addr, validated)</text>
+
+  <!-- accept_endpoint_id box (right branch) -->
+  <rect x="440" y="108" width="240" height="36" rx="5" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <text x="560" y="130" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#d97706">accept_endpoint_id(id)</text>
+
+  <!-- Rejection arrows from accept_addr -->
+  <!-- Retry -->
+  <line x1="100" y1="120" x2="50" y2="120" stroke="#d97706" stroke-width="1" marker-end="url(#arr-a)"/>
+  <text x="50" y="112" font-family="'Space Mono', monospace" font-size="7" fill="#d97706">Retry</text>
+
+  <!-- Reject -->
+  <line x1="100" y1="132" x2="50" y2="145" stroke="#ef4444" stroke-width="1" marker-end="url(#arr-r)"/>
+  <text x="50" y="155" font-family="'Space Mono', monospace" font-size="7" fill="#ef4444">Reject / Ignore</text>
+
+  <!-- Rejection arrows from accept_endpoint_id -->
+  <line x1="680" y1="126" x2="730" y2="140" stroke="#ef4444" stroke-width="1" marker-end="url(#arr-r)"/>
+  <text x="688" y="152" font-family="'Space Mono', monospace" font-size="7" fill="#ef4444">Reject / Ignore</text>
+
+  <!-- Accept arrows down from both -->
+  <line x1="220" y1="144" x2="220" y2="170" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="236" y="164" font-family="'Space Mono', monospace" font-size="7" fill="#6366f1">Accept</text>
+  <line x1="560" y1="144" x2="560" y2="170" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="576" y="164" font-family="'Space Mono', monospace" font-size="7" fill="#6366f1">Accept</text>
+
+  <!-- Retry loop arrow -->
+  <path d="M 50 124 L 50 50 L 298 50" fill="none" stroke="#d97706" stroke-width="1" marker-end="url(#arr-a)" stroke-dasharray="4 3"/>
+  <text x="120" y="44" font-family="'Space Mono', monospace" font-size="7" fill="#d97706">validated=true</text>
+
+  <!-- Merge into accept() -->
+  <line x1="220" y1="170" x2="350" y2="195" stroke="#6366f1" stroke-width="1"/>
+  <line x1="560" y1="170" x2="430" y2="195" stroke="#6366f1" stroke-width="1"/>
+
+  <!-- Accepting box -->
+  <rect x="300" y="195" width="180" height="40" rx="5" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="390" y="212" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">Accepting</text>
+  <text x="390" y="228" text-anchor="middle" font-family="'Space Mono', monospace" font-size="7" fill="#888">TLS handshake</text>
+
+  <!-- Arrow down -->
+  <line x1="390" y1="235" x2="390" y2="265" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="420" y="255" font-family="'Space Mono', monospace" font-size="7" fill="#888">ALPN known</text>
+
+  <!-- accept_alpn box -->
+  <rect x="260" y="268" width="260" height="36" rx="5" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <text x="390" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#d97706">accept_alpn(endpoint_id, alpn)</text>
+
+  <!-- Rejection arrow from accept_alpn -->
+  <line x1="520" y1="286" x2="600" y2="286" stroke="#ef4444" stroke-width="1" marker-end="url(#arr-r)"/>
+  <text x="608" y="290" font-family="'Space Mono', monospace" font-size="7" fill="#ef4444">Close(code, reason)</text>
+
+  <!-- Accept arrow down -->
+  <line x1="390" y1="304" x2="390" y2="334" stroke="#6366f1" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="410" y="324" font-family="'Space Mono', monospace" font-size="7" fill="#6366f1">Accept</text>
+
+  <!-- Connection box -->
+  <rect x="300" y="337" width="180" height="40" rx="5" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="390" y="355" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">Connection</text>
+  <text x="390" y="368" text-anchor="middle" font-family="'Space Mono', monospace" font-size="7" fill="#888">protocol handler</text>
+
+  <!-- Legend -->
+  <line x1="220" y1="405" x2="240" y2="405" stroke="#6366f1" stroke-width="1"/>
+  <text x="248" y="408" font-family="'Space Mono', monospace" font-size="7" fill="#888">accept</text>
+  <line x1="310" y1="405" x2="330" y2="405" stroke="#d97706" stroke-width="1"/>
+  <text x="338" y="408" font-family="'Space Mono', monospace" font-size="7" fill="#888">filter hook</text>
+  <line x1="410" y1="405" x2="430" y2="405" stroke="#ef4444" stroke-width="1"/>
+  <text x="438" y="408" font-family="'Space Mono', monospace" font-size="7" fill="#888">reject</text>
+</svg>

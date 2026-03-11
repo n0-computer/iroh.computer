@@ -1,0 +1,26 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background for light/dark mode compatibility -->
+
+  <!-- Transmit label -->
+  <text x="250" y="20" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1">Transmit (3250 bytes, packet_size: 1200)</text>
+
+  <!-- Outer transmit box -->
+  <rect x="20" y="35" width="460" height="50" rx="3" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+
+  <!-- Segment 1: 1200 bytes = 170 width -->
+  <rect x="20" y="35" width="170" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="105" y="65" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#818cf8">1200 bytes</text>
+
+  <!-- Segment 2: 1200 bytes = 170 width -->
+  <rect x="190" y="35" width="170" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="275" y="65" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#818cf8">1200 bytes</text>
+
+  <!-- Segment 3: 850 bytes = 120 width (proportionally smaller) -->
+  <rect x="360" y="35" width="120" height="50" rx="3" fill="none" stroke="#818cf8" stroke-width="1"/>
+  <text x="420" y="65" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#818cf8">850 bytes</text>
+
+  <!-- Segment labels below -->
+  <text x="105" y="105" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">packet 0</text>
+  <text x="275" y="105" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">packet 1</text>
+  <text x="420" y="105" text-anchor="middle" font-family="'Space Mono', monospace" font-size="9" fill="#888">packet 2</text>
+</svg>
