@@ -269,6 +269,14 @@ let eventfd_config = esp_idf_svc::sys::esp_vfs_eventfd_config_t {
 unsafe { esp_idf_svc::sys::esp_vfs_eventfd_register(&eventfd_config) };
 ```
 
+<Note>
+During the development process you will need to flash for every change. For some newer variants of the esp32 you can set a higher [baud rate] than default to *drastically* speed up the flash speed.
+
+```
+ESPFLASH_BAUD=2000000 cargo run --release
+```
+</Note>
+
 # Memory
 
 After flashing this change, we get a little bit further. This time we have a problem with malloc failing. [Guru Meditation] Error? Somebody likes Amiga it seems...
@@ -443,4 +451,5 @@ If you have a special requirement for a commercial project, talk to us.
 [Guru Meditation]: https://en.wikipedia.org/wiki/Guru_Meditation
 [RISC-V]: https://en.wikipedia.org/wiki/RISC-V
 [esp32-s3]: https://www.espressif.com/en/products/socs/esp32-s3
+[baud rate]: https://en.wikipedia.org/wiki/Baud
 
