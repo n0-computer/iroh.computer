@@ -32,7 +32,15 @@ Welcome to a new release of `iroh`, a modular networking stack in Rust, for buil
 
 You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of Quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
 
-**Important:** Starting with this release, the `Endpoint` no longer attempts to close connections gracefully when dropped. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application.
+Two important callouts
+
+**1. Changes to `Endpoint::builder` and `Endpoint::bind`**
+
+`Endpoint::builder` and `Endpoint::bind` now take a preset argument, making the relay server configuration explicit. To get the same behaviour as before, simply replace `Endpoint::bind()` with `Endpoint::bind(presets::N0)`, and similarly with `Endpoint::builder()` becomes `Endpoint::builder(presets::N0)`:
+
+**2. Changes to Endpoint closing**
+
+Starting with this release, the `Endpoint` no longer attempts to close connections gracefully when dropped. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application.
 
 Here's the rundown:
 
