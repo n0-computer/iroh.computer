@@ -39,10 +39,12 @@ Here's the rundown:
 - **Custom Transports**: Define your own transport implementations beyond UDP/IP
 - **noq**: Our QUIC implementation is now a standalone project
 - **Embeddable Relay Server**: `RelayService` is now public for library embedding
+- **Preset API**: Simpler endpoint configuration with presets
 - **Customizable TLS Trust Roots**: Control certificate verification for non-iroh TLS connections
 - **Address Filtering**: Filter and reorder addresses published by address lookup services
 - **Endpoint Lifecycle Improvements**: Better behavior on close and drop
 - **Improved Incoming Connection Info**: More precise information for rate limiting and access control
+- **Portmapper Feature Gate**: Portmapper can now be disabled via feature flags
 
 ## 🔌 Custom Transports
 
@@ -156,6 +158,28 @@ Checkout [PR #3924](https://github.com/n0-computer/iroh/pull/3924), [PR #3879](h
 
 Checkout [PR #3949](https://github.com/n0-computer/iroh/pull/3949) for more details.
 
+## 🎛️ Preset API
+
+`Endpoint::builder` and `Endpoint::bind` now take a preset argument, making the relay server configuration explicit rather than hardcoded. Instead of the builder silently defaulting to the n0 relay servers, you now pass a preset:
+
+```rust
+// Before
+let endpoint = Endpoint::bind().await?;
+
+// After
+let endpoint = Endpoint::bind(presets::N0).await?;
+```
+
+`Endpoint::empty_builder` and `EndpointBuilder::empty` now assume `RelayMode::Disabled` and take no arguments, making it clearer what you get when starting from a blank slate.
+
+Checkout [PR #4014](https://github.com/n0-computer/iroh/pull/4014) for more details.
+
+## 🔒 Portmapper Feature Gate
+
+The portmapper is now behind a default feature flag. If you're using `no-default-features`, you'll no longer get the portmapper. This doesn't change any APIs, but will change functionality for builds that opt out of default features.
+
+Checkout [PR #4011](https://github.com/n0-computer/iroh/pull/4011) for more details.
+
 ## 📈 Path Watcher Stats Retention
 
 `Connection::paths` and `ConnectionInfo::paths` now return a `PathWatcher`, a named struct that still implements `n0_watcher::Watcher`. Stats for abandoned or closed paths are retained as long as there are active watchers subscribed. This means you won't lose visibility into path statistics just because a path was closed, which is useful for monitoring and debugging multipath connections.
@@ -165,6 +189,13 @@ Note that `PathInfo::stats` and `PathInfo::rtt` now return `Option`, returning `
 Checkout [PR #3899](https://github.com/n0-computer/iroh/pull/3899) for more details.
 
 ## ⚠️ Breaking Changes
+
+### [#4014](https://github.com/n0-computer/iroh/pull/4014) — Preset API
+- `Endpoint::builder` and `Endpoint::bind` now take a preset argument
+- `Endpoint::empty_builder` and `EndpointBuilder::empty` now assume `RelayMode::Disabled` and take no arguments
+
+### [#4011](https://github.com/n0-computer/iroh/pull/4011) — Portmapper feature gate
+- Builds using `no-default-features` will no longer have the portmapper. This does not change APIs but will change functionality.
 
 ### [#4005](https://github.com/n0-computer/iroh/pull/4005) — noq switch
 - Types are now re-exported from `noq`. Internal names have been updated from `quinn` -> `noq`.
