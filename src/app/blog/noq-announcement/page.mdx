@@ -108,6 +108,35 @@ which was previously done using STUN.
 QUIC enables encrypting these packets without sacrificing round-trips compared to STUN,
 preventing protocol ossification and enhancing user privacy.
 
+## More QLog
+
+Qlog is a draft standard to log an awful lot of information about QUIC connections.
+It is a great debugging tool, there are visualisation tools like [qvis] that can show the flow of packets between two peers.
+
+In noq the qlog support has been greatly extended to support many more events from the [main qlog logging schema] and [QUIC event definittions].
+Additionally qlog's extensability was used to add events for QUIC multipath.
+We even have a [viewer prototype] that can show the packet flows across multiple paths.
+
+[qvis]: https://qvis.quictools.info
+[main qlog logging schema]: https://datatracker.ietf.org/doc/html/draft-ietf-quic-qlog-main-schema
+[QUIC event definitions]: https://datatracker.ietf.org/doc/html/draft-ietf-quic-qlog-quic-events.html
+[viewer prototype]: https://github.com/n0-computer/qlog-viewer
+
+## WeakConnectionHandle
+
+While most of noq's API changes are around the multipath support we also added a [`WeakConnectionHandle`].
+This is a type that does not keep a connection alive itself, 
+but can be upgraded to a full [`Connection`] if it was not dropped yet.
+It behaves much like [`std::sync::Weak`] but without having to `Arc` it as that is not always so easy to do.
+
+This can be helpful to build things like connection managers.
+We have needed this for ourselves internally in iroh,
+there for sure are more good usecases.
+
+[`WeakConnectionHandle`]: https://docs.rs/noq/0.17.0/noq/struct.WeakConnectionHandle.html
+[`Connection`]: https://docs.rs/noq/0.17.0/noq/struct.Connection.html
+[`std::sync:::Weak`]: https://doc.rust-lang.org/stable/std/sync/struct.Weak.html
+
 # Already in production
 
 noq shipped as part of iroh v0.96 and has been running in production since then.
