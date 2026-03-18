@@ -8,7 +8,6 @@ import {HomeHero} from '@/components/HomeHero';
 import {FromTheBlog} from '@/components/FromTheBlog';
 import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {AnywhereIllustration} from '@/components/AnywhereIllustration';
-import {IrohEverywhere} from '@/components/IrohEverywhere';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
 import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
@@ -65,7 +64,7 @@ export default function Page() {
                 </p>
                 <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
                   Send data to any device running anywhere, big or small &mdash;
-                  cloud servers, tablets, or embedded systems. The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, so you're never locked in. 
+                  cloud servers, tablets, or embedded systems. The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, so you&apos;re never locked in. 
                 </p>
               </div>
               <div>
