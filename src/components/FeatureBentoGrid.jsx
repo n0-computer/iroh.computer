@@ -14,7 +14,7 @@ export function FeatureBentoGrid() {
                   Save cloud costs
                 </p>
                 <p className="mt-3 text-lg text-irohGray-600 dark:text-irohGray-400">
-                  Direct connections bypass NATs and firewalls. <a href="https://docs.iroh.computer/iroh-services/relays" className="text-irohPurple-500 hover:underline">Relays</a> keep you connected when they can&apos;t.
+                  Peer-to-peer connections bypass NATs and firewalls. <a href="https://docs.iroh.computer/iroh-services/relays" className="text-irohPurple-500 hover:underline">Relays</a> keep devices connected when  connections can&apos;t be made.
                 </p>
               </div>
             </div>
@@ -25,10 +25,10 @@ export function FeatureBentoGrid() {
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">
-                  Sync anything, anywhere
+                  Sync any kind of data
                 </p>
                 <p className="mt-3 text-lg text-irohGray-600 dark:text-irohGray-400">
-                  <a href="https://docs.iroh.computer/protocols/blobs" className="text-irohPurple-500 hover:underline">Files</a>, <a href="https://docs.iroh.computer/protocols/kv-crdts" className="text-irohPurple-500 hover:underline">structured data</a>, <a href="https://docs.iroh.computer/protocols/writing-a-protocol" className="text-irohPurple-500 hover:underline">video</a>, <a href="https://docs.iroh.computer/protocols/rpc" className="text-irohPurple-500 hover:underline">RPC</a> — or write your own protocol.
+                  <a href="https://docs.iroh.computer/protocols/blobs" className="text-irohPurple-500 hover:underline">Files</a>, <a href="https://docs.iroh.computer/protocols/kv-crdts" className="text-irohPurple-500 hover:underline">structured data</a>, <a href="https://docs.iroh.computer/protocols/streaming" className="text-irohPurple-500 hover:underline">video</a>, <a href="https://docs.iroh.computer/protocols/rpc" className="text-irohPurple-500 hover:underline">RPC</a> — or write your own protocol.
                 </p>
               </div>
             </div>
@@ -53,10 +53,10 @@ export function FeatureBentoGrid() {
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">
-                  Deploy a dedicated relay
+                  Send data over any transport
                 </p>
                 <p className="mt-3 text-lg text-irohGray-600 dark:text-irohGray-400">
-                  <a href="/services/hosting" className="text-irohPurple-500 hover:underline">Self-host</a> or use our managed infrastructure across multiple regions.
+                  Customize data transports for <a href="https://www.iroh.computer/blog/tor-custom-transport" className="text-irohPurple-500 hover:underline">tor</a>, <a href="https://www.iroh.computer/blog/nym-custom-transport" className="text-irohPurple-500 hover:underline">nym</a>, <a href="https://docs.iroh.computer/connecting/local-discovery" className="text-irohPurple-500 hover:underline">LAN</a>, or <a href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</a> to suit your needs.
                 </p>
               </div>
             </div>

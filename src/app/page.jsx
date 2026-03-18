@@ -8,6 +8,7 @@ import {HomeHero} from '@/components/HomeHero';
 import {FromTheBlog} from '@/components/FromTheBlog';
 import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {AnywhereIllustration} from '@/components/AnywhereIllustration';
+import {IrohEverywhere} from '@/components/IrohEverywhere';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
 import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
@@ -63,15 +64,9 @@ export default function Page() {
                   Forever.
                 </p>
                 <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
-                  Dial any endpoint running anywhere, big or small &mdash;
-                  cloud servers, tablets, or Raspberry Pis.
+                  Send data to any device running anywhere, big or small &mdash;
+                  cloud servers, tablets, or embedded systems. The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, so you're never locked in. 
                 </p>
-                <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
-                  The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and relays are stateless — host across regions and clouds, or self-host anywhere.
-                </p>
-                <Link href='https://docs.iroh.computer/concepts/relays' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Fast+Connections+Click'>
-                  Learn about Relays <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
-                </Link>
               </div>
               <div>
                 <AnywhereIllustration className='w-full max-w-lg' />
@@ -79,13 +74,11 @@ export default function Page() {
             </div>
           </section>
 
-          <FeatureBentoGrid />
 
           <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
             <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
             <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <img src="/img/user-logos/nous.png" alt="Nous" className="mx-auto h-12" />
               <figure className="mt-10">
                 <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
                   <p>&ldquo;Doubling the network speed halves our compute budget. That&apos;s the difference between a $1M model and a $500K model.&rdquo;</p>
@@ -103,6 +96,8 @@ export default function Page() {
               </figure>
             </div>
           </section>
+
+          <FeatureBentoGrid />
 
           {/* Solutions */}
           <section id="solutions" className='max-w-7xl mx-auto py-16 px-4'>
@@ -135,7 +130,7 @@ export default function Page() {
               <Link href="/solutions/delta-chat" className="block">
                 <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <div className="md:col-span-2">
-                    <p className="text-xl font-medium text-irohPurple-500 dark:text-irohPurple-500 mb-2">Data sync & P2P Web Apps</p>
+                    <p className="text-xl font-medium text-irohGray-100 dark:text-irohGray-100 mb-2">Data sync & P2P Web Apps</p>
                     <p className="text-irohGray-600 dark:text-irohGray-300">Powers in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
                   </div>
                   <div className="flex items-center justify-center">
@@ -153,10 +148,10 @@ export default function Page() {
                 <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>All commits to iroh&apos;s main branch run through a growing set of <a href="https://perf.iroh.computer" target="_blank" className="text-irohPurple-500 hover:underline">simulations &amp; tests</a>.</p>
                 <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
                   iroh provides opt-in
-                  <a href="https://docs.iroh.computer/iroh-services/metrics/custom" className="text-irohPurple-500 hover:underline"> observability</a> and
-                  <a href="https://docs.iroh.computer/metrics/custom" className="text-irohPurple-500 hover:underline"> custom metrics</a> &mdash; track connection health and throughput across all your devices and services.
+                  <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline"> observability</a> and
+                  <a href="https://docs.iroh.computer/iroh-services/net-diagnostics/quickstart" className="text-irohPurple-500 hover:underline"> network diagnostics</a> &mdash; track connection health and throughput across all your devices and services.
                 </p>
-                <Link href='https://docs.iroh.computer/what-is-iroh' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
+                <Link href='https://services.iroh.computer/' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
                   Monitor your App <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
               </div>
