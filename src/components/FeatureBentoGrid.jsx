@@ -14,7 +14,7 @@ export function FeatureBentoGrid() {
                   Save cloud costs
                 </p>
                 <p className="mt-3 text-lg text-irohGray-600 dark:text-irohGray-400">
-                  Peer-to-peer connections bypass NATs and firewalls. <a href="https://docs.iroh.computer/iroh-services/relays" className="text-irohPurple-500 hover:underline">Relays</a> keep devices connected when  connections can&apos;t be made.
+                  Peer-to-peer connections bypass NATs and firewalls. <a href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">Relays</a> keep data flowing when direct connections can&apos;t be made.
                 </p>
               </div>
             </div>
