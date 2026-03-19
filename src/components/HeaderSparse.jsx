@@ -135,13 +135,6 @@ export function HeaderSparse() {
                 <li>
                   <GithubStars />
                 </li>
-                <li>
-                  <Link
-                    href="https://iroh.computer/discord"
-                    className='px-3 py-2 -mt-2 flex text-sm bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 transition hover:text-irohPurple-500 dark:hover:text-irohPurple-500 hover:bg-black/10 rounded'>
-                      Signup
-                  </Link>
-                </li>
               </ul>
             </div>
           </div>
