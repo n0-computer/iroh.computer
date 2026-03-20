@@ -23,7 +23,7 @@ const solutions = [
     company: "Rave",
     headline: "Video Streaming at Global Scale",
     description: "Stream video between millions of devices around the world every day, with over 1 million concurrent connections per relay.",
-    href: "/solutions/rave",
+    href: "/solutions/video",
     logo: "rave",
   },
   {

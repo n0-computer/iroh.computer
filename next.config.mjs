@@ -15,6 +15,9 @@ const withMDX = nextMDX({
 
 const redirects = async () => {
   return [
+    // Solutions page renames
+    { source: '/solutions/rave', destination: '/solutions/video', permanent: true },
+
     // LETS GO DISCORD WAHOO
     { source: '/discord', destination: 'https://discord.gg/DpmJgtU7cW', basePath: false, permanent: false, },
 
