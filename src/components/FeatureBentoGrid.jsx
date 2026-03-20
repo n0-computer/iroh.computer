@@ -7,7 +7,7 @@ export function FeatureBentoGrid() {
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <div className="mt-10 grid gap-6 sm:mt-16 grid-cols-1 md:grid-cols-2">
           <div className="relative">
-            <div className="absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20" />
+            <div className="absolute inset-px rounded-lg bg-irohGray-100 dark:bg-irohGray-800 border border-irohGray-200 dark:border-irohGray-700" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">
@@ -21,7 +21,7 @@ export function FeatureBentoGrid() {
             <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5" />
           </div>
           <div className="relative">
-            <div className="absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20" />
+            <div className="absolute inset-px rounded-lg bg-irohGray-100 dark:bg-irohGray-800 border border-irohGray-200 dark:border-irohGray-700" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">
@@ -35,7 +35,7 @@ export function FeatureBentoGrid() {
             <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5" />
           </div>
           <div className="relative">
-            <div className="absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20" />
+            <div className="absolute inset-px rounded-lg bg-irohGray-100 dark:bg-irohGray-800 border border-irohGray-200 dark:border-irohGray-700" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">
@@ -49,7 +49,7 @@ export function FeatureBentoGrid() {
             <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5" />
           </div>
           <div className="relative">
-            <div className="absolute inset-px rounded-lg bg-gradient-to-br from-irohPurple-500/10 to-irohGray-100 dark:to-irohGray-800 border border-irohPurple-500/20" />
+            <div className="absolute inset-px rounded-lg bg-irohGray-100 dark:bg-irohGray-800 border border-irohGray-200 dark:border-irohGray-700" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-lg">
               <div className="px-8 pb-8 pt-8 sm:px-10 sm:pb-10 sm:pt-10">
                 <p className="text-3xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100">

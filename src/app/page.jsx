@@ -8,6 +8,7 @@ import {HomeHero} from '@/components/HomeHero';
 import {FromTheBlog} from '@/components/FromTheBlog';
 import {PerfChartIllustration} from '@/components/PerfChartIllustration';
 import {AnywhereIllustration} from '@/components/AnywhereIllustration';
+import { IrohEverywhere } from '@/components/IrohEverywhere';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
 import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
@@ -39,7 +40,7 @@ export default function Page() {
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct connections between devices</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Modular networking stack for P2P connections between devices</h3>
                   <div className='flex mt-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
@@ -53,24 +54,21 @@ export default function Page() {
           </section>
 
           <section className='max-w-7xl mx-auto py-16 px-4'>
-            <div className='grid gap-12 grid-cols-1 md:grid-cols-2 items-center'>
-              <div>
-                <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>
-                  <span className='text-irohPurple-500'>Fast connections.</span>
-                  <br />
-                  Anywhere.
-                  <br />
-                  Forever.
-                </p>
-                <p className='mt-4 text-xl font-medium text-irohGray-600 dark:text-irohGray-400'>
-                  Send data to any device running anywhere, big or small &mdash;
-                  cloud servers, tablets, or embedded systems. The core technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a>, so you&apos;re never locked in. 
-                </p>
-              </div>
-              <div>
-                <AnywhereIllustration className='w-full max-w-lg' />
-              </div>
+            <div className='flex flex-col md:flex-row md:items-start md:gap-12 mb-10'>
+              <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 md:w-1/2 shrink-0'>
+                <span className='text-irohPurple-500'>Fast connections.</span>
+                <br />
+                Anywhere.
+                <br />
+                Forever.
+              </p>
+              <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
+                Send data to any device running anywhere, big or small &mdash;
+                cloud servers, tablets, or embedded systems.
+                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in.
+              </p>
             </div>
+            <IrohEverywhere />
           </section>
 
 
@@ -80,7 +78,7 @@ export default function Page() {
             <div className="mx-auto max-w-2xl lg:max-w-4xl">
               <figure className="mt-10">
                 <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
-                  <p>&ldquo;Doubling the network speed halves our compute budget. That&apos;s the difference between a $1M model and a $500K model.&rdquo;</p>
+                  <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
                 </blockquote>
                 <figcaption className="mt-10">
                   <div className="mt-4 flex items-center justify-center space-x-3 text-base">
@@ -118,8 +116,8 @@ export default function Page() {
               <Link href="/solutions/rave" className="block">
                 <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <div className="md:col-span-2">
-                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Video Streaming at Global Scale</p>
-                    <p className="text-irohGray-600 dark:text-irohGray-300">Streams video between millions of devices around the world every day.</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Video Streaming</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Stream video between devices, using peer to peer technology. Create encrypted connections built on open standards, across the globe or across the room.</p>
                   </div>
                   <div className="flex items-center justify-center">
                     <img src="/img/user-logos/rave.png" alt="Rave logo" className="object-contain max-h-16" />
