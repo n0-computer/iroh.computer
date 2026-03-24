@@ -3,7 +3,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 
 export const post = {
   author: 'Rüdiger Klaehn',
-  date: '2026-03-09',
+  date: '2026-03-24',
   title: 'Running iroh on an ESP32',
   description:
     'Running iroh on an ESP32 microcontroller.',
@@ -159,7 +159,7 @@ If we just do the naive thing and `cargo add iroh`, we get a lot of compile erro
 We will make sure to support ESP32 from iroh main in the future, but for now you will have to use a special branch of iroh.
 
 <Note>
-This branch of iroh is using a branch of our QUIC implementation noq, as well as various other changes.
+This branch of iroh is using a branch of our QUIC implementation [noq][noq-blog], as well as various other changes.
 
 It exists **just for this experiment** and won't be updated.
 </Note>
@@ -452,4 +452,5 @@ If you have a special requirement for a commercial project, talk to us.
 [RISC-V]: https://en.wikipedia.org/wiki/RISC-V
 [esp32-s3]: https://www.espressif.com/en/products/socs/esp32-s3
 [baud rate]: https://en.wikipedia.org/wiki/Baud
+[noq-blog]: /blog/noq-announcement
 
