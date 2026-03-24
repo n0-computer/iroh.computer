@@ -1,0 +1,118 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  draft: false,
+  author: 'b5',
+  date: '2026-03-11',
+  title: 'What if your security camera was secure?',
+  description:
+    "Iroh and Media over QUIC are changing the game for video streaming",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+This security camera is a prototype involving a Raspberry Pi, a camera, and more tape than I'd care to admit. If I had to pick between this and a proprietary commercial security camera product right now, I would take the bundle of plastic and tape hands down.
+
+That's because the tech running on Tape Boy over here is a glimpse of the future. It's a new stack in the world of streaming video: iroh and [Media over QUIC (MoQ)](https://doc.moq.dev/).
+
+<div className="not-prose">
+  <img src="/blog/secure-video-everywhere/tapeboy.png"  width={1200} height={754} alt="A Raspberry Pi with a camera taped to it, next to a security camera" />
+</div>
+
+This post was adapted from a video I made about this project, which you can
+watch on [YouTube](https://www.youtube.com/watch?v=GKvSE2g_Yss). If you like
+this kind of thing, please subscribe to the channel for more videos about iroh
+and MoQ.
+
+## How video streaming works today
+
+To understand what's new here, we first have to set a baseline by looking at the
+way things roughly work today. For the sake of argument, let's assume you've
+waded through the minefield of one-off products that do or don't work with each
+other, and find are all secretly just wrappers around FFmpeg.
+
+At this point, your stack is likely driven by some tech that either is, or looks a lot like
+WebRTC. The camera starts up, dials some server, and prepares to send video to
+the cloud. The standard practice is to encode multiple different streams at
+different quality levels directly on the device. This happens whenever your
+device is sending video, and is at least part of the reason why your laptop
+battery gets so unbelievably sad when you join a video conferencing call.
+
+<div className="not-prose">
+  <img src="/blog/secure-video-everywhere/badcameras.png"  width={1200} height={754} alt="A typical camera generating both 720 and 360 streams simultaneously" />
+</div>
+
+## A better approach with MoQ
+
+Iroh with MoQ looks a little different. 
+
+*Our little camera won't  generate any video at all unless someone is connected.*
+
+This is the first really big win of [MoQ](https://doc.moq.dev/): **it's poll-based**. Streams are only
+created when someone asks for them. And this one incredibly simple difference is
+the biggest win for video efficiency generally. It's less strain on batteries.
+It's less data over the network, which leaves more room for doom-scrolling,
+encoding other things, whatever you want to do.
+
+But to get there, we have a problem: how do we connect to the camera to tell it to start sending video in the first place?
+
+Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming) or the [MoQ documentation](https://doc.moq.dev/).
+
+## That's where iroh comes in
+
+With connections that can literally dial from anywhere to anywhere, an app on
+your phone can reach out to a camera in your house, your car, your conference
+room, film set, football stadium—wherever you want it to go. Iroh will create an
+encrypted connection directly between the camera and your device.
+
+So iroh gives us QUIC connections that work everywhere, and [MoQ](https://doc.moq.dev/) gives us
+first-class streaming tools purpose-built for QUIC. If you look at how well all
+this lines up, you'd think we planned it all out in advance. But delightfully,
+this is just another win for open standards, all coalescing around QUIC.
+
+## The fastest, most private path
+
+With iroh, you're always getting the fastest connection possible. If you're in
+your house, the connection doesn't leave your house. If you're on the other side
+of the world, it'll find the shortest path possible through the internet.
+
+But the fact that the connection is encrypted and direct is the reason I'd pick
+this ridiculous, hacky prototype even today: **I know exactly who can see this
+video stream, and it's only people that I choose.**
+
+## IoT and beyond
+
+We think this really shines in the Internet of Things use case, because all of this works on low-power devices... and that's frankly harder to do.
+
+But everything we've shown here translates into wins for nearly all video streaming:
+
+- We can seamlessly bridge into browsers with WebRTC standards
+- We can use MoQ relay servers to do all kinds of classic video conferencing tricks, like combining streams
+- We can fan this out for live streaming
+- We can even add tracks for timecode and go into full broadcast mode if that's the kind of thing you need
+
+## Get involved
+
+For now, this is just a taste of where we'd like to go with video and iroh.
+Hopefully you find this interesting. Stay tuned for more, and [join us on
+Discord](https://discord.gg/iroh) to come hang.
+
+Read more about iroh and MoQ in the [iroh documentation](https://docs.iroh.computer/protocols/streaming) or the [MoQ documentation](https://doc.moq.dev/).

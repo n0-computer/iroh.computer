@@ -28,7 +28,7 @@ export default function MetricsPage() {
                 latency, throughput, and custom application-specific metrics.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-hero">
+                <Link href="https://services.iroh.computer?utm_source=website&utm_content=observability-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 Day Trial
                   </Button>
@@ -61,7 +61,7 @@ export default function MetricsPage() {
 
                 <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mb-4">
                   For a list of all metrics, see the{' '}
-                  <Link href="https://docs.iroh.computer/iroh-online/metrics/glossary" className="text-irohPurple-500 hover:underline">
+                  <Link href="https://docs.iroh.computer/iroh-services/metrics/glossary" className="text-irohPurple-500 hover:underline">
                     metrics glossary
                   </Link>.
                 </p>
@@ -107,7 +107,7 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Custom metrics support
                   </li>
                 </ul>
-                    <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-project"className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 font-medium">
+                    <Link href="https://services.iroh.computer?utm_source=website&utm_content=observability-project"className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 font-medium">
                     Sign up →
                 </Link>
               </div>
@@ -137,7 +137,7 @@ export default function MetricsPage() {
                     <span className="text-irohPurple-500">✓</span> Extended data retention plans available
                   </li>
                 </ul>
-                                <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-granular">
+                                <Link href="https://services.iroh.computer?utm_source=website&utm_content=observability-granular">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                     Start 30 Day Trial
                   </Button>
@@ -159,7 +159,7 @@ export default function MetricsPage() {
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-irohPurple-500 text-white flex items-center justify-center font-bold">1</span>
                     <div>
                       <p className="text-irohGray-600 dark:text-irohGray-300">
-                        Once an iroh endpoint is integrated in your Rust program, add an <code className="text-irohPurple-500">iroh_n0des::Client</code> to 
+                        Once an iroh endpoint is integrated in your Rust program, add an <code className="text-irohPurple-500">iroh_services::Client</code> to 
                         begin sending metrics to the platform.
                       </p>
                     </div>
@@ -177,8 +177,8 @@ export default function MetricsPage() {
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-irohPurple-500 text-white flex items-center justify-center font-bold">3</span>
                     <div>
                       <p className="text-irohGray-600 dark:text-irohGray-300">
-                        Call <code className="text-irohPurple-500">endpoint.online().await</code> before creating the Client. 
-                        The endpoint must be online before the client is instantiated to authenticate to the platform.
+                        Once authenticated, endpoints will start sending granular-level data about their 
+                        behavior and connection status.
                       </p>
                     </div>
                   </li>
@@ -186,16 +186,7 @@ export default function MetricsPage() {
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-irohPurple-500 text-white flex items-center justify-center font-bold">4</span>
                     <div>
                       <p className="text-irohGray-600 dark:text-irohGray-300">
-                        Once authenticated, endpoints will start sending granular-level data about their 
-                        behavior and connection status.
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-irohPurple-500 text-white flex items-center justify-center font-bold">5</span>
-                    <div>
-                      <p className="text-irohGray-600 dark:text-irohGray-300">
-                        Every 10 seconds, the platform will aggregate key project-level metrics 
+                        Every minute, the platform will aggregate key project-level metrics 
                         which are visible in the project dashboard.
                       </p>
                     </div>
@@ -205,7 +196,7 @@ export default function MetricsPage() {
               <div className="p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-800 dark:bg-irohGray-900">
                 <pre className="text-sm text-irohGray-300 overflow-x-auto">
                   <code>{`use iroh::Endpoint;
-use iroh_n0des::Client;
+use iroh_services::Client;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -258,7 +249,7 @@ async fn main() -> anyhow::Result<()> {
               Get started with free project-level metrics, or upgrade to Pro for detailed endpoint analytics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer?utm_source=website&utm_content=observability-cta">
+              <Link href="https://services.iroh.computer?utm_source=website&utm_content=observability-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
