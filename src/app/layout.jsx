@@ -42,7 +42,7 @@ export default async function RootLayout({children}) {
       </head>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
-          <div className="w-full">
+          <div className="w-full overflow-x-hidden">
             {children}
           </div>
         </Providers>
