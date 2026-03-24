@@ -62,7 +62,7 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
   }, [speed])
 
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       <div className="relative w-full overflow-hidden py-4">
         {/* Gradient masks for fading edges */}
         <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>

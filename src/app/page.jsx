@@ -40,7 +40,8 @@ export default function Page() {
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct, peer-to-peer connections between devices</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct,{' '}
+                    <br />peer-to-peer connections between devices</h3>
                   <div className='flex mt-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
