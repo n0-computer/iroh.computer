@@ -27,6 +27,7 @@ release_target_url=$(
     sed -re 's/.*: "([^"]+)".*/\1/' \
 )
 
+echo "Extracting ${release_target_url##*/} to current directory"
 case "$release_target_url" in
     *.zip)
         release_archive=$(
@@ -37,9 +38,9 @@ case "$release_target_url" in
         )
         curl -sL "$release_target_url" -o "$release_archive"
         unzip -oq "$release_archive"
-        rm -rf "$release_archive"
+        rm -f -- "$release_archive"
         ;;
     *)
-        curl -sL "$release_target_url" | tar vxz
+        curl -sL "$release_target_url" | tar vxz -f -
         ;;
 esac
