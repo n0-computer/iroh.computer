@@ -28,7 +28,7 @@ release_target_url=$(
 )
 
 if [ -z "$release_target_url" ]; then
-    echo "Error: No release found for target $target"
+    echo "Error: No release found for target $target (ensure API rate limits are not exceeded)"
     exit 1
 fi
 
