@@ -35,11 +35,11 @@ case "$release_target_url" in
             grep "$target" |
             sed -re 's/.*: "([^"]+)".*/\1/' \
         )
-        curl -sL "$release_target_url" -o $release_archive
-        unzip -oq $release_archive
-        rm -rf $release_archive
+        curl -sL "$release_target_url" -o "$release_archive"
+        unzip -oq "$release_archive"
+        rm -rf "$release_archive"
         ;;
     *)
-        curl -sL "$release_target_url" | tar xz
+        curl -sL "$release_target_url" | tar vxz
         ;;
 esac
