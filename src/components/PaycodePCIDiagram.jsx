@@ -268,6 +268,19 @@ export function PaycodePCIDiagram({ className }) {
           Commands & Encrypted Payloads Only
         </text>
 
+        {/* Transport options */}
+        <text
+          x={(channelLeft + channelRight) / 2}
+          y={centerY + 50}
+          textAnchor="middle"
+          fill="#888"
+          fontSize="7"
+          fontFamily="'Space Grotesk', sans-serif"
+          opacity="0.6"
+        >
+          via Bluetooth / LAN / Wi-Fi
+        </text>
+
         {/* ---- Point of Sale Terminal (Left) ---- */}
         <TerminalIcon x={terminalX} y={centerY - 10} />
 
@@ -282,21 +295,10 @@ export function PaycodePCIDiagram({ className }) {
         >
           Point of Sale
         </text>
-        <text
-          x={terminalX}
-          y={centerY + 46}
-          textAnchor="middle"
-          fill="#888"
-          fontSize="8"
-          fontFamily="'Space Grotesk', sans-serif"
-        >
-          Windows 7 / .NET 6
-        </text>
-
         {/* Terminal features */}
         <text
           x={terminalX}
-          y={centerY + 66}
+          y={centerY + 46}
           textAnchor="middle"
           fill="#888"
           fontSize="7"
@@ -307,7 +309,7 @@ export function PaycodePCIDiagram({ className }) {
         </text>
         <text
           x={terminalX}
-          y={centerY + 78}
+          y={centerY + 58}
           textAnchor="middle"
           fill="#888"
           fontSize="7"
@@ -351,16 +353,6 @@ export function PaycodePCIDiagram({ className }) {
           fontWeight="600"
         >
           Payment Terminal
-        </text>
-        <text
-          x={posX}
-          y={centerY + 46}
-          textAnchor="middle"
-          fill="#888"
-          fontSize="8"
-          fontFamily="'Space Grotesk', sans-serif"
-        >
-          Android / Kotlin
         </text>
 
         {/* Connection dot - channel to POS */}

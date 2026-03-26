@@ -26,7 +26,8 @@ export default function PaycodeUseCasePage() {
                   PCI-Compliant P2P Payments
                 </h1>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                  Connect payment terminals directly to point of sale systems with iroh.
+                  Connect payment terminals directly to point of sale systems over
+                  Bluetooth, LAN, or Wi-Fi with iroh.
                   No additional servers, no cloud dependency, full PCI compliance.
                 </p>
                 <div className="flex gap-4 flex-wrap">
@@ -64,9 +65,10 @@ export default function PaycodeUseCasePage() {
             </p>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-10 leading-relaxed max-w-4xl mx-auto">
               iroh takes a different approach. Peer-to-peer connections act as a <strong>blind command
-              and control channel</strong> between devices. Raw payment data never leaves the payment
-              terminal. Only encrypted payloads and commands travel through the iroh channel&mdash;the
-              compliance boundary is maintained by architecture, not by policy.
+              and control channel</strong> between devices over Bluetooth, LAN, or Wi-Fi. Raw payment
+              data never leaves the payment terminal. Only encrypted payloads and commands travel
+              through the iroh channel&mdash;the compliance boundary is maintained by architecture,
+              not by policy.
             </p>
             <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg max-w-4xl mx-auto">
               <div className="flex items-start gap-4">
@@ -110,7 +112,8 @@ export default function PaycodeUseCasePage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">Works Offline</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
-                    Devices on the same local network connect directly without internet.
+                    iroh works over Bluetooth, LAN, and Wi-Fi&mdash;devices on the same
+                    local network connect directly without internet.
                     When connectivity returns, iroh reconnects automatically.
                   </p>
                 </div>
