@@ -26,6 +26,7 @@ export const navItems = [
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Resilient Apps', href: '/solutions/delta-chat'},
+    {label: 'Payments & POS', href: '/solutions/paycode'},
     {label: 'Enterprise', href: '/enterprise'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},

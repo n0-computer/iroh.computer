@@ -34,6 +34,14 @@ const solutions = [
     href: "/solutions/delta-chat",
     logo: "delta_chat",
   },
+  {
+    category: "Payments / Point of Sale",
+    company: "Payments",
+    headline: "PCI-Compliant Peer-to-Peer Payments",
+    description: "Connect payment terminals directly to point of sale systems with no additional servers and full PCI compliance.",
+    href: "/solutions/paycode",
+    logo: null,
+  },
 ]
 
 export default function SolutionsPage() {
@@ -72,14 +80,18 @@ export default function SolutionsPage() {
                     </p>
                   </div>
                   <div className="flex items-center justify-center p-8">
-                    <ThemeImage
-                      alt={`${solution.company} logo`}
-                      darkSrc={`/img/user-logos/${solution.logo}.png`}
-                      lightSrc={`/img/user-logos/${solution.logo}.png`}
-                      width={300}
-                      height={150}
-                      className="object-contain max-h-32"
-                    />
+                    {solution.logo ? (
+                      <ThemeImage
+                        alt={`${solution.company} logo`}
+                        darkSrc={`/img/user-logos/${solution.logo}.png`}
+                        lightSrc={`/img/user-logos/${solution.logo}.png`}
+                        width={300}
+                        height={150}
+                        className="object-contain max-h-32"
+                      />
+                    ) : (
+                      <p className="text-4xl font-bold text-irohGray-300 dark:text-irohGray-600">{solution.company}</p>
+                    )}
                   </div>
                 </div>
               </Link>
