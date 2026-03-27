@@ -156,11 +156,11 @@ export default function PaycodeUseCasePage() {
         <section className="py-20 px-6">
           <div className="container mx-auto max-w-4xl">
             <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Case Study</p>
-            <h2 className="text-3xl font-bold mb-6">Paycode: Highway Toll Booths in Mexico</h2>
+            <h2 className="text-3xl font-bold mb-6">Paycode: Highway Toll Booths</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
               Paycode used iroh to bring tap-to-pay to highway toll booths running Windows 7
-              hardware&mdash;connecting Kotlin Android POS devices to .NET 6 terminals with no
-              additional servers, no new infrastructure, and full PCI compliance.
+              hardware. They connected Kotlin Android POS devices to .NET 6 terminals with no
+              additional servers.
             </p>
             <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg mb-6">
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 italic">
