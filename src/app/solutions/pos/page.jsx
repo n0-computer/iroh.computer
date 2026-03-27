@@ -23,12 +23,12 @@ export default function PaycodeUseCasePage() {
               <div>
                 <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Payments / Point of Sale</p>
                 <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                  PCI-Compliant P2P Payments
+                 Payments & Point of Sale
                 </h1>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                   Connect payment terminals directly to point of sale systems over
                   Bluetooth, LAN, or Wi-Fi with iroh.
-                  No additional servers, no cloud dependency, full PCI compliance.
+                  No additional servers, no cloud dependency.
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <Link href="https://docs.iroh.computer/quickstart">
@@ -42,41 +42,6 @@ export default function PaycodeUseCasePage() {
                     </Button>
                   </Link>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PCI Architecture Diagram */}
-        <section className="py-16 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-5xl">
-            <PaycodePCIDiagram />
-          </div>
-        </section>
-
-        {/* Compliance by Design */}
-        <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold mb-6 text-center">Compliance by Design</h2>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed max-w-4xl mx-auto">
-              PCI-compliant payment systems require that raw payment data never flows through
-              anything other than the official compliant software. Traditional architectures solve
-              this with servers and VPNs&mdash;adding cost, complexity, and single points of failure.
-            </p>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-10 leading-relaxed max-w-4xl mx-auto">
-              iroh takes a different approach. Peer-to-peer connections act as a <strong>blind command
-              and control channel</strong> between devices over Bluetooth, LAN, or Wi-Fi. Raw payment
-              data never leaves the payment terminal. Only encrypted payloads and commands travel
-              through the iroh channel&mdash;the compliance boundary is maintained by architecture,
-              not by policy.
-            </p>
-            <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg max-w-4xl mx-auto">
-              <div className="flex items-start gap-4">
-                <Shield className="h-8 w-8 text-irohPurple-500 shrink-0 mt-1" />
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                  The iroh channel is transparent to payment data&mdash;it only routes encrypted
-                  payloads. Even as connectivity changes, compliance and security boundaries remain intact.
-                </p>
               </div>
             </div>
           </div>
@@ -102,8 +67,8 @@ export default function PaycodeUseCasePage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">End-to-End Encrypted</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
-                    All connections are encrypted by default. Card data stays on the
-                    payment terminal&mdash;only encrypted commands and results traverse the channel.
+                    All connections are encrypted by default using open standards. Card data stays on the
+                    payment terminal.
                   </p>
                 </div>
               </div>
@@ -112,8 +77,8 @@ export default function PaycodeUseCasePage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">Works Offline</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
-                    iroh works over Bluetooth, LAN, and Wi-Fi&mdash;devices on the same
-                    local network connect directly without internet.
+                    iroh works over <Link href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</Link>, <Link href="https://docs.iroh.computer/connecting/local-discovery" className="text-irohPurple-500 hover:underline">LAN</Link>, and Wi-Fi&mdash;devices
+                    on the same local network connect directly without internet.
                     When connectivity returns, iroh reconnects automatically.
                   </p>
                 </div>
@@ -123,7 +88,7 @@ export default function PaycodeUseCasePage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">Cross-Platform</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
-                    iroh runs on Android, iOS, Windows, Linux, and embedded devices.
+                    iroh runs on <Link href="https://docs.iroh.computer/compatibility" className="text-irohPurple-500 hover:underline">Android, iOS, Windows, Linux, and embedded devices</Link>.
                     Connect any POS device to any terminal regardless of platform.
                   </p>
                 </div>
@@ -144,16 +109,51 @@ export default function PaycodeUseCasePage() {
                   <h3 className="text-lg font-medium mb-2">Resilient by Default</h3>
                   <p className="text-irohGray-600 dark:text-irohGray-300">
                     No single point of failure. If one connection path goes down, iroh
-                    automatically finds another&mdash;direct, relay, or local network.
+                    automatically finds another&mdash;direct, local network, or <Link href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">fallback over the internet via relays</Link>.
                   </p>
                 </div>
               </div>
             </div>
           </div>
+          
+        {/* PCI Architecture Diagram */}
+        <section className="py-16 px-6  dark:border-irohGray-800">
+          <div className="container mx-auto max-w-5xl">
+            <PaycodePCIDiagram />
+          </div>
+        </section>
+
+        {/* Compliance by Design */}
+        <section className="py-20 px-6 ">
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="text-3xl font-bold mb-6 text-center">Compliance by Design</h2>
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed max-w-4xl mx-auto">
+              PCI-compliant payment systems require that raw payment data never flows through
+              anything other than the official compliant software. Traditional architectures solve
+              this with servers and VPNs, adding cost, complexity, and single points of failure.
+            </p>
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-10 leading-relaxed max-w-4xl mx-auto">
+              iroh takes a different approach. Peer-to-peer connections act as a <strong>blind command
+              and control channel</strong> between devices over Bluetooth, LAN, or Wi-Fi. Raw payment
+              data never leaves the payment terminal. Only encrypted payloads and commands travel
+              through the iroh channel. Compliance is maintained by architecture.
+            </p>
+            <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg max-w-4xl mx-auto">
+              <div className="flex items-start gap-4">
+                <Shield className="h-8 w-8 text-irohPurple-500 shrink-0 mt-1" />
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+                  The iroh channel is transparent to payment data&mdash;it only routes encrypted
+                  payloads. Even as connectivity changes, compliance and security boundaries remain intact.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         </section>
 
         {/* Case Study: Paycode */}
-        <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
+        <section className="py-20 px-6">
           <div className="container mx-auto max-w-4xl">
             <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Case Study</p>
             <h2 className="text-3xl font-bold mb-6">Paycode: Highway Toll Booths in Mexico</h2>
@@ -179,11 +179,11 @@ export default function PaycodeUseCasePage() {
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-bold mb-6">
-              Build PCI-Compliant Payment Systems Without Servers
+              Build Payment Systems Without Servers
             </h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-              Get started with iroh in minutes. Connect payment devices directly,
-              maintain compliance, and eliminate infrastructure complexity.
+              Get started with iroh in minutes. Connect devices,
+              maintain compliance, and reduce complexity.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=paycode-cta">
