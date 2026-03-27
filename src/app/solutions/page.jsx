@@ -40,7 +40,8 @@ const solutions = [
     headline: "PCI-Compliant Peer-to-Peer Payments",
     description: "Connect payment terminals directly to point of sale systems with no additional servers and full PCI compliance.",
     href: "/solutions/pos",
-    logo: null,
+    logo: "paycode",
+    logoExt: "svg",
   },
 ]
 
@@ -83,8 +84,8 @@ export default function SolutionsPage() {
                     {solution.logo ? (
                       <ThemeImage
                         alt={`${solution.company} logo`}
-                        darkSrc={`/img/user-logos/${solution.logo}.png`}
-                        lightSrc={`/img/user-logos/${solution.logo}.png`}
+                        darkSrc={`/img/user-logos/${solution.logo}.${solution.logoExt || 'png'}`}
+                        lightSrc={`/img/user-logos/${solution.logo}.${solution.logoExt || 'png'}`}
                         width={300}
                         height={150}
                         className="object-contain max-h-32"

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Shield, Zap, Lock, Radio, ArrowRightLeft, ServerOff } from "lucide-react"
 import { PaycodePCIDiagram } from "@/components/PaycodePCIDiagram"
 
+
 export const metadata = {
   title: 'PCI-Compliant Peer-to-Peer Payments | Iroh',
   description: 'Use iroh to connect payment terminals directly to point of sale systems with full PCI compliance. No servers, no brokers, no complexity.',
@@ -156,7 +157,14 @@ export default function PaycodeUseCasePage() {
         <section className="py-20 px-6">
           <div className="container mx-auto max-w-4xl">
             <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Case Study</p>
-            <h2 className="text-3xl font-bold mb-6">Paycode: Highway Toll Booths</h2>
+            <img
+              alt="Paycode logo"
+              src="/img/user-logos/paycode.svg"
+              width={200}
+              height={100}
+              className="object-contain max-h-12 mb-6 brightness-0 dark:invert"
+            />
+            <h2 className="text-3xl font-bold mb-6">Highway Toll Booths</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
               Paycode used iroh to bring tap-to-pay to highway toll booths running Windows 7
               hardware. They connected Kotlin Android POS devices to .NET 6 terminals with no
