@@ -39,7 +39,7 @@ const solutions = [
     company: "Payments",
     headline: "PCI-Compliant Peer-to-Peer Payments",
     description: "Connect payment terminals directly to point of sale systems with no additional servers and full PCI compliance.",
-    href: "/solutions/paycode",
+    href: "/solutions/pos",
     logo: null,
   },
 ]
