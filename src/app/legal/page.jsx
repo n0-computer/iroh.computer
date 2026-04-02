@@ -104,7 +104,7 @@ export default function LegalPage() {
               <div>
                 <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Limitation of Liability</h3>
                 <p className="leading-relaxed">
-                  Iroh Services is provided "as is." Number Zero is not liable for any damages arising from
+                  Iroh Services is provided &ldquo;as is.&rdquo; Number Zero is not liable for any damages arising from
                   use of the service, including loss of data or business interruption.
                 </p>
               </div>
