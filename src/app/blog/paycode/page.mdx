@@ -4,9 +4,9 @@ export const post = {
   draft: true,
   author: '',
   date: '2026-03-26',
-  title: 'Paycode: Tap-to-Pay at Highway Toll Booths with iroh',
+  title: 'iroh for payments',
   description:
-    'How Paycode used iroh to connect payment terminals to point of sale systems at highway toll booths, with no additional servers and full PCI compliance.',
+    'How Paycode used iroh to connect payment terminals to point of sale systems at highway toll booths, with no additional servers and full compliance.',
 }
 
 export const metadata = {
@@ -28,4 +28,78 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-TODO: Write this post.
+When people think about next generation payment infrastructure, they usually
+think fancy iPads, flashy apps, Bluetooth, and paperless receipts. But the
+reality for most of the world is more humble. You’re more likely to be
+presented with Windows 7, proprietary printers, and ethernet cables.
+
+In this blog post, we highlight PayCode, a team deploying iroh in remote
+environments in Mexico. Their most recent project involved connecting payment
+terminals and point of sale systems to bring tap-to-pay technology to highway
+toll booths. They needed a way for highway toll software to talk directly to the
+point of sale devices, so the cashier can create a charge, pass the device to
+the user in the car/truck, and receive the payment.
+
+Their work offers a compelling look at what it takes to modernize legacy systems
+to reduce cloud costs and improve connectivity & reliability, without replacing
+old hardware.
+Why peer to peer payments?
+
+Paying for things can be frustrating if technology breaks. Slow or inoperable
+point of sale systems can cause massive delays, lines, and ultimately lost
+revenue. Connectivity at all times isn’t always guaranteed, especially for
+mobile devices that move out of range of access points or move in and out of
+cellular dead zones, or if the cloud service is down. Every second saved at the
+point of sale people can get on with their lives instead of waiting for the
+loading spinner.  There are many ways to solve connectivity issues, including
+adding a server to the local WiFi network that brokers data flow between
+devices, using a classic HTTP server or MQTT.
+
+However, this server/broker-based approach can be expensive to maintain in the
+long term, by requiring more on-site hardware as well as on-the-ground
+technicians to service that hardware. Additionally, the original problem never
+fully goes away: the central point of failure just shifts from the cloud to the
+local server. In contrast, with peer-to-peer connectivity, no server is needed.
+The payment terminal syncs encrypted payloads directly between the point of sale
+device and payment devices directly.  One of the most critical requirements for
+PCI-compliant payment systems is that the raw payment data can never flow
+through anything other than the official compliant software. In this way,
+peer-to-peer connections can act as a blind command and control channel between
+devices; the raw payment data remains on the payment terminal, and any resulting
+transaction data is encrypted into a secure payload before being sent off the
+payment device to other non-compliant devices. This separation ensures that even
+as connectivity improves, compliance and security boundaries remain intact.
+
+### Legacy Hardware, Modern Protocols
+
+PayCode is one example of a digital transformation company that chooses iroh to implement peer-to-peer connectivity between devices in the field — payment terminals, point of sale systems, and highway toll software. Existing constraints on hardware and budget made server-based options impossible, so a peer-to-peer approach was the only way forward. The environment itself is far from modern:
+- Touch-based Windows 7 machines
+- Dual-core Intel CPUs with up to 8GB of RAM
+- A mix of Ethernet (on terminals) and Wi-Fi (across the tollway system)
+
+Despite these constraints, the team successfully integrated iroh by bundling the rust library inside a .NET 6 SDK.
+
+Quote box> “iroh was super easy to use… I started hacking and was able to integrate it into our Kotlin PoS app and have a published .NET NuGet package for our client to use in that month.”
+
+### How it works
+
+A terminal scans the QR code, registers the remote node as a static provider, and establishes a connection through gossip-based discovery.
+
+Each QR code encodes an “iroh ticket,” which contains the endpoint information needed to connect to a remote node. A terminal scans the QR code, registers the remote node as a static provider, and establishes a connection through gossip-based discovery.
+
+The terminal is then able to receive commands and send information back through the gossip channel. One such command is the start transaction request: the terminal receives the data required to charge the user, executes the transaction within the PCI-compliant flow, and then sends the outcome back through the channel.
+
+Because the communication is direct between devices, transactions avoid unnecessary intermediaries, which reduces latency and makes the process highly reliable. At the same time since all data is end-to-end encrypted we ensure that even the most sensitive data remains protected throughout the entire transaction lifecycle.
+
+### Final thoughts
+
+This deployment highlights something important: innovation doesn’t always happen
+in greenfield environments. In many cases, the most impactful innovation happens
+when you can modernize legacy systems to reduce cloud costs and improve
+connectivity & reliability, without replacing old hardware. This is why it's so
+important to have tools like iroh that can work on any device, and why we built
+iroh to be flexible enough to meet the needs of a wide range of use cases, from
+cutting-edge applications to legacy modernization projects like this one. We’re
+excited to see what other creative solutions teams will build with iroh in the
+future!
+
