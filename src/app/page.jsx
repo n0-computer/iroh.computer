@@ -136,6 +136,17 @@ export default function Page() {
                   </div>
                 </div>
               </Link>
+              <Link href="/solutions/pos" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Point of Sale Payments</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Connect payment terminals directly to point of sale systems over Bluetooth, LAN, or Wi-Fi with full PCI compliance and no additional servers.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <img src="/img/user-logos/paycode.svg" alt="Paycode logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
             </div>
           </section>
 
