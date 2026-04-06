@@ -31,9 +31,13 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-When people think about next generation payment infrastructure, they usually think fancy iPads, flashy apps, Bluetooth, and paperless receipts. But the reality for most of the world is more humble. You're more likely to be presented with Windows 7, proprietary printers, and ethernet cables.
-
-In this post we look at [Paycode], a team deploying iroh in remote environments in Mexico. Their most recent project: connecting payment terminals and point of sale systems to bring tap-to-pay to highway toll booths.
+<div className="grid md:grid-cols-2 gap-8 items-center not-prose mb-8">
+  <div className="text-lg text-irohGray-700 dark:text-irohGray-300 leading-relaxed">
+    <p className="mb-4">When people think about next generation payment infrastructure, they usually think fancy iPads, flashy apps, Bluetooth, and paperless receipts. But the reality for most of the world is more humble. You're more likely to be presented with Windows 7, proprietary printers, and ethernet cables.</p>
+    <p>In this post we look at <a href="https://paycode.com.mx" className="text-irohPurple-500 hover:underline">Paycode</a>, a team deploying iroh in remote environments in Mexico. Their most recent project: connecting payment terminals and point of sale systems to bring tap-to-pay to highway toll booths.</p>
+  </div>
+  <video src="/img/pos-demo.mov" autoPlay loop muted playsInline className="w-full max-w-xs mx-auto rounded-lg shadow-lg" />
+</div>
 
 <IrohPaymentDiagram />
 
