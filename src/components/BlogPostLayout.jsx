@@ -12,15 +12,17 @@ export function BlogPostLayout({ article, references = [], children }) {
       <BlogHeader />
       <div className="px-5 sm:px-0 mt-16 lg:mt-32 font-space">
         <div className="xl:relative">
-          <div className="mx-auto mt-32 mb-64 max-w-4xl">
-            <a
-              href="/blog"
-              aria-label="Go back to articles"
-              className="flex text-sm font-medium text-irohPurple-500 mb-5"
-            >
-              <ChevronLeftIcon className="mr-1 mt-1 h-4 w-4" />
-              Blog Index
-            </a>
+          <div className="mx-auto mt-32 mb-64 max-w-6xl">
+            <div>
+              <a
+                href="/blog"
+                aria-label="Go back to articles"
+                className="flex text-sm font-medium text-irohPurple-500 mb-5"
+              >
+                <ChevronLeftIcon className="mr-1 mt-1 h-4 w-4" />
+                Blog Index
+              </a>
+            </div>
             <article>
               <header className="flex flex-col">
                 <h1 className="text-4xl font-space font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">

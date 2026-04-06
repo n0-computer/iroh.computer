@@ -154,7 +154,7 @@ export function PaycodePCIDiagram({ className }) {
   const pciHeight = 230
 
   return (
-    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-800 rounded-lg p-4 ${className || ''}`}>
+    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-900 rounded-lg p-4 ${className || ''}`}>
       <svg viewBox="0 0 600 310" className="rounded w-full">
         {/* ---- PCI Compliance Boundary ---- */}
         <rect

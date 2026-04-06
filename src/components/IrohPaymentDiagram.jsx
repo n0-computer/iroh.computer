@@ -100,8 +100,8 @@ export function IrohPaymentDiagram({ className }) {
   const midX = (opRight + posLeft) / 2
 
   return (
-    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-800 rounded-lg p-4 ${className || ''}`}>
-      <svg viewBox="0 0 530 280" className="rounded w-full">
+    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-900 rounded-lg p-4 ${className || ''}`}>
+      <svg viewBox="60 70 420 210" className="rounded w-full">
 
         {/* --- Operator → POS (start_txn) top lane --- */}
         <line

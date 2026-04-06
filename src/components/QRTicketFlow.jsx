@@ -192,8 +192,8 @@ const QRIcon = ({ x, y, size }) => {
 
 export function QRTicketFlow({ className }) {
   return (
-    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-800 rounded-lg p-4 ${className || ''}`}>
-      <svg viewBox="0 0 550 360" className="rounded w-full">
+    <div className={`flex items-center justify-center bg-irohGray-100 dark:bg-irohGray-900 rounded-lg p-4 ${className || ''}`}>
+      <svg viewBox="10 20 530 320" className="rounded w-full">
 
         {/* Lifelines */}
         <Lifeline x={POS_X} />
