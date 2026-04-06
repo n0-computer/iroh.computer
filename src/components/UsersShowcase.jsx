@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 const projects = [
   { title: "Delta Chat",
-    description: "Iroh powers multi-device backup & live connections for in-chat WebXDC apps",
+    description: "Iroh powers multi-device backup & live connections for apps",
     thumbnail: '/img/users/delta_chat.png',
     href: 'https://delta.chat',
   },

@@ -30,7 +30,7 @@ export default function BlogHeader() {
             {navItems.map((item, i ) => {
               return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
             })}
-            <li className='mt-2.5'>
+            <li>
               <GithubStars />
             </li>
           </ul>

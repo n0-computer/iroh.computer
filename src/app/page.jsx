@@ -11,7 +11,8 @@ import {AnywhereIllustration} from '@/components/AnywhereIllustration';
 import { IrohEverywhere } from '@/components/IrohEverywhere';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
 import {LogoCloud} from '@/components/home/LogoCloud';
-import {FeatureBentoGrid} from '@/components/FeatureBentoGrid';
+
+import {HomeFeatureTabs} from '@/components/HomeFeatureTabs';
 
 import logoRust from '@/images/language-logos/rust.svg';
 import { CodeBlock } from '@/components/CodeBlock';
@@ -43,7 +44,7 @@ export default function Page() {
                   <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct,{' '}
                     <br />peer-to-peer connections between devices</h3>
                   <div className='flex mt-3'>
-                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
                 </div>
               </div>
@@ -69,7 +70,6 @@ export default function Page() {
                 The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in.
               </p>
             </div>
-            <IrohEverywhere />
           </section>
 
 
@@ -77,7 +77,7 @@ export default function Page() {
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
             <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
             <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <figure className="mt-10">
+              <figure className="mt">
                 <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
                   <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
                 </blockquote>
@@ -95,7 +95,7 @@ export default function Page() {
             </div>
           </section>
 
-          <FeatureBentoGrid />
+          <HomeFeatureTabs />
 
           {/* Solutions */}
           <section id="solutions" className='max-w-7xl mx-auto py-16 px-4'>
@@ -128,11 +128,22 @@ export default function Page() {
               <Link href="/solutions/delta-chat" className="block">
                 <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <div className="md:col-span-2">
-                    <p className="text-xl font-medium text-irohGray-100 dark:text-irohGray-100 mb-2">Data sync & P2P Web Apps</p>
-                    <p className="text-irohGray-600 dark:text-irohGray-300">Powers in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Real-time Sync for Mobile Applications</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Powers apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
                   </div>
                   <div className="flex items-center justify-center">
                     <img src="/img/user-logos/delta_chat.png" alt="Delta Chat logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
+              <Link href="/solutions/pos" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Point of Sale Payments</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Connect payment terminals directly to point of sale systems over Bluetooth, LAN, or Wi-Fi with full PCI compliance and no additional servers.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <img src="/img/user-logos/paycode.svg" alt="Paycode logo" className="object-contain max-h-16" />
                   </div>
                 </div>
               </Link>

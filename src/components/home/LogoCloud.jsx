@@ -8,6 +8,7 @@ const companies = [
   { name: "spacedrive", ext: "png" },
   { name: "nous", ext: "png" },
   { name: "shaga", ext: "png" },
+  { name: "paycode", ext: "svg" },
   { name: "rave", ext: "png" },
   { name: "delta_chat", ext: "png" },
   { name: "holochain", ext: "svg" },
