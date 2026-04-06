@@ -6,7 +6,7 @@ import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
 import {HomeHero} from '@/components/HomeHero';
 import {FromTheBlog} from '@/components/FromTheBlog';
-import {PerfChartIllustration} from '@/components/PerfChartIllustration';
+import {MetricsIllustration} from '@/components/MetricsIllustration';
 import {AnywhereIllustration} from '@/components/AnywhereIllustration';
 import { IrohEverywhere } from '@/components/IrohEverywhere';
 import {ProtocolHeroList} from '@/components/ProtocolHeroList';
@@ -165,7 +165,7 @@ export default function Page() {
                 </Link>
               </div>
               <div>
-                <PerfChartIllustration />
+                <MetricsIllustration className="w-full" />
               </div>
             </div>
           </section>
