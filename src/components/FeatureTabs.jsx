@@ -30,10 +30,10 @@ export function FeatureTabs({ title, tabs }) {
                     : 'border-irohGray-200 dark:border-irohGray-700 opacity-40 hover:opacity-60'
                 }`}
               >
-                <h3 className={`text-lg font-bold mb-2 ${
+                <h3 className={`text-2xl font-bold mb-2 ${
                   i === active ? 'text-irohPurple-500' : ''
                 }`}>{tab.label}</h3>
-                <div className="text-sm text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+                <div className="text-base text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
                   {tab.body}
                 </div>
               </button>

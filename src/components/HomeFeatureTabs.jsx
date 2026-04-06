@@ -18,16 +18,6 @@ const tabs = [
     diagram: <IrohEverywhere />,
   },
   {
-    id: 'sync',
-    label: 'Sync Any Data',
-    body: (
-      <p>
-        <Link href="https://docs.iroh.computer/protocols/blobs" className="text-irohPurple-500 hover:underline">Files</Link>, <Link href="https://docs.iroh.computer/protocols/kv-crdts" className="text-irohPurple-500 hover:underline">structured data</Link>, <Link href="https://docs.iroh.computer/protocols/streaming" className="text-irohPurple-500 hover:underline">video</Link>, <Link href="https://docs.iroh.computer/protocols/rpc" className="text-irohPurple-500 hover:underline">RPC</Link>&mdash;or write your own protocol.
-      </p>
-    ),
-    diagram: <OpenSourceIllustration className="w-full" />,
-  },
-  {
     id: 'encrypted',
     label: 'E2E Encrypted, Always',
     body: (
