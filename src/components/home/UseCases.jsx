@@ -16,8 +16,8 @@ const useCases = {
   "Data Transfer": [
     "Recall uses iroh to replicate massive amounts content-addressed data for validating AI Agents."
   ],
-  "Resilient Apps": [
-    "Delta Chat uses iroh to power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious."
+  "Real-time Sync for Apps": [
+    "Delta Chat uses iroh to power apps for hundreds of thousands of devices around the world, even when internet access is precarious."
   ]
 }
 

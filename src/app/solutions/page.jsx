@@ -27,10 +27,10 @@ const solutions = [
     logo: "rave",
   },
   {
-    category: "Resilient Apps",
+    category: "Real-time Sync for Mobile",
     company: "Delta Chat",
-    headline: "Resilient Messaging & P2P Web Apps",
-    description: "Power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
+    headline: "Real-time Sync for Mobile Applications",
+    description: "Power apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
     href: "/solutions/delta-chat",
     logo: "delta_chat",
   },

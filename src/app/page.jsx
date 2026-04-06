@@ -43,7 +43,7 @@ export default function Page() {
                   <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct,{' '}
                     <br />peer-to-peer connections between devices</h3>
                   <div className='flex mt-3'>
-                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohGray-800 text-irohPurple-500 uppercase hover:bg-irohGray-700 hover:text-gray-200 plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
                 </div>
               </div>
@@ -128,8 +128,8 @@ export default function Page() {
               <Link href="/solutions/delta-chat" className="block">
                 <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <div className="md:col-span-2">
-                    <p className="text-xl font-medium text-irohGray-100 dark:text-irohGray-100 mb-2">Data sync & P2P Web Apps</p>
-                    <p className="text-irohGray-600 dark:text-irohGray-300">Powers in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Real-time Sync for Mobile Applications</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Powers apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
                   </div>
                   <div className="flex items-center justify-center">
                     <img src="/img/user-logos/delta_chat.png" alt="Delta Chat logo" className="object-contain max-h-16" />
