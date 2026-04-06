@@ -23,11 +23,11 @@ const OperatorMachine = ({ x, y }) => (
     <line x1="8" y1="19" x2="24" y2="19" stroke={palette[0]} strokeWidth="1" opacity="0.4" />
     <line x1="20" y1="26" x2="20" y2="32" stroke={palette[0]} strokeWidth="1.5" />
     <line x1="12" y1="32" x2="28" y2="32" stroke={palette[0]} strokeWidth="1.5" strokeLinecap="round" />
-    <text x="20" y="46" textAnchor="middle" fill={GRAY} fontSize="7" fontFamily="sans-serif">Operator Machine</text>
+    <text x="20" y="46" textAnchor="middle" fill={GRAY} fontSize="7" fontFamily="sans-serif">Point of Sale</text>
   </g>
 )
 
-// POS Terminal — card reader device
+// Payment Terminal — card reader device
 const POSTerminal = ({ x, y }) => (
   <g transform={`translate(${x - 14}, ${y - 20})`}>
     <rect x="2" y="2" width="24" height="36" rx="3" fill="none" stroke={palette[0]} strokeWidth="1.5" />
@@ -42,7 +42,7 @@ const POSTerminal = ({ x, y }) => (
     <circle cx="14" cy="28" r="1.5" fill={palette[0]} opacity="0.5" />
     <circle cx="19" cy="28" r="1.5" fill={palette[0]} opacity="0.5" />
     <line x1="8" y1="35" x2="20" y2="35" stroke={palette[0]} strokeWidth="1" opacity="0.5" />
-    <text x="14" y="50" textAnchor="middle" fill={GRAY} fontSize="7" fontFamily="sans-serif">POS Terminal</text>
+    <text x="14" y="50" textAnchor="middle" fill={GRAY} fontSize="7" fontFamily="sans-serif">Payment Terminal</text>
   </g>
 )
 

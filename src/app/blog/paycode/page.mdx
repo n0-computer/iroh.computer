@@ -1,6 +1,7 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 import { MQTTDiagram } from '@/components/MQTTDiagram'
 import { IrohPaymentDiagram } from '@/components/IrohPaymentDiagram'
+import { QRTicketFlow } from '@/components/QRTicketFlow'
 
 export const post = {
   draft: false,
@@ -34,7 +35,8 @@ When people think about next generation payment infrastructure, they usually thi
 
 In this post we look at [Paycode], a team deploying iroh in remote environments in Mexico. Their most recent project: connecting payment terminals and point of sale systems to bring tap-to-pay to highway toll booths.
 
-![Paycode toll booth deployment](/blog/paycode/paycode.png)
+<IrohPaymentDiagram />
+
 
 ## Why peer-to-peer payments?
 
@@ -61,25 +63,31 @@ The environment is far from modern:
 
 Despite these constraints, the team integrated iroh by bundling the Rust library inside a .NET 6 SDK.
 
-> "iroh was super easy to use… I started hacking and was able to integrate it into our Kotlin PoS app and have a published .NET NuGet package for our client to use in that month."
+> "iroh was super easy to use… I started hacking and was able to integrate it into our Kotlin PoS app and have a published .NET NuGet package for our client to use in that month." - Carlos Diez, Head of mobile and front-end development at Paycode
 
 ## How it works
 
-<IrohPaymentDiagram />
-
 Each QR code encodes an [iroh ticket], which contains the endpoint information needed to connect to a remote node. A terminal scans the QR code, registers the remote node as a static provider, and establishes a connection through gossip-based discovery.
 
+<QRTicketFlow />
+
 From there, the terminal can receive commands and send information back through the gossip channel. One such command is the start transaction request: the terminal receives the data needed to charge the user, executes the transaction within the PCI-compliant flow, and sends the outcome back.
+
+<IrohPaymentDiagram />
+
 
 Because the communication is direct between devices, transactions avoid unnecessary intermediaries. This reduces latency and makes the process reliable. **And since all data is end-to-end encrypted, sensitive data stays protected throughout the entire transaction lifecycle.**
 
 ## What makes this interesting
 
-This deployment highlights something we think is important: **innovation doesn't always happen in greenfield environments.** In many cases, the most impactful work happens when you can modernize legacy systems without replacing old hardware — reducing cloud costs and improving connectivity and reliability at the same time.
+This deployment highlights something we think is important: **innovation doesn't always happen in greenfield environments.** In many cases, the most impactful work happens when you can modernize legacy systems without replacing old hardware: reducing cloud costs and improving connectivity and reliability at the same time.
 
-The Paycode team needed something that could run on constrained devices, handle unreliable networks, and meet strict compliance requirements. iroh fit because it's designed to work on any device and adapt to the network conditions it finds. If you're working on something similar, [come talk to us on Discord][discord].
+The Paycode team needed something that could run on constrained devices, handle
+unreliable networks, and meet strict compliance requirements. iroh fit because
+it's designed to work on any device and adapt to the network conditions it
+finds. If you're working on something similar, [let's talk!][book]
 
 [Paycode]: https://paycode.com.mx
 [iroh ticket]: https://docs.iroh.computer/concepts/tickets
 [MQTT]: https://mqtt.org/
-[discord]: https://discord.gg/iroh
+[book]: https://cal.com/team/number-0/iroh-services

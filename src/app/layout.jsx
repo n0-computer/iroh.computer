@@ -39,8 +39,11 @@ export default async function RootLayout({children}) {
       <head>
         <link rel="me" href="https://mastodon.social/@n0iroh" />
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet" />
       </head>
-      <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
+      <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900 font-space">
         <Providers>
           <div className="w-full overflow-x-hidden">
             {children}
