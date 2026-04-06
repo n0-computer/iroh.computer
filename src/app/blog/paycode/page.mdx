@@ -44,7 +44,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 ## Why peer-to-peer payments?
 
-Paying for things can be frustrating when the tech breaks. Slow or inoperable point of sale systems cause massive delays, lines, and lost revenue. Connectivity isn't always guaranteed — especially for mobile devices that move out of range, or when the cloud service goes down. Every second saved at the point of sale is a second where people can get on with their lives instead of staring at a loading spinner.
+Paying for things can be frustrating when the tech breaks. Slow or inoperable point of sale systems cause massive delays, lines, and lost revenue. Connectivity isn't always guaranteed, especially for mobile devices that move out of range, or when the cloud service goes down. Every second saved at the point of sale is a second where people can get on with their lives instead of staring at a loading spinner.
 
 There are plenty of ways to solve connectivity issues: you can add a server to the local WiFi network, use a classic HTTP server, or run an [MQTT] broker. But these server-based approaches come with costs. More on-site hardware means more technicians to service that hardware. And the original problem never fully goes away, because the single point of failure just shifts from the cloud to the local server.
 
@@ -58,7 +58,7 @@ One of the most critical requirements for PCI-compliant payment systems is that 
 
 ## Legacy hardware, modern protocols
 
-Paycode chose iroh to implement peer-to-peer connectivity between devices in the field — payment terminals, point of sale systems, and highway toll software. Existing constraints on hardware and budget made server-based options impossible, so a peer-to-peer approach was the only way forward.
+Paycode chose iroh to implement peer-to-peer connectivity between devices in the field, such as payment terminals, point of sale systems, and highway toll software. Existing constraints on hardware and budget made server-based options impossible, so a peer-to-peer approach was the only way forward.
 
 The environment is far from modern:
 - Touch-based Windows 7 machines
