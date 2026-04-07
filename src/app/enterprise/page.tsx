@@ -71,14 +71,16 @@ export default function EnterprisePage() {
                 </p>
               </div>
             </div>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mt-12 leading-relaxed">
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mt-12 leading-relaxed text-center">
               This is connection anxiety. We can help.
             </p>
+            <div className="text-center">
             <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
               <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
                 Tell us what you&apos;re building
               </Button>
             </Link>
+            </div>
           </div>
         </section>
 
@@ -170,7 +172,7 @@ export default function EnterprisePage() {
             <h2 className="text-3xl font-bold mb-6">
               Connection anxiety thrives in silence.</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-12 leading-relaxed">
-              iroh Enterprise means messaging the engineers who wrote the code.  Your dedicated Slack or Discord channel connects you directly to the Number0
+              iroh Enterprise means messaging <Link href="https://n0.computer/people/" target="_blank" rel="noopener noreferrer" className="text-irohPurple-500 hover:underline">the engineers who wrote the code</Link>.  Your dedicated Slack or Discord channel connects you directly to the Number0
               core team: the same people committing to iroh every day, triaging issues,
               and shipping features.
             </p>
@@ -192,11 +194,6 @@ export default function EnterprisePage() {
                 </p>
               </div>
             </div>
-            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-8">
-              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                Meet the team
-              </Button>
-            </Link>
           </div>
         </section>
 
@@ -227,14 +224,16 @@ export default function EnterprisePage() {
                 Highest-tier SLA guarantees
               </li>
             </ul>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed text-center">
               Think of it as embedding an iroh expert into your team.
             </p>
-            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
-              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                Hire a dedicated engineer
-              </Button>
-            </Link>
+            <div className="text-center">
+              <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
+                <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                  Hire a dedicated engineer
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -323,11 +322,13 @@ export default function EnterprisePage() {
                 </tbody>
               </table>
             </div>
-            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-8">
-              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                Get SLA details
-              </Button>
-            </Link>
+            <div className="text-center">
+              <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-8">
+                <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                  Get SLA details
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
