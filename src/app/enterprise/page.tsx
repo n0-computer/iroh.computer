@@ -201,9 +201,84 @@ export default function EnterprisePage() {
         </section>
 
 
-        {/* SLAs */}
+
+        {/* Dedicated Engineer */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
+            <h2 className="text-3xl font-bold mb-4">Dedicated Engineer</h2>
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
+              For teams building iroh into the core of their product:
+            </p>
+            <ul className="space-y-3 text-irohGray-600 dark:text-irohGray-300 mb-8">
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                Code reviews and direct collaboration on your codebase
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                Custom feature development
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                Source code access
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                Highest-tier SLA guarantees
+              </li>
+            </ul>
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+              Think of it as embedding an iroh expert into your team.
+            </p>
+            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
+              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                Hire a dedicated engineer
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Social Proof */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="text-3xl font-bold mb-4">iroh is already running at scale</h2>
+            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-12">
+              Hundreds of thousands of devices in production.
+            </p>
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <Link href="/solutions/rave" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
+                <img src="/img/user-logos/rave.png" alt="Rave logo" className="object-contain max-h-10 mb-4" />
+                <p className="font-semibold mb-1">Video Streaming</p>
+                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Real-time video for millions of concurrent connections.</p>
+                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
+              </Link>
+              <Link href="/solutions/nous" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
+                <img src="/img/user-logos/nous.png" alt="Nous logo" className="object-contain max-h-10 mb-4" />
+                <p className="font-semibold mb-1">Distributed AI Training</p>
+                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Train foundation LLMs across AWS, GCP, Azure, and self-hosted compute.</p>
+                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
+              </Link>
+              <Link href="/solutions/pos" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
+                <img src="/img/user-logos/paycode.svg" alt="Paycode logo" className="object-contain max-h-10 mb-4 brightness-0 dark:invert" />
+                <p className="font-semibold mb-1">Payments &amp; Point of Sale</p>
+                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Tap-to-pay at highway toll booths with no additional servers.</p>
+                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
+              </Link>
+            </div>
+            <blockquote className="border-l-4 border-irohPurple-500 pl-6 py-2">
+              <p className="text-lg italic text-irohGray-700 dark:text-irohGray-300 mb-2">
+                &ldquo;Doubling the network speed halves our compute budget.&rdquo;
+              </p>
+              <cite className="text-sm text-irohGray-500 dark:text-irohGray-400 not-italic">
+                — Ari Lotter, Principal Engineer, Nous Research
+              </cite>
+            </blockquote>
+          </div>
+        </section>
+
+        {/* SLAs */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-4xl">
             <h2 className="text-3xl font-bold mb-4">SLAs that cut through the anxiety</h2>
             <p className="text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
               Measured from first contact. Delivered through your dedicated channel.
@@ -256,44 +331,6 @@ export default function EnterprisePage() {
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold mb-4">iroh is already running at scale</h2>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-12">
-              Hundreds of thousands of devices in production.
-            </p>
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <Link href="/solutions/rave" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
-                <img src="/img/user-logos/rave.png" alt="Rave logo" className="object-contain max-h-10 mb-4" />
-                <p className="font-semibold mb-1">Video Streaming</p>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Real-time video for millions of concurrent connections.</p>
-                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
-              </Link>
-              <Link href="/solutions/nous" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
-                <img src="/img/user-logos/nous.png" alt="Nous logo" className="object-contain max-h-10 mb-4" />
-                <p className="font-semibold mb-1">Distributed AI Training</p>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Train foundation LLMs across AWS, GCP, Azure, and self-hosted compute.</p>
-                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
-              </Link>
-              <Link href="/solutions/pos" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
-                <img src="/img/user-logos/paycode.svg" alt="Paycode logo" className="object-contain max-h-10 mb-4 brightness-0 dark:invert" />
-                <p className="font-semibold mb-1">Payments &amp; Point of Sale</p>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Tap-to-pay at highway toll booths with no additional servers.</p>
-                <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
-              </Link>
-            </div>
-            <blockquote className="border-l-4 border-irohPurple-500 pl-6 py-2">
-              <p className="text-lg italic text-irohGray-700 dark:text-irohGray-300 mb-2">
-                &ldquo;Doubling the network speed halves our compute budget.&rdquo;
-              </p>
-              <cite className="text-sm text-irohGray-500 dark:text-irohGray-400 not-italic">
-                — Ari Lotter, Principal Engineer, Nous Research
-              </cite>
-            </blockquote>
-          </div>
-        </section>
-
 
         {/* Tier Comparison */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
@@ -343,43 +380,6 @@ export default function EnterprisePage() {
                 </tbody>
               </table>
             </div>
-          </div>
-        </section>
-
-
-        {/* Dedicated Engineer */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold mb-4">Dedicated Engineer</h2>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-              For teams building iroh into the core of their product:
-            </p>
-            <ul className="space-y-3 text-irohGray-600 dark:text-irohGray-300 mb-8">
-              <li className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                Code reviews and direct collaboration on your codebase
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                Custom feature development
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                Source code access
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                Highest-tier SLA guarantees
-              </li>
-            </ul>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-              Think of it as embedding an iroh expert into your team.
-            </p>
-            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
-              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                Hire a dedicated engineer
-              </Button>
-            </Link>
           </div>
         </section>
 
