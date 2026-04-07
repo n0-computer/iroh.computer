@@ -84,26 +84,6 @@ export default function EnterprisePage() {
           </div>
         </section>
 
-        {/* Why Number0 */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold mb-8">Why Number0</h2>
-            <ul className="space-y-4 text-lg text-irohGray-700 dark:text-irohGray-300">
-              <li className="flex items-start gap-3">
-                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                We wrote iroh: no translation layer between your problem and the fix
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                Dual MIT/Apache licensed — no lock-in risk
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
-                A small, senior team: you talk to engineers, not a support queue
-              </li>
-            </ul>
-          </div>
-        </section>
         {/* Two Tools */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl">
@@ -381,6 +361,27 @@ export default function EnterprisePage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        </section>
+
+        {/* Why Number0 */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-6xl text-center">
+            <h2 className="text-3xl font-bold mb-8">Why Number0</h2>
+            <ul className="space-y-4 text-lg text-irohGray-700 dark:text-irohGray-300 inline-block text-left">
+              <li className="flex items-start gap-3">
+                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                We wrote iroh: no translation layer between your problem and the fix
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                Dual MIT/Apache licensed — no lock-in risk
+              </li>
+              <li className="flex items-start gap-3">
+                <Check className="h-6 w-6 text-irohPurple-500 flex-shrink-0 mt-0.5" />
+                A small, senior team: you talk to engineers, not a support queue
+              </li>
+            </ul>
           </div>
         </section>
 
