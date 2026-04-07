@@ -20,14 +20,13 @@ export const navItems = [
   {content: 'Services', href: '/#services', dropdown: [
     {label: 'Hosting', href: '/services/hosting'},
     {label: 'Observability', href: '/services/observability'},
-    {label: 'Professional Support', href: '/services/support'}
+    {label: 'Enterprise', href: '/services/enterprise'},
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
-    {label: 'Enterprise', href: '/enterprise'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},

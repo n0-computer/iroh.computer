@@ -118,7 +118,7 @@ export default function SolutionsPage() {
                   Read the Docs
                 </Button>
               </Link>
-              <Link href="/enterprise">
+              <Link href="/services/enterprise">
                 <Button
                   arrow="none"
                   variant="outline"
