@@ -30,7 +30,7 @@ export const navItems = [
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
-  {content: 'Roadmap', href: '/roadmap'},
+  {content: 'Pricing', href: '/pricing'},
 ];
 
 export function TopLevelNavItem({href, children}) {
