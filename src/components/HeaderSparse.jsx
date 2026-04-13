@@ -12,7 +12,7 @@ function TopLevelNavItem({ href, children }) {
     <li>
       <Link
         href={href}
-        className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+        className="text-black dark:text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
       >
         {children}
       </Link>
@@ -38,7 +38,7 @@ function DropdownNavItem({ href, label, items }) {
     <li className="relative flex items-center" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100 inline-flex items-center gap-1"
+        className="text-black dark:text-irohGray-400 px-3 py-2 rounded-md text-sm font-medium transition ease-in-out delay-50 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100 inline-flex items-center gap-1"
       >
         {label}
         <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@ function DropdownNavItem({ href, label, items }) {
             <Link
               key={item.href}
               href={item.href}
-              className="block px-4 py-2 text-sm text-irohGray-600 dark:text-irohGray-300 hover:bg-irohGray-100 dark:hover:bg-irohGray-700 hover:text-irohPurple-500"
+              className="block px-4 py-2 text-sm text-black dark:text-irohGray-300 hover:bg-irohGray-100 dark:hover:bg-irohGray-700 hover:text-irohPurple-500"
             >
               {item.label}
             </Link>
@@ -148,14 +148,14 @@ export function HeaderSparse() {
             if (item.dropdown) {
               return (
                 <div key={i}>
-                  <span className="text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</span>
+                  <span className="text-black dark:text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</span>
                   {item.dropdown.map((sub) => (
-                    <Link key={sub.href} href={sub.href} className="text-gray-400 block px-6 py-1.5 rounded-md text-sm">{sub.label}</Link>
+                    <Link key={sub.href} href={sub.href} className="text-black dark:text-gray-400 block px-6 py-1.5 rounded-md text-sm">{sub.label}</Link>
                   ))}
                 </div>
               );
             }
-            return <Link key={i} href={item.href} className="text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
+            return <Link key={i} href={item.href} className="text-black dark:text-gray-500 block px-3 py-2 rounded-md text-base font-medium">{item.content}</Link>;
           })}
         </div>
       </div>
