@@ -28,7 +28,7 @@ export default function Page() {
     <div>
       <HeaderSparse />
 
-      <div className="bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
+      <div className="bg-white dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
         <main className="mb-auto flex flex-col min-h-92">
           {/* hero */}
           <section className="min-h-92 pt-20 bg-cover" style={{ height: 600 }}>

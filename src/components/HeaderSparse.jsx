@@ -85,9 +85,9 @@ export function HeaderSparse() {
     function handleScroll() {
       const navbar = document.getElementById('navbar');
       if (window.scrollY > 0) {
-        navbar.classList.add('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+        navbar.classList.add('bg-white', 'shadow-md', 'dark:bg-irohGray-900');
       } else {
-        navbar?.classList.remove('bg-irohGray-50', 'shadow-md', 'dark:bg-irohGray-900');
+        navbar?.classList.remove('bg-white', 'shadow-md', 'dark:bg-irohGray-900');
       }
     }
 
@@ -100,7 +100,7 @@ export function HeaderSparse() {
   return (
     <nav id="navbar" className={clsx(
       "fixed w-full z-50",
-      "transition-colors ease-in duration-200 bg-irohGray-50 dark:bg-irohGray-900 animate-all",
+      "transition-colors ease-in duration-200 bg-white dark:bg-irohGray-900 animate-all",
       mobileMenuOpen && 'backdrop-blur-md'
       )}
     >
