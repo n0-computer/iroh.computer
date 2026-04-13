@@ -3,7 +3,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 
 export const post = {
   author: 'Rüdiger Klaehn',
-  date: '2026-03-15',
+  date: '2026-04-14',
   title: 'QUIC packet rejection in practice',
   description:
     'Putting QUIC packet rejection to the test with a real iroh endpoint.',
@@ -36,10 +36,10 @@ Using this we can measure not just the wallclock exeuction time but also how muc
 To establish a baseline, we just do a number of echo requests in parallel and look at the CPU usage and wallclock time:
 
 ```
-echo: 100 accepted,   0 rejected,   0 closed  (client: 45.55ms | server: 133.88ms cpu,      747 ops/s, 47.77ms wall)
+echo: 100 accepted,   0 rejected,   0 closed  (client: 42.18ms | server: 127.98ms cpu,      781 ops/s, 45.80ms wall)
 ```
 
-So each *cpu core* can handle 747 complete new handshakes and echo requests per second in terms of raw CPU time.
+So each *cpu core* can handle 781 complete new handshakes and echo requests per second in terms of raw CPU time.
 
 Note that these are fresh connection attemps. Also this is with 100 clients on running on the same machine, so the absolute number isn't that meaningful. We mostly care about relative numbers.
 
@@ -61,23 +61,23 @@ We could reject here based on the unverified sender address, or just to shed loa
 The options here are ignore (silently dropping the connection attempt), retry (instruct the sender to retry with a token), and reject.
 
 ```
-ignore addr:   0 accepted, 100 rejected,   0 closed  (client:   5.01s | server:  1.49ms cpu,    67204 ops/s,  9.65ms wall)
-reject addr:   0 accepted, 100 rejected,   0 closed  (client:  9.95ms | server:  9.73ms cpu,    10276 ops/s, 13.05ms wall)
-retry + reject:   0 accepted, 100 rejected,   0 closed  (client: 36.45ms | server: 14.10ms cpu,     7095 ops/s, 39.56ms wall)
+ignore addr:   0 accepted, 100 rejected,   0 closed  (client:   5.00s | server:  3.65ms cpu,    27427 ops/s, 16.07ms wall)
+reject addr:   0 accepted, 100 rejected,   0 closed  (client: 11.36ms | server:  9.64ms cpu,    10370 ops/s, 14.32ms wall)
+retry + reject:   0 accepted, 100 rejected,   0 closed  (client: 33.83ms | server:  9.58ms cpu,    10434 ops/s, 36.34ms wall)
 ```
 
-Unsurprisingly, ignore is fastest at 67204 ops/s per core. But also not very useful except for unconditional load shedding.
+Unsurprisingly, ignore is fastest at 27427 ops/s per core. But also not very useful except for unconditional load shedding.
 
 Reject is a bit more polite, but for spoofed sender addresses it might not even reach the sender.
 
 Retry+reject is the first rejection mode that is genuinely useful for selective filtering or rate limiting. After a retry we know the source address is correct, so we can e.g. rate limit by ip address or even filter by region.
 
-Even retry+reject is much faster than going through with the request at ~7095 ops/s per core.
+Even retry+reject is much faster than going through with the request at ~10434 ops/s per core.
 
 The last opportunity to reject direct requests is to reject based on the negotiated ALPN. This is useful not so much in a denial of service scenario, but if you serve different ALPNs and want to prioritize one in times of high load.
 
 ```
-reject alpn:   0 accepted,   0 rejected, 100 closed  (client: 34.33ms | server: 81.50ms cpu,     1227 ops/s, 38.66ms wall)
+reject alpn:   0 accepted, 100 rejected,   0 closed  (client: 10.92ms | server:  8.28ms cpu,    12085 ops/s, 14.78ms wall)
 ```
 
 In case of an echo service that is extremely cheap, this does not help much compared to completing the request. But in case of more expensive requests it would help a lot to prioritize.
@@ -89,13 +89,15 @@ For requests via relays we don't have a source address that we can filter or rat
 This id can be relied on only if the relay isn't lying to us, so it is a bit similar to an unverified source ip address. But it is much harder for an attacker to arrange for a compromised relay than to just forge the sender in UDP datagrams, so it is a bit more useful for filtering.
 
 ```
-reject endpoint id:   0 accepted, 100 rejected,   0 closed  (client: 14.12ms | server:  4.88ms cpu,    20509 ops/s, 27.25ms wall)
+ignore eid:   0 accepted, 100 rejected,   0 closed  (client:   5.01s | server:  6.64ms cpu,    15072 ops/s, 34.91ms wall)
+reject eid:   0 accepted, 100 rejected,   0 closed  (client: 17.54ms | server:  8.20ms cpu,    12194 ops/s, 21.11ms wall)
+retry + reject eid:   0 accepted, 100 rejected,   0 closed  (client: 38.09ms | server: 17.51ms cpu,     5711 ops/s, 44.23ms wall)
 ```
 
 Once the handshake is complete, we have the opportunity to filter both on the *verified* remote endpoint id and the negotiated ALPN.
 
 ```
-reject alpn:   0 accepted,   0 rejected, 100 closed  (client: 48.22ms | server: 69.35ms cpu,     1442 ops/s, 58.18ms wall)
+reject alpn:   0 accepted, 100 rejected,   0 closed  (client: 18.38ms | server:  9.97ms cpu,    10028 ops/s, 22.80ms wall)
 ```
 
 This helps a bit even in case of the extremely cheap echo requests.
@@ -105,20 +107,38 @@ This helps a bit even in case of the extremely cheap echo requests.
 The last step is to try to communicate with our echo service while it is being subjected to a denial of service attack.
 
 ```
-  echo: 100/112 accepted, 12 rejected
-  server wall time:   2.80s
-  server cpu time:  450.74ms
-  spam packets sent: 11200
-  server incoming:   2545
-  server filtered:   100
+  echo: 100/117 accepted, 17 rejected
+  server wall time:   2.64s
+  server cpu time:  397.85ms
+  spam packets sent: 11700
+  server incoming:   2543
+  server filtered:   2543
   server completed:  100
-  effective spam/request: 112:1
+  effective spam/request: 117:1
 ```
 
 In this test we spam the echo service binary with 100 fake `ClientHello` per valid echo request. Each `ClientHello` is valid, so it will cause the endpoint to respond with a ServerHello that will be ignored.
 
 Not all spam packets actually arrive at the server, several are dropped by the operating system (it is allowed to do this for UDP datagrams).
 
-But even so, we got 25 times as many fake requests arriving at the endpoint than real requests, and nevertheless all valid echo requests are getting through in a reasonable time (4.5ms of server core time per request).
+But even so, we got 25 times as many fake requests arriving at the endpoint than real requests, and nevertheless all valid echo requests are getting through in a reasonable time (4.0ms of server core time per request).
 
-# Firewall 
+# Adding a firewall rule
+
+Now let's assume we have an endpoint exposed to the internet that has long lived active connections.
+
+We want to minimize the impact of possibly malicious incoming connections while leaving existing connections mostly unaffected.
+
+<Note>
+This is only useful for a protocol that has long running connections, e.g. iroh-blobs data transfers or iroh-gossip messages.
+</Note>
+
+On linux this can be done with a simple nftables rule:
+
+```
+nft add rule inet filter input udp dport 12345 @th,64,1 == 1 limit rate over 1000/second drop
+```
+
+`@th,64,1` inspects 1 bit at offset 64 from the start of the transport (UDP) header. Since the UDP header is 8 bytes, this is the very first bit of the UDP payload — which is the [QUIC form bit](https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2). A value of `1` means it is a long header packet, i.e. a new connection attempt.
+
+So this rule rate limits new QUIC connections to 1000 per second on port 12345, dropping the excess. Short header packets (form bit `0`) used by established connections are not affected at all.
