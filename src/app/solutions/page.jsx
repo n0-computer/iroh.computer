@@ -23,16 +23,25 @@ const solutions = [
     company: "Rave",
     headline: "Video Streaming at Global Scale",
     description: "Stream video between millions of devices around the world every day, with over 1 million concurrent connections per relay.",
-    href: "/solutions/rave",
+    href: "/solutions/video",
     logo: "rave",
   },
   {
-    category: "Resilient Apps",
+    category: "Real-time Sync for Mobile",
     company: "Delta Chat",
-    headline: "Resilient Messaging & P2P Web Apps",
-    description: "Power in-chat apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
+    headline: "Real-time Sync for Mobile Applications",
+    description: "Power apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
     href: "/solutions/delta-chat",
     logo: "delta_chat",
+  },
+  {
+    category: "Payments / Point of Sale",
+    company: "Payments",
+    headline: "PCI-Compliant Peer-to-Peer Payments",
+    description: "Connect payment terminals directly to point of sale systems with no additional servers and full PCI compliance.",
+    href: "/solutions/pos",
+    logo: "paycode",
+    logoExt: "svg",
   },
 ]
 
@@ -72,14 +81,18 @@ export default function SolutionsPage() {
                     </p>
                   </div>
                   <div className="flex items-center justify-center p-8">
-                    <ThemeImage
-                      alt={`${solution.company} logo`}
-                      darkSrc={`/img/user-logos/${solution.logo}.png`}
-                      lightSrc={`/img/user-logos/${solution.logo}.png`}
-                      width={300}
-                      height={150}
-                      className="object-contain max-h-32"
-                    />
+                    {solution.logo ? (
+                      <ThemeImage
+                        alt={`${solution.company} logo`}
+                        darkSrc={`/img/user-logos/${solution.logo}.${solution.logoExt || 'png'}`}
+                        lightSrc={`/img/user-logos/${solution.logo}.${solution.logoExt || 'png'}`}
+                        width={300}
+                        height={150}
+                        className="object-contain max-h-32"
+                      />
+                    ) : (
+                      <p className="text-4xl font-bold text-irohGray-300 dark:text-irohGray-600">{solution.company}</p>
+                    )}
                   </div>
                 </div>
               </Link>
@@ -105,7 +118,7 @@ export default function SolutionsPage() {
                   Read the Docs
                 </Button>
               </Link>
-              <Link href="/enterprise">
+              <Link href="/services/enterprise">
                 <Button
                   arrow="none"
                   variant="outline"

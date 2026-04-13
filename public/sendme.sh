@@ -22,24 +22,25 @@ fi
 echo "Downloading $repo for $target"
 release_target_url=$(
     curl -s "$release_url" |
-    grep "browser_download_url" |
-    grep "$target" |
-    sed -re 's/.*: "([^"]+)".*/\1/' \
+    grep '"browser_download_url":' |
+    grep -- "-$target." |
+    sed -re 's/^.+: "([^"]+)"$/\1/'
 )
 
+if [ -z "$release_target_url" ]; then
+    echo "Error: No release found for target $target (ensure API rate limits are not exceeded)"
+    exit 1
+fi
+
+echo "Extracting ${release_target_url##*/} to current directory"
 case "$release_target_url" in
     *.zip)
-        release_archive=$(
-            curl -s "$release_url" |
-            grep "name" |
-            grep "$target" |
-            sed -re 's/.*: "([^"]+)".*/\1/' \
-        )
-        curl -sL "$release_target_url" -o $release_archive
-        unzip -oq $release_archive
-        rm -rf $release_archive
+        release_archive="${release_target_url##*/}"
+        curl -sL "$release_target_url" -o "$release_archive"
+        unzip -o "$release_archive"
+        rm -f -- "$release_archive"
         ;;
     *)
-        curl -sL "$release_target_url" | tar xz
+        curl -sL "$release_target_url" | tar vxz -f -
         ;;
 esac

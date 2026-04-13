@@ -402,7 +402,7 @@ export function MetricsIllustration({ className }) {
   
   return (
     <div className={`flex items-center justify-center ${className || ''}`}>
-      <svg viewBox="0 0 480 260" className="rounded">
+      <svg viewBox="0 0 480 260" className="rounded w-full">
         {/* Metric flows from endpoints to aggregator */}
         {endpoints.map((endpoint, i) => (
           <MetricFlow

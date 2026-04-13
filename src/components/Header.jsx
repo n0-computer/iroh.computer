@@ -20,17 +20,17 @@ export const navItems = [
   {content: 'Services', href: '/#services', dropdown: [
     {label: 'Hosting', href: '/services/hosting'},
     {label: 'Observability', href: '/services/observability'},
-    {label: 'Professional Support', href: '/services/support'}
+    {label: 'Enterprise', href: '/services/enterprise'},
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
-    {label: 'Resilient Apps', href: '/solutions/delta-chat'},
-    {label: 'Enterprise', href: '/enterprise'},
+    {label: 'Real-time Sync', href: '/solutions/delta-chat'},
+    {label: 'Payments & POS', href: '/solutions/pos'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
-  {content: 'Roadmap', href: '/roadmap'},
+  {content: 'Pricing', href: '/pricing'},
 ];
 
 export function TopLevelNavItem({href, children}) {
@@ -137,7 +137,7 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://n0des.iroh.computer" variant="filled">Sign Up</Button>
+          <Button href="https://services.iroh.computer?utm_source=website&utm_content=nav-signup" variant="filled">Sign Up</Button>
         </div>
       </div>
     </motion.div>

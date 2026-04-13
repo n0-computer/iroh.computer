@@ -30,7 +30,7 @@ export default function BlogHeader() {
             {navItems.map((item, i ) => {
               return <TopLevelNavItem key={i} href={item.href}>{item.content}</TopLevelNavItem>;
             })}
-            <li className='mt-2.5'>
+            <li>
               <GithubStars />
             </li>
           </ul>
@@ -41,7 +41,7 @@ export default function BlogHeader() {
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://iroh.computer/discord">Join Discord</Button>
+          <Button href="https://services.iroh.computer">Sign up</Button>
         </div>
       </div>
     </div>

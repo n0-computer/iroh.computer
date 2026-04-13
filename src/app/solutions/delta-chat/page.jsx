@@ -23,16 +23,16 @@ export default function DeltaChatSolutionPage() {
           </div>
           <div className="container mx-auto max-w-6xl pt-12 relative z-10">
             <div className="max-w-3xl">
-              <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Solution: Resilient Apps</p>
+              <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Real-time Sync for Mobile</p>
               <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                Resilient Messaging & P2P Web Apps
+                Real-time Sync for Mobile & Web Apps
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                 Delta Chat uses iroh for multi-device setup and realtime P2P communication,
-                powering in-chat apps for hundreds of thousands of devices around the world.
+                powering apps for hundreds of thousands of devices around the world.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Link href="https://n0des.iroh.computer/signup">
+                <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=delta-chat-hero">
                   <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer uppercase">
                     Get Started
                   </Button>
@@ -80,7 +80,7 @@ export default function DeltaChatSolutionPage() {
                   <div>
                     <h3 className="text-lg font-medium mb-2">Works Everywhere</h3>
                     <p className="text-irohGray-600 dark:text-irohGray-300">
-                      Proven holepunching keeps users connected even when internet access is precarious.
+                      Proven NAT traversal keeps users connected even when internet access is precarious.
                     </p>
                   </div>
                 </div>
@@ -102,18 +102,18 @@ export default function DeltaChatSolutionPage() {
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-bold mb-6">
-              Ready to Build Resilient Apps?
+              Ready to Build Real-time Sync?
             </h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
               Get started with iroh and build apps that work everywhere.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://n0des.iroh.computer/signup">
+              <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=delta-chat-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
                 >
-                  Sign Up 
+                  Sign Up
                 </Button>
               </Link>
               <Link href="https://docs.iroh.computer/quickstart">

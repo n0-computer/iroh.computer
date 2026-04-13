@@ -1,0 +1,258 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2026-03-16',
+  title: 'iroh 0.97.0 - Custom Transports & noq',
+  description: 'Release of iroh v0.97.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+You can now plug your own transport implementations into `iroh`, opening the door to bluetooth, WebRTC, and anything else you can dream up. We've also officially switched our QUIC implementation to [`noq`](https://github.com/n0-computer/noq), our fork of Quinn that's now its own project. And if you've ever wanted to embed a relay server directly into your application, now you can.
+
+Two important callouts
+
+**1. Changes to `Endpoint::builder` and `Endpoint::bind`**
+
+`Endpoint::builder` and `Endpoint::bind` now take a preset argument, making the relay server configuration explicit. To get the same behaviour as before, simply replace `Endpoint::bind()` with `Endpoint::bind(presets::N0)`, and similarly with `Endpoint::builder()` becomes `Endpoint::builder(presets::N0)`:
+
+**2. Changes to Endpoint closing**
+
+Starting with this release, the `Endpoint` no longer attempts to close connections gracefully when dropped. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application.
+
+Here's the rundown:
+
+- **Custom Transports**: Define your own transport implementations beyond UDP/IP
+- **noq**: Our QUIC implementation is now a standalone project
+- **Embeddable Relay Server**: `RelayService` is now public for library embedding
+- **Preset API**: Simpler endpoint configuration with presets
+- **Customizable TLS Trust Roots**: Control certificate verification for non-iroh TLS connections
+- **Address Filtering**: Filter and reorder addresses published by address lookup services
+- **Endpoint Lifecycle Improvements**: Better behavior on close and drop
+- **Improved Incoming Connection Info**: More precise information for rate limiting and access control
+- **Portmapper Feature Gate**: Portmapper can now be disabled via feature flags
+
+## 🔌 Custom Transports
+
+This release includes a new experimental feature: custom transports. Any unreliable datagram transport that can support a minimum packet size of 1200 bytes can be used as a custom transport for iroh.
+
+### Using custom transports
+
+To *use* a custom transport, you just need to add a dependency to a custom transport crate and add the custom transport while building the endpoint. You will only be able to talk via the custom transport to endpoints that also have the transport enabled.
+
+```rust
+Endpoint::builder()
+    .add_custom_transport(my_transport)
+    .bind().await?
+```
+
+### Implementing custom transports
+
+*Implementing* a custom transport is more involved. You need to implement a number of traits for low level packet sending and receiving, choose a custom address id, and implement serialisation of your custom address into an opaque `CustomAddr`.
+
+Currently, we have a [tor transport](https://github.com/n0-computer/iroh-tor-transport) and a [nym transport](https://github.com/n0-computer/iroh-nym-transport) implemented. We will work with the community to provide transports such as bluetooth low energy (BLE).
+
+The tor transport is pretty simple and is a good starting point if you want to implement your own custom transport. Check out this [blog post](https://www.iroh.computer/blog/tor-custom-transport) for details.
+
+### Current status
+
+The ability to represent custom addresses is included in iroh, but the traits you need to *implement* or *use* custom transports need to be enabled using the `unstable-custom-transports` feature flag.
+
+As the name suggests, the custom transport API is unstable and will remain so for some time even after iroh 1.0 is released.
+
+There is a limited API to configure preferences for custom transports. This is an area that we expect to refine and improve in the future.
+
+Checkout [PR #3845](https://github.com/n0-computer/iroh/pull/3845) for more details.
+
+## 📦 Hello, noq
+
+If you've been following along, you know that `iroh` has been built on a fork of the [`Quinn`](https://github.com/quinn-rs/quinn) QUIC implementation. Over time, our fork diverged significantly as we added multipath support, QUIC NAT traversal, and other features that `iroh` needs.
+
+With this release, our fork has graduated into its own project: [`noq`](https://github.com/n0-computer/noq). This isn't just a rename - it reflects the reality that our QUIC implementation has its own direction and focus. All internal references have been updated from `Quinn` to `noq`, and types are now re-exported from `noq` directly.
+
+For most users, this is a search-and-replace change: anywhere you were using `iroh_quinn` or `iroh_quinn_proto` types, you'll now find them under `noq` and `noq_proto`.
+
+Checkout [PR #4005](https://github.com/n0-computer/iroh/pull/4005) for more details.
+
+## 🏠 Embeddable Relay Server
+
+The `iroh-relay` crate has always let you run a standalone relay server, but what if you want to embed relay functionality directly into your own application? Now you can.
+
+`RelayService` is now public, and the relay internals have been refactored to be generic over stream types. This means you can integrate the relay server into your own `axum` application, adding relay capabilities alongside your existing HTTP endpoints. All the types you need for external integration are now public and documented.
+
+Thanks to [Nicolas Luck](https://github.com/lucksus) for contributing this feature!
+
+Checkout [PR #3832](https://github.com/n0-computer/iroh/pull/3832) for more details.
+
+## 🔐 Customizable TLS Trust Roots
+
+By default, `iroh` uses embedded WebPKI roots for TLS certificate verification on non-iroh connections (relay servers, pkarr, DNS-over-HTTPS). But sometimes you need more control - maybe you're running in an environment with custom CAs, or you want to use the operating system's trust store.
+
+The new `CaRootsConfig` struct gives you that control:
+
+```rust
+// Use OS roots with an additional custom CA
+let endpoint = Endpoint::builder()
+    .ca_roots_config(CaRootsConfig::system().with_extra_roots([my_ca_cert]))
+    .bind()
+    .await?;
+```
+
+Options include embedded WebPKI roots (the default), the operating system's roots, a custom list of roots, or any combination with additional extra roots. The `insecure_skip_verify` option is still available as `CaRootsConfig::insecure_skip_verify()`, gated behind the `test-utils` feature as before.
+
+Checkout [PR #3973](https://github.com/n0-computer/iroh/pull/3973) for more details.
+
+## 🔍 Address Filtering for Address Lookup Services
+
+With custom transports come custom addresses, and you probably don't want to publish every address type on every address lookup service. DNS-based lookups have byte-size limits, and a bluetooth address isn't useful on a global DHT.
+
+The new `AddrFilter` type lets you control exactly which addresses each lookup service publishes:
+
+```rust
+Endpoint::builder()
+    .address_lookup(PkarrPublisher::n0_dns()
+        .with_addr_filter(AddrFilter::new(|addrs| {
+            addrs.iter()
+                .filter(|a| !matches!(a, TransportAddr::Custom(_)))
+                .cloned()
+                .collect()
+        })))
+    .address_lookup(MyBluetoothLookup::new())
+    .bind()
+    .await?;
+```
+
+The `AddrFilter` runs before the addresses are passed to the lookup service. Some services may do additional filtering internally afterwards, but the `AddrFilter` always runs first.
+
+Checkout [PR #3960](https://github.com/n0-computer/iroh/pull/3960) and [PR #3987](https://github.com/n0-computer/iroh/pull/3987) for more details.
+
+## 🏗️ Endpoint Lifecycle Improvements
+
+We've made several improvements to how `Endpoint` behaves when closed or dropped:
+
+**Sensible return values after close.** Methods like `Endpoint::address_lookup()`, `Endpoint::dns_resolver()`, and `Endpoint::socket()` now return `Result<_, EndpointError>` instead of potentially returning stale values or panicking after the endpoint has been closed. A new `EndpointError::Closed` variant makes it easy to handle this case. We also added `Endpoint::last_net_report()` which returns the most recent `NetReport` as an `Option`.
+
+**Explicit close is now required.** The `Endpoint` no longer makes any best-effort attempt to close connections gracefully when dropped. If you drop an endpoint without calling `Endpoint::close`, resources are cleaned up immediately but connections will not be closed gracefully. To gracefully close the endpoint, always await `endpoint.close()` before dropping the last instance of an endpoint or terminating your application. An error will be logged if you forget.
+
+**Relay connection stability.** The relay server no longer kills existing connections when the same endpoint ID reconnects. Instead, the new connection becomes the active target for messages while the old connection is moved to an inactive state. When the active client disconnects, the latest inactive client is promoted back. This prevents the infinite reconnect loop that could occur previously.
+
+Checkout [PR #3924](https://github.com/n0-computer/iroh/pull/3924), [PR #3879](https://github.com/n0-computer/iroh/pull/3879), and [PR #3921](https://github.com/n0-computer/iroh/pull/3921) for more details.
+
+## 📊 Improved Incoming Connection Info
+
+`Incoming::remote_addr` (renamed from `remote_address`) now returns an `IncomingAddr` enum instead of a raw socket address. Previously, relay connections exposed a synthetic IPv6 address that wasn't useful for making decisions. Now you get all available information about the incoming connection, making it easy to implement rate limiting or access control at the connection layer.
+
+Checkout [PR #3949](https://github.com/n0-computer/iroh/pull/3949) for more details.
+
+## 🎛️ Preset API
+
+`Endpoint::builder` and `Endpoint::bind` now take a preset argument, making the relay server configuration explicit rather than hardcoded. Instead of the builder silently defaulting to the n0 relay servers, you now pass a preset:
+
+```rust
+// Before
+let endpoint = Endpoint::bind().await?;
+
+// After
+let endpoint = Endpoint::bind(presets::N0).await?;
+```
+
+`Endpoint::empty_builder` and `EndpointBuilder::empty` now assume `RelayMode::Disabled` and take no arguments, making it clearer what you get when starting from a blank slate.
+
+Checkout [PR #4014](https://github.com/n0-computer/iroh/pull/4014) for more details.
+
+## 🔒 Portmapper Feature Gate
+
+The portmapper is now behind a default feature flag. If you're using `no-default-features`, you'll no longer get the portmapper. This doesn't change any APIs, but will change functionality for builds that opt out of default features.
+
+Checkout [PR #4011](https://github.com/n0-computer/iroh/pull/4011) for more details.
+
+## 📈 Path Watcher Stats Retention
+
+`Connection::paths` and `ConnectionInfo::paths` now return a `PathWatcher`, a named struct that still implements `n0_watcher::Watcher`. Stats for abandoned or closed paths are retained as long as there are active watchers subscribed. This means you won't lose visibility into path statistics just because a path was closed, which is useful for monitoring and debugging multipath connections.
+
+Note that `PathInfo::stats` and `PathInfo::rtt` now return `Option`, returning `None` if the underlying connection has been dropped.
+
+Checkout [PR #3899](https://github.com/n0-computer/iroh/pull/3899) for more details.
+
+## ⚠️ Breaking Changes
+
+### [#4014](https://github.com/n0-computer/iroh/pull/4014) — Preset API
+- `Endpoint::builder` and `Endpoint::bind` now take a preset argument
+- `Endpoint::empty_builder` and `EndpointBuilder::empty` now assume `RelayMode::Disabled` and take no arguments
+
+### [#4011](https://github.com/n0-computer/iroh/pull/4011) — Portmapper feature gate
+- Builds using `no-default-features` will no longer have the portmapper. This does not change APIs but will change functionality.
+
+### [#4005](https://github.com/n0-computer/iroh/pull/4005) — noq switch
+- Types are now re-exported from `noq`. Internal names have been updated from `quinn` -> `noq`.
+
+### [#4003](https://github.com/n0-computer/iroh/pull/4003) — Crypto
+- `trait AeadKey` is no longer publicly exposed
+- `trait HandshakeTokenKey` now implements `seal` and `open` directly
+
+### [#3973](https://github.com/n0-computer/iroh/pull/3973) — TLS trust roots
+- Removed `iroh::endpoint::Builder::insecure_skip_cert_verify`, use `Builder::ca_roots_config(CaRootsConfig::insecure_skip_verify())` instead
+- Removed `iroh_relay::client::ClientBuilder::insecure_skip_cert_verify`, use `ClientBuilder::tls_client_config` instead
+- `PkarrResolverBuilder::build` and `PkarrPublisherBuilder::build` now take a `tls_config: rustls::ClientConfig` argument. If building via `Endpoint::add_discovery` or `endpoint::Builder::discovery` no change is needed since the TLS config is passed from the endpoint builder.
+
+### [#3960](https://github.com/n0-computer/iroh/pull/3960) — Address lookup
+- `DhtAddressLookupBuilder::include_direct_addresses` removed. Use `DhtAddressLookupBuilder::set_addr_filter` instead.
+- Trait `IntoAddressLookup` renamed to `AddressLookupBuilder`.
+
+### [#3949](https://github.com/n0-computer/iroh/pull/3949) — Incoming connections
+- `endpoint::Incoming::remote_address` renamed to `remote_addr`, and now returns `IncomingAddr`.
+- `endpoint::Incoming::remote_address_validated` renamed to `remote_addr_validated`.
+
+### [#3924](https://github.com/n0-computer/iroh/pull/3924) — Endpoint API
+- `Endpoint::address_lookup()` now returns `Result<&ConcurrentAddressLookup, EndpointError>`
+- `Endpoint::dns_resolver()` now returns `Result<&DnsResolver, EndpointError>`
+- `Endpoint::endpoint()` now returns `Result<&quinn::Endpoint, EndpointError>`
+- `Endpoint::socket()` now returns `Result<Handle, EndpointError>`
+- Added `Endpoint::last_net_report() -> Option<NetReport>`
+- Added `EndpointError` enum (with variant `EndpointError::Closed`)
+- Added `ConnectWithOptsError::EndpointClosed` variant
+
+### [#3921](https://github.com/n0-computer/iroh/pull/3921) — Relay server
+- `iroh_relay::server::client::RunError` variants changed
+
+### [#3916](https://github.com/n0-computer/iroh/pull/3916) — DNS module
+- `iroh::dns` is now a re-export of `iroh_relay::dns`. This should not actually be breaking if you were using the public API.
+
+### [#3899](https://github.com/n0-computer/iroh/pull/3899) — Path watcher
+- `Connection::paths` and `ConnectionInfo::paths` now return a `PathWatcher`
+- `PathInfo::stats` and `PathInfo::rtt` now return `Option`
+
+### [#3879](https://github.com/n0-computer/iroh/pull/3879) — Endpoint drop behavior
+- **Behavioral change:** `Endpoint` no longer makes any best-effort to close connections gracefully on drop. You must call `Endpoint::close` explicitly.
+
+## 🎉 The Road to 1.0
+
+With custom transports landed and `noq` standing on its own, `iroh` continues marching toward a stable 1.0. Just need to fix a few more bugs and API inconsistencies.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.97.0](https://github.com/n0-computer/iroh/releases/tag/v0.97.0).
+
+If you want to know what is coming up, check out the [v0.98.0 milestone](https://github.com/n0-computer/iroh/milestone/53), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).

@@ -4,14 +4,14 @@ import React from 'react';
 import {ThemeImage} from '@/components/ThemeImage'
 import { useEffect, useRef } from "react"
 
-// each of these has a png at /img/user-logos/${COMPANY}.png
 const companies = [
-  "spacedrive",
-  "nous",
-  "shaga",
-  "rave",
-  "delta_chat",
-  "recall"
+  { name: "spacedrive", ext: "png" },
+  { name: "nous", ext: "png" },
+  { name: "shaga", ext: "png" },
+  { name: "paycode", ext: "svg" },
+  { name: "rave", ext: "png" },
+  { name: "delta_chat", ext: "png" },
+  { name: "holochain", ext: "svg" },
 ];
 
 // interface LogoCloudProps {
@@ -63,10 +63,7 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
   }, [speed])
 
   return (
-    <div>
-      <div className="pl-5 md:pl-10 pt-8 lg:max-w-none">
-        <h1 className="text-lg font-medium text-irohGray-600 dark:text-irohGray-200">Trusted at scale by the world&apos;s most innovative teams</h1>
-      </div>
+    <div className="w-full overflow-hidden">
       <div className="relative w-full overflow-hidden py-4">
         {/* Gradient masks for fading edges */}
         <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
@@ -75,16 +72,15 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map((co, index) => (
-              <div key={`${co}-${index}`} style={{ height, width: height * 1.4 }} className="flex items-center justify-center px-4">
+            {companies.map(({ name, ext }, index) => (
+              <div key={`${name}-${index}`} style={{ height, width: height * 1.4 }} className="flex items-center justify-center px-4">
                 <ThemeImage
-                  key={co}
-                  alt={`${co} logo`}
-                  darkSrc={`/img/user-logos/${co}.png`}
-                  lightSrc={`/img/user-logos/${co}.png`}
+                  alt={`${name} logo`}
+                  darkSrc={`/img/user-logos/${name}.${ext}`}
+                  lightSrc={`/img/user-logos/${name}.${ext}`}
                   width={height * 1.4}
                   height={height}
-                  className="object-contain"
+                  className="object-contain max-h-12 w-auto"
                 />
               </div>
             ))}
