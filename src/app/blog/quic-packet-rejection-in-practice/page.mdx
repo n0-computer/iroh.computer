@@ -29,7 +29,7 @@ This endpoint runs as a standalone binary. You can configure the endpoint id in 
 
 It will also measure its own CPU time on shutdown, using the [cpu-time](https://docs.rs/cpu-time/) crate.
 
-Using this we can measure not just the wallclock exeuction time but also how much load the server was under.
+Using this we can measure not just the wallclock execution time but also how much load the server was under.
 
 # Reference case: just valid requests
 
@@ -41,7 +41,7 @@ echo: 100 accepted,   0 rejected,   0 closed  (client: 42.18ms | server: 127.98m
 
 So each *cpu core* can handle 781 complete new handshakes and echo requests per second in terms of raw CPU time.
 
-Note that these are fresh connection attemps. Also this is with 100 clients on running on the same machine, so the absolute number isn't that meaningful. We mostly care about relative numbers.
+Note that these are fresh connection attempts. Also this is with 100 clients on running on the same machine, so the absolute number isn't that meaningful. We mostly care about relative numbers.
 
 Now let's imagine our poor echo service is under load or under a denial of service attack. We will see at which places we can reject incoming connection attempts, and how many we can reject.
 
@@ -51,7 +51,7 @@ Now let's imagine our poor echo service is under load or under a denial of servi
 
 ## Direct requests
 
-The first incoming datagram will contain an initial packet without retry token. At this point we don't know if the sender addresss is valid. This is the first opportunity to reject.
+The first incoming datagram will contain an initial packet without retry token. At this point we don't know if the sender address is valid. This is the first opportunity to reject.
 
 We could reject here based on the unverified sender address, or just to shed load.
 
