@@ -47,7 +47,7 @@ Now let's imagine our poor echo service is under load or under a denial of servi
 
 # Rejection hooks
 
-![Connection filter pipeline](/blog/quic-packet-rejection-in-practice/connection-filter.svg)
+![Connection filter pipeline](/blog/quic-packet-rejection-in-practice/incoming-filter.svg)
 
 ## Direct requests
 
@@ -74,13 +74,13 @@ Retry+reject is the first rejection mode that is genuinely useful for selective 
 
 Even retry+reject is much faster than going through with the request at ~10434 ops/s per core.
 
-The last opportunity to reject direct requests is to reject based on the negotiated ALPN. This is useful not so much in a denial of service scenario, but if you serve different ALPNs and want to prioritize one in times of high load.
+The last opportunity to reject direct requests is to reject based on the proposed ALPNs. This is useful not so much in a denial of service scenario, but if you serve different ALPNs and want to prioritize one in times of high load.
 
 ```
 reject alpn:   0 accepted, 100 rejected,   0 closed  (client: 10.92ms | server:  8.28ms cpu,    12085 ops/s, 14.78ms wall)
 ```
 
-In case of an echo service that is extremely cheap, this does not help much compared to completing the request. But in case of more expensive requests it would help a lot to prioritize.
+Since the proposed ALPNs are available in the Initial packet, this rejection is almost as cheap as the other early filters.
 
 ## Requests via relays
 
@@ -94,13 +94,13 @@ reject eid:   0 accepted, 100 rejected,   0 closed  (client: 17.54ms | server:  
 retry + reject eid:   0 accepted, 100 rejected,   0 closed  (client: 38.09ms | server: 17.51ms cpu,     5711 ops/s, 44.23ms wall)
 ```
 
-Once the handshake is complete, we have the opportunity to filter both on the *verified* remote endpoint id and the negotiated ALPN.
+We can also filter on the proposed ALPNs, which are available in the Initial packet just like for direct connections.
 
 ```
 reject alpn:   0 accepted, 100 rejected,   0 closed  (client: 18.38ms | server:  9.97ms cpu,    10028 ops/s, 22.80ms wall)
 ```
 
-This helps a bit even in case of the extremely cheap echo requests.
+Again, this is cheap and comparable to the other early filters.
 
 # Combining valid requests with spam
 
