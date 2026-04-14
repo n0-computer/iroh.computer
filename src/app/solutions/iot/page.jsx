@@ -3,6 +3,7 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from "@/components/FooterMarketing"
 import Link from "next/link"
 import { DiscoveryDiagram } from "@/components/DiscoveryDiagram"
+import { MQTTDiagram } from "@/components/MQTTDiagram"
 
 export const metadata = {
   title: 'Iroh for IoT & Embedded Devices',
@@ -127,6 +128,29 @@ export default function IoTUseCasePage() {
                 compatibility matrix
               </Link>.
             </p>
+          </div>
+        </section>
+
+        {/* MQTT SPOF */}
+        <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid md:grid-cols-12 gap-12 items-center">
+              <div className="md:col-span-5">
+                <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Why not MQTT</p>
+                <h2 className="text-4xl font-bold mb-6">The broker is the weakest link</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed mb-4">
+                  MQTT routes every message through a central broker. If the broker
+                  goes down: bad config, expired cert, network blip, hardware
+                  failure, every device in the fleet stops talking.
+                </p>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+                  iroh devices speak directly to each other. No single point of failure, no cloud round-trip, just direct, encrypted communication.
+                </p>
+              </div>
+              <div className="md:col-span-7">
+                <MQTTDiagram className="w-full" />
+              </div>
+            </div>
           </div>
         </section>
 
