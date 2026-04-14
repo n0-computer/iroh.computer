@@ -27,6 +27,7 @@ export const navItems = [
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
+    {label: 'IoT & Embedded', href: '/solutions/iot'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
