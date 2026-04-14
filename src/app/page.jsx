@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { Cpu } from 'lucide-react'
 
 import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
@@ -144,6 +145,17 @@ export default function Page() {
                   </div>
                   <div className="flex items-center justify-center">
                     <img src="/img/user-logos/paycode.svg" alt="Paycode logo" className="object-contain max-h-16" />
+                  </div>
+                </div>
+              </Link>
+              <Link href="/solutions/iot" className="block">
+                <div className="grid md:grid-cols-3 gap-6 items-center p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <div className="md:col-span-2">
+                    <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">IoT & Embedded Devices</p>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">Run iroh on ESP32, Raspberry Pi, and Linux with the same API. Devices discover each other automatically — no brokers, no gateways.</p>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <Cpu className="h-16 w-16 text-irohPurple-500" strokeWidth={1.5} />
                   </div>
                 </div>
               </Link>
