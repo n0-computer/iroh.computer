@@ -27,6 +27,7 @@ export const navItems = [
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
+    {label: 'IoT & Embedded', href: '/solutions/iot'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},
@@ -77,7 +78,7 @@ function DropdownNavItem({ label, items }) {
             <Link
               key={item.href}
               href={item.href}
-              className="block px-4 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-irohPurple-500"
+              className="block px-4 py-2 text-sm text-black dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-irohPurple-500"
             >
               {item.label}
             </Link>
