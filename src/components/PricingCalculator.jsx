@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 const PRO_BASE = 19
 const INCLUDED_ENDPOINTS = 100
+const INCLUDED_DPM = 10000
 const ENDPOINT_RATE = 0.50
 const METRICS_RATE = 1.49
 const RELAY_RATE = 199
@@ -60,7 +61,8 @@ export function PricingCalculator() {
 
   const extraConnections = Math.max(0, peakConnections - INCLUDED_ENDPOINTS)
   const connectionsCost = (extraConnections / 100) * ENDPOINT_RATE
-  const metricsCost = (dpm / 1000) * METRICS_RATE
+  const extraDpm = Math.max(0, dpm - INCLUDED_DPM)
+  const metricsCost = (extraDpm / 1000) * METRICS_RATE
   const relayCost = relays * RELAY_RATE
   const total = PRO_BASE + connectionsCost + metricsCost + relayCost
 
@@ -163,8 +165,10 @@ export function PricingCalculator() {
                   <span>Metrics DPM</span>
                   <span className="font-medium">{formatPrice(metricsCost)}/mo</span>
                 </div>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5">
-                  {formatNumber(Math.round(dpm))} DPM &times; ${METRICS_RATE}/1K
+                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraDpm === 0 ? 'italic' : ''}`}>
+                  {extraDpm === 0
+                    ? 'Included in base plan'
+                    : `${formatNumber(Math.round(extraDpm))} extra DPM \u00d7 $${METRICS_RATE}/1K`}
                 </p>
               </div>
 
