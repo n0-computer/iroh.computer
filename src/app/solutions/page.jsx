@@ -43,6 +43,13 @@ const solutions = [
     logo: "paycode",
     logoExt: "svg",
   },
+  {
+    category: "IoT & Embedded Devices",
+    company: "IoT",
+    headline: "Connect Every Device, Everywhere",
+    description: "Run iroh on ESP32, Raspberry Pi, and Linux with the same API. No brokers, no gateways, no custom protocols.",
+    href: "/solutions/iot",
+  },
 ]
 
 export default function SolutionsPage() {

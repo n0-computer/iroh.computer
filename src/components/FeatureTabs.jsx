@@ -27,13 +27,13 @@ export function FeatureTabs({ title, tabs }) {
                 className={`text-left py-5 border-l-2 pl-5 transition-all cursor-pointer ${
                   i === active
                     ? 'border-irohPurple-500 opacity-100'
-                    : 'border-irohGray-200 dark:border-irohGray-700 opacity-40 hover:opacity-60'
+                    : 'border-irohGray-200 dark:border-irohGray-700 opacity-70 hover:opacity-90'
                 }`}
               >
                 <h3 className={`text-2xl font-bold mb-2 ${
                   i === active ? 'text-irohPurple-500' : ''
                 }`}>{tab.label}</h3>
-                <div className="text-base text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+                <div className="text-base text-irohGray-800 dark:text-irohGray-300 leading-relaxed">
                   {tab.body}
                 </div>
               </button>

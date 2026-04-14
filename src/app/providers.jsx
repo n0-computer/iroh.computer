@@ -31,7 +31,7 @@ export const AppContext = createContext({})
 
 export function Providers({ children }) {
   return (
-    <ThemeProvider attribute="class" disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
       <ThemeWatcher />
       {children}
     </ThemeProvider>
