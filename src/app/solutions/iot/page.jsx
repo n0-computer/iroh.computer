@@ -18,10 +18,10 @@ const devices = [
 ]
 
 const comparison = [
+  { feature: "Open source", iroh: true, mqtt: true, espnow: true },
   { feature: "Vendor-neutral hardware", iroh: true, mqtt: true, espnow: false },
   { feature: "Works over the internet", iroh: true, mqtt: true, espnow: false },
   { feature: "No server or broker required", iroh: true, mqtt: false, espnow: true },
-  { feature: "Direct peer-to-peer", iroh: true, mqtt: false, espnow: true },
   { feature: "End-to-end encrypted by default", iroh: true, mqtt: false, espnow: false },
   { feature: "NAT & firewall traversal", iroh: true, mqtt: false, espnow: false },
   { feature: "Cryptographic device identity", iroh: true, mqtt: false, espnow: false },
@@ -90,10 +90,10 @@ export default function IoTUseCasePage() {
             <div className="grid md:grid-cols-12 gap-12 items-center">
               <div className="md:col-span-4">
                 <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Automatic Discovery</p>
-                <h2 className="text-4xl font-bold mb-6">Devices find each other</h2>
+                <h2 className="text-4xl font-bold mb-6">Devices find each other automatically</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
                   Power on a device and it announces itself on the local network.
-                  Peers connect directly over Wi-Fi, Ethernet, or Bluetooth — no
+                  Peers connect directly over Wi-Fi, Ethernet, or Bluetooth. No
                   broker, no manual pairing, no cloud round-trip.
                 </p>
               </div>
@@ -107,9 +107,9 @@ export default function IoTUseCasePage() {
         {/* Device Support */}
         <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-5xl text-center">
-            <h2 className="text-4xl font-bold mb-4">From microcontroller to cloud</h2>
+            <h2 className="text-4xl font-bold mb-4">From microcontroller to cloud and back again</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-12 max-w-2xl mx-auto">
-              The same API runs across the full range of hardware a connected product touches.
+              The same API runs across the full range of hardware. Pull data from a remote sensor, control a local actuator, or connect a gateway in between. Mix and match devices as your needs evolve.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {devices.map((device) => (
@@ -159,9 +159,8 @@ export default function IoTUseCasePage() {
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Why iroh</p>
-              <h2 className="text-4xl font-bold mb-4">iroh vs. MQTT vs. ESP-NOW</h2>
+              <h2 className="text-4xl font-bold mb-4">How does iroh stand up?</h2>
               <p className="text-lg text-irohGray-600 dark:text-irohGray-300 max-w-2xl mx-auto">
-                MQTT needs a broker. ESP-NOW stops at the edge of the room.
                 iroh connects devices directly, anywhere.
               </p>
             </div>
