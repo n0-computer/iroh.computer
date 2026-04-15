@@ -93,8 +93,7 @@ export default function IoTUseCasePage() {
                 <h2 className="text-4xl font-bold mb-6">Devices find each other automatically</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
                   Power on a device and it announces itself on the local network.
-                  Peers connect directly over Wi-Fi, Ethernet, or Bluetooth. No
-                  broker, no manual pairing, no cloud round-trip.
+                  Peers connect directly over Wi-Fi, Ethernet, or Bluetooth. 
                 </p>
               </div>
               <div className="md:col-span-8">
@@ -109,7 +108,7 @@ export default function IoTUseCasePage() {
           <div className="container mx-auto max-w-5xl text-center">
             <h2 className="text-4xl font-bold mb-4">From microcontroller to cloud and back again</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-12 max-w-2xl mx-auto">
-              The same API runs across the full range of hardware. Pull data from a remote sensor, control a local actuator, or connect a gateway in between. Mix and match devices as your needs evolve.
+              The same API runs everywhere, with open standards on QUIC.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {devices.map((device) => (
@@ -142,9 +141,7 @@ export default function IoTUseCasePage() {
                   MQTT routes every message through a central broker. If the broker
                   goes down: bad config, expired cert, network blip, hardware
                   failure, every device in the fleet stops talking.
-                </p>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                  iroh devices speak directly to each other. No single point of failure, no cloud round-trip, just direct, encrypted communication.
+                  Instead, iroh devices speak directly to each other. No single point of failure.
                 </p>
               </div>
               <div className="md:col-span-7">
