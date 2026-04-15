@@ -134,10 +134,10 @@ export function SubscribeDialog({ open, onClose, source }) {
               </button>
 
               <Dialog.Title className="text-3xl sm:text-4xl font-bold leading-tight text-irohGray-900 dark:text-irohGray-50">
-                Let&apos;s set up a meeting
+                How can we help?
               </Dialog.Title>
               <p className="mt-3 text-base text-irohGray-600 dark:text-irohGray-300">
-                Drop your details and we&apos;ll reach out to learn what you&apos;re building.
+                Drop your details and we&apos;ll reach out 
               </p>
 
               {status === 'success' ? (
