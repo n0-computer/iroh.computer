@@ -7,7 +7,7 @@ import { MQTTDiagram } from "@/components/MQTTDiagram"
 
 export const metadata = {
   title: 'Iroh for IoT & Embedded Devices',
-  description: 'Connect embedded devices directly with iroh. Run on ESP32, Raspberry Pi, and Linux. No brokers, no gateways.',
+  description: 'Connect embedded devices directly with iroh. No servers, no gateways.',
 }
 
 const devices = [
@@ -66,8 +66,7 @@ export default function IoTUseCasePage() {
               Connect every device, everywhere
             </h1>
             <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed max-w-2xl mx-auto">
-              Run iroh on ESP32, Raspberry Pi, and Linux with the same API.
-              No brokers, no gateways.
+              No servers, no gateways. Just peer-to-peer connectivity for every device, from microcontrollers to cloud servers.
             </p>
             <div className="flex gap-4 flex-wrap justify-center">
               <Link href="https://docs.iroh.computer/quickstart">
