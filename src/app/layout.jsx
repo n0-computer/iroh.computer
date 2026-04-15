@@ -45,7 +45,7 @@ export default async function RootLayout({children}) {
       </head>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900 font-space">
         <Providers>
-          <div className="w-full overflow-x-hidden">
+          <div className="w-full overflow-x-clip">
             {children}
           </div>
         </Providers>

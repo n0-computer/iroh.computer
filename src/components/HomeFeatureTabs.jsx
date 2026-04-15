@@ -12,7 +12,7 @@ const tabs = [
     label: 'Works Everywhere',
     body: (
       <p>
-        Windows, macOS, Linux, Android, iOS, and <Link href="https://docs.iroh.computer/compatibility" className="text-irohPurple-500 hover:underline">embedded devices</Link>. Connect over <Link href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</Link>, <Link href="https://docs.iroh.computer/connecting/local-discovery" className="text-irohPurple-500 hover:underline">LAN</Link>, Wi-Fi, or <Link href="https://www.iroh.computer/blog/tor-custom-transport" className="text-irohPurple-500 hover:underline">Tor</Link>.
+        Windows, macOS, Linux, Android, iOS, cloud, servers, and <Link href="https://docs.iroh.computer/compatibility" className="text-irohPurple-500 hover:underline">embedded devices</Link>. Connect over <Link href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</Link>, <Link href="https://docs.iroh.computer/connecting/local-discovery" className="text-irohPurple-500 hover:underline">LAN</Link>, Wi-Fi, ethernet, cellular, or <Link href="https://www.iroh.computer/blog/iroh-0-97-0-custom-transports-and-noq" className="text-irohPurple-500 hover:underline">create your own transport</Link>.
       </p>
     ),
     diagram: <IrohEverywhere />,
