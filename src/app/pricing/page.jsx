@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { PricingCalculator } from '@/components/PricingCalculator'
+import { ContactTrigger } from '@/components/ContactButton'
 import Link from 'next/link'
 import { Check, Minus, Activity, BarChart3, Server, Headphones } from 'lucide-react'
 
@@ -11,7 +12,6 @@ export const metadata = {
 }
 
 const SERVICES_URL = 'https://services.iroh.computer'
-const CAL_URL = 'https://cal.com/team/number-0/iroh-services'
 
 const plans = [
   {
@@ -46,7 +46,7 @@ const plans = [
     description: 'For large-scale deployments.',
     price: 'Contact Us',
     period: '',
-    href: CAL_URL,
+    contact: true,
     buttonLabel: "Let's Chat",
     features: [
       'On-prem and multi-cloud',
@@ -183,16 +183,29 @@ export default function PricingPage() {
                       ))}
                     </ul>
                   </div>
-                  <Link
-                    href={plan.href}
-                    className={`mt-8 block rounded-md py-2.5 px-3 text-center text-sm font-semibold transition-colors ${
-                      plan.popular
-                        ? 'bg-irohPurple-500 text-white hover:bg-irohPurple-400'
-                        : 'border border-irohPurple-500 text-irohPurple-500 hover:bg-irohPurple-500/10'
-                    }`}
-                  >
-                    {plan.buttonLabel}
-                  </Link>
+                  {plan.contact ? (
+                    <ContactTrigger
+                      source="pricing-enterprise"
+                      className={`mt-8 block w-full rounded-md py-2.5 px-3 text-center text-sm font-semibold transition-colors cursor-pointer ${
+                        plan.popular
+                          ? 'bg-irohPurple-500 text-white hover:bg-irohPurple-400'
+                          : 'border border-irohPurple-500 text-irohPurple-500 hover:bg-irohPurple-500/10'
+                      }`}
+                    >
+                      {plan.buttonLabel}
+                    </ContactTrigger>
+                  ) : (
+                    <Link
+                      href={plan.href}
+                      className={`mt-8 block rounded-md py-2.5 px-3 text-center text-sm font-semibold transition-colors ${
+                        plan.popular
+                          ? 'bg-irohPurple-500 text-white hover:bg-irohPurple-400'
+                          : 'border border-irohPurple-500 text-irohPurple-500 hover:bg-irohPurple-500/10'
+                      }`}
+                    >
+                      {plan.buttonLabel}
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
@@ -257,12 +270,9 @@ export default function PricingPage() {
           <div className="container mx-auto max-w-4xl text-center">
             <p className="text-irohGray-600 dark:text-irohGray-300">
               Need hosting, support or development?{' '}
-              <a
-                href={CAL_URL}
-                className="text-irohPurple-500 hover:underline"
-              >
+              <ContactTrigger source="pricing-footer" className="text-irohPurple-500 hover:underline cursor-pointer bg-transparent p-0 border-0">
                 Book a meeting
-              </a>
+              </ContactTrigger>
             </p>
           </div>
         </section>

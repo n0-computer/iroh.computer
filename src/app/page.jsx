@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { Cpu } from 'lucide-react'
 
+import {ContactTrigger} from '@/components/ContactButton';
 import {FooterMarketing} from '@/components/FooterMarketing';
 import {HeaderSparse} from '@/components/HeaderSparse';
 import {HomeHero} from '@/components/HomeHero';
@@ -44,8 +45,14 @@ export default function Page() {
                   </h1>
                   <h3 className="text-lg mt-3 leading-normal">Modular networking stack for direct,{' '}
                     <br />peer-to-peer connections between devices</h3>
-                  <div className='flex mt-3'>
+                  <div className='flex mt-3 gap-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
+                    <ContactTrigger
+                      source="home-hero"
+                      className="my-4 p-3 px-4 transition border border-irohPurple-500 text-irohPurple-500 uppercase hover:bg-irohPurple-500 hover:text-white cursor-pointer"
+                    >
+                      Chat with us
+                    </ContactTrigger>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button"
+import { ContactButton } from "@/components/ContactButton"
 import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from "@/components/FooterMarketing"
 import Link from "next/link"
@@ -38,11 +39,9 @@ export default function PaycodeUseCasePage() {
                       Get Started
                     </Button>
                   </Link>
-                  <Link href="https://cal.com/team/number-0/iroh-services">
-                    <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
-                      Talk to Us
-                    </Button>
-                  </Link>
+                  <ContactButton source="pos-hero" arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
+                    Talk to Us
+                  </ContactButton>
                 </div>
               </div>
               <div className="flex justify-center">
