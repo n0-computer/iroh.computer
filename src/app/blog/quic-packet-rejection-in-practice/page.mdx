@@ -20,6 +20,12 @@ In the [previous blog post][prev-post] we have explored the mechanisms QUIC uses
 
 Now we want to see how this works in practice.
 
+# The problem
+
+An attacker can cheaply generate valid-looking `ClientHello` packets and flood an endpoint with them. Completing a full handshake is expensive: it involves crypto, state allocation, and a response over the network. Even a modest stream of fake connection attempts can saturate a server's CPU and crowd out legitimate traffic.
+
+Anyone exposing a p2p endpoint on the internet should harden it against this kind of spam, cloud deployments included. Most existing defenses assume TCP and HTTP, so QUIC endpoints don't get much help from the usual tooling. This post walks through how an iroh endpoint does it, and measures what each rejection option actually costs in practice.
+
 # A test handler
 
 We start with an iroh endpoint that serves a simple echo protocol and counts completed requests.
@@ -166,7 +172,7 @@ As you can see, throughput suffers a bit from the spam, but nothing major. Despi
 
 This probably goes without saying, but UDP support on macOS is not great. Iroh and noq do everything possible to make sending and receiving UDP packets on macOS fast, by using the batched [`sendmsg_x`/`recvmsg_x`][xnu-socket] syscalls. And this is sufficient for iroh endpoints that are under modest load.
 
-But if you want to expose an iroh endpoint that must handle a very high rate of incoming UDP packets, don't use macOS. Linux's UDP stack is much, much better — with [`recvmmsg`][recvmmsg]/[`sendmmsg`][sendmmsg] for batched syscalls and [UDP GRO/GSO][udp-gso] to amortize per-packet overhead.
+But if you want to expose an iroh endpoint that must handle a very high rate of incoming UDP packets, don't use macOS. Linux's UDP stack is much, much better, with [`recvmmsg`][recvmmsg]/[`sendmmsg`][sendmmsg] for batched syscalls and [UDP GRO/GSO][udp-gso] to amortize per-packet overhead.
 
 We do a lot of work in noq to make sure *handling* UDP spam is cheap, but if there is so much that the operating system has a bottleneck *delivering* the packets to us there is not much we can do.
 
