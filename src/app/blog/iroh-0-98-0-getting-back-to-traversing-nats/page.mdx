@@ -83,22 +83,23 @@ Checkout [PR #3992](https://github.com/n0-computer/iroh/pull/3992) for more deta
 
 ## 🚦 Rate Limiting in the Router
 
-If you run a single iroh endpoint that's exposed to the world (a public irpc service, an n0des node, anything where arbitrary clients can connect), you want to be able to shed load before the connection handshake completes. 0.98 adds hooks for that.
+If you run a single iroh endpoint that's exposed to the world (a public irpc service, an n0des node, anything where arbitrary clients can connect), you want to be able to shed load before the connection handshake completes. 0.98 adds a hook for that.
 
 For more on why early rejection is cheap at the QUIC layer, see [How QUIC rejects garbage packets](/blog/quic-packet-rejection) and for measurements of the filters in this release against a real endpoint, see [QUIC packet rejection in practice](/blog/quic-packet-rejection-in-practice).
 
-The router now supports optional connection filters that run at several points in the connection lifecycle: by remote address, by endpoint ID (for relay connections), and by ALPN. Each stage can accept, reject, retry, or ignore the incoming connection.
+The router now supports an incoming connection filter that allows rejecting early by remote address, by endpoint ID (for relay connections), or by ALPN. The filter can accept, reject, retry, or ignore the incoming connection, and the specific logic is left up to the user.
 
 ```rust
+fn filter(incoming: &Incoming) -> IncomingFilterOutcome {
+    match incoming.remote_addr() {
+        IncomingAddr::Ip(_) if !incoming.remote_addr_validated() => IncomingFilterOutcome::Retry,
+        _ => IncomingFilterOutcome::Accept,
+    }
+}
+
 Router::builder(endpoint)
-    .filter(|conn| {
-        if is_banned(conn.remote_addr()) {
-            ConnectionAction::Ignore
-        } else {
-            ConnectionAction::Accept
-        }
-    })
-    .spawn()
+    .incoming_filter(Arc::new(filter))
+    .spawn();
 ```
 
 Rejecting early is much cheaper than closing the connection after it's established. Benchmarks on the PR show ~30x throughput for address-based rejection vs. accepting and closing. For relay connections, rejecting by endpoint ID is the cheapest option since we get that information before the handshake completes.
@@ -107,11 +108,9 @@ Checkout [PR #3951](https://github.com/n0-computer/iroh/pull/3951) for more deta
 
 ## 📡 Relay Protocol v2
 
-The relay protocol now supports version negotiation, and we're using it: this release ships `iroh-relay-v2`. The wire changes are minor. There's a new `Status` frame that replaces the old `Health` frame with a binary-encoded extensible payload, and unknown frames are now ignored rather than erroring out. The real goal here was to exercise the version-negotiation machinery end-to-end. Old clients can talk to new relays, and new clients can talk to old relays.
+The relay protocol now supports version negotiation and are using it with `iroh-relay-v2`. The actual wire changes are minor. There's a new `Status` frame that replaces the old `Health` frame with an extensible payload. Frames not allowed in the negotiated protocol version are now rejected as errors. The real goal here was to exercise the version-negotiation machinery end-to-end. Old clients can talk to new relays, and new clients can talk to old relays.
 
-Next time we need to extend the relay protocol, the path is already paved.
-
-Checkout [PR #3955](https://github.com/n0-computer/iroh/pull/3955) for more details.
+Checkout [PR #3955](https://github.com/n0-computer/iroh/pull/3955) and [PR #4127](https://github.com/n0-computer/iroh/pull/4127) for more details.
 
 ## ⭐ Other Notable Changes
 
