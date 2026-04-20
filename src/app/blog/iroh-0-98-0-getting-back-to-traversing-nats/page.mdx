@@ -1,0 +1,189 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'dignifiedquire',
+  date: '2026-04-17',
+  title: 'iroh 0.98.0 - Getting back to traversing NATs',
+  description: 'Release of iroh v0.98.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+**This release is focused on NAT traversal reliability.** In [0.96](/blog/iroh-0-96-0-the-quic-multipaths-to-1-0) we flagged a known regression where holepunching wasn't re-triggered on network changes. Through 0.96 and 0.97 a few more subtle regressions crept in alongside multipath, QUIC-NAT-Traversal, and the `noq` split. Connections that used to punch through would sometimes sit on the relay. Paths that used to recover across a Wi-Fi to LTE switch would stall.
+
+Most of the work for this landed in `noq` 0.18, with a matching set of fixes on the `iroh` side. We also built out a much bigger [`patchbay`](https://github.com/n0-computer/patchbay) test matrix that now reproduces the scenarios that were breaking.
+
+This release also introduces pluggable crypto backends, rate limiting hooks in the router, and a new relay protocol version that exercises our version-negotiation machinery.
+
+## 🕳️ Getting back to traversing NATs
+
+If you've been running iroh in environments that need NAT traversal, the last two releases probably felt worse than 0.95. This release fixes most of these issues we have observed.
+
+Most of the work landed in [`noq`](https://github.com/n0-computer/noq) 0.18, which has a big batch of multipath and NAT traversal fixes. A few highlights:
+
+- **Abandoned paths are now handled correctly.** We were ignoring ACKs for abandoned paths ([noq#519](https://github.com/n0-computer/noq/pull/519)), not accepting remote `PATH_ABANDON` for the last path ([noq#522](https://github.com/n0-computer/noq/pull/522)), and scheduling tail-loss probes on paths that were already gone ([noq#562](https://github.com/n0-computer/noq/pull/562)). All fixed.
+- **PTO backoff no longer stalls connections.** PTO is now capped at 2 seconds post-handshake ([noq#523](https://github.com/n0-computer/noq/pull/523)) and gets reset for recoverable paths on a network change ([noq#545](https://github.com/n0-computer/noq/pull/545)), so a brief outage doesn't push the connection into a multi-second sleep.
+- **NAT traversal retries properly.** Off-path probes are retried and stale CIDs retired ([noq#524](https://github.com/n0-computer/noq/pull/524)), existing paths are revalidated during NAT traversal rounds ([noq#531](https://github.com/n0-computer/noq/pull/531)), and the server sends NAT traversal probes with the active CID ([noq#575](https://github.com/n0-computer/noq/pull/575)). Holepunching frames no longer get stuck behind stream data ([noq#540](https://github.com/n0-computer/noq/pull/540)).
+- **Tail-loss probes are always ack-eliciting** ([noq#561](https://github.com/n0-computer/noq/pull/561)). This was a subtle source of connections that looked alive but weren't making progress.
+
+On the iroh side we also kept busy:
+
+- **Faster relay health check after a network change** ([#4041](https://github.com/n0-computer/iroh/pull/4041)). Instead of waiting up to 5 seconds for the next scheduled ping, we now send an immediate RTT-based ping (3x last RTT, min 500ms). If the relay is broken, we now detect it faster and reconnect.
+- **Holepunching after network changes** restarts correctly again ([#3928](https://github.com/n0-computer/iroh/pull/3928)).
+- **Exponential backoff when polling for the default route** after a network change ([#4039](https://github.com/n0-computer/iroh/pull/4039)), instead of hammering the OS.
+- **Path idle timeouts are tuned** to match the relay and direct-path characteristics ([#4038](https://github.com/n0-computer/iroh/pull/4038)).
+
+## 🔐 Pluggable Crypto Backends
+
+iroh has historically pulled in `ring` as its TLS crypto provider. That's fine for most users. It's a problem if you're on a platform where `ring` doesn't build, if your org mandates a FIPS-certified backend like `aws-lc-rs`, or if you just don't want to ship `ring` at all.
+
+0.98 makes the crypto provider pluggable. There are two new feature flags:
+
+- `ring` (default): use rustls's ring provider.
+- `aws-lc-rs`: use rustls's aws-lc-rs provider.
+
+Or you can turn both off and wire in your own:
+
+```rust
+let endpoint = Endpoint::builder(presets::N0)
+    .crypto_provider(my_custom_provider)
+    .bind()
+    .await?;
+```
+
+If neither feature flag is enabled and you don't call `crypto_provider`, `bind()` will return an error telling you what you forgot. If both features are enabled, we default to `ring`.
+
+We also added two new presets alongside `presets::N0`:
+
+- `presets::Minimal`: the minimum required options on the builder (only available with `ring` or `aws-lc-rs` enabled).
+- `presets::Empty`: replaces the old `Endpoint::empty_builder()`, which has been removed.
+
+Checkout [PR #3992](https://github.com/n0-computer/iroh/pull/3992) for more details.
+
+## 🚦 Rate Limiting in the Router
+
+If you run a single iroh endpoint that's exposed to the world (a public irpc service, an n0des node, anything where arbitrary clients can connect), you want to be able to shed load before the connection handshake completes. 0.98 adds a hook for that.
+
+For more on why early rejection is cheap at the QUIC layer, see [How QUIC rejects garbage packets](/blog/quic-packet-rejection) and for measurements of the filters in this release against a real endpoint, see [QUIC packet rejection in practice](/blog/quic-packet-rejection-in-practice).
+
+The router now supports an incoming connection filter that allows rejecting early by remote address, by endpoint ID (for relay connections), or by ALPN. The filter can accept, reject, retry, or ignore the incoming connection, and the specific logic is left up to the user.
+
+```rust
+fn filter(incoming: &Incoming) -> IncomingFilterOutcome {
+    match incoming.remote_addr() {
+        IncomingAddr::Ip(_) if !incoming.remote_addr_validated() => IncomingFilterOutcome::Retry,
+        _ => IncomingFilterOutcome::Accept,
+    }
+}
+
+Router::builder(endpoint)
+    .incoming_filter(Arc::new(filter))
+    .spawn();
+```
+
+Rejecting early is much cheaper than closing the connection after it's established. Benchmarks on the PR show ~30x throughput for address-based rejection vs. accepting and closing. For relay connections, rejecting by endpoint ID is the cheapest option since we get that information before the handshake completes.
+
+Checkout [PR #3951](https://github.com/n0-computer/iroh/pull/3951) for more details.
+
+## 📡 Relay Protocol v2
+
+The relay protocol now supports version negotiation and are using it with `iroh-relay-v2`. The actual wire changes are minor. There's a new `Status` frame that replaces the old `Health` frame with an extensible payload. Frames not allowed in the negotiated protocol version are now rejected as errors. The real goal here was to exercise the version-negotiation machinery end-to-end. Old clients can talk to new relays, and new clients can talk to old relays.
+
+Checkout [PR #3955](https://github.com/n0-computer/iroh/pull/3955) and [PR #4127](https://github.com/n0-computer/iroh/pull/4127) for more details.
+
+## ⭐ Other Notable Changes
+
+- **Configurable external addresses** ([#4098](https://github.com/n0-computer/iroh/pull/4098)). If you already know your endpoint's public address (e.g. from a reverse proxy or platform metadata), you can now tell the endpoint about it directly instead of relying on discovery.
+- **Deprecated IPv6 addresses are no longer advertised** ([#4106](https://github.com/n0-computer/iroh/pull/4106)). Deprecated IPv6 addresses (in the RFC 4862 sense) aren't meant to be used for new connections, so we no longer include them in NAT traversal advertisements.
+- **pkarr is now vendored as `iroh-dns`** ([#4026](https://github.com/n0-computer/iroh/pull/4026)). We only ever used the DNS-record encoding bits, so we inlined those into a new `iroh-dns` crate and dropped the third-party `pkarr` dependency. Smaller dep tree, no behavioural change for most users.
+- **More metrics on the relay server** ([#4085](https://github.com/n0-computer/iroh/pull/4085)). Useful if you run your own relay and want to monitor it.
+
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - changed
+        - `iroh::address_lookup::ConcurrentAddressLookup` renamed to `iroh::address_lookup::AddressLookupServices`, and no longer implements the `AddressLookup` trait; owned by `Endpoint`, used via its inherent methods ([#4130](https://github.com/n0-computer/iroh/pull/4130))
+        - `iroh::Endpoint::address_lookup` now returns `Result<&AddressLookupServices, EndpointError>` ([#4130](https://github.com/n0-computer/iroh/pull/4130))
+        - `AddressLookupServices::resolve` now returns `impl Stream<Item = Result<Item, AddressLookupFailed>>` instead of `Option<BoxStream<...>>` ([#4130](https://github.com/n0-computer/iroh/pull/4130))
+        - `iroh::address_lookup::Error` is now a struct; existing constructor methods unchanged ([#4126](https://github.com/n0-computer/iroh/pull/4126))
+        - `iroh::endpoint::ConnectWithOptsError::NoAddress { source }` - `source` is now `AddressLookupFailed`, which can carry errors from all failed services ([#4126](https://github.com/n0-computer/iroh/pull/4126))
+        - `iroh::DirectAddrType` is now `#[non_exhaustive]` ([#4107](https://github.com/n0-computer/iroh/pull/4107))
+        - `iroh::address_lookup::mdns::DiscoveryEvent` is now `#[non_exhaustive]` ([#4107](https://github.com/n0-computer/iroh/pull/4107))
+        - `iroh::address_lookup::pkarr::dht::Builder::client(pkarr::Client)` replaced by `dht_builder(mainline::DhtBuilder)` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `PkarrError::PublicKey` source type is now `iroh_base::KeyParsingError` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `PkarrError::Verify` source type is now `iroh_dns::pkarr::SignedPacketVerifyError` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+    - added
+        - `iroh::endpoint::Builder::crypto_provider` ([#3992](https://github.com/n0-computer/iroh/pull/3992))
+    - removed
+        - `ConcurrentAddressLookup::empty()`, `ConcurrentAddressLookup::from_services()` - use `AddressLookupServices::default()` with `add` / `add_boxed` instead ([#4130](https://github.com/n0-computer/iroh/pull/4130))
+        - `impl<T: IntoIterator<Item = Box<dyn AddressLookup>>> From<T> for ConcurrentAddressLookup` ([#4130](https://github.com/n0-computer/iroh/pull/4130))
+        - `Endpoint::empty_builder` - use `Endpoint::builder(presets::Empty)` or `Endpoint::builder(presets::Minimal)` instead ([#3992](https://github.com/n0-computer/iroh/pull/3992))
+        - `Builder::pkarr_relay(Url)`, `Builder::n0_dns_pkarr_relay()`, `Builder::dht(bool)` on DHT address lookup - the DHT lookup only uses the Mainline DHT; use `PkarrPublisher` for relay publishing ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+    - behavioural
+        - If neither the `ring` nor `aws-lc-rs` feature flag is enabled and you don't call `crypto_provider`, `Builder::bind()` will return an error ([#3992](https://github.com/n0-computer/iroh/pull/3992))
+- `iroh-base`
+    - changed
+        - `iroh_base::SecretKey::generate()` no longer takes an `Rng` generic argument; uses `rand::rng()` internally. Use `SecretKey::from_bytes` if you need a specific RNG ([#4075](https://github.com/n0-computer/iroh/pull/4075))
+        - `iroh_base::key::KeyDecodeError` - variants changed, no longer embeds third-party error types, now `#[non_exhaustive]` ([#4073](https://github.com/n0-computer/iroh/pull/4073))
+    - renamed
+        - `iroh_base::CustomAddr::as_vec` -> `iroh_base::CustomAddr::to_vec` ([#4074](https://github.com/n0-computer/iroh/pull/4074))
+- `iroh-relay`
+    - changed
+        - `iroh_relay::server::client::Config` - new field `protocol_version: ProtocolVersion` ([#3955](https://github.com/n0-computer/iroh/pull/3955))
+        - `iroh_relay::protos::relay::RelayToClientMsg` - new `Status(Status)` variant; `Health` variant deprecated ([#3955](https://github.com/n0-computer/iroh/pull/3955))
+        - `iroh_relay::server::http_server::RelayService` no longer implements `hyper::Service` - use `RelayServiceWithNotify` (via `RelayServiceWithNotify::new`) ([#4083](https://github.com/n0-computer/iroh/pull/4083))
+        - `iroh_relay::server::http_server::RelayService::handle_connection` - new `establish_timeout` argument ([#4083](https://github.com/n0-computer/iroh/pull/4083))
+        - `iroh_relay::PingTracker::new` - `default_timeout` parameter renamed to `max_timeout` ([#4041](https://github.com/n0-computer/iroh/pull/4041))
+        - `iroh_relay::RelayConfig`, `RelayQuicConfig`, `protos::relay::{RelayToClientMsg, ClientToRelayMsg}`, `protos::common::FrameType`, `server::Metrics`, `server::RelayMetrics` are now `#[non_exhaustive]`; use constructors or `default()` instead of struct literals ([#4107](https://github.com/n0-computer/iroh/pull/4107))
+        - `iroh_relay::endpoint_info::EndpointIdExt::from_z32` return type is now `Result<EndpointId, iroh_base::KeyParsingError>` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `iroh_relay::endpoint_info::EndpointInfo::{from_pkarr_signed_packet, to_pkarr_signed_packet}` now use `iroh_dns::pkarr::SignedPacket` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `iroh_relay::endpoint_info::EndpointInfo::from_txt_lookup` signature relaxed to `impl Iterator<Item = impl Display>`; no longer `#[cfg(not(wasm_browser))]`-gated ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `iroh_relay::endpoint_info::EncodingError::FailedBuildingPacket` source type is now `iroh_dns::pkarr::SignedPacketBuildError` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+    - renamed
+        - `iroh_relay::PingTracker::default_timeout()` -> `PingTracker::max_timeout()` ([#4041](https://github.com/n0-computer/iroh/pull/4041))
+    - added
+        - `iroh_relay::http::ProtocolVersion` ([#3955](https://github.com/n0-computer/iroh/pull/3955))
+        - `iroh_relay::PingTracker::new_ping_with_timeout(timeout)`, `PingTracker::ping_timeout()` ([#4041](https://github.com/n0-computer/iroh/pull/4041))
+    - removed
+        - `iroh_relay::http::RELAY_PROTOCOL_VERSION` - use `ProtocolVersion::V1.to_str()` for the old constant value ([#3955](https://github.com/n0-computer/iroh/pull/3955))
+        - `iroh_relay::endpoint_info::DecodingError` - handle `iroh_base::KeyParsingError` instead ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `iroh_relay::endpoint_info::EncodingError::InvalidTxtEntry` variant ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+- `iroh-dns` (new crate)
+    - added
+        - new crate containing `SignedPacket`, `Timestamp`, `EndpointIdExt`, `TxtAttrs`, `IrohAttr`, `IROH_TXT_NAME`, `ParseError`, `EncodingError` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+- Build and features
+    - changed
+        - cargo feature `address-lookup-pkarr-dht` now pulls in `mainline` instead of `pkarr/dht` + `pkarr/relays` ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+        - `z32` and `pkarr` are no longer direct dependencies of iroh, iroh-relay, or iroh-dns-server; downstream users depending on them transitively must depend on them explicitly ([#4026](https://github.com/n0-computer/iroh/pull/4026))
+
+## 🎉 The Road to 1.0
+
+Reliability fixes aren't glamorous, but they're what makes the stack trustworthy enough to build on. NAT traversal is back on solid ground, and the patchbay matrix is there to keep it that way. On to the remaining 1.0 rough edges.
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.98.0](https://github.com/n0-computer/iroh/releases/tag/v0.98.0).
+
+If you want to know what is coming up, check out the [v0.99.0 milestone](https://github.com/n0-computer/iroh/milestones), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
