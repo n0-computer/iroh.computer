@@ -222,6 +222,10 @@ export function SubscribeDialog({ open, onClose, source }) {
                     <p className="text-sm text-red-600 dark:text-red-400">{message}</p>
                   )}
 
+                  <p className="text-xs text-irohGray-500 dark:text-irohGray-400">
+                    n0.computer needs the contact information you provide to us to contact you about services. You may unsubscribe from these communications at any time.
+                  </p>
+
                   <button
                     type="submit"
                     disabled={status === 'loading'}

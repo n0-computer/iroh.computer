@@ -2,7 +2,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { CheckCircleIcon } from '@heroicons/react/20/solid';
 
-import { EmailSubscribe } from "@/components/EmailSubscribe"
+import { ContactButton } from "@/components/ContactButton"
 import { BlankLayout } from '@/components/BlankLayout';
 import { formatDate } from '@/lib/formatDate'
 import releases from './releases.json';
@@ -19,9 +19,9 @@ export default function Component() {
       <h1 className="text-2xl sm:text-4xl font-space font-bold tracking-tight text-zinc-800 dark:text-zinc-100">Change Log</h1>
       <div className="mt-5 mb-20">
         <h4 className='text-lg'>Subscribe for updates</h4>
-        <EmailSubscribe />
         <div className="max-w-md">
-          <p>We&apos;ll send you an email with each new release of iroh &amp; and a link to the blog post. Right now iroh is releasing roughly every 3 weeks.</p>
+          <p className="my-4">We&apos;ll send you an email with each new release of iroh &amp; and a link to the blog post. Right now iroh is releasing roughly every 3 weeks.</p>
+          <ContactButton source="changelog">Subscribe</ContactButton>
         </div>
       </div>
       {releases.map((release, i) => <Release key={release.version} data={release} />)}
