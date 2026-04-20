@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button"
+import { ContactButton } from "@/components/ContactButton"
 import { HeaderSparse } from '@/components/HeaderSparse'
 import { LogoCloud } from '@/components/home/LogoCloud'
 import { FooterMarketing } from "@/components/FooterMarketing"
@@ -39,11 +39,9 @@ export default function EnterprisePage() {
               For teams going to production with peer-to-peer.
             </p>
             <div className="flex gap-4 mt-8 justify-center">
-              <Link href="https://cal.com/team/number-0/iroh-services">
-                <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                  Chat with us
-                </Button>
-              </Link>
+              <ContactButton source="enterprise-hero" arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                Chat with us
+              </ContactButton>
             </div>
           </div>
         </section>
@@ -75,11 +73,9 @@ export default function EnterprisePage() {
               This is connection anxiety. We can help.
             </p>
             <div className="text-center">
-            <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
-              <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                Tell us what you&apos;re building
-              </Button>
-            </Link>
+            <ContactButton source="enterprise-anxiety" arrow="none" className="mt-6 bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+              Tell us what you&apos;re building
+            </ContactButton>
             </div>
           </div>
         </section>
@@ -106,11 +102,9 @@ export default function EnterprisePage() {
                     Know immediately whether the fault is in iroh, your integration, or the user&apos;s environment.
                   </p>
                 </div>
-                <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block">
-                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Set up monitoring
-                  </Button>
-                </Link>
+                <ContactButton source="enterprise-monitoring" arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                  Set up monitoring
+                </ContactButton>
               </div>
               <div className="md:col-span-7">
                 <MetricsIllustration className="w-full" />
@@ -133,11 +127,9 @@ export default function EnterprisePage() {
                   Running on unusual hardware? Send us the device. We&apos;ll add it to our test lab
                   and make sure iroh works on your target platform.
                 </p>
-                <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block">
-                  <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                    Discuss your platform
-                  </Button>
-                </Link>
+                <ContactButton source="enterprise-platform" arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                  Discuss your platform
+                </ContactButton>
               </div>
               <div className="md:col-span-7">
                 <IrohEverywhere />
@@ -208,11 +200,9 @@ export default function EnterprisePage() {
               Think of it as embedding an iroh expert into your team.
             </p>
             <div className="text-center">
-              <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-6">
-                <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                  Hire a dedicated engineer
-                </Button>
-              </Link>
+              <ContactButton source="enterprise-dedicated" arrow="none" className="mt-6 bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                Hire a dedicated engineer
+              </ContactButton>
             </div>
           </div>
         </section>
@@ -303,11 +293,9 @@ export default function EnterprisePage() {
               </table>
             </div>
             <div className="text-center">
-              <Link href="https://cal.com/team/number-0/iroh-services" className="inline-block mt-8">
-                <Button arrow="none" className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
-                  Get SLA details
-                </Button>
-              </Link>
+              <ContactButton source="enterprise-sla" arrow="none" className="mt-8 bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-6 py-2 text-sm font-medium cursor-pointer">
+                Get SLA details
+              </ContactButton>
             </div>
           </div>
         </section>
@@ -395,14 +383,13 @@ export default function EnterprisePage() {
               Talk to the team that wrote iroh.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://cal.com/team/number-0/iroh-services">
-                <Button
-                  arrow="none"
-                  className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3 text-sm font-medium cursor-pointer"
-                >
-                  Chat with us
-                </Button>
-              </Link>
+              <ContactButton
+                source="enterprise-footer"
+                arrow="none"
+                className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3 text-sm font-medium cursor-pointer"
+              >
+                Chat with us
+              </ContactButton>
             </div>
           </div>
         </section>
