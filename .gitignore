@@ -45,3 +45,4 @@ api-code-examples/target
 
 # nodejs
 api-code-examples/node_modules
+.env.local

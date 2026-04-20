@@ -1,87 +1,88 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { X } from 'lucide-react'
 
-const MAILCHIMP_URL =
-  'https://computer.us10.list-manage.com/subscribe/post-json?u=7ee5e42577ed134f89e28572b&id=ca88c7595d&f_id=00d3c1e5f0'
-const HONEYPOT_NAME = 'b_7ee5e42577ed134f89e28572b_ca88c7595d'
+const PORTAL_ID = process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID
+const FORM_GUID = process.env.NEXT_PUBLIC_HUBSPOT_FORM_GUID
 
-function stripHtml(str) {
-  if (typeof str !== 'string') return ''
-  return str.replace(/<[^>]*>/g, '')
-}
+const USE_CASE_OPTIONS = [
+  { value: 'networking_optimization', label: 'Cloud networking optimization' },
+  { value: 'iot_embed', label: 'IoT/Embedded' },
+  { value: 'pos_payments', label: 'Point of Sale/Payments' },
+  { value: 'streaming', label: 'Streaming (audio/video/data)' },
+  { value: 'agency', label: 'User Agency' },
+  { value: 'other', label: 'Other' },
+]
 
 export function SubscribeDialog({ open, onClose, source }) {
   const [email, setEmail] = useState('')
   const [company, setCompany] = useState('')
+  const [useCase, setUseCase] = useState('')
   const [honeypot, setHoneypot] = useState('')
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
-  const scriptRef = useRef(null)
-  const callbackNameRef = useRef(null)
 
-  const cleanup = () => {
-    if (callbackNameRef.current && window[callbackNameRef.current]) {
-      try {
-        delete window[callbackNameRef.current]
-      } catch {
-        window[callbackNameRef.current] = undefined
-      }
-      callbackNameRef.current = null
-    }
-    if (scriptRef.current && scriptRef.current.parentNode) {
-      scriptRef.current.parentNode.removeChild(scriptRef.current)
-      scriptRef.current = null
-    }
-  }
-
-  useEffect(() => cleanup, [])
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email || status === 'loading') return
+
+    if (honeypot) {
+      setStatus('success')
+      setMessage("We'll see you soon.")
+      return
+    }
+
+    if (!PORTAL_ID || !FORM_GUID) {
+      setStatus('error')
+      setMessage('Form is not configured. Please try again later.')
+      return
+    }
+
     setStatus('loading')
     setMessage('')
-    cleanup()
 
-    const callbackName = `mcCallback_${Date.now()}_${Math.floor(Math.random() * 1e9)}`
-    callbackNameRef.current = callbackName
-
-    const params = new URLSearchParams({
-      EMAIL: email,
-      [HONEYPOT_NAME]: honeypot,
-      c: callbackName,
-    })
+    const fields = [{ objectTypeId: '0-1', name: 'email', value: email }]
     if (company) {
-      params.set('COMPANY', company)
+      fields.push({ objectTypeId: '0-1', name: 'company', value: company })
+    }
+    if (useCase) {
+      fields.push({ objectTypeId: '0-1', name: 'primary_use_case', value: useCase })
     }
     if (source) {
-      params.set('SOURCE', source)
+      fields.push({ objectTypeId: '0-1', name: 'source', value: source })
     }
-    const url = `${MAILCHIMP_URL}&${params.toString()}`
 
-    window[callbackName] = (data) => {
-      if (data && data.result === 'success') {
+    const context = {}
+    if (typeof window !== 'undefined') {
+      context.pageUri = window.location.href
+      context.pageName = document.title
+    }
+
+    try {
+      const res = await fetch(
+        `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_GUID}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields, context }),
+        },
+      )
+      if (res.ok) {
         setStatus('success')
         setMessage("We'll see you soon.")
-      } else {
-        setStatus('error')
-        setMessage(stripHtml(data?.msg) || 'Something went wrong. Please try again.')
+        return
       }
-      cleanup()
-    }
-
-    const script = document.createElement('script')
-    script.src = url
-    script.onerror = () => {
+      const data = await res.json().catch(() => null)
+      const errorMsg =
+        data?.errors?.[0]?.message || data?.message || 'Something went wrong. Please try again.'
+      setStatus('error')
+      setMessage(errorMsg)
+    } catch {
       setStatus('error')
       setMessage('Connection error. Please try again.')
-      cleanup()
     }
-    scriptRef.current = script
-    document.body.appendChild(script)
   }
 
   const close = () => {
@@ -92,10 +93,10 @@ export function SubscribeDialog({ open, onClose, source }) {
   const reset = () => {
     setEmail('')
     setCompany('')
+    setUseCase('')
     setHoneypot('')
     setStatus('idle')
     setMessage('')
-    cleanup()
   }
 
   return (
@@ -137,7 +138,7 @@ export function SubscribeDialog({ open, onClose, source }) {
                 How can we help?
               </Dialog.Title>
               <p className="mt-3 text-base text-irohGray-600 dark:text-irohGray-300">
-                Drop your details and we&apos;ll reach out 
+                Drop your details and we&apos;ll reach out
               </p>
 
               {status === 'success' ? (
@@ -155,7 +156,7 @@ export function SubscribeDialog({ open, onClose, source }) {
                     </label>
                     <input
                       id="subscribe-email"
-                      name="EMAIL"
+                      name="email"
                       type="email"
                       required
                       autoComplete="email"
@@ -174,7 +175,7 @@ export function SubscribeDialog({ open, onClose, source }) {
                     </label>
                     <input
                       id="subscribe-company"
-                      name="COMPANY"
+                      name="company"
                       type="text"
                       autoComplete="organization"
                       value={company}
@@ -183,11 +184,35 @@ export function SubscribeDialog({ open, onClose, source }) {
                     />
                   </div>
 
+                  <div>
+                    <label
+                      htmlFor="subscribe-use-case"
+                      className="block text-sm font-medium text-irohGray-700 dark:text-irohGray-200"
+                    >
+                      Primary use case
+                    </label>
+                    <select
+                      id="subscribe-use-case"
+                      name="primary_use_case"
+                      value={useCase}
+                      onChange={(e) => setUseCase(e.target.value)}
+                      className="mt-1 block w-full rounded-md border border-irohGray-300 bg-white px-3 py-2 text-sm text-irohGray-900 shadow-sm focus:border-irohPurple-500 focus:outline-none focus:ring-1 focus:ring-irohPurple-500 dark:border-irohGray-600 dark:bg-irohGray-900 dark:text-irohGray-100"
+                    >
+                      <option value="">Select an option</option>
+                      {USE_CASE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div aria-hidden="true" className="absolute left-[-5000px]">
                     <input
                       type="text"
-                      name={HONEYPOT_NAME}
+                      name="website"
                       tabIndex={-1}
+                      autoComplete="off"
                       value={honeypot}
                       onChange={(e) => setHoneypot(e.target.value)}
                     />
