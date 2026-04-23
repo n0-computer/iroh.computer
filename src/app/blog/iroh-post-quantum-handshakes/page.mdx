@@ -30,7 +30,7 @@ So there are two attack vectors. If the *signature algorithm* is broken, an atta
 
 You might think this isn't a problem. After all, nobody has a sufficiently powerful quantum computer today.
 
-But an attacker can *record* connections now and then break the *key exchange* later, once a sufficiently capable quantum computer becomes available. This is called [harvest now, decrypt later][hndl].
+But an attacker can *record* connections now and then break the *key exchange* later, once a sufficiently capable quantum computer becomes available. This is called [*harvest now, decrypt later*][hndl].
 
 While we still have some time to decide on a post-quantum *signature algorithm*, securing the *key exchange* is **more urgent** because encrypted connections can be recorded by anyone who can observe the traffic.
 
@@ -46,13 +46,15 @@ We had long discussions about using the somewhat clunky [self-signed X.509 cert]
 
 In TLS 1.3, the key exchange algorithm uses an ephemeral keypair on each side, so we have freedom to choose the kind of keypair we use.
 
-Post-quantum key exchange algorithms are standardized and have acceptable overhead, so for scenarios where we are concerned about harvest now, decrypt later, we can enable them.
+Post-quantum key exchange algorithms are standardized and have acceptable overhead, so for scenarios where we are concerned about *harvest now, decrypt later*, we can enable them.
 
 We have to configure iroh to use the `aws-lc-rs` Rust binding to [AWS-LC][aws-lc] via the iroh feature flag `tls-aws-lc-rs`, and configure rustls to *prefer* post-quantum handshakes via the `prefer-post-quantum` rustls feature.
 
 <Note>
 The other popular crypto provider [`ring`][ring] as of now does not support post-quantum handshakes.
 </Note>
+
+In the `Cargo.toml` of your project, add iroh and rustls with the following feature flags:
 
 ```toml
 iroh = { version = "0.98", default-features = false, features = ["tls-aws-lc-rs"] }
