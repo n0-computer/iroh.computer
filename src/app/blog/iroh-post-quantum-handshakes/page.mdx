@@ -1,0 +1,167 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  author: 'Rüdiger Klaehn',
+  date: '2026-04-22',
+  title: 'Iroh post-quantum key exchange',
+  description:
+    'TODO',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+There is a heated discussion going on right now about if and when cryptographic primitives will have to be updated to be quantum-safe. I am not qualified to weigh in on the debate, but some [serious cryptographers][valsorda-crqc] seem to think that current signature algorithms will be broken by quantum computers sooner than expected.
+
+# Iroh connection establishment
+
+So let's take a look where post-quantum algorithms are relevant for iroh:
+
+During iroh connection establishment, we verify the identity of the remote endpoint. This requires a [*signature algorithm*][wiki-sig]. We exchange a secret for the symmetric encryption of the connection. This requires a [*key exchange algorithm*][wiki-kex].
+
+So there are two attack vectors. If the *signature algorithm* is broken, an attacker can *impersonate* any endpoint id. If the *key exchange algorithm* is broken, an attacker can *decrypt* the contents of the connection.
+
+You might think this isn't a problem. After all, nobody has a sufficiently powerful quantum computer today.
+
+But an attacker can *record* connections now and then break the *key exchange* later, once a sufficiently capable quantum computer becomes available. This is called [harvest now, decrypt later][hndl].
+
+While we still have some time to decide on a post-quantum *signature algorithm*, securing the *key exchange* is **more urgent** because encrypted connections can be recorded by anyone who can observe the traffic.
+
+# So how can we secure the key exchange?
+
+The number0 team decided to rely on existing standards as much as possible. Iroh connections are QUIC connections that use TLS 1.3 for encryption.
+
+<Note>
+This wasn't an easy decision, especially early in the project when peer-to-peer key exchange via [RFC 7250][rfc7250] wasn't widely available.
+
+We had long discussions about using the somewhat clunky [self-signed X.509 cert][libp2p-tls] versus using a custom [Noise][noise]-based encryption.
+</Note>
+
+In TLS 1.3, the key exchange algorithm uses an ephemeral keypair on each side, so we have freedom to choose the kind of keypair we use.
+
+Post-quantum key exchange algorithms are standardized and have acceptable overhead, so for scenarios where we are concerned about harvest now, decrypt later, we can enable them.
+
+We have to configure iroh to use the `aws-lc-rs` Rust binding to [AWS-LC][aws-lc] via the iroh feature flag `tls-aws-lc-rs`, and configure rustls to *prefer* post-quantum handshakes via the `prefer-post-quantum` rustls feature.
+
+<Note>
+The other popular crypto provider [`ring`][ring] as of now does not support post-quantum handshakes.
+</Note>
+
+```toml
+iroh = { version = "0.98", default-features = false, features = ["tls-aws-lc-rs"] }
+# iroh depends on rustls with default-features = false, so we need to enable this explicitly
+rustls = { version = "0.23.38", default-features = false, features = ["prefer-post-quantum"] }
+```
+
+<Note>
+What `prefer-post-quantum` actually turns on is `X25519MLKEM768`, a *hybrid* key exchange: both sides run X25519 and ML-KEM-768 and combine the secrets. The session key is safe as long as *at least one* of the two primitives holds — so if ML-KEM turns out to be broken, X25519 still protects you.
+</Note>
+
+What this does is to *prefer* a post-quantum handshake despite the higher cost, if *both sides* support it. It does not *force* a post-quantum handshake, so if you talk to an iroh node that does not support post-quantum, you will get a normal X25519 handshake.
+
+So if you are extremely paranoid you would have to configure your iroh endpoint to not allow classical handshakes *at all*, and lose interoperability with default configured iroh endpoints.
+
+Keep in mind that turning on post-quantum key exchange isn't free. `X25519MLKEM768` adds roughly 1 KB in each direction — enough that the handshake requires multiple UDP packets in both directions. `aws-lc-rs` is also a heavier dependency than `ring`.
+
+# What about signatures?
+
+While post-quantum key exchange algorithms are standardized and come with relatively modest overhead, post-quantum signature algorithms are [the subject of active research][nist-pqc-sig].
+
+All current options have [significant downsides][pq-sig-comparison] regarding computational cost, key size or signature size. So there is no industry consensus yet which one to use.
+
+There is also less urgency because there is no harvest-now-decrypt-later equivalent for signatures.
+
+# Conclusion
+
+Iroh today lets you *opt in* to a post-quantum key exchange algorithm, protecting against *harvest now, decrypt later*. If your traffic needs to stay confidential for a few years or more, turn it on.
+
+For signature algorithms we are waiting for an industry consensus to emerge.
+
+---
+
+
+
+
+
+---
+
+
+This turns from a concern in the far future to something that needs to be acted on soon.
+
+The iroh team is well aware of the issue and is weighing options to implement full post-quantum support. This won't happen for 1.0, but it is also not something we can put off for the far future anymore.
+
+The post-quantum problem can be divided into two parts. Safety of connections that happen right now. Compromising this would require an attacker to forge a signature, which is currently not possible.
+
+But if it is correct that sufficiently capable quantum computers will exist less than a decade from now, there is another attack vector. An attacker could record an existing connection and then decrypt it as soon as a sufficiently capable quantum computer becomes available. This is called [harvest now, decrypt later][hndl].
+
+Recently an [iroh user asked about the latter][issue-4147].
+
+The number0 team made the decision to rely on existing standards as much as possible. Iroh connections are QUIC connections that use TLS for encryption. This wasn't an easy decision, especially early in the project when peer-to-peer key exchange via [RFC 7250][rfc7250] wasn't widely available. We had long discussions about using the somewhat clunky [self-signed X.509 cert][libp2p-tls] versus using a custom [Noise][noise]-based encryption.
+
+Because we use TLS, we can use work that is done by crypto providers such as the [AWS-LC][aws-lc] library in the field of PQ handshakes.
+
+
+What this does is to *prefer* a post-quantum handshake despite the much higher cost, if *both sides* support it. It does not force a post-quantum handshake, so if you talk to an iroh node that does not support post-quantum, you will get a normal X25519 handshake.
+
+So if you are extremely paranoid you would have to configure your iroh endpoint to not allow classical handshakes at all, and lose interoperability with default configured iroh endpoints.
+
+It is also important to keep in mind that this only secures the negotiation of the symmetric encryption key. The endpoint *identity* is still a classical Ed25519 key.
+
+Dialing by key is one of the core benefits of iroh over address based QUIC connections. We are thinking about how to migrate to post-quantum identity, but we still have some time for that part. We would prefer a signature scheme with a small key size, but [all currently available options have significant downsides][pq-sig-comparison].
+
+# Why isn't this the default
+
+{/* AI-generated, reformulate */}
+
+This isn't on by default because the threat is niche. Harvest-now-decrypt-later only matters if someone is recording your traffic *and* its contents need to stay confidential for a decade or more. Most iroh workloads don't look like that. Paying ~2 KB of extra handshake per connection for everyone to defend a minority use case isn't the right default.
+
+{/* end AI-generated */}
+
+{/* AI-generated, reformulate */}
+
+This is exactly the kind of problem we're happy to let the IETF and the rustls/aws-lc-rs maintainers solve. Our "rely on existing standards" bet means that once the wider QUIC ecosystem lands on a sensible default — whether that's proactive Retry under PQ, a relaxed amplification limit on validated paths, or something else — iroh inherits it by bumping dependencies. At that point we flip `prefer-post-quantum` on by default, and existing users get the benefit without config changes.
+
+{/* end AI-generated */}
+
+
+```rust
+let kx_name = self.inner.negotiated_key_exchange_group().unwrap().name();
+tracing::trace!(?kx_name, "negotiated key exchange group");
+```
+
+# Conclusion
+
+{/* AI-generated, reformulate */}
+
+The TLDR: don't worry about it. Post-quantum migration is a real concern, but it's one that browser users don't have to think about — they trust the browser manufacturers to handle it before it becomes a practical problem. Iroh users get to be in the same position. If you have long-lived confidential data and want to defend against harvest-now-decrypt-later today, the opt-in config above is there for you. Otherwise, the number0 team is tracking this closely and will flip the right defaults as the ecosystem matures.
+
+{/* end AI-generated */}
+
+[valsorda-crqc]: https://words.filippo.io/crqc-timeline/
+[hndl]: https://en.wikipedia.org/wiki/Harvest_now,_decrypt_later
+[issue-4147]: https://github.com/n0-computer/iroh/issues/4147
+[rfc7250]: https://datatracker.ietf.org/doc/html/rfc7250
+[libp2p-tls]: https://github.com/libp2p/specs/blob/master/tls/tls.md
+[aws-lc]: https://github.com/aws/aws-lc
+[ring]: https://github.com/briansmith/ring
+[pq-sig-comparison]: https://blog.cloudflare.com/another-look-at-pq-signatures/
+[nist-pqc-sig]: https://csrc.nist.gov/Projects/pqc-dig-sig
+[wiki-sig]: https://en.wikipedia.org/wiki/Digital_signature
+[wiki-kex]: https://en.wikipedia.org/wiki/Key_exchange
+[noise]: https://noiseprotocol.org/
+
+{/* Reference links for later use
+
+- Filippo Valsorda, "A Cryptography Engineer's Perspective on Quantum Computing Timelines" (2026-04): argues the risk of CRQCs within a few years is now "dispositive" — ship PQ now with ML-KEM + ML-DSA. https://words.filippo.io/crqc-timeline/ — Bluesky TL;DR: https://bsky.app/profile/did:plc:x2nsupeeo52oznrmplwapppl/post/3mitkixqo2s2c
+- Matthew Green's counterpoint on Bluesky: willing to bet $5000 the timelines are wildly wrong, but agrees the precautionary analysis is sound. (In the replies to the Valsorda post above.)
+- Craig Gidney (Google), 2025: "How to factor 2048 bit RSA integers with less than a million noisy qubits" — a ~20x reduction from his own 2019 estimate of 20M qubits. Paper: https://arxiv.org/abs/2505.15917 — Google blog post: https://security.googleblog.com/2025/05/tracking-cost-of-quantum-factori.html
+- Michele Mosca et al., Global Risk Institute, "Quantum Threat Timeline Report 2025" — median expert estimate for a cryptographically relevant quantum computer is now 2029–2032; 10-year probability 28–49%, the highest in the report's seven-year history. Summary: https://postquantum.com/security-pqc/quantum-threat-timeline-report-2025/
+- Mosca's theorem (the "X + Y > Z" argument for why migration has to start now): discussed in the GRI report above and summarized here: https://quantumsecuritydefence.com/insights/quantum-threat-rsa-evolution-1994-2026/
+- Gidney's earlier 2019 estimate (20M qubits, 8 hours): https://arxiv.org/abs/1905.09749
+
+*/}
