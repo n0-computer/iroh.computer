@@ -1,0 +1,112 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import {ThemeImage} from '@/components/ThemeImage'
+
+export const post = {
+  author: 'Rüdiger Klaehn',
+  date: '2026-04-22',
+  title: 'Iroh post-quantum key exchange',
+  description:
+    'Iroh post-quantum key exchange',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+There is a heated discussion going on right now about if and when cryptographic primitives will have to be updated to be quantum-safe. I am not qualified to weigh in on the debate, but some [serious cryptographers][valsorda-crqc] seem to think that current signature algorithms will be broken by quantum computers sooner than expected.
+
+A recent [question from an iroh user][issue-4147] prompted us to write this up.
+
+# Iroh connection establishment
+
+So let's take a look where post-quantum algorithms are relevant for iroh:
+
+During iroh connection establishment, we verify the identity of the remote endpoint. This requires a [*signature algorithm*][wiki-sig]. We exchange a secret for the symmetric encryption of the connection. This requires a [*key exchange algorithm*][wiki-kex].
+
+So there are two attack vectors. If the *signature algorithm* is broken, an attacker can *impersonate* any endpoint id. If the *key exchange algorithm* is broken, an attacker can *decrypt* the contents of the connection.
+
+You might think this isn't a problem. After all, nobody has a sufficiently powerful quantum computer today.
+
+But an attacker can *record* connections now and then break the *key exchange* later, once a sufficiently capable quantum computer becomes available. This is called [*harvest now, decrypt later*][hndl] or *HNDL*.
+
+It's possible that an attacker *listens* to your network (a "passive network attacker") and stores encrypted packets you're sending and receiving in the hopes of being able to decrypt them later, once a cryptographically-relevant quantum computer (CRQC) is built/becomes accessible to the attacker.
+
+Once that happens, the attacker would go through the key exchange messages using algorithms using RSA or elliptic curves such as P256 or X25519, break their secret keys and be able to derive the symmetric encryption keys used in transmission and thus be albe to decrypt later communication.
+
+# So how can we secure the key exchange?
+
+The number0 team decided to rely on existing standards as much as possible. Iroh connections are QUIC connections that use TLS 1.3 for encryption.
+
+<Note>
+This wasn't an easy decision, especially early in the project when peer-to-peer key exchange via [RFC 7250][rfc7250] wasn't widely available.
+
+We had long discussions about using the somewhat clunky [self-signed X.509 cert][libp2p-tls] with TLS versus using a custom [Noise][noise]-based encryption.
+</Note>
+
+In TLS 1.3, the key exchange algorithm uses an ephemeral keypair on each side, so we have freedom to choose the kind of keypair we use.
+
+Post-quantum key exchange algorithms are standardized and have acceptable overhead, so for scenarios where we are concerned about *harvest now, decrypt later*, we can enable them.
+
+We have to configure iroh to use the `aws-lc-rs` Rust binding to [AWS-LC][aws-lc] via the iroh feature flag `tls-aws-lc-rs`, and configure rustls to *prefer* post-quantum handshakes via the `prefer-post-quantum` rustls feature.
+
+<Note>
+The other popular crypto provider [`ring`][ring] as of now does not support post-quantum handshakes.
+</Note>
+
+In the `Cargo.toml` of your project, add iroh and rustls with the following feature flags:
+
+```toml
+iroh = { version = "0.98", default-features = false, features = ["tls-aws-lc-rs"] }
+# iroh depends on rustls with default-features = false, so we need to enable this explicitly
+rustls = { version = "0.23.38", default-features = false, features = ["prefer-post-quantum"] }
+```
+
+<Note>
+What `prefer-post-quantum` actually turns on is [`X25519MLKEM768`][tls-ecdhe-mlkem], a *hybrid* key exchange: both sides run X25519 and [ML-KEM-768][fips-203] and combine the secrets. The session key is safe as long as *at least one* of the two primitives holds — so if ML-KEM turns out to be broken, X25519 still protects you.
+
+This is necessary because post quantum key exchange algorithms are novel and not as well understood as classical algorithms.
+</Note>
+
+This configuration *prefers* a post-quantum handshake despite the higher cost, if *both sides* support it. It does not *force* a post-quantum handshake, so if you talk to an iroh node that does not support post-quantum, you will get a normal X25519 handshake.
+
+So if you are extremely paranoid you would have to configure your iroh endpoint to not allow classical handshakes *at all*, and lose interoperability with default configured iroh endpoints and relays.
+
+Keep in mind that turning on post-quantum key exchange isn't free. `X25519MLKEM768` adds roughly 1 KB in each direction — enough that the handshake requires multiple UDP packets in both directions. `aws-lc-rs` is also a heavier dependency than `ring`.
+
+# What about signatures?
+
+While post-quantum key exchange algorithms are standardized and come with relatively modest overhead, post-quantum signature algorithms are [the subject of active research][nist-pqc-sig].
+
+All current options have [significant downsides][pq-sig-comparison] regarding computational cost, key size or signature size. So there is no industry consensus yet which one to use.
+
+There is also less urgency because there is no harvest-now-decrypt-later equivalent for signatures.
+
+# Conclusion
+
+Iroh today lets you *opt in* to a post-quantum *key exchange algorithm*, protecting against *harvest now, decrypt later*. If your traffic needs to stay confidential for a few years or more, turn it on.
+
+Eenabling a quantum-secure key exchange algorithm *does not* protect from active network attackers (a "man in the middle") that intercepts and changes network packets *with access to a CRQC*. Such attacks are impossible at the moment, but might become possible in the future.
+
+The reason we're not protected from this is that iroh uses Ed25519 keys to identify iroh endpoints, and Ed25519 might be broken by a CRQC in the future. We use these Ed25519 keys to *authenticate* communication, using the raw-public-keys TLS certificate verification method. If this piece of the protocol is broken, then you won't be able to distinguish if you're talking to an attacker or the actual endpoint you want to talk to, and thus you might exchange encryption keys with the attacker instead of the legitimate endpoint.
+
+To reiterate: This attack is impossible without a CRQC. That said, we're taking this seriously and have already looked into what it would take to migrate iroh to `EndpointId`s that are not Ed25519.
+
+We are waiting for an industry consensus to emerge.
+
+[valsorda-crqc]: https://words.filippo.io/crqc-timeline/
+[hndl]: https://en.wikipedia.org/wiki/Harvest_now,_decrypt_later
+[issue-4147]: https://github.com/n0-computer/iroh/issues/4147
+[rfc7250]: https://datatracker.ietf.org/doc/html/rfc7250
+[libp2p-tls]: https://github.com/libp2p/specs/blob/master/tls/tls.md
+[aws-lc]: https://github.com/aws/aws-lc
+[ring]: https://github.com/briansmith/ring
+[pq-sig-comparison]: https://blog.cloudflare.com/another-look-at-pq-signatures/
+[nist-pqc-sig]: https://csrc.nist.gov/Projects/pqc-dig-sig
+[wiki-sig]: https://en.wikipedia.org/wiki/Digital_signature
+[wiki-kex]: https://en.wikipedia.org/wiki/Key_exchange
+[noise]: https://noiseprotocol.org/
+[tls-ecdhe-mlkem]: https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/
+[fips-203]: https://csrc.nist.gov/pubs/fips/203/final
