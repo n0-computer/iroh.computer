@@ -1,0 +1,117 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: true,
+  author: 'Rüdiger Klaehn',
+  date: '2026-05-08',
+  title: 'iroh 1.0.0-rc.0 - The first release candidate',
+  description: 'Release of iroh v1.0.0-rc.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+After four years of work, we finally did it. This is the first release candidate for iroh 1.0.
+
+For this release, we have spent a lot of time refining the API surface. We have eliminated almost all types from <1.0 crates that are used or reexported in the iroh public API. The exceptions are only [rustls] and a few core futures types ([Sink], [Stream]).
+
+We have also improved the public API in a few places to increase usability and to make it easier to extend in the future. We moved some optional features of iroh into separate crates.
+
+With this release candidate we also published the first release candidate of [noq], our QUIC implementation. The improvements in noq would fill another blog post easily, but here also the theme was to reduce and future-proof the API surface.
+
+In terms of functionality, we have made a lot of work under the hood in iroh and noq that improve the holepunching rate.
+
+## Restructuring
+
+Several optional features have been moved out of the iroh crate and repository. This allows us to have a different versioning and release schedule for these components, which is now possible due to iroh having a stable API. It is also helpful to reduce the number of optional features in iroh.
+
+- `address_lookup::DhtAddressLookup` has moved to the [`iroh-mainline-address-lookup`] crate in the [`iroh-address-lookups`] repo.
+- `address_lookup::MdnsAddressLookup` has moved to the [`iroh-mdns-address-lookup`] crate in the [`iroh-address-lookups`] repo.
+- `protocol::AccessLimit` has moved to the [`iroh-util`] crate in the [`iroh-util` repo].
+
+## Notable API changes
+
+### Path observation API redesign
+
+<insert rationale>
+
+```rust
+let mut events = conn.path_events();
+while let Some(event) = events.next().await {
+    match event {
+        PathEvent::Opened { id, remote_addr } => println!("path {id:?} opened via {remote_addr:?}"),
+        PathEvent::Selected { id, remote_addr } => println!("now using path {id:?} via {remote_addr:?}"),
+        PathEvent::Closed { id, last_stats, .. } => println!("path {id:?} closed (rtt {:?})", last_stats.rtt),
+        _ => {}
+    }
+}
+```
+
+### Incoming address
+
+We changed the local address for an incoming request from an ip address to a new `IncomingLocalAddr` that properly handles relay and custom connections.
+
+```rust
+let incoming = endpoint.accept().await.context("no incoming")?;
+match incoming.local_addr() {
+    IncomingLocalAddr::Ip(ip) => println!("direct IP, local ip: {ip:?}"),
+    IncomingLocalAddr::Relay { url } => println!("via relay {url}"),
+    IncomingLocalAddr::Custom(addr) => println!("via custom transport: {addr:?}"),
+    _ => {}
+}
+```
+
+### Non exhaustive structs and enums
+
+In many cases we have marked public structs and enums with `#[non_exhaustive]` to allow for future extension without breaking the public API. This is the reason both examples above end with a wildcard arm (`_ => {}`): `PathEvent` and `IncomingLocalAddr` are both `#[non_exhaustive]`, so the compiler requires you to handle the case of variants we may add later.
+
+## Changelog in detail
+
+## Call to the community
+
+We tried very hard to get a good holepunching rate and high performance. At this point we rely on feedback from the community. If you are a user of our stable release 0.35 and did not follow our fast-paced development since then, now is the time to try out the release candidate and let us know if there are any issues.
+
+## What happens after 1.0
+
+We are confident that the wire protocol is stable. We also will be able to make significant performance and holepunching rate improvements without having to change the public API. So after 1.0, development will continue at full speed.
+
+We expect to keep the 1.0 API stable for at least a year. Subsequent releases with major API changes will attempt to preserve wire compatibility.
+
+## 🎉 The Road to 1.0
+
+TODO
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.0](https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.0).
+
+If you want to know what is coming up, check out the [milestones](https://github.com/n0-computer/iroh/milestones), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
+
+[Sink]: https://docs.rs/futures-sink/latest/futures_sink/trait.Sink.html
+[Stream]: https://docs.rs/futures-core/latest/futures_core/stream/trait.Stream.html
+[rustls]: https://github.com/rustls/rustls
+[noq]: /blog/noq-announcement
+[`iroh-mainline-address-lookup`]: https://docs.rs/iroh-mainline-address-lookup
+[`iroh-mdns-address-lookup`]: https://docs.rs/iroh-mdns-address-lookup
+[`iroh-util`]: https://docs.rs/iroh-util
+[`iroh-address-lookups`]: https://github.com/n0-computer/iroh-address-lookups
+[`iroh-util` repo]: https://github.com/n0-computer/iroh-util
