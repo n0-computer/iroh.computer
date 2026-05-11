@@ -1,0 +1,181 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'Friedel Ziegelmayer & Rüdiger Klaehn',
+  date: '2026-05-11',
+  title: 'iroh 1.0.0-rc.0 - The first release candidate',
+  description: 'Release of iroh v1.0.0-rc.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to `iroh@1.0.0-rc.0`, the first release candidate of iroh, a modular networking stack in Rust for building direct connections between devices.
+
+After four years of work and more than [50 releases](/changelog), we finally have our first release candidate for 1.0.
+
+We want to take this moment to thank all the [external contributors](https://github.com/n0-computer/iroh/graphs/contributors) and folks who file issues and use iroh every day, helping us to make iroh better. And of course a big thank you to the whole [n0 team](https://n0.computer) for their hard work over the past years, to finally get us here!
+
+The changes in this release were all about making sure our API surface is as refined as we can make it, so we can commit to it in good conscience. We eliminated almost all types from pre-1.0 crates in reexports and exported types, with only a very small number left.
+
+As a large portion of iroh's public API depends on [noq], our QUIC implementation, it too has gotten the 1.0 release candidate treatment, and will be stabilized alongside iroh.
+
+But of course we also landed more bug fixes and improvements to NAT traversal, so this is the best version of iroh yet.
+
+## 📦 Sometimes things have to move out
+
+Several optional features have been moved out of the iroh crate and repository. This allows us to have a different versioning and release schedule for these components. It is also helpful to reduce the number of optional features in iroh.
+
+- `address_lookup::DhtAddressLookup` has moved to the [`iroh-mainline-address-lookup`] crate in the [`iroh-address-lookups`] repo.
+- `address_lookup::MdnsAddressLookup` has moved to the [`iroh-mdns-address-lookup`] crate in the [`iroh-address-lookups`] repo.
+- `protocol::AccessLimit` has moved to the [`iroh-util`] crate in the [`iroh-util` repo].
+
+## ✨ Making the API better
+
+### Path observation API redesign
+
+Since we added multipath in 0.96, observing connection paths went through `PathWatcher`, a single primitive that tried to serve two very different consumers: code that wants "what are the paths right now?" and code that wants "tell me when paths change". The `Watcher` returned its state by value and retained stats for closed paths to keep them visible to late subscribers.
+
+We've now split that into two primitives that each answer one of these questions clearly:
+
+- `Connection::paths()` returns a `PathList<'_>`, a borrowed snapshot of currently-open paths. Because it's lifetime-bound to the `Connection`, `Path::stats()` is infallible. noq is still alive, so the stats are too.
+- `Connection::path_events()` returns a `PathEventStream` of `Opened` / `Selected` / `Closed` / `Lagged` events. The stream is `'static`, doesn't keep the connection alive, and registers its subscription immediately, so the standard "subscribe then snapshot" pattern is race-free.
+
+Closed paths are no longer retained on the connection. Final per-path stats are delivered inline on `PathEvent::Closed`, and consumers accumulate them themselves. See the `transfer.rs` example for the pattern.
+
+```rust
+let mut events = conn.path_events();
+while let Some(event) = events.next().await {
+    match event {
+        PathEvent::Opened { id, remote_addr } => println!("path {id:?} opened via {remote_addr:?}"),
+        PathEvent::Selected { id, remote_addr } => println!("now using path {id:?} via {remote_addr:?}"),
+        PathEvent::Closed { id, last_stats, .. } => println!("path {id:?} closed (rtt {:?})", last_stats.rtt),
+        _ => {}
+    }
+}
+```
+
+### Incoming address
+
+We changed the local address for an incoming request from an IP address to a new `IncomingLocalAddr` that properly handles relay and custom connections.
+
+```rust
+let incoming = endpoint.accept().await.context("no incoming")?;
+match incoming.local_addr() {
+    IncomingLocalAddr::Ip(ip) => println!("direct IP, local ip: {ip:?}"),
+    IncomingLocalAddr::Relay { url } => println!("via relay {url}"),
+    IncomingLocalAddr::Custom(addr) => println!("via custom transport: {addr:?}"),
+    _ => {}
+}
+```
+
+### Non-exhaustive structs and enums
+
+In many cases we have marked public structs and enums with `#[non_exhaustive]` to allow for future extension without breaking the public API. This is the reason both examples above end with a wildcard arm (`_ => {}`): `PathEvent` and `IncomingLocalAddr` are both `#[non_exhaustive]`, so the compiler requires you to handle the case of variants we may add later.
+
+## 📣 Call to the community
+
+We tried very hard to get a good holepunching rate and high performance. At this point we rely on feedback from the community. If you are a user of our [stable release 0.35](/blog/iroh-0-35-prepping-for-1-0) and did not follow our fast-paced development since then, now is the time to try out the release candidate and let us know if there are any issues.
+
+## 🎉 The last steps on the Road to 1.0
+
+We are almost there, can you feel it? But of course a release candidate is neither the end nor the finish line. Our current plan is to ship at least one more release candidate in the next weeks, based on feedback and improvements we see necessary. After that we hope to cut 1.0 with any final changes we need to make. So stay tuned, and follow along.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - removed
+        - `Incoming::local_ip`. Use `Incoming::local_addr` instead ([#4182](https://github.com/n0-computer/iroh/pull/4182))
+        - `iroh::endpoint::PathWatcher`, `PathInfo`, `PathInfoList`, `PathInfoListIter` ([#4188](https://github.com/n0-computer/iroh/pull/4188))
+        - `iroh::endpoint::ConnectionInfo`, replaced by `iroh::endpoint::WeakConnectionHandle` ([#4189](https://github.com/n0-computer/iroh/pull/4189))
+        - `iroh::endpoint::Source`, now `pub(crate)` and no longer part of the public API ([#4227](https://github.com/n0-computer/iroh/pull/4227))
+        - `iroh::metrics::PortmapMetrics` re-export ([#4235](https://github.com/n0-computer/iroh/pull/4235))
+        - `iroh::metrics::EndpointMetrics::portmapper` field ([#4235](https://github.com/n0-computer/iroh/pull/4235))
+        - `iroh::endpoint::Written` (noq re-export) ([#4236](https://github.com/n0-computer/iroh/pull/4236))
+        - `iroh::endpoint::Builder::transport_bias` and `iroh::endpoint::transports::TransportBias` ([#4234](https://github.com/n0-computer/iroh/pull/4234))
+    - changed
+        - `Connection::paths` returns `PathList<'_>` instead of `PathWatcher`. `Path<'_>` replaces `PathInfo`. `Path::stats` is now infallible ([#4188](https://github.com/n0-computer/iroh/pull/4188))
+        - `ConnectionInfo::paths` is removed in favour of `ConnectionInfo::path_events`. `ConnectionInfo::selected_path` now returns `Option<TransportAddr>` instead of `Option<PathInfo>` ([#4188](https://github.com/n0-computer/iroh/pull/4188))
+        - `Connection::to_info() -> ConnectionInfo` is now `Connection::weak_handle() -> WeakConnectionHandle`. `WeakConnectionHandle` exposes far fewer methods than `ConnectionInfo` did. Use `WeakConnectionHandle::upgrade` and call the corresponding `Connection` methods ([#4189](https://github.com/n0-computer/iroh/pull/4189))
+        - `EndpointHooks::after_handshake` parameter changed from `&WeakConnectionHandle` to `&Connection` ([#4189](https://github.com/n0-computer/iroh/pull/4189))
+        - The `OnClosed` future returned from `WeakConnectionHandle::closed` now resolves to `iroh::endpoint::Closed`, a struct with public fields for the close reason, connection stats, and path stats ([#4229](https://github.com/n0-computer/iroh/pull/4229))
+        - `QuicTransportConfig::set_max_remote_nat_traversal_addresses` renamed to `QuicTransportConfig::max_remote_nat_traversal_addresses` ([#4213](https://github.com/n0-computer/iroh/pull/4213))
+        - `iroh::endpoint::transports` is now gated on the `unstable-custom-transports` feature ([#4228](https://github.com/n0-computer/iroh/pull/4228))
+        - The `metrics` feature no longer enables `portmapper/metrics` ([#4235](https://github.com/n0-computer/iroh/pull/4235))
+        - `iroh::endpoint::BeforeConnectOutcome` and `iroh::endpoint::AfterHandshakeOutcome` are now `#[non_exhaustive]` ([#4226](https://github.com/n0-computer/iroh/pull/4226))
+    - added
+        - `Incoming::local_addr` returning `IncomingLocalAddr` ([#4182](https://github.com/n0-computer/iroh/pull/4182))
+        - `iroh::endpoint::Path`, `Paths`, `PathEvent` (with `Opened`, `Closed`, `Selected`, `Lagged` variants), `PathEventStream`, `Connection::path_events`, `ConnectionInfo::path_events` ([#4188](https://github.com/n0-computer/iroh/pull/4188))
+        - `iroh::endpoint::WeakConnectionHandle` ([#4189](https://github.com/n0-computer/iroh/pull/4189))
+        - `iroh::endpoint::Closed` ([#4229](https://github.com/n0-computer/iroh/pull/4229))
+        - `iroh::metrics::NetReportMetrics::portmap_attempts` and `NetReportMetrics::portmap_external_address_updated` counters ([#4235](https://github.com/n0-computer/iroh/pull/4235))
+- `iroh-base`
+    - changed
+        - `iroh_base::endpoint_addr::CustomAddrParseError` is now `#[non_exhaustive]` ([#4226](https://github.com/n0-computer/iroh/pull/4226))
+- `iroh-relay`
+    - removed
+        - `tokio_rustls_acme::AcmeState` from the public API. `tokio_rustls_acme` is no longer referenced by any public type ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `iroh_relay::server::TlsConfig::quic_bind_addr`. The value from `QuicConfig::bind_addr` is always used now ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `CertConfig::Reloading` variant. Use `CertConfig::Manual` with a `rustls::ServerConfig` whose cert resolver performs reloading (e.g. one built with `iroh_relay::server::reloading_resolver`) ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `iroh_relay::server::Server::certificates`. Callers that need the certs should keep them alongside whatever they pass to `CertConfig::Manual` ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `iroh_relay::client::ClientBuilder::query_param(key, value)`, replaced by `ClientBuilder::auth_token`. Arbitrary URL query parameters on the upgrade request are no longer settable on the client ([#4205](https://github.com/n0-computer/iroh/pull/4205))
+    - changed
+        - `iroh_relay::server::ServerConfig<EC, EA>`, `RelayConfig<EC, EA>`, `TlsConfig<EC, EA>`, `CertConfig<EC, EA>` are no longer generic. `TlsConfig`'s `server_config: rustls::ServerConfig` field is removed. The `rustls::ServerConfig` now lives inside the `CertConfig` variants (`Manual::server_config`, or injected via `LetsEncrypt::server_config_builder`) ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `CertConfig::LetsEncrypt` restructured: `{ state: AcmeState<EC, EA> }` → `{ acme_config: AcmeConfig, server_config_builder: rustls::ConfigBuilder<rustls::ServerConfig, rustls::server::WantsServerCert> }`. `CertConfig::Manual` restructured: `{ certs: Vec<CertificateDer<'static>> }` → `{ server_config: rustls::ServerConfig }` ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `QuicConfig::server_config` type changed from `rustls::ServerConfig` to `Option<rustls::ServerConfig>`. When `None`, the QUIC server reuses `RelayConfig::tls`. If neither is set, `Server::spawn` fails with `SpawnError::QuicSpawn { source: QuicSpawnError::TlsNotConfigured }` ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `Server::spawn` is no longer generic: `pub async fn spawn(config: ServerConfig) -> Result<Self, SpawnError>` ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `AccessConfig::Restricted` closure now takes `&ClientRequest` instead of `EndpointId`. Existing closures need to read `request.endpoint_id()`. Boxed closure type exposed as `iroh_relay::server::AccessCheck` ([#4207](https://github.com/n0-computer/iroh/pull/4207))
+        - `AccessConfig::is_allowed` signature is now `is_allowed(&self, request: &ClientRequest) -> bool` ([#4207](https://github.com/n0-computer/iroh/pull/4207))
+        - `AccessCheck` future may now borrow from its `&ClientRequest` argument: `for<'a> Fn(&'a ClientRequest) -> Pin<Box<dyn Future<Output = Access> + Send + 'a>>` instead of `Fn(&ClientRequest) -> n0_future::future::Boxed<Access>`. Closures that build the future with `async move { ... }.boxed()` keep compiling ([#4205](https://github.com/n0-computer/iroh/pull/4205))
+        - `ServerConfig`, `RelayConfig`, `AccessConfig`, `QuicConfig`, `TlsConfig`, `Limits`, `ClientRateLimit`, `CertConfig`, `client::Config<S>`, `http::ProtocolVersion`, `protos::handshake::Mechanism` (cfg `server`) are now `#[non_exhaustive]` ([#4190](https://github.com/n0-computer/iroh/pull/4190), [#4226](https://github.com/n0-computer/iroh/pull/4226))
+    - added
+        - `iroh_relay::server::AcmeConfig`, a builder for `CertConfig::LetsEncrypt`. Constructors: `AcmeConfig::new(directory_url)`, `AcmeConfig::letsencrypt(production)`. Builder methods: `domains`, `contact`, `cache_path` ([#4166](https://github.com/n0-computer/iroh/pull/4166))
+        - `iroh_relay::client::ClientBuilder::auth_token` ([#4205](https://github.com/n0-computer/iroh/pull/4205))
+        - Constructors for non-exhaustive types: `RelayConfig::new`, `QuicConfig::new`, `TlsConfig::new`, `ClientRateLimit::new`, `client::Config::new` ([#4226](https://github.com/n0-computer/iroh/pull/4226))
+- `iroh-dns-server`
+    - removed
+        - `iroh_dns_server::dns`, `http`, `metrics`, `server`, and `state` modules are now private. Items that were genuinely part of the public API are re-exported at the crate root or under `iroh_dns_server::config` ([#4160](https://github.com/n0-computer/iroh/pull/4160))
+        - `iroh_dns_server::ZoneStore` re-export. Use `Server::bind` to run the server ([#4160](https://github.com/n0-computer/iroh/pull/4160))
+    - changed
+        - `iroh_dns_server::config::ZoneStoreOptions` replaced by `iroh_dns_server::config::StoreConfig`, with the same fields. The private `signed_packets::Options` type is no longer exposed ([#4160](https://github.com/n0-computer/iroh/pull/4160))
+        - `Config`, `HttpConfig`, `HttpsConfig`, `MetricsConfig`, `MainlineConfig`, `StoreConfig`, `CertMode`, `RateLimitConfig` are now `#[non_exhaustive]` ([#4160](https://github.com/n0-computer/iroh/pull/4160))
+        - `DnsConfig` is now `#[non_exhaustive]`. Added `DnsConfig::new(port: u16, default_soa: String, default_ttl: u32, origins: Vec<String>) -> Self`, which leaves `bind_addr = None` and the apex `rr_a`, `rr_aaaa`, `rr_ns` records at `None`. There is no `Default` impl: SOA, origins, and port are deployment-specific and have no neutral default ([#4226](https://github.com/n0-computer/iroh/pull/4226))
+    - added
+        - `iroh_dns_server::Metrics` and `iroh_dns_server::Server` re-exports at the crate root ([#4160](https://github.com/n0-computer/iroh/pull/4160))
+- Build / MSRV
+    - MSRV bumped to **1.91** ([#4237](https://github.com/n0-computer/iroh/pull/4237))
+- Restructuring (moved out of the iroh repo)
+    - `address_lookup::DhtAddressLookup` → [`iroh-mainline-address-lookup`](https://docs.rs/iroh-mainline-address-lookup)
+    - `address_lookup::MdnsAddressLookup` → [`iroh-mdns-address-lookup`](https://docs.rs/iroh-mdns-address-lookup)
+    - `protocol::AccessLimit` → [`iroh-util`](https://docs.rs/iroh-util)
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.0](https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.0).
+
+If you want to know what is coming up, check out the [milestones](https://github.com/n0-computer/iroh/milestones), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
+
+[noq]: /blog/noq-announcement
+[`iroh-mainline-address-lookup`]: https://docs.rs/iroh-mainline-address-lookup
+[`iroh-mdns-address-lookup`]: https://docs.rs/iroh-mdns-address-lookup
+[`iroh-util`]: https://docs.rs/iroh-util
+[`iroh-address-lookups`]: https://github.com/n0-computer/iroh-address-lookups
+[`iroh-util` repo]: https://github.com/n0-computer/iroh-util
