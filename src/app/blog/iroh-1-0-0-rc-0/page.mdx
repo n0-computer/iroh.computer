@@ -32,7 +32,7 @@ Welcome to `iroh@1.0.0-rc.0`, the first release candidate of iroh, a modular net
 
 After four years of work and more than [50 releases](/changelog), we finally have our first release candidate for 1.0.
 
-We want to take this moment to thank all the [external contributors](https://github.com/n0-computer/iroh/graphs/contributors) and folks who file issues and use iroh every day, helping us to make iroh better. And of course a big thank you to the whole n0 team for their hard work over the past years, to finally get us here!
+We want to take this moment to thank all the [external contributors](https://github.com/n0-computer/iroh/graphs/contributors) and folks who file issues and use iroh every day, helping us to make iroh better. And of course a big thank you to the whole [n0 team](https://n0.computer) for their hard work over the past years, to finally get us here!
 
 The changes in this release were all about making sure our API surface is as refined as we can make it, so we can commit to it in good conscience. We eliminated almost all types from pre-1.0 crates in reexports and exported types, with only a very small number left.
 
@@ -90,6 +90,20 @@ match incoming.local_addr() {
 ### Non-exhaustive structs and enums
 
 In many cases we have marked public structs and enums with `#[non_exhaustive]` to allow for future extension without breaking the public API. This is the reason both examples above end with a wildcard arm (`_ => {}`): `PathEvent` and `IncomingLocalAddr` are both `#[non_exhaustive]`, so the compiler requires you to handle the case of variants we may add later.
+
+## 📣 Call to the community
+
+We tried very hard to get a good holepunching rate and high performance. At this point we rely on feedback from the community. If you are a user of our [stable release 0.35](/blog/iroh-0-35-prepping-for-1-0) and did not follow our fast-paced development since then, now is the time to try out the release candidate and let us know if there are any issues.
+
+## 🔮 What happens after 1.0
+
+We are confident that the wire protocol is stable. We also will be able to make significant performance and holepunching rate improvements without having to change the public API. So after 1.0, development will continue at full speed.
+
+We expect to keep the 1.0 API stable for at least a year. Subsequent releases with major API changes will attempt to preserve wire compatibility. For the full details of our cadence and support commitments, see our [release & support policy](https://docs.iroh.computer/about/release-policy).
+
+## 🎉 The Road to 1.0
+
+We are almost there, can you feel it? But of course a release candidate is neither the end nor the finish line. Our current plan is to ship at least one more release candidate in the next weeks, based on feedback and improvements we see necessary. After that we hope to cut 1.0 with any final changes we need to make. So stay tuned, and follow along.
 
 ## ⚠️ Breaking Changes
 
@@ -158,20 +172,6 @@ In many cases we have marked public structs and enums with `#[non_exhaustive]` t
     - `address_lookup::DhtAddressLookup` → [`iroh-mainline-address-lookup`](https://docs.rs/iroh-mainline-address-lookup)
     - `address_lookup::MdnsAddressLookup` → [`iroh-mdns-address-lookup`](https://docs.rs/iroh-mdns-address-lookup)
     - `protocol::AccessLimit` → [`iroh-util`](https://docs.rs/iroh-util)
-
-## 📣 Call to the community
-
-We tried very hard to get a good holepunching rate and high performance. At this point we rely on feedback from the community. If you are a user of our [stable release 0.35](/blog/iroh-0-35-prepping-for-1-0) and did not follow our fast-paced development since then, now is the time to try out the release candidate and let us know if there are any issues.
-
-## 🔮 What happens after 1.0
-
-We are confident that the wire protocol is stable. We also will be able to make significant performance and holepunching rate improvements without having to change the public API. So after 1.0, development will continue at full speed.
-
-We expect to keep the 1.0 API stable for at least a year. Subsequent releases with major API changes will attempt to preserve wire compatibility.
-
-## 🎉 The Road to 1.0
-
-We are almost there, can you feel it? But of course a release candidate is neither the end nor the finish line. Our current plan is to ship at least one more release candidate in the next weeks, based on feedback and improvements we see necessary. After that we hope to cut 1.0 with any final changes we need to make. So stay tuned, and follow along on our [roadmap](/roadmap).
 
 ### But wait, there's more!
 
