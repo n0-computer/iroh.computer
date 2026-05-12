@@ -67,7 +67,7 @@ rustls = { version = "0.23.38", default-features = false, features = ["prefer-po
 <Note>
 What `prefer-post-quantum` actually turns on is [`X25519MLKEM768`][tls-ecdhe-mlkem], a *hybrid* key exchange: both sides run X25519 and [ML-KEM-768][fips-203] and combine the secrets. The session key is safe as long as *at least one* of the two primitives holds — so if ML-KEM turns out to be broken, X25519 still protects you.
 
-This is necessary because post quantum key exchange algorithms are novel and not as well understood as classical algorithms.
+This is wise to protect from [post quantum key exchange algorithms being broken in classical ways](https://www.quantamagazine.org/post-quantum-cryptography-scheme-is-cracked-on-a-laptop-20220824/), given they are a more recent innovation compared to classic key exchange algorithms.
 </Note>
 
 This configuration *prefers* a post-quantum handshake despite the higher cost, if *both sides* support it. It does not *force* a post-quantum handshake, so if you talk to an iroh node that does not support post-quantum, you will get a normal X25519 handshake.
