@@ -84,6 +84,8 @@ All current options have [significant downsides][pq-sig-comparison] regarding co
 
 There is also less urgency because there is no harvest-now-decrypt-later equivalent for signatures.
 
+This is similar to the HTTPS world: [More than half of all cloudflare HTTPS connections are now now served using hybrid key exchange algorithms](https://blog.cloudflare.com/pq-2025/), but TLS certificates still entirely depend on classical signature algorithms at the root.
+
 # Conclusion
 
 Iroh today lets you *opt in* to a post-quantum *key exchange algorithm*, protecting against *harvest now, decrypt later*. If your traffic needs to stay confidential for a few years or more, turn it on.
