@@ -90,7 +90,7 @@ This is similar to the HTTPS world: [More than half of all cloudflare HTTPS conn
 
 Iroh today lets you *opt in* to a post-quantum *key exchange algorithm*, protecting against *harvest now, decrypt later*. If your traffic needs to stay confidential for a few years or more, turn it on.
 
-Eenabling a quantum-secure key exchange algorithm *does not* protect from active network attackers (a "man in the middle") that intercepts and changes network packets *with access to a CRQC*. Such attacks are impossible at the moment, but might become possible in the future.
+Enabling a quantum-secure key exchange algorithm *does not* protect from active network attackers (a "man in the middle") that intercepts and changes network packets *with access to a CRQC*. Such attacks are impossible at the moment, but might become possible in the future.
 
 The reason we're not protected from this is that iroh uses Ed25519 keys to identify iroh endpoints, and Ed25519 might be broken by a CRQC in the future. We use these Ed25519 keys to *authenticate* communication, using the raw-public-keys TLS certificate verification method. If this piece of the protocol is broken, then you won't be able to distinguish if you're talking to an attacker or the actual endpoint you want to talk to, and thus you might exchange encryption keys with the attacker instead of the legitimate endpoint.
 
