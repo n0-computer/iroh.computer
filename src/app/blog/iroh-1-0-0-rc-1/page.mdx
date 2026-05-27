@@ -31,9 +31,13 @@ Welcome to `iroh@1.0.0-rc.1`, the last release candidate before 1.0.
 
 Since [the first release candidate](/blog/iroh-1-0-0-rc-0) two weeks ago we collected feedback from you, fixed bugs, and made the (hopefully) last API adjustments we wanted to make before stabilizing. Unless something serious comes up, the next release is **1.0**.
 
+## 📣 Call to the community
+
+This is the last release candidate before 1.0. If you're still on [`0.35`](/blog/iroh-0-35-prepping-for-1-0) and have been waiting for things to settle, please try this release and let us know if you hit any issues.
+
 ## 🥊 Hard-NAT holepunching
 
-Until this release, iroh could holepunch when the client was behind a hard NAT (endpoint-dependent NAT mapping) and the server behind an easy NAT (endpoint-independent NAT mapping), but not the reverse. With this release, the asymmetric case where the server is behind a hard NAT also works.
+Until this release, iroh could holepunch when the client initiating the connection was behind a hard NAT (endpoint-dependent NAT mapping) and the server behind an easy NAT (endpoint-independent NAT mapping), but not the reverse. With this release, the asymmetric case where the server is behind a hard NAT also works.
 
 See [noq#672](https://github.com/n0-computer/noq/pull/672) and [#4254](https://github.com/n0-computer/iroh/pull/4254) for more details.
 
@@ -91,10 +95,6 @@ Internally the selected path is now tracked as a `FourTuple` (local + remote add
 - Custom transport implementations get a new `src: Option<&CustomAddr>` argument on `CustomSender::poll_send`, matching the source-pinning the IP transport already supports.
 
 See [#4273](https://github.com/n0-computer/iroh/pull/4273) and [#4281](https://github.com/n0-computer/iroh/pull/4281) for more details.
-
-## 📣 Call to the community
-
-This is the last release candidate before 1.0. If you're still on [`0.35`](/blog/iroh-0-35-prepping-for-1-0) and have been waiting for things to settle, please try this release and let us know if you hit any issues.
 
 ## ⚠️ Breaking Changes
 
