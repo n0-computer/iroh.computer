@@ -1,0 +1,136 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Friedel Ziegelmayer & Rüdiger Klaehn',
+  date: '2026-05-27',
+  title: 'iroh 1.0.0-rc.1 - The last one',
+  description: 'Release of iroh v1.0.0-rc.1, the last release candidate before 1.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to `iroh@1.0.0-rc.1`, the last release candidate before 1.0.
+
+Since [the first release candidate](/blog/iroh-1-0-0-rc-0) two weeks ago we collected feedback from you, fixed bugs, and made the (hopefully) last API adjustments we wanted to make before stabilizing. Unless something serious comes up, the next release is **1.0**.
+
+## 📣 Call to the community
+
+This is the last release candidate before 1.0. If you're still on [`0.35`](/blog/iroh-0-35-prepping-for-1-0) and have been waiting for things to settle, please try this release and let us know if you hit any issues.
+
+## 🥊 Hard-NAT holepunching
+
+Until this release, iroh could holepunch when the client initiating the connection was behind a hard NAT (endpoint-dependent NAT mapping) and the server behind an easy NAT (endpoint-independent NAT mapping), but not the reverse. With this release, the asymmetric case where the server is behind a hard NAT also works.
+
+See [noq#672](https://github.com/n0-computer/noq/pull/672) and [#4254](https://github.com/n0-computer/iroh/pull/4254) for more details.
+
+## 🛣️ Configurable path selection
+
+For users building on top of [custom transports](/blog/tor-custom-transport), iroh now exposes a `PathSelector` trait that decides which path a connection uses.
+
+```rust
+trait PathSelector {
+    fn select(&self, ctx: PathSelectionContext<'_>) -> PathSelection;
+}
+```
+
+`PathSelectionContext` exposes the currently selected path and an iterator over `PathSelectionData`, which today contains the path address and stats. `PathSelection` is a newtype over `Option<Addr>`. Configure a selector via `Endpoint::builder().path_selector(...)`.
+
+The trait and the new types are gated behind the `unstable-custom-transports` feature. Keep in mind that this means they are not covered by the 1.0 stability guarantees and may break in future releases.
+
+See [#4232](https://github.com/n0-computer/iroh/pull/4232) for more details.
+
+## 🔐 Pluggable relay access control
+
+The relay's access control has been redesigned. The `AccessConfig` enum is gone, replaced by an `AccessControl` trait with `on_connect` and `on_disconnect` hooks. Each connection gets a `ConnectionId` that is passed to both callbacks.
+
+```rust
+trait AccessControl {
+    async fn on_connect(&self, req: &ClientRequest) -> Access;
+    async fn on_disconnect(&self, id: ConnectionId);
+}
+```
+
+With the `ConnectionId`, an `AccessControl` implementation can track active connections and proactively disconnect clients when their access is revoked, via the new `iroh_relay::server::clients::Clients::disconnect` API. No need to wait for the client to make another request.
+
+The `Bucket` rate-limit primitive is now public, for embedders that mount the relay protocol via their own HTTP server (e.g. axum).
+
+See [#4276](https://github.com/n0-computer/iroh/pull/4276) and [#4242](https://github.com/n0-computer/iroh/pull/4242) for more details.
+
+## ⚡ Faster `Endpoint::close`
+
+Shutdown now skips the draining period when it can. Closing is near-instant when the peer already closed remotely, and roughly one RTT otherwise if there is no packet loss.
+
+Fixes [#4201](https://github.com/n0-computer/iroh/issues/4201) in [#4270](https://github.com/n0-computer/iroh/pull/4270).
+
+## 🧹 Stability fixes
+
+- **Remote state races** — Two related bugs in the remote map could double-spawn `RemoteStateActor`s or shut one down while `ResolveRemote` requests were still pending. Both fixed in [#4271](https://github.com/n0-computer/iroh/pull/4271) and [#4272](https://github.com/n0-computer/iroh/pull/4272).
+- **Path abandonment scope** — Abandoning a path on one connection no longer abandons it on every other connection that shares the same address. Other connections will abandon it themselves if it's unusable. Fixed in [#4284](https://github.com/n0-computer/iroh/pull/4284).
+- **Static musl builds** — A CI fix forces non-PIE `crt1.o` so the static musl release binaries link again. Fixed in [#4258](https://github.com/n0-computer/iroh/pull/4258).
+
+## 📐 FourTuple plumbing
+
+Internally the selected path is now tracked as a `FourTuple` (local + remote address) throughout both send and receive paths. The user-visible changes are small:
+
+- `IncomingLocalAddr` has been renamed to `LocalTransportAddr` to reflect that it is used on both sides; the `Relay` variant is now a tuple variant.
+- `PathEvent` variants are now `#[non_exhaustive]`.
+- Custom transport implementations get a new `src: Option<&CustomAddr>` argument on `CustomSender::poll_send`, matching the source-pinning the IP transport already supports.
+
+See [#4273](https://github.com/n0-computer/iroh/pull/4273) and [#4281](https://github.com/n0-computer/iroh/pull/4281) for more details.
+
+## ⚠️ Breaking Changes
+
+- `iroh`
+    - removed
+        - `iroh::endpoint::IncomingLocalAddr` — renamed to `LocalTransportAddr` ([#4273](https://github.com/n0-computer/iroh/pull/4273))
+    - changed
+        - `iroh::endpoint::PathEvent` variants are now `#[non_exhaustive]` ([#4273](https://github.com/n0-computer/iroh/pull/4273))
+        - `iroh::endpoint::transports::CustomSender::poll_send` gains a `src: Option<&CustomAddr>` argument ([#4281](https://github.com/n0-computer/iroh/pull/4281))
+    - added
+        - `iroh::endpoint::transports::LocalTransportAddr` (replaces `IncomingLocalAddr`); the `Relay` variant is now a tuple variant ([#4273](https://github.com/n0-computer/iroh/pull/4273))
+        - `iroh::endpoint::Builder::path_selector` ([#4232](https://github.com/n0-computer/iroh/pull/4232))
+        - under `unstable-custom-transports`: `endpoint::transports::PathSelector`, `PathSelection`, `PathSelectionContext`, `PathSelectionData`, `FourTuple` ([#4232](https://github.com/n0-computer/iroh/pull/4232), [#4281](https://github.com/n0-computer/iroh/pull/4281))
+- `iroh-relay`
+    - removed
+        - `iroh_relay::server::AccessConfig` (enum) and `iroh_relay::server::AccessCheck` (type alias) — replaced by the `AccessControl` trait ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::server::client::Client` is no longer public; it had no public methods ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+    - changed
+        - `iroh_relay::server::RelayConfig::access` is `Arc<dyn DynAccessControl>` instead of `AccessConfig`. `RelayService::new` and `iroh::test_utils::run_relay_server_with_access` take the same type ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::server::Access::Deny` is now a struct variant `Deny { reason: Option<String> }`; `Access` is no longer `Copy` ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::server::ClientRequest::new` takes `(EndpointId, ProtocolVersion, http::request::Parts)`, including the negotiated protocol version ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::protos::handshake::SuccessfulAuthentication::authorize_if` takes `Access` instead of `bool` ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::server::client::Config::new` takes `(OnDisconnectGuard, RelayedStream, ProtocolVersion)` instead of `(EndpointId, RelayedStream, ProtocolVersion)`; the public `Config::endpoint_id` field is replaced by `Config::guard` ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+    - added
+        - `iroh_relay::server::AccessControl`, `DynAccessControl`, `AllowAll`, `ConnectionId`, `OnDisconnectGuard` ([#4276](https://github.com/n0-computer/iroh/pull/4276))
+        - `iroh_relay::server::streams::Bucket`, `Bucket::new`, `Bucket::consume` are now public ([#4242](https://github.com/n0-computer/iroh/pull/4242))
+- `iroh-base`
+    - added
+        - `iroh_base::SignatureParsingError` is now re-exported ([#4285](https://github.com/n0-computer/iroh/pull/4285))
+- Deps
+    - Updated to [`noq@1.0.0-rc.1`](https://github.com/n0-computer/noq/releases/tag/v1.0.0-rc.1) ([#4287](https://github.com/n0-computer/iroh/pull/4287))
+
+### But wait, there's more!
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.0-rc.1).
+
+If you want to know what is coming up, check out the [milestones](https://github.com/n0-computer/iroh/milestones), and if you have any wishes, let us know about the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using `iroh` or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)! And to keep up with all things `iroh`, check out our [Twitter](https://x.com/iroh_n0), [Mastodon](https://mastodon.social/@n0iroh), and [Bluesky](https://bsky.app/profile/iroh.computer).
+
+[noq]: /blog/noq-announcement
