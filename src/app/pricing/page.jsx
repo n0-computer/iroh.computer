@@ -23,7 +23,7 @@ const plans = [
     buttonLabel: 'Get Started',
     features: [
       'All features in Pro, limited',
-      '1 day retention',
+      '7 day retention',
       'Community support',
     ],
   },
@@ -37,7 +37,7 @@ const plans = [
     buttonLabel: 'Free trial',
     features: [
       'Pay as you go pricing',
-      '7 day retention',
+      '30 day retention',
       '8x5 support tickets',
     ],
   },
@@ -76,7 +76,7 @@ const featureSections = [
     name: 'Metrics',
     features: [
       { name: 'Data Points per Minute', free: '1K DPM', freeNote: '100 metrics \u00d7 10 endpoints', pro: '10K DPM', proNote: 'then $1.49/1K DPM', enterprise: 'Custom', enterpriseNote: 'Volume discounts' },
-      { name: 'Retention', free: '1 day', pro: '7 days', enterprise: 'Custom' },
+      { name: 'Retention', free: '7 days', pro: '30 days', enterprise: 'Custom' },
       { name: 'Concurrent Endpoints', free: '10', pro: '100', proNote: 'then $0.50/100 endpoints', enterprise: 'Custom' },
     ],
   },
