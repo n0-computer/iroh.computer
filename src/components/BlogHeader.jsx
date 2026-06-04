@@ -6,7 +6,6 @@ import clsx from 'clsx';
 import {Button} from '@/components/Button';
 import {Logotype} from '@/components/Logotype';
 import {MobileSearch} from '@/components/Search';
-import {ThemeToggle} from '@/components/ThemeToggle';
 import {TopLevelNavItem, navItems} from '@/components/Header';
 import GithubStars from '@/components/GithubStars';
 
@@ -38,7 +37,6 @@ export default function BlogHeader() {
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
           <MobileSearch />
-          <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
           <Button href="https://services.iroh.computer">Sign up</Button>
