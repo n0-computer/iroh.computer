@@ -92,6 +92,9 @@ export default function HostingPage() {
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
 
                   <li className="flex items-center gap-2">
+                    <span className="text-irohPurple-500">✓</span>Authenticated by default&mdash;only your endpoints connect
+                  </li>
+                  <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span>Multi-region or multi-cloud deployment
                   </li>
                   <li className="flex items-center gap-2">
@@ -144,15 +147,27 @@ export default function HostingPage() {
                   </Link> 
                 </p>
 
+                <h2 className="text-3xl font-bold mb-6">Authentication</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  Dedicated relays are authenticated by default&mdash;only your project&apos;s
+                  endpoints can connect, using your API key. It&apos;s built in, with
+                  nothing extra to wire up.
+                  <br></br>
+
+                  <Link href="https://docs.iroh.computer/concepts/relays#authentication" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link>
+                </p>
+
                 <h2 className="text-3xl font-bold mb-6">DNS Discovery</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   Iroh can use standard DNS servers to publish, discover, and resolve
                   EndpointIds. This allows clients to be discoverable globally.
-                  <br></br> 
-                  
+                  <br></br>
+
                   <Link href="https://docs.iroh.computer/concepts/discovery" target="_blank" className="text-irohPurple-500 hover:underline">
                   Read more.
-                  </Link> 
+                  </Link>
                 </p>
               </div>
               <div className="flex items-center justify-center">
