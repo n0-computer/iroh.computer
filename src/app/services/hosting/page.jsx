@@ -92,6 +92,9 @@ export default function HostingPage() {
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
 
                   <li className="flex items-center gap-2">
+                    <span className="text-irohPurple-500">✓</span>Authenticated by default, so only your endpoints connect
+                  </li>
+                  <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span>Multi-region or multi-cloud deployment
                   </li>
                   <li className="flex items-center gap-2">
@@ -101,7 +104,7 @@ export default function HostingPage() {
                     <span className="text-irohPurple-500">✓</span>Negotiated bandwidth
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span>Early access to new features 
+                    <span className="text-irohPurple-500">✓</span>Client version locking &amp; diagnostics
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs available
@@ -135,7 +138,7 @@ export default function HostingPage() {
                 <h2 className="text-3xl font-bold mb-6">Relays</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   Iroh uses QUIC for fast, reliable connections between peers. When a direct connection 
-                  isn&apos;t possible&mdash;due to firewalls, NAT, or network conditions&mdash;relays step in 
+                  isn&apos;t possible, due to firewalls, NAT, or network conditions, relays step in
                   to ensure data continues flowing.
                   <br></br>
 
@@ -144,15 +147,27 @@ export default function HostingPage() {
                   </Link> 
                 </p>
 
+                <h2 className="text-3xl font-bold mb-6">Authentication</h2>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  Dedicated relays are authenticated by default. Only your project&apos;s
+                  endpoints can connect, using your API key. It&apos;s built in, with
+                  nothing extra to wire up.
+                  <br></br>
+
+                  <Link href="https://docs.iroh.computer/concepts/relays#authentication" target="_blank" className="text-irohPurple-500 hover:underline">
+                  Read more.
+                  </Link>
+                </p>
+
                 <h2 className="text-3xl font-bold mb-6">DNS Discovery</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   Iroh can use standard DNS servers to publish, discover, and resolve
                   EndpointIds. This allows clients to be discoverable globally.
-                  <br></br> 
-                  
+                  <br></br>
+
                   <Link href="https://docs.iroh.computer/concepts/discovery" target="_blank" className="text-irohPurple-500 hover:underline">
                   Read more.
-                  </Link> 
+                  </Link>
                 </p>
               </div>
               <div className="flex items-center justify-center">
