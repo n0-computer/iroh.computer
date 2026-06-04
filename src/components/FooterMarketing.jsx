@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import Logo from "@/components/Logo";
-import { ThemeToggle } from './ThemeToggle';
 import { BlueskyIcon, DiscordIcon, GitHubIcon, MastodonIcon, TwitterIcon, YouTubeIcon } from './Footer';
 
 const navigation = {
@@ -123,7 +122,6 @@ export function FooterMarketing() {
         </div>
         <div className="mt-16 flex border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-400 mr-auto">&copy; 2025 n0, inc.</p>
-          <ThemeToggle />
         </div>
       </div>
     </footer>

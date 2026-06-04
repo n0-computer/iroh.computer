@@ -13,7 +13,6 @@ import {
 } from '@/components/MobileNavigation';
 import {useMobileNavigationStore} from '@/components/MobileNavigation';
 import {MobileSearch, Search} from '@/components/Search';
-import {ThemeToggle} from '@/components/ThemeToggle';
 import GithubStars from './GithubStars';
 
 export const navItems = [
@@ -135,7 +134,6 @@ export const Header = forwardRef(function Header({className, sidebar = []}, ref)
         {/* <div className="hidden lg:block lg:h-5 lg:w-px lg:bg-zinc-900/10 lg:dark:bg-white/15" /> */}
         <div className="flex gap-4">
           <MobileSearch />
-          <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
           <Button href="https://services.iroh.computer?utm_source=website&utm_content=nav-signup" variant="filled">Sign Up</Button>
