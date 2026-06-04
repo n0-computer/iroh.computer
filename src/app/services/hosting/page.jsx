@@ -104,7 +104,7 @@ export default function HostingPage() {
                     <span className="text-irohPurple-500">✓</span>Negotiated bandwidth
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span>Early access to new features 
+                    <span className="text-irohPurple-500">✓</span>Client version locking &amp; diagnostics
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs available
