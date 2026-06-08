@@ -47,8 +47,8 @@ For a typical initial [`ClientHello`][clienthello], we receive 1200 bytes (the i
 <Note>
 The factor of 3 is an educated guess for a value that is small enough to make QUIC unattractive for amplification attacks while allowing the protocol to work. Other commonly used protocols have much bigger factors:
 
-- **DNS**: ~50×
-- **NTP** (monlist): ~556×
+- **DNS**: ~50× — [deep dive on DNS amplification][dns-ddos]
+- **NTP** (monlist): ~556× — [behind the 400 Gbps Cloudflare attack in 2014][ntp-ddos]
 - **memcached**: up to ~50,000× — behind the [1.35 Tbps GitHub attack in 2018][github-ddos]
 </Note>
 
@@ -250,6 +250,8 @@ If you need help tweaking your iroh based services for maximum performance or mi
 [amplification attacks]: https://en.wikipedia.org/wiki/Denial-of-service_attack#Amplification
 [replay attacks]: https://en.wikipedia.org/wiki/Replay_attack
 [github-ddos]: https://github.blog/news-insights/company-news/ddos-incident-report/
+[ntp-ddos]: https://blog.cloudflare.com/technical-details-behind-a-400gbps-ntp-amplification-ddos-attack/
+[dns-ddos]: https://blog.cloudflare.com/deep-inside-a-dns-amplification-ddos-attack/
 [hqc]: https://pqc-hqc.org/
 [rfc9000-avt]: https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.3
 [BLAKE3]: https://github.com/BLAKE3-team/BLAKE3
