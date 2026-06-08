@@ -2,9 +2,9 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 import { MotionCanvas } from '@/components/MotionCanvas'
 
 export const post = {
-  draft: true,
+  draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2026-06-04',
+  date: '2026-06-08',
   title: 'Address validation tokens - what are they good for anyway?',
   description: 'A closer look at QUIC NEW_TOKEN tokens, why they exist, and what they buy you in iroh and noq.',
 }
@@ -242,6 +242,8 @@ So we can change the data in the address validation token at any time. We will a
 # Takeaway
 
 QUIC requires anti amplification protection, so if you implement a protocol using iroh you can be sure that your protocol won't be abused for an amplification attack. In some rare real world cases you need to enable optional features for optimal performance.
+
+If you need help tweaking your iroh based services for maximum performance or minimum latency, get in touch.
 
 [clienthello]: https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.2
 [serverhello]: https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.3
