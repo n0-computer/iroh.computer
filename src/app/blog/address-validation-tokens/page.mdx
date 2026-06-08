@@ -76,11 +76,46 @@ To try this out I wrote a small noq demo that just connects to publicly availabl
 
 ![Happy case: server response fits in 3600 bytes](/blog/address-validation-tokens/happy-case.svg)
 
-A real handshake that fits: `www.cloudflare.com`, 41 ms, server response 4.4 KiB but actually 3.4 KiB on the wire — under the cap. [Inspect the qlog.](/blog/address-validation-tokens/handshake-no-stall.qlog)
+A real handshake that fits, against `www.cloudflare.com`. Every same-direction packet gap is sub-20 ms; the server's handshake packets arrive in one tight burst.
+
+| time (ms) |    Δ same dir | dir  | space     | pn | size |
+|----------:|--------------:|:-----|:----------|---:|-----:|
+|     32.49 |          —    | send | initial   |  0 | 1200 |
+|     51.16 |          —    | recv | initial   |  0 |  155 |
+|     51.16 |       +  0.00 | recv | handshake |  1 | 1200 |
+|     51.38 |       + 18.89 | send | initial   |  1 |   60 |
+|     51.38 |       +  0.00 | send | handshake |  0 | 1140 |
+|     54.02 |       +  2.86 | recv | handshake |  2 | 1200 |
+|     54.02 |       +  0.00 | recv | handshake |  3 |  835 |
+|     54.78 |       +  3.40 | send | handshake |  1 |  115 |
+|     54.78 |       +  0.00 | send | 1RTT      |  0 | 1326 |
+|     57.17 |       +  2.39 | send | 1RTT      |  1 |  102 |
+|     72.20 |       + 18.19 | recv | 1RTT      |  4 |  573 |
+
+[Raw qlog](/blog/address-validation-tokens/handshake-no-stall.qlog)
 
 ![Stall case: server response exceeds 3600 bytes](/blog/address-validation-tokens/stall-case.svg)
 
-A real handshake that stalls: `quic.aiortc.org`, 115 ms, server sends exactly 3600 bytes in its first burst then pauses ~38 ms until the client's Handshake-protected packet arrives, then resumes with the rest. [Inspect the qlog.](/blog/address-validation-tokens/handshake-stall.qlog)
+A real handshake that stalls, against `quic.aiortc.org`. The server sends three Handshake-space packets back to back, hits the 3600-byte cap, and pauses — visible as the **+63.14 ms** gap on the `recv handshake 4` row, exactly one RTT to aioquic.
+
+| time (ms) |    Δ same dir | dir  | space     | pn | size |
+|----------:|--------------:|:-----|:----------|---:|-----:|
+|     34.67 |          —    | send | initial   |  0 | 1200 |
+|    103.71 |          —    | recv | initial   |  0 |  144 |
+|    103.71 |       +  0.00 | recv | handshake |  1 | 1056 |
+|    103.89 |       + 69.22 | send | initial   |  1 |   48 |
+|    103.89 |       +  0.00 | send | handshake |  0 | 1152 |
+|    107.55 |       +  3.83 | recv | handshake |  2 | 1200 |
+|    107.57 |       +  0.03 | recv | handshake |  3 | 1200 |
+|    110.99 |       +  7.10 | send | handshake |  1 |   48 |
+|    170.71 |     **+63.14**| recv | handshake |  4 | 1200 |
+|    170.78 |       + 59.79 | send | handshake |  2 |   47 |
+|    175.02 |       +  4.31 | recv | handshake |  5 |  110 |
+|    175.02 |       +  0.00 | recv | 1RTT      |  6 |  153 |
+
+[Raw qlog](/blog/address-validation-tokens/handshake-stall.qlog)
+
+# Does this even matter for iroh?
 
 But wait a minute! Iroh is **not** sending certificate chains, but just a single Ed25519 public key in the [raw public keys in TLS][rfc7250] extension. An iroh server response is around 1 KiB today, well below 3600 bytes. *So can we just forget about the topic?*
 
