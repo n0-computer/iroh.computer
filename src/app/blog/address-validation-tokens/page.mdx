@@ -72,7 +72,7 @@ There are also extensions that might push the server response over 3600 bytes.
 
 # Trying it out.
 
-To try this out I wrote a small noq demo that just connects to publicly available servers. None of this is specific to noq, it is a QUIC mechanism.
+To try this out I wrote a small noq demo that just connects to publicly available servers and logs the interaction in [qlog] format. None of this is specific to noq, it is a QUIC mechanism.
 
 ![Happy case: server response fits in 3600 bytes](/blog/address-validation-tokens/happy-case.svg)
 
@@ -82,9 +82,9 @@ A real handshake that fits: `www.cloudflare.com`, 41 ms, server response 4.4 KiB
 
 A real handshake that stalls: `quic.aiortc.org`, 115 ms, server sends exactly 3600 bytes in its first burst then pauses ~38 ms until the client's Handshake-protected packet arrives, then resumes with the rest. [Inspect the qlog.](/blog/address-validation-tokens/handshake-stall.qlog)
 
-But iroh is **not** sending certificate chains, but just a single Ed25519 public key in the [raw public keys in TLS][rfc7250] extension. An iroh server response is around 1 KiB today, well below 3600 bytes. So can we just forget about the topic?
+But wait a minute! Iroh is **not** sending certificate chains, but just a single Ed25519 public key in the [raw public keys in TLS][rfc7250] extension. An iroh server response is around 1 KiB today, well below 3600 bytes. *So can we just forget about the topic?*
 
-Mostly, but... In most cases, address validation tokens are not that useful for iroh. But there is one user visible case where they make a difference: 0-rtt.
+Mostly, but... In most cases, anti amplification protection limits are not an issue for iroh. But there is one user visible case where they are limiting: 0-rtt.
 
 # 0-RTT
 
@@ -254,6 +254,7 @@ If you need help tweaking your iroh based services for maximum performance or mi
 [rfc9000-avt]: https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.3
 [BLAKE3]: https://github.com/BLAKE3-team/BLAKE3
 [irpc-0rtt]: https://docs.rs/irpc/latest/irpc/struct.Client.html#method.rpc
+[qlog]: https://datatracker.ietf.org/doc/html/draft-ietf-quic-qlog-main-schema
 
 
 
