@@ -143,7 +143,7 @@ On completion of a handshake, we *know* that the remote IP address is valid. We 
 
 When we receive a valid token for a new connection attempt, we know that we have talked to this IP address in the recent past and can lift the 3x / 3600 byte limit.
 
-We [should][rfc9000-avt] make sure that the tokens aren't reused though. The most trivial implementation would be a set of all non-expired tokens. But this could grow to an arbitrary size, so noq uses a more clever two stage [bloom filter] based approach that has a constant size, at the expense of a very low but non-zero probability of valid tokens being rejected.
+We [SHOULD][rfc9000-avt] make sure that the tokens aren't reused though. The most trivial implementation would be a set of all non-expired tokens. But this could grow to an arbitrary size, so noq uses a more clever two stage [bloom filter] based approach that has a constant size, at the expense of a very low but non-zero probability of valid tokens being rejected.
 
 Since address validation tokens are of limited use in most iroh usage, the feature is disabled by default on the server side. To enable it, we must set the `bloom` feature flag on the server side in noq-proto.
 
