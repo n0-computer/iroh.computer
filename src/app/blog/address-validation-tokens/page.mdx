@@ -42,7 +42,7 @@ Unlike simpler protocols, QUIC tries very hard to be a good internet citizen and
 
 So as long as we have not validated the IP address of the remote, we are only allowed to send a tiny trickle of data to the remote address. To be precise, 3x the amount of data we seemingly received from the remote address.
 
-For a typical initial [`ClientHello`][clienthello], we receive 1200 bytes (the initial packet is padded to 1200 bytes), so we are allowed to send 3600 bytes.
+For a typical initial [`ClientHello`][clienthello], the server receives 1200 bytes (the initial packet is padded to 1200 bytes), so it is allowed to send 3600 bytes.
 
 <Note>
 The factor of 3 is an educated guess for a value that is small enough to make QUIC unattractive for amplification attacks while allowing the protocol to work. Other commonly used protocols have much bigger factors:
