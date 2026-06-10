@@ -72,6 +72,107 @@ export default function LegalPage() {
           </div>
         </section>
 
+        {/* iroh doctor app privacy policy */}
+        <section id="iroh-doctor" className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800 scroll-mt-24">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl font-bold mb-8">iroh doctor (App) Privacy Policy</h2>
+            <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mb-8">Last updated: 2026-06-10</p>
+
+            <div className="prose dark:prose-invert max-w-none text-irohGray-600 dark:text-irohGray-300 space-y-6">
+              <p className="leading-relaxed">
+                iroh doctor is a peer-to-peer network-diagnostics tool published by number 0, Inc.
+                (&ldquo;number 0&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). It helps you measure the
+                quality of a direct connection to another peer and inspect your local network
+                environment. It does not require an account, and we do not collect personal
+                information for advertising or analytics. By default the app sends anonymous
+                connection diagnostics to help improve iroh; you can turn this off at any time
+                (see Connection Diagnostics below).
+              </p>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Information Stored on Your Device</h3>
+                <p className="leading-relaxed">
+                  On first launch the app generates a cryptographic key pair and stores the secret
+                  key in its private storage on your device to identify your node to peers; it never
+                  leaves the device. Saved peer identifiers, diagnostic logs (kept on your device and,
+                  on iOS, in the system log), and any exported diagnostics bundle are also kept in the
+                  app&rsquo;s storage on your device and are shared only if you choose to share them.
+                  Uninstalling the app removes this data.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Information Shared Over the Network</h3>
+                <p className="leading-relaxed">
+                  To connect you to a peer, the app uses the same public iroh infrastructure
+                  (relay and discovery servers) operated by number 0 that any iroh application
+                  uses. As an inherent part of establishing a connection, your public node identifier
+                  and network addresses (including IP addresses) may be visible to that infrastructure
+                  and to the peer you connect to. When connected, you and that peer exchange connection
+                  measurements (such as round-trip latency and throughput) and any messages you send
+                  over the gossip feature. Only connect to peers you trust. We do not use this
+                  connection information to build advertising or marketing profiles.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Connection Diagnostics (On by Default, Can Be Turned Off)</h3>
+                <p className="leading-relaxed">
+                  iroh doctor sends anonymous connection diagnostics to iroh-services, a service
+                  operated by number 0, to help us analyze connectivity and improve iroh. This is on
+                  by default. The data sent is: a short device name the app generates from your public
+                  node id (a platform tag plus the first eight hexadecimal characters of the id, for
+                  example <code>dx-1a2b3c4d</code>), and aggregate connection performance metrics from
+                  the iroh networking layer &mdash; socket and transport counters, net-report
+                  connectivity results, and port-mapping (UPnP, PCP, NAT-PMP) counters, sent about
+                  once a minute. These are numeric counters and gauges. We do not send the contents of
+                  your connections, message or file data, your contacts, or your location, and the
+                  metrics are not linked to your identity or used for tracking. We do not use these
+                  diagnostics for advertising and do not share them with advertising partners. You can
+                  turn this off at any time from the Diagnostics tab. See the{' '}
+                  <a href="https://services.iroh.computer/legal/privacy" className="text-irohPurple-500 hover:underline">
+                    iroh-services privacy terms
+                  </a>. Advanced users can point this at their own iroh-services account by supplying
+                  an API key in the same place; the key is stored only on your device.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Third-Party Services &amp; Children</h3>
+                <p className="leading-relaxed">
+                  The app talks only to number 0 infrastructure (relay, discovery, and iroh-services,
+                  which receives the connection diagnostics unless you turn them off) and to the peers
+                  you connect with. It does not include third-party advertising or analytics SDKs.
+                  iroh doctor is a developer and network tool and is not directed to children under 13;
+                  we do not knowingly collect personal information from children.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Data Retention &amp; Deletion</h3>
+                <p className="leading-relaxed">
+                  Data stored on your device remains until you delete it or uninstall the app. We do
+                  not maintain user accounts, so there is no server-side profile to delete. Diagnostics
+                  sent to iroh-services are retained as described in the iroh-services privacy policy:
+                  for as long as needed to provide and improve the Services and for the other purposes
+                  set out in that policy.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold text-irohGray-800 dark:text-irohGray-100 mb-3">Changes &amp; Contact</h3>
+                <p className="leading-relaxed">
+                  We may update this policy; material changes will be posted at this URL with an
+                  updated date. Questions about this policy can be sent to{' '}
+                  <a href="mailto:support@iroh.computer" className="text-irohPurple-500 hover:underline">
+                    support@iroh.computer
+                  </a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Terms of Service */}
         <section className="py-20 px-6">
           <div className="container mx-auto max-w-4xl">
