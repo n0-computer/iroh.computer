@@ -1,0 +1,309 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-06-08',
+  title: 'Address validation tokens - what are they good for anyway?',
+  description: 'A closer look at QUIC NEW_TOKEN tokens, why they exist, and what they buy you in iroh and noq.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+QUIC is not a simple protocol. It's a distillation of decades of experience with real world traffic on the internet. But still it can be daunting sometimes.
+
+Part of the complexity is various mechanisms where one side sends opaque data to the remote that is to be presented in a subsequent packet. Another very complex part is throttling.
+
+During preparation for 1.0 we went over all features of iroh and noq, including some that you rarely interact with as a user. This blog post explains a mechanism that touches both of these topics.
+
+# Anti-amplification
+
+Unlike simpler protocols, QUIC tries very hard to be a good internet citizen and prevent [amplification attacks]. It must not be possible to get a powerful server running a QUIC endpoint to send a lot of data to an unrelated endpoint.
+
+![Reflection-amplification attack: an attacker spoofs the victim's IP, sending tiny requests to reflector services that respond with much larger packets to the victim.](/blog/address-validation-tokens/amplification-attack.svg)
+
+So during a handshake, as long as we have not validated the IP address of the remote, we are only allowed to send a tiny trickle of data to the remote address. To be precise, 3x the amount of data we seemingly received from the remote address.
+
+For a typical initial [`ClientHello`][clienthello], we receive 1200 bytes (the initial packet is padded to 1200 bytes), so we are allowed to send 3600 bytes.
+
+<Note>
+The factor of 3 is an educated guess for a value that is small enough to make QUIC unattractive for amplification attacks while allowing the protocol to work. Other commonly used protocols have much bigger factors:
+
+- **DNS**: ~50× — [deep dive on DNS amplification][dns-ddos]
+- **NTP** (monlist): ~556× — [behind the 400 Gbps Cloudflare attack in 2014][ntp-ddos]
+- **memcached**: up to ~50,000× — behind the [1.35 Tbps GitHub attack in 2018][github-ddos]
+</Note>
+
+# What do we have to send, and can this be a problem?
+
+The *absolute minimum* we need to send in these 3600 bytes is the [`ServerHello`][serverhello]. Without that, the client can't proceed in the handshake and we would be *stuck* until the client retransmits.
+
+Fortunately the `ServerHello` is almost guaranteed to fit in 3600 bytes. The only big variable size thing it contains is information for the key exchange, and that is *as of now* always comfortably below 3600 bytes.
+
+<Note>
+With some large post-quantum key exchanges we might exceed the 3600 bytes even for the `ServerHello`. For example, [HQC-128][hqc], NIST's backup KEM, has a ~4 KiB ciphertext.
+</Note>
+
+But ideally we want to send the *entire server response* in 3600 bytes. If we can only send the `ServerHello` but not the rest, we are not stuck, but stalled. We will have to wait for a packet from the client that is encrypted with the session key to remove the limit, which means another roundtrip.
+
+This, unfortunately, can happen even today. For traditional client/server QUIC connections the rest of the server response to the initial `ClientHello` includes the entire certificate chain. A short chain solely consisting of ECDSA certificates comfortably fits, but e.g. a chain containing multiple RSA-2048 certs does not.
+
+Once you go to post-quantum signatures, even a single ML-DSA-65 won't fit, and a typical chain will be much larger.
+
+There are also extensions that might push the server response over 3600 bytes.
+
+# Trying it out
+
+To try this out I wrote a small noq demo that just connects to publicly available servers and logs the interaction in [qlog] format. None of this is specific to noq, it is a QUIC mechanism.
+
+![Happy case: server response fits in 3600 bytes](/blog/address-validation-tokens/happy-case.svg)
+
+A real handshake that fits, against `www.cloudflare.com`. Every same-direction packet gap is sub-20 ms; the server's handshake packets arrive in one tight burst.
+
+## Client qlog
+
+| time (ms) |    Δ same dir | dir  | space     | pn | size |
+|----------:|--------------:|:-----|:----------|---:|-----:|
+|     32.49 |          —    | c → s | initial   |  0 | 1200 |
+|     51.16 |          —    | s → c | initial   |  0 |  155 |
+|     51.16 |       +  0.00 | s → c | handshake |  1 | 1200 |
+|     51.38 |       + 18.89 | c → s | initial   |  1 |   60 |
+|     51.38 |       +  0.00 | c → s | handshake |  0 | 1140 |
+|     54.02 |       +  2.86 | s → c | handshake |  2 | 1200 |
+|     54.02 |       +  0.00 | s → c | handshake |  3 |  835 |
+|     54.78 |       +  3.40 | c → s | handshake |  1 |  115 |
+|     54.78 |       +  0.00 | c → s | 1RTT      |  0 | 1326 |
+|     57.17 |       +  2.39 | c → s | 1RTT      |  1 |  102 |
+|     72.20 |       + 18.19 | s → c | 1RTT      |  4 |  573 |
+
+[Raw qlog](/blog/address-validation-tokens/handshake-no-stall.qlog)
+
+![Stall case: server response exceeds 3600 bytes](/blog/address-validation-tokens/stall-case.svg)
+
+A real handshake that stalls, against `quic.aiortc.org`. The server sends three Handshake-space packets back to back, hits the 3600-byte cap, and pauses — visible as the **+63.14 ms** gap on the `s → c handshake 4` row, one RTT to aioquic.
+
+## Client qlog
+
+| time (ms) |    Δ same dir | dir  | space     | pn | size |
+|----------:|--------------:|:-----|:----------|---:|-----:|
+|     34.67 |          —    | c → s | initial   |  0 | 1200 |
+|    103.71 |          —    | s → c | initial   |  0 |  144 |
+|    103.71 |       +  0.00 | s → c | handshake |  1 | 1056 |
+|    103.89 |       + 69.22 | c → s | initial   |  1 |   48 |
+|    103.89 |       +  0.00 | c → s | handshake |  0 | 1152 |
+|    107.55 |       +  3.83 | s → c | handshake |  2 | 1200 |
+|    107.57 |       +  0.03 | s → c | handshake |  3 | 1200 |
+|    110.99 |       +  7.10 | c → s | handshake |  1 |   48 |
+|    170.71 |     **+63.14**| s → c | handshake |  4 | 1200 |
+|    170.78 |       + 59.79 | c → s | handshake |  2 |   47 |
+|    175.02 |       +  4.31 | s → c | handshake |  5 |  110 |
+|    175.02 |       +  0.00 | s → c | 1RTT      |  6 |  153 |
+
+[Raw qlog](/blog/address-validation-tokens/handshake-stall.qlog)
+
+# Does this even matter for iroh?
+
+But wait a minute! Iroh is **not** sending certificate chains, but just a single Ed25519 public key in the [raw public keys in TLS][rfc7250] extension. An iroh server response is around 1 KiB today, well below 3600 bytes. *So can we just forget about the topic?*
+
+Mostly, but... In most cases, anti-amplification protection limits are not an issue for iroh. But there is one user visible case where they are limiting: 0-RTT.
+
+# 0-RTT
+
+<Note>
+For an introduction about what 0-RTT is and what it is good for, read [this blog post][0rtt-post].
+</Note>
+
+The entire purpose of 0-RTT is to be able to include user data in the first interaction. And there are scenarios where this data will exceed the 3600 byte limit. Imagine a simple RPC protocol that allows the client to look up a few KiB of data for 32 byte keys.
+
+With the 3600 byte limit, the following would happen: the server would send the `ServerHello`, remaining handshake packets, and user data. While sending the user data, we would hit the limit and stall until we get a response to the `ServerHello`. So an interaction that could be a single roundtrip would become two roundtrips.
+
+If our server is on the other side of the world, this can make the difference between almost unnoticeable (250ms) and very visibly annoying (500ms).
+
+# Address validation tokens
+
+Now we have established that while in most cases the limit is fine for iroh, we have a concrete scenario where we don't get the benefit of 0-RTT due to the response hitting the 3x anti-amplification limit. So what can we do?
+
+It turns out that QUIC contains a mechanism for just this case: [address validation tokens][rfc9000-avt].
+
+On completion of a handshake, we *know* that the remote IP address is valid. We have sent data to it and have received a response *specifically to that data*. So at that point QUIC gives the option to issue tokens that attest for some time that the address is valid and send them to the remote.
+
+When we receive a valid token for a new connection attempt, we know that we have talked to this IP address in the recent past and can lift the 3x / 3600 byte limit.
+
+We [should][rfc9000-avt] make sure that the tokens aren't reused though. The most trivial implementation would be a set of all non-expired tokens. But this could grow to an arbitrary size, so noq uses a more clever two stage [bloom filter] based approach that has a constant size, at the expense of a very low but non-zero probability of valid tokens being rejected.
+
+Since address validation tokens are of limited use in most iroh usage, the feature is disabled by default on the server side. To enable it, we must set the `bloom` feature flag on the server side in noq-proto.
+
+Client side token storage and use is enabled by default.
+
+# Example
+
+As an example, we will do a little iroh rpc service that provides data for [BLAKE3] hashes up to a limit of 10 KiB. It is somewhat similar to the memcached service that was used in the famous github amplification attack. It is completely safe against an amplification attack due to using QUIC, but we will need some work to make it fast over high latency connections.
+
+To make the advantage of 0-RTT very visible we will run an instance of this service on a server on the other side of the world.
+
+<Note>
+Typically when writing a RPC service for iroh connections you would reach for [irpc], which does [support 0-RTT for rpc requests][irpc-0rtt]. But for this example we will use raw iroh to keep things simple.
+</Note>
+
+Our example service is a single binary with a server and client mode. The server can be configured to optionally emit address validation tokens.
+
+The client has two options `get` and `put`. Put puts data from stdin, get gets data by BLAKE3 hash. In both cases there is a parameter `n` to run the request multiple times over separate connections to see the effect of 0-RTT connections.
+
+So let's start a server process on a very remote box and try it out.
+
+```
+> IROH_SECRET=... zero-rtt-blob-service server --port 10101
+direct addresses: [5.223.43.41:10101]
+ticket: endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha
+```
+
+## Storing and retrieving a tiny blob
+
+Storing 1000 bytes of random data.
+```
+> head -c 1000 /dev/urandom | zero-rtt-blob-service client put endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha
+1bdaadd8341abeaf52e24d2bfdbfd282a597d9a499e67581d8557c078d007db5
+
+❯ zero-rtt-blob-service client get endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha 1bdaadd8341abeaf52e24d2bfdbfd282a597d9a499e67581d8557c078d007db5 -n 2
+dialing direct addresses: [5.223.43.41:10101]
+0-RTT not possible from our side
+  recv +467416 us  Δ+467416 us  | + 1024 B |   1024 B total
+1bdaadd8341abeaf52e24d2bfdbfd282a597d9a499e67581d8557c078d007db5
+get 0: 467542 us
+0-RTT accepted
+  recv +227489 us  Δ+227489 us  | +  720 B |    720 B total
+  recv +231445 us  Δ  +3956 us  | +  304 B |   1024 B total
+1bdaadd8341abeaf52e24d2bfdbfd282a597d9a499e67581d8557c078d007db5
+get 1: 231573 us
+```
+
+For the first get we don't have a cryptographic session ticket, so 0-RTT is not possible from our side. We get our data after two roundtrips, 467ms.
+
+For the second get (same endpoint, different connection), we *do* have a cryptographic session ticket and do get our 1000 bytes in the minimum possible time, 230ms. This is exactly as long as a ping, so not even an extremely low level protocol without any amplification protections or encryption is able to do better in terms of packets sent and received.
+
+## Storing and retrieving a larger blob
+
+Now let's increase the size a bit.
+
+```
+> head -c 8000 /dev/urandom | zero-rtt-blob-service client put endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha
+b05b26efc89cfaa946b8c13c445f70ac8bc4010e485961e70300413b27ae619c
+
+❯ zero-rtt-blob-service client get endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha b05b26efc89cfaa946b8c13c445f70ac8bc4010e485961e70300413b27ae619c -n 2
+dialing direct addresses: [5.223.43.41:10101]
+0-RTT not possible from our side
+  recv +444230 us  Δ+444230 us  | + 2342 B |   2342 B total
+  recv +448641 us  Δ  +4411 us  | + 5658 B |   8000 B total
+b05b26efc89cfaa946b8c13c445f70ac8bc4010e485961e70300413b27ae619c
+get 0: 448815 us
+0-RTT accepted
+  recv +210037 us  Δ+210037 us  | +  728 B |    728 B total
+  recv +213114 us  Δ  +3076 us  | + 2340 B |   3068 B total
+  recv +414878 us  Δ+201764 us  | +  867 B |   3935 B total // anti-amplification limit of 3x1200 bytes kicking in
+  recv +417661 us  Δ  +2782 us  | + 4065 B |   8000 B total
+b05b26efc89cfaa946b8c13c445f70ac8bc4010e485961e70300413b27ae619c
+get 1: 417766 us
+```
+
+For the first get we get identical behaviour. 0-RTT is not possible, so we only get our data after a full handshake.
+
+But the second get is different now. We get the first byte as expected after one rtt, but then there is a delay of one rtt in the middle. This is exactly the anti-amplification limit kicking in and ruining our latency.
+
+## Enabling tokens on the server
+
+Restart the server with address validation tokens enabled. We get the same ticket because we set IROH_SECRET, but all data is lost.
+
+```
+> IROH_SECRET=... cargo run --release server --port 10101 --tokens
+direct addresses: [5.223.43.41:10101]
+ticket: endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha
+```
+
+So we store another 8000 random bytes and retrieve them using get -n 2:
+
+```
+❯ ./target/release/zero-rtt-blob-service client get endpointabzmyvgzw4luokmf2plrd3x2xtyrqpgjwhh6sks6554wq7kiqtkckaibaac56kzj6vha f4187cf1ddea28c2d30710cdef4cfc61ceca60b22b1f9c2c7326f7d15d1c9582 -n 2
+dialing direct addresses: [5.223.43.41:10101]
+0-RTT not possible from our side
+  recv +412636 us  Δ+412636 us  | + 3512 B |   3512 B total
+  recv +417558 us  Δ  +4922 us  | + 2340 B |   5852 B total
+  recv +418573 us  Δ  +1014 us  | + 2148 B |   8000 B total
+f4187cf1ddea28c2d30710cdef4cfc61ceca60b22b1f9c2c7326f7d15d1c9582
+get 0: 418695 us
+0-RTT accepted
+  recv +198050 us  Δ+198050 us  | + 1172 B |   1172 B total
+  recv +199893 us  Δ  +1843 us  | + 1170 B |   2342 B total
+  recv +199957 us  Δ    +63 us  | + 1170 B |   3512 B total
+  recv +200335 us  Δ   +377 us  | + 3510 B |   7022 B total
+  recv +200410 us  Δ    +75 us  | +  978 B |   8000 B total
+f4187cf1ddea28c2d30710cdef4cfc61ceca60b22b1f9c2c7326f7d15d1c9582
+get 1: 200522 us
+```
+
+This is looking much better. We get the physically inevitable ~200ms delay, but then we get the remaining data within two milliseconds.
+
+<Note>
+To get truly full speed responses, I had to do another tweak, namely to reconfigure the `initial congestion window`. The default initial congestion window combined with the high rtt leads to delays even in the first kilobytes of the response. This might be the subject of another blog post in the future.
+</Note>
+
+# Misc remarks
+
+Just to be clear: the given example is a bit contrived. I wanted a small real world example that shows the benefit of address validation tokens in the context of iroh 0-RTT connections. But for a real small blob store you could just keep the connection open, and the cost of additional lookups is zero without having to tweak obscure parameters.
+
+Blog posts like this and the 0-RTT blog post show off rarely used features of iroh, but in general if you use iroh in the most straightforward way possible you will already get excellent performance.
+
+There are some real world use cases such as DHTs where you have tiny interactions with such a large number of endpoints that keeping connections open via a connection pool is not viable.
+
+I find the name of the NEW_TOKEN frame quite undescriptive. QUIC has a variety of token mechanisms (Retry, NEW_TOKEN, stateless reset, TLS session tickets). Why do all but one get a descriptive name?
+
+# Address validation tokens and multipath
+
+Until now we have learned how address validation tokens work for normal QUIC connections. But noq is a QUIC implementation that implements QUIC multipath. So how do things change here?
+
+We can have multiple valid paths between our client and server, so ideally we want tokens to contain not just the remote address via which we have done the handshake but all valid addresses for that connection.
+
+Currently we issue tokens per path with a single address. But it is important to remember that tokens are written by the server and read by the server. For the client they are just opaque bytes. Also, tokens from a previous server instance will not be valid for a new server instance, even if it is the exact same binary.
+
+So we can change the data in the address validation token at any time. We will add multiple IP addresses per token after 1.0. This is a tricky corner case, so we don't want to rush it.
+
+# Takeaway
+
+QUIC requires anti-amplification protection, so if you implement a protocol using iroh you can be sure that your protocol won't be abused for an amplification attack. In some rare real world cases you need to enable optional features for optimal performance.
+
+If you need help tweaking your iroh based services for maximum performance or minimum latency, please [get in touch][talk-to-us].
+
+[clienthello]: https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.2
+[serverhello]: https://www.rfc-editor.org/rfc/rfc8446.html#section-4.1.3
+[rfc7250]: https://www.rfc-editor.org/rfc/rfc7250.html
+[bloom filter]: https://en.wikipedia.org/wiki/Bloom_filter
+[irpc]: /blog/irpc
+[0rtt-post]: /blog/0rtt-api
+[amplification attacks]: https://en.wikipedia.org/wiki/Denial-of-service_attack#Amplification
+[replay attacks]: https://en.wikipedia.org/wiki/Replay_attack
+[github-ddos]: https://github.blog/news-insights/company-news/ddos-incident-report/
+[ntp-ddos]: https://blog.cloudflare.com/technical-details-behind-a-400gbps-ntp-amplification-ddos-attack/
+[dns-ddos]: https://blog.cloudflare.com/deep-inside-a-dns-amplification-ddos-attack/
+[hqc]: https://pqc-hqc.org/
+[rfc9000-avt]: https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1.3
+[BLAKE3]: https://github.com/BLAKE3-team/BLAKE3
+[irpc-0rtt]: https://docs.rs/irpc/latest/irpc/struct.Client.html#method.rpc
+[qlog]: https://datatracker.ietf.org/doc/html/draft-ietf-quic-qlog-main-schema
+[talk-to-us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
