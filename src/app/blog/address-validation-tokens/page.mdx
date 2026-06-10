@@ -280,7 +280,7 @@ Until now we have learned how address validation tokens work for normal QUIC con
 
 We can have multiple valid paths between our client and server, so ideally we want tokens to contain not just the remote address via which we have done the handshake but all valid addresses for that connection.
 
-Currently we issue tokens per path with a single address. But it is important to remember that tokens are written by the server and read by the server. For the client they are just opaque bytes. Also, tokens from a previous server instance will not be valid for a new server instance, even if it is the exact same binary.
+Currently we issue tokens per path with a single address. But it is important to remember that tokens are written by the server and read by the server. For the client they are just opaque bytes. Also, our tokens from a previous server instance will not be valid for a new server instance, even if it is the exact same binary.
 
 So we can change the data in the address validation token at any time. We will add multiple IP addresses per token after 1.0. This is a tricky corner case, so we don't want to rush it.
 
