@@ -25,7 +25,7 @@ export function BlogPostLayout({ article, references = [], children }) {
             </div>
             <article>
               <header className="flex flex-col">
-                <h1 className="text-4xl font-space font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">
+                <h1 className="text-4xl font-display font-semibold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">
                   {article.title}
                 </h1>
                 <span className='mt-1 text-base text-irohGray-400 dark:text-irohGray-500'>
@@ -35,7 +35,11 @@ export function BlogPostLayout({ article, references = [], children }) {
                   <span>{' '}by {article.author}</span>
                 </span>
               </header>
-              <Prose className="mt-8" data-mdx-content>
+              <Prose
+                className="mt-8 prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight"
+                style={{fontFamily: "Georgia, 'Times New Roman', serif"}}
+                data-mdx-content
+              >
                 {children}
                 {references.length > 0 && (
                   <References references={references} />
