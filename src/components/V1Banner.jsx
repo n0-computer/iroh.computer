@@ -66,7 +66,7 @@ export function V1Banner() {
   return (
     <div
       ref={ref}
-      className="fixed inset-x-0 top-0 z-[60] bg-iroh-purple-600 text-white w-full"
+      className="fixed inset-x-0 top-0 z-[60] bg-irohPurple-600 text-white w-full"
     >
       <Link
         href="/blog/v1"
