@@ -1,0 +1,101 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'b5',
+  date: '2026-06-15',
+  title: 'Iroh 1.0',
+  description: 'Iroh 1.0 is out. Now is the time to build.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+
+## **Dial keys. Not IPs.**
+
+It’s a simple idea really, and it’s the right abstraction for the future of the internet. IP addresses can break, without warning, and it’s outside of your device’s control. Keys, however, are created & controlled by you. They stay the same as your device moves, and are yours to throw away, or not.
+
+We think this is how the internet should work, which is why iroh exists, and today we’re delighted to announce iroh version 1.0.
+
+This is our first stable release, but the project has grown significantly over the 65 versions that led to 1.0. iroh is already used all over the place. **The public relays we run have seen more than 200 million endpoints created, *in the last 30 days alone.*** Developers are using iroh to stream video, train large language models, talk to agents, secure chats, play games, send files, and many more things than we could jam into this list. Iroh is a fundamental technology aimed at a fundamental shift in the internet, and it’s running on millions of devices today. 
+
+After more than 4 years of building in the open, we have a foundation we’re both proud of.
+
+- We shifted onto open standards, preferring IETF drafts whenever possible
+- We built on our own implementation of QUIC multipath, so iroh can build & manage multiple routes within the same connection, and hot swap paths as conditions change
+- We implemented QUIC NAT traversal, so we can establish direct connections while keeping connection details encrypted
+- We added full local-first configurations so iroh can find & connect to local devices, without internet access
+- We built & continually check that iroh can compile to WASM & run in the browser
+- We worked with power users to add hooks, so you can inject logic to control how connections should work
+- We’ve even added support for custom transports, so you can plug in technologies like Bluetooth Low-Energy (BLE), LoRa (under construction), WiFi Aware, or even Tor to build connections, and all of this fits under the same dial-by-key abstraction
+
+The power of that key can’t be overstated. We use it to secure the connection. And because all data that comes from the connection is secured by that key, we can build up from that same key into identity, permissions, and attribution. We can also use that same key as an address we can dial, no matter where it is in the world. It turns the internet into a secure localhost.
+
+Iroh connections are also far more efficient. It’s normal to see 95% of data transferred in a connection pass directly between devices. Going direct means fewer hops through the cloud, which lowers your egress bill. It’s also fewer hops through routers, which means the internet is more efficient overall.
+
+## Python, Node.js, Kotlin & Swift support
+
+With iroh 1.0, in addition to our reference Rust implementation we’re adding official support for Python, Node.js, Swift, and Kotlin, opening up whole new worlds of connectivity. version 1.0 is not just an API assertion, it also asserts wire stability: which means v1 endpoints can talk to each other across any set of languages. We’re literally connecting languages now, and the future for the project couldn’t be brighter.
+
+## Wire Stability
+
+Iroh version 1.0 asserts stability for both the wire protocol and language APIs: an iroh v1 endpoint will be able to communicate with another iroh v1 endpoint, regardless of minor version or language.
+
+In the future we may version these two aspects independently, for example: we may release version 2 of a given language API, but keep compatibility over the wire. **Any change that affects the wire stability of iroh will always coincide with a major release.**
+
+## Major version support policy
+
+Version 1.0 is the first major release of iroh, which we’re announcing in conjunction with our support schedule. Stability is a promise, so here's exactly what we're promising: The n0 team will provide bug fixes, security patches, and ongoing maintenance according to the following schedule:
+
+| **Release** | **Full Support** | **Maintenance Mode** | **End of Life** | **Extended Support**  |
+| --- | --- | --- | --- | --- |
+| Major  | 1 year | 1-3 years | 3 years | 1+ years (paid) |
+| Canary | N/A | N/A | N/A | N/A |
+| v0.35 | N/A | N/A* | N/A | N/A |
+| Experimental, Release Candidate | N/A | N/A | N/A | N/A |
+
+*v0.35x will receive no further 0.35 releases. Public relay support for 0.35x continues through Dec 31, 2026*
+
+**Full Support:** New features, performance improvements, bug fixes & security patches will land in the latest version. All fixes land in the latest minor version of their supported major version. Users apply fixes & upgrades by bumping to the latest minor version.
+
+**Maintenance Mode**: This version is stable and no longer under active development. Only critical bug fixes or security patches may be provided, and solely at the company’s discretion. No new features or enhancements will be introduced.
+
+**End of Life (EOL)**: This version is no longer supported. No bug fixes, security updates, or maintenance will be provided. Continued use is at the customer’s own risk, and upgrading is strongly recommended.
+
+**Extended Support**: A paid support tier for versions that have exited Full Support. Under Extended Support, n0 will provide critical bug fixes and security patches for a defined period of time. It includes service level agreements (SLAs) covering response and resolution times for critical issues, including security vulnerabilities and high-severity defects.
+
+## Public Relay Support
+
+n0 maintains a set of public relays, most commonly accessed via the “n0” preset for building an endpoint.
+
+| Release | Final day of public relay operation |
+| --- | --- |
+| v1.0 | until End of Life |
+| v0.35x | Dec 31, 2026 |
+| v1.0.0-rc1 | Sept 30, 2026 |
+
+We will bump public relays to their latest version shortly after each release, usually within 24 hours. Wire-breaking relay changes will get new URLs so older clients keep working.
+
+As always, relay binaries themselves are open source, and we offer hosted relays through iroh services. Public relays are rate-limited for relayed traffic, which can change at any time.
+
+## The time to build is now
+
+The internet should be built on dialing keys. On connections that just work. On connections that are secure, and default to being direct. With 1.0 you now have a mature networking stack that you can put into your app with confidence. Now is the time to come build on iroh, and we can’t wait to see what you come up with.
