@@ -40,12 +40,12 @@ This is our first stable release, but the project has grown significantly over t
 After more than 4 years of building in the open, we have a foundation we’re both proud of.
 
 - We shifted onto open standards, preferring IETF drafts whenever possible
-- We built on our own implementation of QUIC multipath, so iroh can build & manage multiple routes within the same connection, and hot swap paths as conditions change
-- We implemented QUIC NAT traversal, so we can establish direct connections while keeping connection details encrypted
+- We built on our own implementation of [QUIC multipath][quic-multipath], so iroh can build & manage multiple routes within the same connection, and hot swap paths as conditions change
+- We implemented [QUIC NAT traversal][quic-nat-traversal], so we can establish direct connections while keeping connection details encrypted
 - We added full local-first configurations so iroh can find & connect to local devices, without internet access
 - We built & continually check that iroh can compile to WASM & run in the browser
 - We worked with power users to add hooks, so you can inject logic to control how connections should work
-- We’ve even added support for custom transports, so you can plug in technologies like Bluetooth Low-Energy (BLE), LoRa (under construction), WiFi Aware, or even Tor to build connections, and all of this fits under the same dial-by-key abstraction
+- We’ve even added support for [custom transports][custom-transports], so you can plug in technologies like [Bluetooth Low-Energy (BLE)][bluetooth-low-energy-ble], LoRa (under construction), WiFi Aware, or even [Tor][iroh-tor-transport] to build connections, and all of this fits under the same dial-by-key abstraction
 
 The power of that key can’t be overstated. We use it to secure the connection. And because all data that comes from the connection is secured by that key, we can build up from that same key into identity, permissions, and attribution. We can also use that same key as an address we can dial, no matter where it is in the world. It turns the internet into a secure localhost.
 
@@ -99,3 +99,9 @@ As always, relay binaries themselves are open source, and we offer hosted relays
 ## The time to build is now
 
 The internet should be built on dialing keys. On connections that just work. On connections that are secure, and default to being direct. With 1.0 you now have a mature networking stack that you can put into your app with confidence. Now is the time to come build on iroh, and we can’t wait to see what you come up with.
+
+[bluetooth-low-energy-ble]: https://github.com/mcginty/iroh-ble-transport/
+[custom-transports]: /blog/iroh-0-97-0-custom-transports-and-noq
+[iroh-tor-transport]: https://github.com/n0-computer/iroh-tor-transport
+[quic-multipath]: https://datatracker.ietf.org/doc/draft-ietf-quic-multipath/
+[quic-nat-traversal]: https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/
