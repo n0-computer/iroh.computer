@@ -102,7 +102,7 @@ export function MobileNavigation({ sidebar = [] }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 top-14 bg-zinc-400/20 backdrop-blur-sm dark:bg-black/40" />
+              <div className="fixed inset-0 top-[calc(3.5rem+var(--v1-banner-height,0px))] bg-zinc-400/20 backdrop-blur-sm dark:bg-black/40" />
             </Transition.Child>
 
             <Dialog.Panel>
@@ -129,7 +129,7 @@ export function MobileNavigation({ sidebar = [] }) {
               >
                 <motion.div
                   layoutScroll
-                  className="fixed bottom-0 left-0 top-14 w-full overflow-y-auto bg-white px-4 pb-4 pt-6 shadow-lg shadow-zinc-900/10 ring-1 ring-zinc-900/7.5 dark:bg-zinc-900 dark:ring-zinc-800 min-[416px]:max-w-sm sm:px-6 sm:pb-10"
+                  className="fixed bottom-0 left-0 top-[calc(3.5rem+var(--v1-banner-height,0px))] w-full overflow-y-auto bg-white px-4 pb-4 pt-6 shadow-lg shadow-zinc-900/10 ring-1 ring-zinc-900/7.5 dark:bg-zinc-900 dark:ring-zinc-800 min-[416px]:max-w-sm sm:px-6 sm:pb-10"
                 >
                   <Navigation sidebar={sidebar} />
                 </motion.div>

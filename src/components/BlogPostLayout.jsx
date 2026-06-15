@@ -12,8 +12,8 @@ export function BlogPostLayout({ article, references = [], children }) {
       <BlogHeader />
       <div className="px-5 sm:px-0 mt-16 lg:mt-32 font-space">
         <div className="xl:relative">
-          <div className="mx-auto mt-32 mb-64 max-w-6xl">
-            <div>
+          <div className="mt-32 mb-64">
+            <div className="mx-auto max-w-2xl">
               <a
                 href="/blog"
                 aria-label="Go back to articles"
@@ -24,7 +24,7 @@ export function BlogPostLayout({ article, references = [], children }) {
               </a>
             </div>
             <article>
-              <header className="flex flex-col">
+              <header className="mx-auto max-w-2xl flex flex-col">
                 <h1 className="text-4xl font-space font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">
                   {article.title}
                 </h1>

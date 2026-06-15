@@ -11,7 +11,7 @@ import GithubStars from '@/components/GithubStars';
 
 export default function BlogHeader() {
   return (
-    <div className='fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6 lg:z-30 lg:px-8 backdrop-blur-sm dark:backdrop-blur'>
+    <div className='fixed inset-x-0 top-[var(--v1-banner-height,0px)] z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6 lg:z-30 lg:px-8 backdrop-blur-sm dark:backdrop-blur'>
       <div
         className={clsx(
             'absolute inset-x-0 top-full h-px transition',
