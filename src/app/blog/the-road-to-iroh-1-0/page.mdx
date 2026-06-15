@@ -1,7 +1,7 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
-  draft: true,
+  draft: false,
   author: 'Rüdiger Klaehn',
   date: '2026-06-16',
   title: 'The road to iroh 1.0',
@@ -29,149 +29,100 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 It is done. After four years of work and various pivots we have released iroh 1.0.
 
-# A trip down github memory lane
+## A trip down github memory lane
 
 We have an expanding web site describing how iroh works under the hood, but we think it is important to also understand *why* we made the decisions that led to the current iroh. So here is a trip down memory lane / our commit history which highlights major turning points and design decisions.
 
 <div className="not-prose" style={{margin: '2em 0'}}>
-<svg viewBox="0 0 1400 210" xmlns="http://www.w3.org/2000/svg" style={{width: '100%', height: 'auto'}}>
-  <text x="700" y="20" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="13" fill="#6366f1">The road to iroh 1.0 — major decisions</text>
-
-  <line x1="80" y1="115" x2="1320" y2="115" stroke="#888" strokeWidth="1.5"/>
-
-  <g fontFamily="'Space Mono', monospace" fontSize="10" fill="#888" textAnchor="middle">
-    <line x1="80" y1="115" x2="80" y2="121" stroke="#888"/>
-    <text x="80" y="135">2022</text>
-    <line x1="323" y1="115" x2="323" y2="121" stroke="#888"/>
-    <text x="323" y="135">2023</text>
-    <line x1="615" y1="115" x2="615" y2="121" stroke="#888"/>
-    <text x="615" y="135">2024</text>
-    <line x1="906" y1="115" x2="906" y2="121" stroke="#888"/>
-    <text x="906" y="135">2025</text>
-    <line x1="1198" y1="115" x2="1198" y2="121" stroke="#888"/>
-    <text x="1198" y="135">2026</text>
-  </g>
-
-  <g>
-    <circle cx="80" cy="115" r="4" fill="#888"/>
-    <line x1="80" y1="111" x2="80" y2="80" stroke="#888" strokeWidth="1"/>
-    <text x="80" y="72" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#888">2022-03</text>
-    <text x="80" y="58" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#888">iroh as IPFS</text>
-  </g>
-
-  <a href="/blog/a-new-direction-for-iroh">
-    <circle cx="362" cy="115" r="5" fill="#6366f1"/>
-    <line x1="362" y1="110" x2="362" y2="80" stroke="#6366f1" strokeWidth="1"/>
-    <text x="362" y="72" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#6366f1">2023-02-17</text>
-    <text x="362" y="58" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#6366f1">pivot from IPFS</text>
-  </a>
-
-  <a href="/blog/smaller-is-better">
-    <circle cx="826" cy="115" r="5" fill="#6366f1"/>
-    <line x1="826" y1="120" x2="826" y2="155" stroke="#6366f1" strokeWidth="1"/>
-    <text x="826" y="170" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#6366f1">2024-09-23</text>
-    <text x="826" y="184" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#6366f1">just connections</text>
-  </a>
-
-  <a href="/blog/iroh-0-35-prepping-for-1-0">
-    <circle cx="1013" cy="115" r="5" fill="#6366f1"/>
-    <line x1="1013" y1="110" x2="1013" y2="80" stroke="#6366f1" strokeWidth="1"/>
-    <text x="1013" y="72" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#6366f1">2025-05-12</text>
-    <text x="1013" y="58" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#6366f1">0.35 de-facto 1.0</text>
-  </a>
-
-  <a href="/blog/iroh-on-QUIC-multipath">
-    <circle cx="1081" cy="115" r="5" fill="#6366f1"/>
-    <line x1="1081" y1="120" x2="1081" y2="155" stroke="#6366f1" strokeWidth="1"/>
-    <text x="1081" y="170" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#6366f1">2025-08-05</text>
-    <text x="1081" y="184" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#6366f1">multipath</text>
-  </a>
-
-  <a href="/blog/iroh-0-97-0-custom-transports-and-noq">
-    <circle cx="1259" cy="115" r="5" fill="#6366f1"/>
-    <line x1="1259" y1="110" x2="1259" y2="80" stroke="#6366f1" strokeWidth="1"/>
-    <text x="1259" y="72" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#6366f1">2026-03-16</text>
-    <text x="1259" y="58" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#6366f1">quinn → noq</text>
-  </a>
-
-  <a href="/blog/iroh-1-0-0-rc-1">
-    <circle cx="1317" cy="115" r="6" fill="#d97706"/>
-    <line x1="1317" y1="121" x2="1317" y2="155" stroke="#d97706" strokeWidth="1"/>
-    <text x="1317" y="170" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="10" fill="#d97706">2026-05-27</text>
-    <text x="1317" y="184" textAnchor="middle" fontFamily="'Space Mono', monospace" fontSize="11" fill="#d97706">iroh 1.0-rc.1</text>
-  </a>
-</svg>
+  <object data="/blog/the-road-to-iroh-1-0/timeline.svg" type="image/svg+xml" style={{width: '100%', height: 'auto'}}>
+    <img src="/blog/the-road-to-iroh-1-0/timeline.svg" alt="Timeline of major iroh decisions from 2022 to 2026" style={{width: '100%', height: 'auto'}} />
+  </object>
 </div>
 
-# The early days
+## The early days
 
-Iroh started as a rust implementation of ipfs. We got pretty far implementing various ipfs protocols and had interop with existing ipfs implementations working. Our goal with iroh was to target lightweight and resource constrained devices such as mobile phones.
+Iroh started as a rust implementation of [ipfs][ipfs]. We got pretty far implementing various ipfs protocols and had interop with existing ipfs implementations working. Our goal with iroh was to target lightweight and resource constrained devices such as mobile phones.
 
-One area where the mismatch between what is physically possible and our implementation was particularly large was blob transfer. We started a working group within the ipfs community to come up with a new protocol, called the [move the bytes working group](https://www.youtube.com/playlist?list=PLuhRWgmPaHtQ--aQ5GlgCyKkQYXUfQpVf).
+One area where we were unhappy with existing protocols was blob transfer. We started a working group within the ipfs community to come up with a new protocol, called the [move the bytes working group][move-the-bytes-wg].
 
-# First steps with QUIC
+## First steps with QUIC
 
-For that working group, we worked on a proposal for new blob transfer protocol. We wrote a small library called [krakensync](https://github.com/n0-computer/krakensync). Krakensync did various graph traversal and bitmap things that aren't that relevant here, but also used [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) exclusively for content addressing because BLAKE3 supports verified incremental streaming of large blobs.
+For that working group, we worked on a proposal for new blob transfer protocol. We wrote a small library called [krakensync][krakensync]. Krakensync used [BLAKE3][blake3] exclusively for content addressing because BLAKE3 supports verified incremental streaming of large blobs.
 
-After a few days we had a bare algorithm, and wanted to add networking to it to make the demo feel more real. We had only two days before the next meeting, and adding networking via rust-libp2p seemed impossible (Remember that this was before LLM coding assistants!).
+After a few days we had a bare algorithm, and wanted to add networking to it to make the demo feel more real. We had only two days before the next meeting, and adding networking via [rust-libp2p][libp2p] seemed impossible (Remember that this was before LLM coding assistants!).
 
-I had a tiny bit of previous experience with QUIC, and remembered from a project of a friend of mine, [quinn-noise](https://crates.io/crates/quinn-noise) that quinn is both hackable and has a simple idiomatic rust API. So I tried to add networking via quinn and found it **an absolute joy** to work with.
+I had a tiny bit of previous experience with [QUIC][rfc9000], and remembered from a project of a friend of mine, [quinn-noise][quinn-noise] that quinn is both hackable and has a simple idiomatic rust API. So I tried to add networking via quinn and found it **an absolute joy** to work with.
 
-# A real world use case
+## A real world use case
 
-In parallel to working on the ipfs compatible iroh, we worked on a side project to implement a single narrow real world use case: transfer of deltachat chat history when provisioning a new device. The technical task was to transfer a single large blob of backup data to a new device. There were hard constraints regarding disk and network usage. And the transfer had to be resumable.
+In parallel to working on the ipfs compatible iroh, we worked on a side project to implement a single narrow real world use case: transfer of [deltachat][deltachat] chat history when provisioning a new device. The technical task was to transfer a single large blob of backup data to a new device. There were hard constraints regarding disk and network usage. And the transfer had to be resumable.
 
 We found that *we could not* implement this very narrow use case with our ipfs based iroh implementation. Doing so would have had less than optimal network performance, and would have pulled in a very large dependency tree.
 
 So we started writing a lightweight sync system from scratch, using QUIC as the networking layer and BLAKE3 verified streaming for large blob transfer.
 
-# Abstraction fatique
+## Abstraction fatigue
 
-Despite our best efforts, our main project was still far away from the theoretical limits. Meanwhile our sync side project showed what is possible. So we [made the decision](/blog/a-new-direction-for-iroh) to no longer pursue the goal of staying compatible with existing ipfs implementations.
+Despite our best efforts, our main project was still far away from the theoretical limits. Meanwhile our sync side project showed what is possible. So we [made the decision][a-new-direction-for-iroh] to no longer pursue the goal of staying compatible with existing ipfs implementations.
 
-Instead of multiaddrs, nodes were identified by an Ed25519 public key.
-Instead of multihashes, we had BLAKE3.
+Instead of [multiaddrs][multiaddr], nodes were identified by an [Ed25519][rfc8032] public key.  
+Instead of [multihashes][multihash], we had BLAKE3.  
 And instead of multiple protocols we had QUIC.
 
-The new iroh was just QUIC based networking using s2n-quic and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base](https://github.com/chatmail/core/commit/24856f3050be9a7705f9df736ab575fd856454d5). And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android).
+The new iroh was just QUIC based networking using [quinn][quinn] and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base][deltachat-iroh-merge]. And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android).
 
-# Hole punching
+## Hole punching
 
-One thing we were not yet happy with: for the blob transfer to work, both devices had to be in the same network. Ideally this should work in all cases where the two devices are somehow connected to the internet. We also wanted these transfers to be fast. So what we needed was hole punching. We looked at various systems that implement hole punching. Our goal was to get holepunching to work reliably, even at the expense of compromising p2p purity. If we would need a small server to help, so be it.
+One thing we were not yet happy with: for the blob transfer to work, both devices had to be in the same network. Ideally this should work in all cases where the two devices are somehow connected to the internet. We also wanted these transfers to be fast. So what we needed was [hole punching][hole-punching-wikipedia]. We looked at various systems that implement hole punching. Our goal was to get holepunching to work reliably, even at the expense of compromising p2p purity. If we would need a small server to help, so be it.
 
-Of all the existing open source implementations of holepunching, we found the tailscale approach best suited to our requirements. So we implemented something that was initially very similar, with good results. This was a [huge effort](https://github.com/n0-computer/iroh/pull/830), but once we merged it we had hole punch rates to be proud of. In most normal circumstances we punched holes almost immediately, and in the few corporate networks where hole punching was impossible, at least we could still transfer data. It **just worked**.
+Of all the existing open source implementations of holepunching, we found the [tailscale][tailscale] approach best suited to our requirements. So we implemented something that was initially very similar, with good results. This was a [huge effort][holepunching-pr], but once we merged it we had hole punch rates to be proud of. In most normal circumstances we punched holes almost immediately, and in the few corporate networks where hole punching was impossible, at least we could still transfer data via relays. It **just worked**.
 
-# Iroh as a batteries included p2p application toolkit
+## Iroh as a batteries included p2p application toolkit
 
-We achieved our goal of having a simple p2p library that just worked. But the API was still anemic. It was something that experienced rust teams such as deltachat could include, but not yet attractive to p2p application developers. So we decided to gradually expose more functionality. One of the first things we did was extending the blob related API to expose more functionality for BLAKE3 verified streaming. In parallel we also optimized the verified streaming by implementing some advanced features such as BLAKE3 chunk groups.
+We achieved our goal of having a simple p2p library that just worked. But the API was still anemic. It was something that experienced rust teams such as deltachat could include, but not yet attractive to p2p application developers. So we decided to gradually expose more functionality. One of the first things we did was extending the blob related API to expose more functionality for BLAKE3 verified streaming. In parallel we also optimized the verified streaming by implementing some advanced features such as [BLAKE3 chunk groups][chunk-groups-pr].
 
-But even with blobs included, it was not enough. We had very useful functionality for experienced rust teams, but at the time that wasn't exactly a large group. So we decided to add a [document abstraction](https://github.com/n0-computer/iroh/pull/1333) that would make iroh viable as a batteries included p2p application development framework, where ideally you would only need to add application specific code.
+But even with blobs included, it was not enough. We had very useful functionality for experienced rust teams, but at the time that wasn't exactly a large group. So we decided to add a [document abstraction][docs-pr] that would make iroh viable as a batteries included p2p application development framework, where ideally you would only need to add application specific code.
 
-# Bindings
+## Bindings
 
+As part of the push to make iroh approachable to more developers, we started to publish language bindings to almost all major languages. This worked well and was frequently used, but turned out to be a lot of work for us because of the frequent API changes on the road to 1.0. So we ended up [pausing the bindings][ffi-updates].
 
+### Sendme and dumbpipe
 
-## Sendme and dumbpipe
+<div className="not-prose" style={{display: 'flex', gap: '2rem', justifyContent: 'center', margin: '1.5em 0'}}>
+  <a href="/sendme"><img src="/svg/sendme_icon.svg" alt="sendme" style={{width: '120px', height: 'auto'}} /></a>
+  <a href="https://www.dumbpipe.dev/"><img src="/svg/dumbpipe_icon.svg" alt="dumbpipe" style={{width: '120px', height: 'auto'}} /></a>
+</div>
 
-To show off iroh, we published two small tools: sendme and dumbpipe. These were meant to just show off different iroh capabilities, but also be useful on their own.
+To show off iroh, we published two small tools: [sendme][sendme] and [dumbpipe][dumbpipe]. These were meant to just show off different iroh capabilities, but also be useful on their own.
 
-# Iroh as just connections
+To this day we use sendme every day to send logs around. And there are a large number of popular sendme clones: [Lightning P2P][lightning-p2p], [alt-sendme][alt-sendme], [ARK Drop Desktop][ark-drop], [DataBeam][databeam], [sendme-egui][sendme-egui], and [iroh-send][iroh-send].
 
-After working on iroh as a batteries included toolkit for some time, the API surface was increasing substantiatlly. And we could not guarantee the same level of quality for all parts of the API. In addition, we noticed that each of our users was using a different subset of the API. The one thing everybody had in common was that they needed dial by node id and connections that reliably hole punch. So we [made the decision](/blog/smaller-is-better) to narrow the scope of what iroh is significantly. From now on iroh would be just direct connections dialed by node id. The other functionality, that several teams depend on, was [moved into separate crates](/blog/iroh-0-28-let-them-have-crates).
+Dumbpipe also inspired a number of projects: [pai-sho][pai-sho], [iroh-ssh][iroh-ssh], [do-ssh][do-ssh], and [iroh-ssh-android][iroh-ssh-android]. But more importantly it showed **how useful** just direct connections by node id are a building block.
 
-# A long term stable release
+## Node discovery
 
-We were now at the enviable position that several important projects depended on iroh. But we needed freedom to evolve iroh, and did not want to do so on a feature branch due to previous bad experiences with this approach. So we made our first long term stable release, [0.35](/blog/iroh-0-35-prepping-for-1-0). In retrospect it would have been fine to call this iroh 1.0. It is a stable version of iroh that many projects depend on even today.
+For a long time we did not have the ability to dial an iroh node by node id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. 
 
-# Multipath
+## Iroh as just connections
 
-Iroh was working just fine in most cases. But there were some dark clouds on the horizon. To get one of the main features of iroh, seamless migration of the underlying transport, to work reliably, we had to do some [not so nice hacks](https://github.com/n0-computer/iroh/pull/2835). In the short term this wasn't really a big problem. But we knew that the current approach would limit us substantiatlly in the future.
+After working on iroh as a batteries included toolkit for some time, the API surface was increasing substantially. And we could not guarantee the same level of quality for all parts of the API. In addition, we noticed that each of our users was using a different subset of the API. The one thing everybody had in common was that they needed dial by node id and connections that reliably hole punch. So we [made the decision][smaller-is-better] to narrow the scope of what iroh is significantly. From now on iroh would be just direct connections dialed by node id. The other functionality, that several teams depend on, was [moved into separate crates][iroh-0-28-let-them-have-crates].
 
-So we [made the decision](/blog/iroh-on-QUIC-multipath) to fundamentally rework how iroh works under the hood. We were already using multiple paths under the hood, but QUIC was unaware of all of this. Which was the root cause for various problems.
+## A long term stable release
 
-# Forking quinn
+We were now at the enviable position that several important projects depended on iroh. But we needed freedom to evolve iroh, and did not want to do so on a feature branch due to previous bad experiences with this approach. So we made our first long term stable release, [0.35][iroh-0-35-prepping-for-1-0] and started the [canary series][canary-series] for people that wanted to stay on the bleeding edge on the way to 1.0.
 
-So far we had used quinn and contributed a few improvements. But now we were doing something fundamentally new: extending quinn to support multipath. For a long time we worked with the assumption that we would upstream our changes, but as the diff grew this became increasingly unlikely. So w
+In retrospect it would have been fine to call this iroh 1.0. It is a rock solid version of iroh that many projects depend on even today. But we are happy with the decision to develop on main and let people follow along.
+
+## Multipath
+
+Iroh was working just fine in most cases. But there were some dark clouds on the horizon. To get one of the main features of iroh, seamless migration of the underlying transport, to work reliably, we had to do some [not so nice hacks][mtu-reset-pr]. In the short term this wasn't really a big problem. But we knew that the current approach would limit us substantially in the future.
+
+So we [made the decision][multipath-decision] to fundamentally rework how iroh works under the hood. We were already using multiple paths under the hood, but QUIC was unaware of all of this. Which was the root cause for various problems.
+
+## Forking quinn
+
+So far we had used quinn and contributed a few improvements. But now we were doing something fundamentally new: extending quinn to support multipath. For a long time we worked with the assumption that we would upstream our changes, but as the diff grew this became increasingly unlikely. So we [decided to fork quinn][noq-announcement] and maintain our own QUIC implementation, [noq][noq].
 
 We felt that while this was
 
@@ -189,7 +140,7 @@ IPFS implementation
 - 2022-10-28 v0.1.0 tag (6324d832a2)
 - 2022-12-21 final IPFS-era publishes (iroh-resolver/bitswap/gateway v0.2.0)
 - 2023-02-17 blog: /blog/a-new-direction-for-iroh — pivot announced, old code → beetle
-- 2023-02-22 v0.3.0 removes iroh-api/bitswap/car/embed/gateway/localops/metrics/one/p2p/resolver/rpc-*/share/store/util/unixfs
+- 2023-02-22 v0.3.0 removes iroh-api/bitswap/car/embed/gateway/localops/metrics/one/p2p/resolver/rpc-client/rpc-types/share/store/util/unixfs
 */}
 
 {/* precursors — pre-iroh experiments that shaped the QUIC choice and seeded the (later rejected) "replace TLS with noise" idea:
@@ -337,3 +288,44 @@ quinn -> noq
 - 2026-05-22 noq patch for holepunch when server is behind a hard NAT, PR #4254 (b8a596844a)
 - 2026-05-27 v1.0.0-rc.1 "The last one", PR #4287, blog /blog/iroh-1-0-0-rc-1
 */}
+
+[a-new-direction-for-iroh]: /blog/a-new-direction-for-iroh
+[alt-sendme]: https://github.com/tonyantony300/alt-sendme
+[ark-drop]: https://github.com/ARK-Builders/ARK-Drop-Desktop
+[blake3]: https://github.com/BLAKE3-team/BLAKE3
+[canary-series]: /blog/iroh-0-90-the-canary-series
+[chunk-groups-pr]: https://github.com/n0-computer/iroh/pull/798
+[databeam]: https://github.com/vinay-winai/DataBeam
+[deltachat]: https://delta.chat/
+[deltachat-iroh-merge]: https://github.com/chatmail/core/commit/24856f3050be9a7705f9df736ab575fd856454d5
+[do-ssh]: https://github.com/doEggi/do-ssh
+[docs-pr]: https://github.com/n0-computer/iroh/pull/1333
+[dumbpipe]: https://www.dumbpipe.dev/
+[ffi-updates]: /blog/ffi-updates
+[hole-punching-wikipedia]: https://en.wikipedia.org/wiki/Hole_punching_(networking)
+[holepunching-pr]: https://github.com/n0-computer/iroh/pull/830
+[ipfs]: https://ipfs.tech/
+[iroh-0-28-let-them-have-crates]: /blog/iroh-0-28-let-them-have-crates
+[iroh-0-35-prepping-for-1-0]: /blog/iroh-0-35-prepping-for-1-0
+[iroh-send]: https://github.com/thiswillbeyourgithub/iroh-send
+[iroh-ssh]: https://github.com/rustonbsd/iroh-ssh
+[iroh-ssh-android]: https://github.com/futpib/iroh-ssh-android
+[krakensync]: https://github.com/n0-computer/krakensync
+[libp2p]: https://docs.rs/libp2p
+[lightning-p2p]: https://github.com/Kerim-Sabic/lightning-p2p
+[move-the-bytes-wg]: https://www.youtube.com/playlist?list=PLuhRWgmPaHtQ--aQ5GlgCyKkQYXUfQpVf
+[mtu-reset-pr]: https://github.com/n0-computer/iroh/pull/2835
+[multiaddr]: https://github.com/multiformats/multiaddr
+[multihash]: https://github.com/multiformats/multihash
+[multipath-decision]: /blog/iroh-on-QUIC-multipath
+[noq]: https://docs.rs/noq
+[noq-announcement]: /blog/noq-announcement
+[pai-sho]: https://github.com/cablehead/pai-sho
+[quinn]: https://docs.rs/quinn
+[quinn-noise]: https://docs.rs/quinn-noise
+[rfc8032]: https://www.rfc-editor.org/rfc/rfc8032.html
+[rfc9000]: https://www.rfc-editor.org/rfc/rfc9000.html
+[sendme]: /sendme
+[sendme-egui]: https://github.com/zignig/sendme-egui
+[smaller-is-better]: /blog/smaller-is-better
+[tailscale]: https://tailscale.com/
