@@ -18,6 +18,15 @@ export const h2 = function H2(props) {
   return <Heading level={2} {...props} />;
 };
 
+export const table = function Table(props) {
+  // This makes the table scrollable if it doesn't fit width-wise on mobile
+  return <div className="mx-auto max-w-2xl">
+    <div className="overflow-x-auto">
+      <table {...props} />
+    </div>
+  </div>
+}
+
 function InfoIcon(props) {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
