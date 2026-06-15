@@ -2,17 +2,17 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
 import { Prose } from '@/components/Prose'
 import References from '@/components/References'
-import BlogHeader from '@/components/BlogHeader'
+import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { formatDate } from '@/lib/formatDate'
 
 export function BlogPostLayout({ article, references = [], children }) {
   return (
     <div>
-      <BlogHeader />
-      <div className="px-5 sm:px-0 mt-16 lg:mt-32 font-space">
+      <HeaderSparse />
+      <div className="px-5 sm:px-0 mt-24 font-space">
         <div className="xl:relative">
-          <div className="mt-32 mb-64">
+          <div className="mb-64">
             <div className="mx-auto max-w-2xl">
               <a
                 href="/blog"
