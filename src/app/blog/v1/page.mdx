@@ -40,7 +40,7 @@ This is our first stable release, but the project has grown significantly over t
 After more than 4 years of building in the open, we have a foundation we're both proud of.
 
 - We shifted onto open standards, preferring IETF drafts whenever possible
-- We built on our own implementation of [QUIC multipath][quic-multipath], so iroh can build & manage multiple routes within the same connection, and hot swap paths as conditions change
+- We built our own implementation of [QUIC multipath][quic-multipath], so iroh can build & manage multiple routes within the same connection, and hot swap paths as conditions change
 - We implemented [QUIC NAT traversal][quic-nat-traversal], so we can establish direct connections while keeping connection details encrypted
 - We added full local-first configurations so iroh can find & connect to local devices, without internet access
 - We built & continually check that iroh can compile to WASM & run in the browser
@@ -53,7 +53,8 @@ Iroh connections are also far more efficient. It's normal to see 95% of data tra
 
 ## Python, Node.js, Kotlin & Swift support
 
-We previously paused FFI support because of maintenance overhead with API churn and promised to bring it back with a stable 1.0 API. Now we're follwing through on this promise: In addition to the Rust crate, we now officially support Python, Node.js, Swift, and Kotlin. This makes your application use case even easier, making it possible to embed iroh into your swift iOS application or your Kotlin Android app. Check out the binding docs: https://n0-computer.github.io/iroh-ffi/
+We previously paused FFI support because of maintenance overhead with API churn and promised to bring it back with a stable 1.0 API. Now we're follwing through on this promise: In addition to the Rust crate, we now officially support Python, Node.js, Swift, and Kotlin. This makes your application use case even easier, making it possible to embed iroh into your swift iOS application or your Kotlin Android app.
+Check out the [documentation](https://docs.iroh.computer/languages) and [generated API  docs](https://n0-computer.github.io/iroh-ffi/).
 
 ## Wire Stability
 
