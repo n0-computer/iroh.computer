@@ -99,7 +99,7 @@ export function HeaderSparse() {
 
   return (
     <nav id="navbar" className={clsx(
-      "fixed w-full z-50",
+      "fixed w-full top-[var(--v1-banner-height,0px)] z-50",
       "transition-colors ease-in duration-200 bg-white dark:bg-irohGray-900 animate-all",
       mobileMenuOpen && 'backdrop-blur-md'
       )}
