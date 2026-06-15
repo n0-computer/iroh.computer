@@ -70,7 +70,7 @@ export function V1Banner() {
     >
       <Link
         href="/blog/v1"
-        className="flex flex-wrap gap-x-3 gap-y-1 px-10 py-2 text-sm font-medium hover:bg-irohPurple-700 transition-colors"
+        className="flex flex-wrap gap-x-3 gap-y-1 px-10 py-2 text-sm font-medium hover:bg-irohPurple-700 transition-colors justify-center"
       >
         <span>🎉 version 1.0 is here!</span>
         <span className="underline underline-offset-2">Read the blog post</span>
