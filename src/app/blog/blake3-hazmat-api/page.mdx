@@ -39,29 +39,27 @@ The BLAKE3 hash function is a *tree* hash function. Briefly, the data gets divid
 
 To compute a root hash, pairs of hashes are combined with a binary combine function until just a single hash remains. To provide [domain separation], ***only*** the final root hash gets computed with a special flag is_root set to true.
 
-<div className="not-prose">
 <ThemeImage
     lightSrc='/blog/blake3-hazmat-api/blake-tree-6.png'
     darkSrc='/blog/blake3-hazmat-api/blake-tree-6-dark.png'
     alt='BLAKE3 forks'
     width={800}
     height={600}
-  />
-</div>
+/>
+
 
 # Why does iroh-blobs need internals access
 
 The `iroh-blobs` protocol allows for verified streaming of data, just like the [bao] crate. In order to do so we need to be able to compute *intermediate results* of the computation described above.
 
-<div className="not-prose">
 <ThemeImage
     lightSrc='/blog/blake3-hazmat-api/blake-tree-21.png'
     darkSrc='/blog/blake3-hazmat-api/blake-tree-21-dark.png'
     alt='BLAKE3 forks'
     width={800}
     height={600}
-  />
-</div>
+/>
+
 
 <Note>
 Most users are only interested in the root hash, and won't *ever* have to deal with intermediate results.
@@ -125,15 +123,14 @@ Despite this attempt to make the distinction between chaining values and root ha
 
 Due to it's useful tree structure, high performance and built in parallelism, the BLAKE3 hashing function is quite popular. Several other projects like [fleek] or [fluence] also forked the BLAKE3 crate, often for very similar reasons.
 
-<div className="not-prose">
 <ThemeImage
     lightSrc='/blog/blake3-hazmat-api/crates.png'
     darkSrc='/blog/blake3-hazmat-api/crates.png'
     alt='BLAKE3 forks'
     width={800}
     height={600}
-  />
-</div>
+/>
+
 
 These are just the public forks from [crates.io](https://crates.io/search?q=blake3), there are probably more private or less visible forks. For example, the [s5 project] also uses BLAKE3 with chunk groups, but with a larger chunk group size than iroh-blobs.
 
