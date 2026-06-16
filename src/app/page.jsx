@@ -67,7 +67,7 @@ export default function Page() {
               </p>
               <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
                 No VPNs, user accounts, or proprietary networks.
-                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, or let us <a href="/pricing" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
+                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, or let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
               </p>
             </div>
           </section>
