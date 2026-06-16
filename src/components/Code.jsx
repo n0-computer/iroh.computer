@@ -253,7 +253,7 @@ function useTabGroupProps(availableLanguages) {
 
 const CodeGroupContext = createContext(false);
 
-export function CodeGroup({children, title, ...props}) {
+export function CodeGroup({children, title, className, ...props}) {
   const languages = Children.map(children, (child) => getPanelTitle(child.props));
   const tabGroupProps = useTabGroupProps(languages);
   const hasTabs = Children.count(children) > 1;
@@ -267,7 +267,7 @@ export function CodeGroup({children, title, ...props}) {
     <CodeGroupContext.Provider value={true}>
       <Container
         {...containerProps}
-        className="not-prose my-6 overflow-hidden rounded-2xl bg-zinc-900 shadow-md dark:ring-1 dark:ring-white/10"
+        className={clsx("not-prose my-6 overflow-hidden rounded-2xl bg-zinc-900 shadow-md dark:ring-1 dark:ring-white/10", className)}
       >
         <CodeGroupHeader title={title} {...headerProps}>
           {children}
@@ -295,5 +295,5 @@ export function Pre({children, ...props}) {
     return children;
   }
 
-  return <CodeGroup {...props}>{children}</CodeGroup>;
+  return <CodeGroup className="mx-auto max-w-2xl" {...props}>{children}</CodeGroup>;
 }

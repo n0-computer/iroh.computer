@@ -42,6 +42,7 @@ export default function Page() {
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
+
                   <h3 className="text-lg mt-3 leading-normal">Add peer-to-peer connectivity to your app, anywhere: servers, mobile apps, agents, desktops, and embedded systems.</h3>
                   <div className='flex mt-3 gap-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
