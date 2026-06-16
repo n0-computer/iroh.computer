@@ -42,7 +42,7 @@ export default function Page() {
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal">Add peer-to-peer connectivity to your app.</h3>
+                  <h3 className="text-lg mt-3 leading-normal">Add peer-to-peer connectivity to your app, anywhere: servers, mobile apps, agents, desktops, and embedded systems.</h3>
                   <div className='flex mt-3 gap-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
@@ -65,7 +65,7 @@ export default function Page() {
                 Forever.
               </p>
               <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
-                Connect devices anywhere: servers, mobile apps, agents, desktops, and embedded systems. No VPNs, user accounts, or proprietary networks.
+                No VPNs, user accounts, or proprietary networks.
                 The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, or let us <a href="/pricing" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
               </p>
             </div>
