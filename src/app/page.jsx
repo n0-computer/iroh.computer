@@ -35,15 +35,15 @@ export default function Page() {
       <div className="bg-white dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
         <main className="mb-auto flex flex-col min-h-92">
           {/* hero */}
-          <section className="min-h-92 pt-20 bg-cover" style={{ height: 600 }}>
+          <section className="min-h-92 pt-20 bg-cover overflow-hidden md:h-[600px]">
             <div className='relative max-w-7xl mx-auto'>
               <div className='absolute z-10 overflow-hidden w-full'>
                 <HomeHero className='' />
                 {/* readability scrim: opaque under the text, fading to reveal the grid */}
                 <div className='absolute inset-0 bg-linear-to-r from-white via-white/80 to-transparent dark:from-irohGray-900 dark:via-irohGray-900/80 dark:to-transparent pointer-events-none' />
               </div>
-              <div className="absolute z-40 max-w-7xl mx-auto md:grid md:grid-cols-4 md:gap-4">
-                <div className="col-span-2 pl-8" style={{ paddingTop: 100 }}>
+              <div className="relative md:absolute z-40 w-full md:w-auto max-w-7xl mx-auto md:grid md:grid-cols-4 md:gap-4">
+                <div className="col-span-2 pl-8 pr-8 md:pr-0" style={{ paddingTop: 100 }}>
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
