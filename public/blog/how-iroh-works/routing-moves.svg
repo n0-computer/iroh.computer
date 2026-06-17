@@ -1,0 +1,202 @@
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style><![CDATA[
+      /* 20s loop — Bob's travel from home (R1) through cellular (R2) to in-flight (R3, Starlink ground station):
+         0-5s     Static. Bob next to Alice, single curve through R1.
+         5s       Bob starts moving right. R2 (cell tower) fades in.
+         5-6s     Single-bend curve elongates as Bob heads toward R2.
+         6s       Threshold 1: path snaps to multi R1→R2. Public IPs fade in.
+         6-11s    Bob continues right; path follows.
+         11s      Threshold 2: Bob is now closer to R3 (Starlink ground station, far away).
+                  R2 + multi R1→R2 fade out. R3 + multi R1→R3 fade in.
+         11-15s   Bob continues to final position (cx=720, mirroring Alice's offset from R1).
+         15-20s   Static. */
+
+      .bob-phone   { animation: bob-move 20s infinite linear; }
+      .bob-ip-r1   { animation: bob-ip-r1 20s infinite linear; }
+      .bob-ip-r2   { animation: bob-ip-r2 20s infinite linear; opacity: 0; }
+      .bob-ip-r3   { animation: bob-ip-r3 20s infinite linear; opacity: 0; }
+      .single-bend { animation: single-bend 20s infinite linear; }
+      .multi-r1r2  { animation: multi-r1r2 20s infinite linear; opacity: 0; }
+      .multi-r1r3  { animation: multi-r1r3 20s infinite linear; opacity: 0; }
+      .router2     { animation: router2 20s infinite linear; opacity: 0; visibility: hidden; }
+      .router3     { animation: router3 20s infinite linear; opacity: 0; visibility: hidden; }
+      .multi-router { animation: multi-router 20s infinite linear; opacity: 0; }
+
+      @keyframes bob-move {
+        0%, 25% { transform: translateX(0); }
+        75%, 100% { transform: translateX(480px); }
+      }
+      @keyframes bob-ip-r1 {
+        0%, 29% { opacity: 1; }
+        31%, 100% { opacity: 0; }
+      }
+      @keyframes bob-ip-r2 {
+        0%, 29% { opacity: 0; }
+        31%, 55% { opacity: 1; }
+        57%, 100% { opacity: 0; }
+      }
+      @keyframes bob-ip-r3 {
+        0%, 55% { opacity: 0; }
+        57%, 100% { opacity: 1; }
+      }
+      @keyframes single-bend {
+        0%, 29% { opacity: 1; }
+        31%, 100% { opacity: 0; }
+      }
+      @keyframes multi-r1r2 {
+        0%, 29% { opacity: 0; }
+        31%, 55% { opacity: 1; }
+        57%, 100% { opacity: 0; }
+      }
+      @keyframes multi-r1r3 {
+        0%, 55% { opacity: 0; }
+        57%, 100% { opacity: 1; }
+      }
+      @keyframes router2 {
+        0%, 25% { opacity: 0; visibility: hidden; }
+        27%, 55% { opacity: 1; visibility: visible; }
+        57%, 100% { opacity: 0; visibility: hidden; }
+      }
+      @keyframes router3 {
+        0%, 55% { opacity: 0; visibility: hidden; }
+        57%, 100% { opacity: 1; visibility: visible; }
+      }
+      @keyframes multi-router {
+        0%, 29% { opacity: 0; }
+        31%, 100% { opacity: 1; }
+      }
+    ]]></style>
+
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6366f1"/>
+    </marker>
+  </defs>
+
+  <!-- ========== Alice (iPhone with notch, static) ========== -->
+  <g>
+    <text x="120" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">10.0.0.42</text>
+    <rect x="75" y="190" width="90" height="150" rx="14" fill="none" stroke="#888" stroke-width="1.5"/>
+    <path d="M 88 193
+             L 105 193
+             Q 108 193 108 196
+             L 108 199
+             Q 108 202 111 202
+             L 129 202
+             Q 132 202 132 199
+             L 132 196
+             Q 132 193 135 193
+             L 152 193
+             A 10 10 0 0 1 162 203
+             L 162 327
+             A 10 10 0 0 1 152 337
+             L 88 337
+             A 10 10 0 0 1 78 327
+             L 78 203
+             A 10 10 0 0 1 88 193 Z"
+          fill="none" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="95" y="240" width="50" height="30" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="120" y="259" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#d97706">iroh</text>
+    <text x="120" y="285" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#d97706">🔑 a4f7c0…</text>
+    <text x="120" y="365" text-anchor="middle" font-family="'Space Mono', monospace" font-size="14" fill="#6366f1">Alice</text>
+  </g>
+
+  <!-- ========== Bob (Android with hole-punch, moves rightward) ========== -->
+  <g class="bob-phone">
+    <text class="bob-ip-r1" x="240" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">10.0.0.7</text>
+    <text class="bob-ip-r2" x="240" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">192.168.1.7</text>
+    <text class="bob-ip-r3" x="240" y="180" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">172.16.0.7</text>
+    <rect x="195" y="190" width="90" height="150" rx="14" fill="none" stroke="#888" stroke-width="1.5"/>
+    <rect x="198" y="193" width="84" height="144" rx="11" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+    <circle cx="240" cy="201" r="2" fill="#888"/>
+    <rect x="215" y="240" width="50" height="30" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="240" y="259" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#d97706">iroh</text>
+    <text x="240" y="285" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#d97706">🔑 8e2b1d…</text>
+    <text x="240" y="365" text-anchor="middle" font-family="'Space Mono', monospace" font-size="14" fill="#6366f1">Bob</text>
+  </g>
+
+  <!-- ========== Single-bend connection (R1 only) ========== -->
+  <path class="single-bend"
+        d="M 120 240 Q 120 161 180 161 Q 240 161 240 240"
+        fill="none" stroke="#6366f1" stroke-width="1.5"
+        marker-start="url(#arr)" marker-end="url(#arr)">
+    <animate attributeName="d"
+             values="M 120 240 Q 120 161 180 161 Q 240 161 240 240;
+                     M 120 240 Q 120 161 180 161 Q 240 161 240 240;
+                     M 120 240 Q 120 161 180 161 Q 285 161 285 240;
+                     M 120 240 Q 120 161 180 161 Q 285 161 285 240"
+             keyTimes="0; 0.25; 0.3; 1"
+             dur="20s"
+             repeatCount="indefinite"/>
+  </path>
+
+  <!-- ========== Multi-router R1 → R2 (visible 31% → 55%) ========== -->
+  <path class="multi-r1r2"
+        d="M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 30 420 30 420 90 L 420 130 C 420 200 285 170 285 240"
+        fill="none" stroke="#6366f1" stroke-width="1.5"
+        marker-start="url(#arr)" marker-end="url(#arr)">
+    <animate attributeName="d"
+             values="M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 30 420 30 420 90 L 420 130 C 420 200 285 170 285 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 30 420 30 420 90 L 420 130 C 420 200 285 170 285 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 30 420 30 420 90 L 420 130 C 420 200 528 170 528 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 30 420 30 420 90 L 420 130 C 420 200 528 170 528 240"
+             keyTimes="0; 0.3; 0.55; 1"
+             dur="20s"
+             repeatCount="indefinite"/>
+  </path>
+
+  <!-- ========== Multi-router R1 → R3 (skips R2 — visible 57% → end) ========== -->
+  <path class="multi-r1r3"
+        d="M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 10 660 10 660 90 L 660 130 C 660 200 552 170 552 240"
+        fill="none" stroke="#6366f1" stroke-width="1.5"
+        marker-start="url(#arr)" marker-end="url(#arr)">
+    <animate attributeName="d"
+             values="M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 10 660 10 660 90 L 660 130 C 660 200 552 170 552 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 10 660 10 660 90 L 660 130 C 660 200 552 170 552 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 10 660 10 660 90 L 660 130 C 660 200 720 170 720 240;
+                     M 120 240 C 120 170 180 200 180 130 L 180 90 C 180 10 660 10 660 90 L 660 130 C 660 200 720 170 720 240"
+             keyTimes="0; 0.57; 0.75; 1"
+             dur="20s"
+             repeatCount="indefinite"/>
+  </path>
+
+  <!-- ========== Routers drawn last (on top), so the connection tucks behind them ========== -->
+  <!-- Router 1 (home) — always visible -->
+  <g>
+    <title>home router</title>
+    <rect x="130" y="78" width="100" height="72" fill="transparent" pointer-events="all"/>
+    <text class="multi-router" x="180" y="82" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">203.0.113.1</text>
+    <polyline points="150,125 140,125 140,82" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="140" cy="80" r="1.5" fill="#888"/>
+    <polyline points="210,125 220,125 220,82" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="220" cy="80" r="1.5" fill="#888"/>
+    <rect x="150" y="90" width="60" height="40" rx="3" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <circle cx="200" cy="124" r="1.5" fill="#d97706"/>
+    <text x="180" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">10.0.0.1</text>
+  </g>
+
+  <!-- Router 2 (cell tower) — appears 5s, fades out at 11s -->
+  <g class="router2">
+    <title>mobile network</title>
+    <rect x="395" y="78" width="50" height="72" fill="transparent" pointer-events="all"/>
+    <text class="multi-router" x="420" y="82" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">198.51.100.1</text>
+    <!-- Cell tower: mast + crossbar drawn first (behind), 3 panel antennas drawn last (in front) -->
+    <line x1="418" y1="128" x2="418" y2="82" stroke="#888" stroke-width="1"/>
+    <line x1="400" y1="95" x2="440" y2="95" stroke="#888" stroke-width="1.5"/>
+    <rect x="404" y="88" width="4" height="18" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <rect x="418" y="88" width="4" height="18" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <rect x="432" y="88" width="4" height="18" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <text x="420" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">192.168.1.1</text>
+  </g>
+
+  <!-- Router 3 (Starlink ground station, far away) — fades in at 11s -->
+  <g class="router3">
+    <title>satellite internet</title>
+    <rect x="632" y="78" width="64" height="72" fill="transparent" pointer-events="all"/>
+    <text class="multi-router" x="660" y="82" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">100.64.10.1</text>
+    <!-- Starlink: tilted parallelogram panel + short handle kickstand near the middle, resting on the desk at y=120 -->
+    <polygon points="664,108 668,108 672,120 668,120" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <polygon points="640,116 680,96 684,100 644,120" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <text x="660" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888">172.16.0.1</text>
+  </g>
+</svg>
