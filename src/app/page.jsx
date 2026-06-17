@@ -53,11 +53,11 @@ export default function Page() {
                   </h3>
                   <h3 className="text-lg mt-3 leading-normal flex items-start gap-2">
                     <SquareCheck className="w-5 h-5 shrink-0 mt-1 text-irohPurple-500" aria-hidden="true" />
-                    <span>No VPNs, user accounts, or proprietary networks.</span>
+                    <span>Low-latency between any platform, cloud, or device.</span>
                   </h3>
                   <h3 className="text-lg mt-3 leading-normal flex items-start gap-2">
                     <SquareCheck className="w-5 h-5 shrink-0 mt-1 text-irohPurple-500" aria-hidden="true" />
-                    <span>Connect any platform, cloud, or device.</span>
+                    <span>No VPNs, user accounts, or proprietary networks.</span>
                   </h3>
                   <div className='flex mt-3 gap-3'>
                     <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
@@ -71,6 +71,10 @@ export default function Page() {
           <section className='max-w-7xl mx-auto px-4 pt-10 pb-6'>
             <div className='flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
               {[
+                { name: 'Swift', file: 'Swift' },
+                { name: 'Rust', file: 'Rust' },
+                { name: 'JavaScript', file: 'JavaScript' },
+                { name: 'Kotlin', file: 'Kotlin' },
                 { name: 'Raspberry Pi', file: 'RaspberryPi' },
                 { name: 'Espressif', file: 'Espressif' },
                 { name: 'Linux', file: 'Linux' },
@@ -102,21 +106,6 @@ export default function Page() {
             </div>
           </section>
 
-          <section className='max-w-7xl mx-auto py-16 px-4'>
-            <div className='flex flex-col md:flex-row md:items-start md:gap-12 mb-10'>
-              <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 md:w-1/2 shrink-0'>
-                <span className='text-irohPurple-500'>Fast connections.</span>
-                <br />
-                Anywhere.
-                <br />
-                Forever.
-              </p>
-              <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
-                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, or let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
-              </p>
-            </div>
-          </section>
-
 
           <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
@@ -144,24 +133,20 @@ export default function Page() {
           <section className='max-w-7xl mx-auto py-16 px-4'>
             <div className='grid gap-12 grid-cols-1 md:grid-cols-2 items-center'>
               <div>
-                <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Reach every device, on any network</p>
+                <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Low-latency everywhere</p>
                 <p className='mt-4 text-xl text-irohGray-600 dark:text-irohGray-400'>Write your app once and connect it everywhere, with one API.</p>
                 <ul className='mt-8 space-y-5'>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
-                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>Connect over Wi-Fi, cellular, ethernet, LAN, or <a href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</a>, or bring your own transport.</p>
+                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'><span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Use all the radios:</span> Wi-Fi, cellular, ethernet, LAN, or <a href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</a>, or bring your own transport.</p>
                   </li>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
-                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>Direct peer-to-peer links bypass NATs and firewalls, with <a href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">relays</a> as automatic fallback, so you lean on the cloud less and cut egress costs.</p>
+                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'> <span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Lean on the cloud less</span> with direct links that bypass NATs and firewalls, with <a href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 hover:underline">stateless relays</a> as fallback.</p>
                   </li>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
-                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>The same code runs from an ESP32 or Raspberry Pi up to a Linux server, in <a href="https://docs.iroh.computer/languages" className="text-irohPurple-500 hover:underline">Rust, Swift, Kotlin, and JavaScript</a>.</p>
-                  </li>
-                  <li className='flex gap-3'>
-                    <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
-                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>Every connection is end-to-end encrypted, with opt-in <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">observability</a>.</p>
+                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'><span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Built-in end-to-end encryption</span>, with opt-in <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">observability</a>.</p>
                   </li>
                 </ul>
               </div>
@@ -175,9 +160,6 @@ export default function Page() {
           <section id="solutions" className='max-w-7xl mx-auto py-16 px-4'>
             <div className='mb-10'>
               <h3 className='text-5xl font-bold mb-2'>How are people using iroh?</h3>
-            </div>
-            <div className='mb-12'>
-              <LogoCloud />
             </div>
             <div className='grid gap-6 md:grid-cols-2'>
               <Link href="/solutions/nous" className="block h-full">
@@ -253,12 +235,20 @@ export default function Page() {
             </div>
           </section>
 
-          {/* iroh protocols */}
+
           <section className='max-w-7xl mx-auto py-16 px-4'>
-            <h3 className='text-5xl font-bold mb-4'>Modular toolkit</h3>
-            <p className='text-irohGray-600 dark:text-irohGray-400 text-lg mb-10'>
-              Dozens of open-source, composable protocols built on top of iroh. Mix & match to get the feature set you need.</p>
-            <ProtocolHeroList />
+            <div className='flex flex-col md:flex-row md:items-start md:gap-12 mb-10'>
+              <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 md:w-1/2 shrink-0'>
+                <span className='text-irohPurple-500'>Fast connections.</span>
+                <br />
+                Anywhere.
+                <br />
+                Forever.
+              </p>
+              <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
+                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
+              </p>
+            </div>
           </section>
 
           {/* build in your language */}
@@ -290,6 +280,14 @@ export default function Page() {
                 <CodeBlockTabs snippets={codeSnippets} />
               </div>
             </div>
+          </section>
+
+          {/* iroh protocols */}
+          <section className='max-w-7xl mx-auto py-16 px-4'>
+            <h3 className='text-5xl font-bold mb-4'>Modular toolkit</h3>
+            <p className='text-irohGray-600 dark:text-irohGray-400 text-lg mb-10'>
+              Dozens of open-source, composable protocols built on top of iroh. Mix & match to get the feature set you need.</p>
+            <ProtocolHeroList />
           </section>
           <section className='max-w-7xl w-full mx-auto px-4 py-20'>
             <div className='w-full'>
