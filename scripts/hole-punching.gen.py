@@ -22,6 +22,7 @@ OUT_PATH = os.path.normpath(os.path.join(
 
 MONO = "'Space Mono', monospace"
 INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#374151", "#2563eb", "#dc2626", "#15803d"
+FADED = "#aab2bd"   # inactive/secondary connection — clearly lighter than the structure gray
 CYCLE = 39.0   # one loop; popups fade after both checks are green, then the direct path stands alone
 T_POPUP_FADE = 29.5   # NAT bubbles fade out here (a few seconds after both mappings are validated)
 
@@ -270,7 +271,7 @@ def pc_co(side, addr, t0, t1):
 def nat_bubble(side, l1, l2, t_on, t_used):
     # thinking bubble on a router: the NAT mapping (remote public -> local private). A green
     # check appears next to the mapping the moment a packet actually uses it.
-    out0, out1 = CYCLE-0.7, CYCLE-0.3
+    out0, out1 = T_POPUP_FADE, T_POPUP_FADE+1.0
     pts = [(0, 0), (t_on, 0), (t_on+0.4, 1), (out0, 1), (out1, 0), (CYCLE, 0)]
     hg_pts = [(0, 0), (t_on+0.4, 0), (t_on+0.7, 1), (t_used, 1), (t_used+0.3, 0), (CYCLE, 0)]   # hourglass: created, temporary
     chk_pts = [(0, 0), (t_used, 0), (t_used+0.3, 1), (CYCLE, 1)]                                # check: used / validated
@@ -327,18 +328,19 @@ reply_co = callout("L", [("PATH_RESPONSE", True), ("PATH_CHALLENGE", True)], T_A
 resp_pkt = hp_pkt("direct", T_BR, 2.2, kp0=1, kp1=0)
 resp_co = callout("R", [("PATH_RESPONSE", True)], T_BR-0.3, T_BR+2.3, w=150)
 
-# the direct path itself: appears gray as Bob's packet goes through, turns blue once validated
+# the direct path itself: appears faded-gray as Bob's packet goes through, turns blue once validated
 direct_opa = [(0, 0), (T_BP, 0), (T_BP+0.3, 1), (CYCLE-0.5, 1), (CYCLE-0.2, 0), (CYCLE, 0)]
 direct_stroke = (f'<animate attributeName="stroke" dur="{CYCLE}s" repeatCount="indefinite" '
-                 f'values="{GRAY};{GRAY};{BLUE};{BLUE}" '
+                 f'values="{FADED};{FADED};{BLUE};{BLUE}" '
                  f'keyTimes="0;{T_BLUE/CYCLE:.4f};{(T_BLUE+0.6)/CYCLE:.4f};1"/>')
-direct_path = (f'  <path id="direct" d="{direct_d}" fill="none" stroke="{GRAY}" stroke-width="1.5" opacity="0">'
+direct_path = (f'  <path id="direct" d="{direct_d}" fill="none" stroke="{FADED}" stroke-width="1.5" opacity="0">'
                f'{anim_opacity(direct_opa)}{direct_stroke}</path>')
 
-# relay pipe fades blue -> gray once the direct path takes over
+# the relay stays blue/active (user data flows over it during hole punching) and only fades to
+# gray at the moment the direct path becomes blue — i.e. when the handover happens
 relay_stroke = (f'<animate attributeName="stroke" dur="{CYCLE}s" repeatCount="indefinite" '
-                f'values="{BLUE};{BLUE};{GRAY};{GRAY}" '
-                f'keyTimes="0;{T_BP/CYCLE:.4f};{(T_BP+4)/CYCLE:.4f};1"/>')
+                f'values="{BLUE};{BLUE};{FADED};{FADED}" '
+                f'keyTimes="0;{T_BLUE/CYCLE:.4f};{(T_BLUE+1.0)/CYCLE:.4f};1"/>')
 
 VB_X, VB_Y, VB_W, VB_H = 0, 30, 940, 430
 svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -346,6 +348,9 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
   <path id="relay-path" d="{relay_d}" fill="none" stroke="{BLUE}" stroke-width="1.5">{relay_stroke}</path>
   <!-- the direct path: gray as the first packet goes through, blue once validated -->
 {direct_path}
+  <!-- local links (phone <-> router) are always active, so always blue (over both paths) -->
+  <line x1="{acx}" y1="{A_PH[1]}" x2="{acx}" y2="{R1[1]+20}" stroke="{BLUE}" stroke-width="1.5"/>
+  <line x1="{bcx}" y1="{B_PH[1]}" x2="{bcx}" y2="{R2[1]+20}" stroke="{BLUE}" stroke-width="1.5"/>
   <!-- local probe trajectories (invisible; the packets ride them) -->
   <path id="probe-local-a" d="{probe_local_a_d}" fill="none" stroke="none"/>
   <path id="probe-local-b" d="{probe_local_b_d}" fill="none" stroke="none"/>
