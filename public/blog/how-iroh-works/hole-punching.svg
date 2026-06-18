@@ -49,8 +49,7 @@
   <!-- Alice -->
   <g>
     <rect x="175" y="312" width="50" height="92" rx="9" fill="#fff" stroke="#6366f1" stroke-width="1.5"/>
-    <rect x="178" y="315" width="44" height="86" rx="6" fill="none" stroke="#6366f1" stroke-width="1"/>
-    <circle cx="200.0" cy="320" r="1.6" fill="#888"/>
+    <path d="M 184 315 L 192 315 Q 194 315 194 317 L 194 318 Q 194 320 196 320 L 204 320 Q 206 320 206 318 L 206 317 Q 206 315 208 315 L 216 315 A 6 6 0 0 1 222 321 L 222 395 A 6 6 0 0 1 216 401 L 184 401 A 6 6 0 0 1 178 395 L 178 321 A 6 6 0 0 1 184 315 Z" fill="none" stroke="#6366f1" stroke-width="1"/>
     <rect x="186" y="340" width="28" height="16" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
     <text x="200.0" y="352" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
     <text x="200.0" y="372" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">🔑 1a9c…</text>

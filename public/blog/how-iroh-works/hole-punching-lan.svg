@@ -1,11 +1,11 @@
 <svg viewBox="0 30 940 430" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <!-- stem: the router's uplink to the relay; fades to gray once the LAN path takes over -->
-  <path id="stem" d="M 440 220 L 440 78" fill="none" stroke="#2563eb" stroke-width="1.5"><animate attributeName="stroke" dur="27.0s" repeatCount="indefinite" values="#2563eb;#2563eb;#aab2bd;#aab2bd" keyTimes="0;0.8000;0.8370;1"/></path>
+  <path id="stem" d="M 440 213 L 440 78" fill="none" stroke="#2563eb" stroke-width="1.5"><animate attributeName="stroke" dur="27.0s" repeatCount="indefinite" values="#2563eb;#2563eb;#aab2bd;#aab2bd" keyTimes="0;0.8000;0.8370;1"/></path>
   <!-- the LAN path (Alice <-> router <-> Bob): always the local link, always blue -->
-  <path id="lan" d="M 200 312 C 200 248 440 308 440 220 C 440 308 680 248 680 312" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+  <path id="lan" d="M 200 312 C 200 248 424 301 424 213 L 456 213 C 456 301 680 248 680 312" fill="none" stroke="#2563eb" stroke-width="1.5"/>
   <!-- relay round-trip wires (invisible; the control packets ride them) -->
-  <path id="relay-a2b" d="M 200 312 C 200 248 440 308 440 220 L 440 78 L 440 220 C 440 308 680 248 680 312" fill="none" stroke="none"/>
-  <path id="relay-b2a" d="M 680 312 C 680 248 440 308 440 220 L 440 78 L 440 220 C 440 308 200 248 200 312" fill="none" stroke="none"/>
+  <path id="relay-a2b" d="M 200 312 C 200 248 424 301 424 213 L 440 213 L 440 78 L 440 213 L 456 213 C 456 301 680 248 680 312" fill="none" stroke="none"/>
+  <path id="relay-b2a" d="M 680 312 C 680 248 456 301 456 213 L 440 213 L 440 78 L 440 213 L 424 213 C 424 301 200 248 200 312" fill="none" stroke="none"/>
 
   <g>
     <rect x="408" y="57" width="64" height="18" rx="2" fill="#fff" stroke="#888" stroke-width="1.5"/>

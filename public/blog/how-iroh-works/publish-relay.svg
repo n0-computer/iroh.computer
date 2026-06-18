@@ -71,8 +71,7 @@
   <g opacity="0">
     <animate attributeName="opacity" dur="14.5s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2621;0.3034;0.9517;0.9793;1.0000"/>
     <rect x="664" y="296" width="48" height="88" rx="9" fill="#fff" stroke="#6366f1" stroke-width="1.5"/>
-    <rect x="667" y="299" width="42" height="82" rx="6" fill="none" stroke="#6366f1" stroke-width="1"/>
-    <circle cx="688.0" cy="304" r="1.6" fill="#888"/>
+    <path d="M 673 299 L 681 299 Q 683 299 683 301 L 683 302 Q 683 304 685 304 L 691 304 Q 693 304 693 302 L 693 301 Q 693 299 695 299 L 703 299 A 6 6 0 0 1 709 305 L 709 375 A 6 6 0 0 1 703 381 L 673 381 A 6 6 0 0 1 667 375 L 667 305 A 6 6 0 0 1 673 299 Z" fill="none" stroke="#6366f1" stroke-width="1"/>
     <rect x="674" y="322" width="28" height="16" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
     <text x="688.0" y="334" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
     <text x="688.0" y="354" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">🔑 1a9c…</text>

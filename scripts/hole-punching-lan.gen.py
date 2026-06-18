@@ -114,19 +114,23 @@ JX, JY = 440, 220    # junction (router bottom center) where the legs meet the s
 RELAY_B = 78         # relay box bottom
 
 # The legs curve: they leave each phone vertically and arrive at the router vertically
-# (from below), so they flow smoothly into the vertical stem up to the relay.
+# (from below). They enter the router box at two *separate* points tucked inside it, so
+# the legs never cross; the vertical stem leaves the box top center up to the relay.
 DV, DV2 = 64, 88   # control-point offsets: vertical out of the phone / into the router
-_legA = f"C {acx} {A_PH[1]-DV} {JX} {JY+DV2} {JX} {JY}"      # phone A -> junction
-_legB = f"C {bcx} {B_PH[1]-DV} {JX} {JY+DV2} {JX} {JY}"      # phone B -> junction
-_legA_r = f"C {JX} {JY+DV2} {acx} {A_PH[1]-DV} {acx} {A_PH[1]}"   # junction -> phone A
-_legB_r = f"C {JX} {JY+DV2} {bcx} {B_PH[1]-DV} {bcx} {B_PH[1]}"   # junction -> phone B
+OJ = 16            # legs enter the box this far either side of center
+JYH = 213          # internal junction, hidden inside the router box
+JXA, JXB = JX-OJ, JX+OJ
+_legA = f"C {acx} {A_PH[1]-DV} {JXA} {JYH+DV2} {JXA} {JYH}"
+_legB = f"C {bcx} {B_PH[1]-DV} {JXB} {JYH+DV2} {JXB} {JYH}"
+_legA_r = f"C {JXA} {JYH+DV2} {acx} {A_PH[1]-DV} {acx} {A_PH[1]}"
+_legB_r = f"C {JXB} {JYH+DV2} {bcx} {B_PH[1]-DV} {bcx} {B_PH[1]}"
 
 # stem (uplink to the relay); lan path (Alice -> router -> Bob)
-stem_d = f"M {JX} {JY} L {JX} {RELAY_B}"
-lan_d = f"M {acx} {A_PH[1]} {_legA} {_legB_r}"
+stem_d = f"M {JX} {JYH} L {JX} {RELAY_B}"
+lan_d = f"M {acx} {A_PH[1]} {_legA} L {JXB} {JYH} {_legB_r}"
 # relay round-trips: up the stem to the relay and back down (the latency made visible)
-relay_b2a = f"M {bcx} {B_PH[1]} {_legB} L {JX} {RELAY_B} L {JX} {JY} {_legA_r}"
-relay_a2b = f"M {acx} {A_PH[1]} {_legA} L {JX} {RELAY_B} L {JX} {JY} {_legB_r}"
+relay_b2a = f"M {bcx} {B_PH[1]} {_legB} L {JX} {JYH} L {JX} {RELAY_B} L {JX} {JYH} L {JXA} {JYH} {_legA_r}"
+relay_a2b = f"M {acx} {A_PH[1]} {_legA} L {JX} {JYH} L {JX} {RELAY_B} L {JX} {JYH} L {JXB} {JYH} {_legB_r}"
 
 alice_facts = facts(A_PH[0]+62, [
     (A_PH[1]+18, "EndpointId:", "1a9c…"),
