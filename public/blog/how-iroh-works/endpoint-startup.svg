@@ -133,4 +133,11 @@
       <animate attributeName="opacity" begin="0s" dur="14s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7586;0.7943;1"/>
     </line>
   </g>
+  <!-- Timer bar (position in loop) -->
+  <g>
+    <rect x="0" y="368" width="705" height="3" fill="#e5e7eb"/>
+    <rect x="0" y="368" width="0" height="3" fill="#9ca3af">
+      <animate attributeName="width" from="0" to="705" dur="14.0s" repeatCount="indefinite"/>
+    </rect>
+  </g>
 </svg>

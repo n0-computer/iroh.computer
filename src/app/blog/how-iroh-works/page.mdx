@@ -58,10 +58,15 @@ We make sure that you do get a connection whenever possible. And we make sure th
 
 When conditions change, we immediately react and choose the new best path. This is transparent to the user.
 
-<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%', aspectRatio: '800 / 380'}}>
-  <object data="/blog/how-iroh-works/routing-moves.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/routing-moves.svg" alt="Alice and Bob connected via a shared router, with two more routers available for when Bob moves" style={{width: '100%', height: '100%'}} />
-  </object>
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/routing-moves.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '800 / 380'}}>
+    <object data="/blog/how-iroh-works/routing-moves.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/routing-moves.svg" alt="Alice and Bob connected via a shared router, with two more routers available for when Bob moves" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
 </div>
 
 # So how this it actually work?
@@ -86,36 +91,51 @@ Iroh works just fine with a single relay, but works best if you have relays in a
 
 ## Determining the home relay
 
-<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%', aspectRatio: '705 / 280'}}>
-  <object data="/blog/how-iroh-works/endpoint-startup.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/endpoint-startup.svg" alt="A map of the US and Europe with iroh relays in us-west (Seattle), us-east (Delaware), and eu-west (Frankfurt), and an endpoint in Florida" style={{width: '100%', height: '100%'}} />
-  </object>
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/endpoint-startup.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '705 / 280'}}>
+    <object data="/blog/how-iroh-works/endpoint-startup.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/endpoint-startup.svg" alt="A map of the US and Europe with iroh relays in us-west (Seattle), us-east (Delaware), and eu-west (Frankfurt), and an endpoint in Florida" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
 </div>
 
 On startup, an iroh endpoint sends [QAD] probes to all configured relays. This serves two purposes: learning our own public IP address as well as learning which relay is closest in terms of latency. The closest relay becomes our home relay. We keep a secure websocket connection open to our home relay.
 
 ## Publishing the home relay
 
-If we had only one relay, we would be done now. But frequently we have multiple relays. Alice needs to know which relay to use to talk to Bob. For this we have two mechanisms
+Iroh works just fine with one relay. But frequently we have multiple relays. Alice needs to know which relay to use to talk to Bob. For this we have two mechanisms
 
 ### DNS based address lookup
 
 We offer a mechanism based on DNS out of the box. Bob publishes a signed DNS record to a DNS server operated by number0 via a https PUT request. Alice or whoever wants to talk to bob then looks up this record using a DNS query or a https query.
 
-<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%', aspectRatio: '820 / 376'}}>
-  <object data="/blog/how-iroh-works/publish-relay.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/publish-relay.svg" alt="Bob publishes a signed DNS record with his home relay to dns.iroh.link via an HTTPS PUT; Alice resolves it with a DNS lookup" style={{width: '100%', height: '100%'}} />
-  </object>
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/publish-relay.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '820 / 376'}}>
+    <object data="/blog/how-iroh-works/publish-relay.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/publish-relay.svg" alt="Bob publishes a signed DNS record with his home relay to dns.iroh.link via an HTTPS PUT; Alice resolves it with a DNS lookup" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
 </div>
 
 ### Mainline DHT based address lookup
 
 The above mechanism works fine in most cases. But maybe you want something that is fully peer to peer. For that case we offer an optional DHT based address lookup mechanism. We publish the exact same record as before on the mainline DHT, using the [bep_0044] extension.
 
-<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%', aspectRatio: '820 / 376'}}>
-  <object data="/blog/how-iroh-works/publish-relay-dht.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/publish-relay-dht.svg" alt="Bob publishes his signed record to several random nodes of the Mainline DHT; Alice resolves it by querying several random nodes" style={{width: '100%', height: '100%'}} />
-  </object>
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/publish-relay-dht.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '820 / 376'}}>
+    <object data="/blog/how-iroh-works/publish-relay-dht.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/publish-relay-dht.svg" alt="Bob publishes his signed record to several random nodes of the Mainline DHT; Alice resolves it by querying several random nodes" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
 </div>
 
 
@@ -129,10 +149,31 @@ How do we make the connections fast and direct? This is aguably the most complex
 
 Hole punching happens *inside* the QUIC connection via an extension `n0_nat_traversal`. It is inspired by the [QUIC NAT traversal draft][quic-nat-traversal], but uses its own transport parameter ID.
 
-<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '780px', width: '100%', aspectRatio: '940 / 430'}}>
-  <object data="/blog/how-iroh-works/hole-punching.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/hole-punching.svg" alt="Alice and Bob, each behind a home router, connected through the relay — all data flows up to the relay and back down" style={{width: '100%', height: '100%'}} />
-  </object>
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '780px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/hole-punching.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '940 / 430'}}>
+    <object data="/blog/how-iroh-works/hole-punching.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/hole-punching.svg" alt="Alice and Bob, each behind a home router, connected through the relay — all data flows up to the relay and back down" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
+</div>
+
+
+## Local direct connections
+
+If two devices are in the same network, hole punching is not needed. Each side just needs to learn the local address of the remote.
+
+<div className="not-prose" style={{margin: '1.5em auto', maxWidth: '780px', width: '100%'}}>
+  <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
+    <a href="/blog/how-iroh-works/hole-punching-lan.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+  </div>
+  <div style={{width: '100%', aspectRatio: '940 / 430'}}>
+    <object data="/blog/how-iroh-works/hole-punching-lan.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/blog/how-iroh-works/hole-punching-lan.svg" alt="Alice and Bob on the same home network discover each other over the relay, then connect directly across the LAN — the relay uplink fades away once the local path is validated" style={{width: '100%', height: '100%'}} />
+    </object>
+  </div>
 </div>
 
 

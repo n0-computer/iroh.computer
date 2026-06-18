@@ -8,8 +8,8 @@
     </marker>
   </defs>
 
-  <path id="put-wire" d="M 120 296 Q 227 159 396 122" fill="none" stroke="#2563eb" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="14.5s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0414;0.0690;0.2759;0.3103;1.0000"/></path>
-  <path id="lookup-wire" d="M 424 122 Q 587 161 688 296" fill="none" stroke="#2563eb" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="14.5s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3034;0.3448;0.5724;0.6069;1.0000"/></path>
+  <path id="put-wire" d="M 120 296 Q 227 159 396 122" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="14.5s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0414;0.0690;0.2759;0.3103;1.0000"/></path>
+  <path id="lookup-wire" d="M 424 122 Q 587 161 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="14.5s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3034;0.3448;0.5724;0.6069;1.0000"/></path>
 
   <!-- dns.iroh.link server (vanilla) -->
   <g>
@@ -115,5 +115,12 @@
       <text x="484" y="182" font-family="'Space Mono', monospace" font-size="12" fill="#374151">;; ANSWER SECTION:</text>
       <text x="484" y="202" font-family="'Space Mono', monospace" font-size="12" fill="#2563eb" font-weight="bold">TXT "relay=https://us-east"</text>
     </g>
+  </g>
+  <!-- Timer bar (position in loop) -->
+  <g>
+    <rect x="0" y="416" width="820" height="3" fill="#e5e7eb"/>
+    <rect x="0" y="416" width="0" height="3" fill="#9ca3af">
+      <animate attributeName="width" from="0" to="820" dur="14.5s" repeatCount="indefinite"/>
+    </rect>
   </g>
 </svg>

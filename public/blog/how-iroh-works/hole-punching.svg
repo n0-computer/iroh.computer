@@ -253,4 +253,11 @@
     <rect x="506" y="136" width="150" height="37" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
     <text x="518" y="157" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">PATH_RESPONSE</text>
   </g>
+  <!-- Timer bar (position in loop) -->
+  <g>
+    <rect x="0" y="456" width="940" height="3" fill="#e5e7eb"/>
+    <rect x="0" y="456" width="0" height="3" fill="#9ca3af">
+      <animate attributeName="width" from="0" to="940" dur="39.0s" repeatCount="indefinite"/>
+    </rect>
+  </g>
 </svg>

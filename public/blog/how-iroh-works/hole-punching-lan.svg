@@ -1,0 +1,155 @@
+<svg viewBox="0 30 940 430" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <!-- stem: the router's uplink to the relay; fades to gray once the LAN path takes over -->
+  <path id="stem" d="M 440 220 L 440 78" fill="none" stroke="#2563eb" stroke-width="1.5"><animate attributeName="stroke" dur="27.0s" repeatCount="indefinite" values="#2563eb;#2563eb;#aab2bd;#aab2bd" keyTimes="0;0.8000;0.8370;1"/></path>
+  <!-- the LAN path (Alice <-> router <-> Bob): always the local link, always blue -->
+  <path id="lan" d="M 200 312 C 200 248 440 308 440 220 C 440 308 680 248 680 312" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+  <!-- relay round-trip wires (invisible; the control packets ride them) -->
+  <path id="relay-a2b" d="M 200 312 C 200 248 440 308 440 220 L 440 78 L 440 220 C 440 308 680 248 680 312" fill="none" stroke="none"/>
+  <path id="relay-b2a" d="M 680 312 C 680 248 440 308 440 220 L 440 78 L 440 220 C 440 308 200 248 200 312" fill="none" stroke="none"/>
+
+  <g>
+    <rect x="408" y="57" width="64" height="18" rx="2" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <line x1="424" y1="60" x2="424" y2="72" stroke="#888" stroke-width="1"/>
+    <circle cx="414" cy="63" r="1.5" fill="#d97706"/>
+    <circle cx="414" cy="69" r="1.5" fill="#888"/>
+    <line x1="432" y1="61" x2="432" y2="71" stroke="#888" stroke-width="1"/>
+    <line x1="437" y1="61" x2="437" y2="71" stroke="#888" stroke-width="1"/>
+    <line x1="442" y1="61" x2="442" y2="71" stroke="#888" stroke-width="1"/>
+    <line x1="447" y1="61" x2="447" y2="71" stroke="#888" stroke-width="1"/>
+    <line x1="452" y1="61" x2="452" y2="71" stroke="#888" stroke-width="1"/>
+    <line x1="457" y1="61" x2="457" y2="71" stroke="#888" stroke-width="1"/>
+    <text x="440" y="91" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#374151">relay</text>
+  </g>
+
+  <g font-family="'Space Mono', monospace" font-size="10" fill="#888">
+    <polyline points="410,215 400,215 400,172" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="400" cy="170" r="1.5" fill="#888"/>
+    <polyline points="470,215 480,215 480,172" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="480" cy="170" r="1.5" fill="#888"/>
+    <rect x="410" y="180" width="60" height="40" rx="3" fill="#fff" stroke="#888" stroke-width="1.5"/>
+    <circle cx="460" cy="214" r="1.5" fill="#d97706"/>
+    <text x="440" y="235" text-anchor="middle">192.168.0.1</text>
+  </g>
+
+  <!-- Alice -->
+  <g>
+    <rect x="175" y="312" width="50" height="92" rx="9" fill="#fff" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="178" y="315" width="44" height="86" rx="6" fill="none" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="200.0" cy="320" r="1.6" fill="#888"/>
+    <rect x="186" y="340" width="28" height="16" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="200.0" y="352" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <text x="200.0" y="372" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">🔑 1a9c…</text>
+    <text x="200" y="420" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#6366f1">Alice</text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="11" fill="#888" text-anchor="start">
+    <text x="237" y="330"><tspan font-weight="bold">EndpointId:</tspan> 1a9c…</text>
+    <text x="237" y="348"><tspan font-weight="bold">Addr:</tspan> 192.168.0.3:2104</text>
+    <text x="237" y="366"><tspan font-weight="bold">Addr:</tspan> 4.9.8.2:2104</text>
+    <text x="237" y="384"><tspan font-weight="bold">relay:</tspan> us-east</text>
+  </g>
+
+  <!-- Bob -->
+  <g>
+    <rect x="655" y="312" width="50" height="92" rx="9" fill="#fff" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="658" y="315" width="44" height="86" rx="6" fill="none" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="680.0" cy="320" r="1.6" fill="#888"/>
+    <rect x="666" y="340" width="28" height="16" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="680.0" y="352" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <text x="680.0" y="372" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">🔑 8e2b…</text>
+    <text x="680" y="420" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#6366f1">Bob</text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="11" fill="#888" text-anchor="start">
+    <text x="717" y="330"><tspan font-weight="bold">EndpointId:</tspan> 8e2b…</text>
+    <text x="717" y="348"><tspan font-weight="bold">Addr:</tspan> 192.168.0.5:4153</text>
+    <text x="717" y="366"><tspan font-weight="bold">Addr:</tspan> 4.9.8.2:4153</text>
+    <text x="717" y="384"><tspan font-weight="bold">relay:</tspan> us-east</text>
+  </g>
+
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0370;0.0481;0.1593;0.1704;1.0000"/>
+    <animateMotion dur="27.0s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0.0000;0.0370;0.1667;1.0000"><mpath href="#relay-b2a"/></animateMotion>
+  </g>
+
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0370;0.0519;0.1630;0.1778;1.0000"/>
+    <rect x="660" y="108" width="224" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <text x="674" y="132" font-family="'Space Mono', monospace" font-size="12" fill="#374151"><tspan font-weight="bold">ADD_ADDRESS</tspan> 192.168.0.5:4153</text>
+    <text x="674" y="152" font-family="'Space Mono', monospace" font-size="12" fill="#374151"><tspan font-weight="bold">ADD_ADDRESS</tspan> 4.9.8.2:4153</text>
+  </g>
+
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.1630;0.1741;0.2444;0.2556;1.0000"/>
+    <circle cx="234" cy="366" r="4" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="226" cy="358" r="3" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="219" cy="352" r="2" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <rect x="238" y="324" width="216" height="64" rx="16" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="252" y="343" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1" font-weight="bold">Bob</text>
+    <text x="252" y="362" font-family="'Space Mono', monospace" font-size="11" fill="#374151"><tspan font-weight="bold">Candidate:</tspan> 192.168.0.5:4153</text>
+    <text x="252" y="380" font-family="'Space Mono', monospace" font-size="11" fill="#374151"><tspan font-weight="bold">Candidate:</tspan> 4.9.8.2:4153</text>
+  </g>
+
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2778;0.2889;0.4000;0.4111;1.0000"/>
+    <animateMotion dur="27.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.2778;0.4074;1.0000"><mpath href="#relay-a2b"/></animateMotion>
+  </g>
+
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2778;0.2926;0.4037;0.4148;1.0000"/>
+    <rect x="56" y="108" width="216" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <text x="72" y="132" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">REACH_OUT<tspan x="162" font-weight="normal">192.168.0.3:2104</tspan></text>
+    <text x="72" y="152" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">REACH_OUT<tspan x="162" font-weight="normal">4.9.8.2:2104</tspan></text>
+  </g>
+
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4074;0.4185;0.4889;0.5000;1.0000"/>
+    <circle cx="704" cy="366" r="4" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="698" cy="358" r="3" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="692" cy="352" r="2" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <rect x="708" y="324" width="186" height="64" rx="16" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="722" y="343" font-family="'Space Mono', monospace" font-size="12" fill="#6366f1" font-weight="bold">Alice</text>
+    <text x="722" y="362" font-family="'Space Mono', monospace" font-size="11" fill="#374151"><tspan font-weight="bold">Candidate:</tspan> 192.168.0.3:2104</text>
+    <text x="722" y="380" font-family="'Space Mono', monospace" font-size="11" fill="#374151"><tspan font-weight="bold">Candidate:</tspan> 4.9.8.2:2104</text>
+  </g>
+
+  <!-- LAN hole punch: packets first (behind the boxes), then callouts on top -->
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5259;0.5315;0.5956;0.6022;1.0000"/>
+    <animateMotion dur="27.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.5259;0.6000;1.0000"><mpath href="#lan"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.6222;0.6278;0.6919;0.6985;1.0000"/>
+    <animateMotion dur="27.0s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0.0000;0.6222;0.6963;1.0000"><mpath href="#lan"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.7185;0.7241;0.7881;0.7948;1.0000"/>
+    <animateMotion dur="27.0s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.7185;0.7926;1.0000"><mpath href="#lan"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1" keyTimes="0.0000;0.8000;0.8148;1.0000"/>
+    <polyline points="372,251 377,257 387,245" fill="none" stroke="#15803d" stroke-width="2"/>
+    <text x="394" y="255" font-family="'Space Mono', monospace" font-size="12" fill="#15803d" font-weight="bold">direct (LAN)</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5037;0.5148;0.6037;0.6148;1.0000"/>
+    <rect x="232" y="136" width="170" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <text x="244" y="157" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">PATH_CHALLENGE</text>
+    <text x="244" y="176" font-family="'Space Mono', monospace" font-size="12" fill="#374151">192.168.0.5:4153</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.6000;0.6111;0.7000;0.7111;1.0000"/>
+    <rect x="478" y="136" width="170" height="75" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <text x="490" y="157" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">PATH_RESPONSE</text>
+    <text x="490" y="176" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">PATH_CHALLENGE</text>
+    <text x="490" y="195" font-family="'Space Mono', monospace" font-size="12" fill="#374151">192.168.0.3:2104</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="27.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.6963;0.7074;0.7963;0.8074;1.0000"/>
+    <rect x="232" y="136" width="150" height="37" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <text x="244" y="157" font-family="'Space Mono', monospace" font-size="12" fill="#374151" font-weight="bold">PATH_RESPONSE</text>
+  </g>
+</svg>

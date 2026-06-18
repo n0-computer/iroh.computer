@@ -38,6 +38,9 @@
       @keyframes uni-arr { 0%, 35% { opacity: 0; } 37%, 42% { opacity: 1; } 44%, 100% { opacity: 0; } }
       /* Bidirectional arrow: 6s onwards */
       @keyframes bi-arr  { 0%, 42% { opacity: 0; } 44%, 100% { opacity: 1; } }
+
+      .timer-fill { animation: timer-fill 14s infinite linear; transform-origin: left; transform: scaleX(0); }
+      @keyframes timer-fill { to { transform: scaleX(1); } }
     ]]></style>
 
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -103,4 +106,9 @@
 
   <!-- ========== Bidirectional arrow (6s onwards) ========== -->
   <line class="bi-arr" x1="230" y1="170" x2="570" y2="170" stroke="#6366f1" stroke-width="1.5" marker-start="url(#arr)" marker-end="url(#arr)"/>
+  <!-- Timer bar (position in loop) -->
+  <g>
+    <rect x="0" y="316" width="800" height="3" fill="#e5e7eb"/>
+    <rect class="timer-fill" x="0" y="316" width="800" height="3" fill="#9ca3af"/>
+  </g>
 </svg>
