@@ -27,6 +27,45 @@ export const metadata = {
     'less net work for networks',
 };
 
+const languages = [
+  { name: 'Swift', file: 'Swift', href: 'https://docs.iroh.computer/languages/swift' },
+  { name: 'Rust', file: 'Rust', href: 'https://docs.iroh.computer/languages/rust' },
+  { name: 'JavaScript', file: 'JavaScript', href: 'https://docs.iroh.computer/languages/javascript' },
+  { name: 'Kotlin', file: 'Kotlin', href: 'https://docs.iroh.computer/languages/kotlin' },
+];
+
+const platforms = [
+  { name: 'Raspberry Pi', file: 'RaspberryPi' },
+  { name: 'Espressif', file: 'Espressif' },
+  { name: 'Linux', file: 'Linux' },
+  { name: 'Windows', file: 'Windows' },
+  { name: 'Apple', file: 'Apple' },
+  { name: 'Android', file: 'Android' },
+];
+
+function PlatformLogo({ name, file, href }) {
+  const Wrapper = href ? 'a' : 'div';
+  return (
+    <Wrapper href={href} className={`flex items-center gap-2.5${href ? ' transition-opacity hover:opacity-70' : ''}`}>
+      <span
+        aria-hidden='true'
+        className='h-6 w-6 shrink-0 bg-irohGray-700 dark:bg-irohGray-200'
+        style={{
+          maskImage: `url(/img/platform-logos/${file}.svg)`,
+          WebkitMaskImage: `url(/img/platform-logos/${file}.svg)`,
+          maskRepeat: 'no-repeat',
+          WebkitMaskRepeat: 'no-repeat',
+          maskPosition: 'center',
+          WebkitMaskPosition: 'center',
+          maskSize: 'contain',
+          WebkitMaskSize: 'contain',
+        }}
+      />
+      <span className='text-lg font-medium text-irohGray-700 dark:text-irohGray-200'>{name}</span>
+    </Wrapper>
+  );
+}
+
 export default function Page() {
   return (
     <div>
@@ -70,58 +109,33 @@ export default function Page() {
           {/* connect between platforms */}
           <section className='max-w-7xl mx-auto px-4 pt-10 pb-6'>
             <div className='flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
-              {[
-                { name: 'Swift', file: 'Swift' },
-                { name: 'Rust', file: 'Rust' },
-                { name: 'JavaScript', file: 'JavaScript' },
-                { name: 'Kotlin', file: 'Kotlin' },
-                { name: 'Raspberry Pi', file: 'RaspberryPi' },
-                { name: 'Espressif', file: 'Espressif' },
-                { name: 'Linux', file: 'Linux' },
-                { name: 'Windows', file: 'Windows' },
-                { name: 'Apple', file: 'Apple' },
-                { name: 'Android', file: 'Android' },
-                { name: 'Cloudflare', file: 'Cloudflare' },
-                { name: 'AWS', file: 'AWS' },
-                { name: 'Azure', file: 'Azure' },
-              ].map(({ name, file }) => (
-                <div key={name} className='flex items-center gap-2.5'>
-                  <span
-                    aria-hidden='true'
-                    className='h-6 w-6 shrink-0 bg-irohGray-700 dark:bg-irohGray-200'
-                    style={{
-                      maskImage: `url(/img/platform-logos/${file}.svg)`,
-                      WebkitMaskImage: `url(/img/platform-logos/${file}.svg)`,
-                      maskRepeat: 'no-repeat',
-                      WebkitMaskRepeat: 'no-repeat',
-                      maskPosition: 'center',
-                      WebkitMaskPosition: 'center',
-                      maskSize: 'contain',
-                      WebkitMaskSize: 'contain',
-                    }}
-                  />
-                  <span className='text-lg font-medium text-irohGray-700 dark:text-irohGray-200'>{name}</span>
-                </div>
+              {languages.map((logo) => (
+                <PlatformLogo key={logo.name} {...logo} />
+              ))}
+            </div>
+            <div className='mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
+              {platforms.map((logo) => (
+                <PlatformLogo key={logo.name} {...logo} />
               ))}
             </div>
           </section>
 
 
-          <section className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
+          <section className="relative isolate overflow-hidden bg-irohGray-100 dark:bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
-            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white dark:bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-irohGray-900/5 dark:ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
             <div className="mx-auto max-w-2xl lg:max-w-4xl">
               <figure className="mt">
-                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
+                <blockquote className="text-center text-xl/8 font-semibold text-irohGray-900 dark:text-white sm:text-2xl/9">
                   <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
                 </blockquote>
                 <figcaption className="mt-10">
                   <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-white">Ari Lotter</div>
-                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
+                    <div className="font-semibold text-irohGray-900 dark:text-white">Ari Lotter</div>
+                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-irohGray-900 dark:fill-white">
                       <circle r="1" cx="1" cy="1" />
                     </svg>
-                    <div className="text-gray-400">Principal Engineer at Nous</div>
+                    <div className="text-irohGray-500 dark:text-gray-400">Principal Engineer at Nous</div>
                     <a href="/solutions/nous" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
                   </div>
                 </figcaption>
