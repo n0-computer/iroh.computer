@@ -28,39 +28,44 @@ export const metadata = {
 };
 
 const languages = [
-  { name: 'Swift', file: 'Swift', href: 'https://docs.iroh.computer/languages/swift' },
-  { name: 'Rust', file: 'Rust', href: 'https://docs.iroh.computer/languages/rust' },
-  { name: 'JavaScript', file: 'JavaScript', href: 'https://docs.iroh.computer/languages/javascript' },
-  { name: 'Kotlin', file: 'Kotlin', href: 'https://docs.iroh.computer/languages/kotlin' },
+  { name: 'Swift', logo: logoSwift, href: 'https://docs.iroh.computer/languages/swift' },
+  { name: 'Rust', logo: logoRust, href: 'https://docs.iroh.computer/languages/rust' },
+  { name: 'JavaScript', logo: logoJavascript, href: 'https://docs.iroh.computer/languages/javascript' },
+  { name: 'Kotlin', logo: logoKotlin, href: 'https://docs.iroh.computer/languages/kotlin' },
 ];
 
 const platforms = [
-  { name: 'Raspberry Pi', file: 'RaspberryPi' },
-  { name: 'Espressif', file: 'Espressif' },
-  { name: 'Linux', file: 'Linux' },
-  { name: 'Windows', file: 'Windows' },
+  { name: 'Raspberry Pi', file: 'RaspberryPi', color: '#A22846' },
+  { name: 'Espressif', file: 'Espressif', color: '#E7352C' },
+  { name: 'Linux', file: 'Linux', color: '#FCC624' },
+  { name: 'Windows', file: 'Windows', color: '#0078D4' },
   { name: 'Apple', file: 'Apple' },
-  { name: 'Android', file: 'Android' },
+  { name: 'Android', file: 'Android', color: '#34A853' },
 ];
 
-function PlatformLogo({ name, file, href }) {
+function PlatformLogo({ name, file, href, color, logo }) {
   const Wrapper = href ? 'a' : 'div';
   return (
     <Wrapper href={href} className={`flex items-center gap-2.5${href ? ' transition-opacity hover:opacity-70' : ''}`}>
-      <span
-        aria-hidden='true'
-        className='h-6 w-6 shrink-0 bg-irohGray-700 dark:bg-irohGray-200'
-        style={{
-          maskImage: `url(/img/platform-logos/${file}.svg)`,
-          WebkitMaskImage: `url(/img/platform-logos/${file}.svg)`,
-          maskRepeat: 'no-repeat',
-          WebkitMaskRepeat: 'no-repeat',
-          maskPosition: 'center',
-          WebkitMaskPosition: 'center',
-          maskSize: 'contain',
-          WebkitMaskSize: 'contain',
-        }}
-      />
+      {logo ? (
+        <Image src={logo} alt='' aria-hidden='true' className='h-6 w-6 shrink-0' unoptimized />
+      ) : (
+        <span
+          aria-hidden='true'
+          className={`h-6 w-6 shrink-0${color ? '' : ' bg-irohGray-700 dark:bg-irohGray-200'}`}
+          style={{
+            ...(color ? { backgroundColor: color } : {}),
+            maskImage: `url(/img/platform-logos/${file}.svg)`,
+            WebkitMaskImage: `url(/img/platform-logos/${file}.svg)`,
+            maskRepeat: 'no-repeat',
+            WebkitMaskRepeat: 'no-repeat',
+            maskPosition: 'center',
+            WebkitMaskPosition: 'center',
+            maskSize: 'contain',
+            WebkitMaskSize: 'contain',
+          }}
+        />
+      )}
       <span className='text-lg font-medium text-irohGray-700 dark:text-irohGray-200'>{name}</span>
     </Wrapper>
   );
@@ -107,7 +112,7 @@ export default function Page() {
           </section>
 
           {/* connect between platforms */}
-          <section className='max-w-7xl mx-auto px-4 pt-10 pb-6'>
+          <section className='max-w-7xl mx-auto px-4 pt-2 pb-6'>
             <div className='flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
               {languages.map((logo) => (
                 <PlatformLogo key={logo.name} {...logo} />
