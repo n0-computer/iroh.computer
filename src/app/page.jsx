@@ -37,7 +37,7 @@ const languages = [
 const platforms = [
   { name: 'Raspberry Pi', file: 'RaspberryPi', color: '#A22846' },
   { name: 'Espressif', file: 'Espressif', color: '#E7352C' },
-  { name: 'Linux', file: 'Linux', color: '#FCC624' },
+  { name: 'Linux', file: 'Linux', color: '#B8860B' },
   { name: 'Windows', file: 'Windows', color: '#0078D4' },
   { name: 'Apple', file: 'Apple' },
   { name: 'Android', file: 'Android', color: '#34A853' },
