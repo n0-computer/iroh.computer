@@ -174,6 +174,7 @@ rec_lines = [f'    <text x="{rec_x}" y="{ry0+i*rlh}" fill="{GRAY}">{k} → {r}</
 ynew = ry0 + len(existing)*rlh
 rec_pts = [(0, 0), (3.5, 0), (4.0, 1), (13.8, 1), (14.2, 0), (CYCLE, 0)]
 record = f'''  <!-- server records; Bob's entry is added when his PUT arrives, removed on loop -->
+  <rect x="{rec_x-10}" y="{ry0-14}" width="150" height="{(len(existing)+1)*rlh + 6}" rx="4" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
   <g font-family="{MONO}" font-size="11">
 {chr(10).join(rec_lines)}
     <text x="{rec_x}" y="{ynew}" fill="{INK}" font-weight="bold" opacity="0">8e2b… → us-east{anim_opacity(rec_pts)}</text>

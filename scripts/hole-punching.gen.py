@@ -254,7 +254,7 @@ T_AR = 22.9                  # Alice reply: PATH_RESPONSE + PATH_CHALLENGE
 T_BR = 25.7                  # Bob reply: PATH_RESPONSE → validated
 T_BLUE = T_BR + 2.4          # direct path turns blue once the response validates it
 
-DROP_A, DROP_B = (acx, 200), (bcx, 200)   # local drops — straight up above each router (no bend toward the other side, which read as if the packet was trying to reach the peer)
+DROP_A, DROP_B = (acx, 165), (bcx, 165)   # local drops — straight up above each router (no bend toward the other side, which read as if the packet was trying to reach the peer). Kept high enough that the "not routable" label clears the router's public IP below.
 probe_local_a_d = f"M {acx} {A_PH[1]} L {acx} {DROP_A[1]}"
 probe_local_b_d = f"M {bcx} {B_PH[1]} L {bcx} {DROP_B[1]}"
 

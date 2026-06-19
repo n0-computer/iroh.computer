@@ -8,8 +8,8 @@
   <line x1="200" y1="312" x2="200" y2="230" stroke="#2563eb" stroke-width="1.5"/>
   <line x1="680" y1="312" x2="680" y2="230" stroke="#2563eb" stroke-width="1.5"/>
   <!-- local probe trajectories (invisible; the packets ride them) -->
-  <path id="probe-local-a" d="M 200 312 L 200 200" fill="none" stroke="none"/>
-  <path id="probe-local-b" d="M 680 312 L 680 200" fill="none" stroke="none"/>
+  <path id="probe-local-a" d="M 200 312 L 200 165" fill="none" stroke="none"/>
+  <path id="probe-local-b" d="M 680 312 L 680 165" fill="none" stroke="none"/>
 
   <g>
     <rect x="408" y="57" width="64" height="18" rx="2" fill="#eee" stroke="#888" stroke-width="1.5"/>
@@ -123,15 +123,15 @@
   </g>
   <g opacity="0">
     <animate attributeName="opacity" dur="39.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3526;0.3577;0.3667;0.3744;1.0000"/>
-    <line x1="194" y1="194" x2="206" y2="206" stroke="#dc2626" stroke-width="2"/>
-    <line x1="194" y1="206" x2="206" y2="194" stroke="#dc2626" stroke-width="2"/>
-    <text x="200" y="222" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#dc2626">not routable</text>
+    <line x1="194" y1="159" x2="206" y2="171" stroke="#dc2626" stroke-width="2"/>
+    <line x1="194" y1="171" x2="206" y2="159" stroke="#dc2626" stroke-width="2"/>
+    <text x="200" y="187" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#dc2626">not routable</text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" dur="39.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4090;0.4141;0.4231;0.4308;1.0000"/>
-    <line x1="674" y1="194" x2="686" y2="206" stroke="#dc2626" stroke-width="2"/>
-    <line x1="674" y1="206" x2="686" y2="194" stroke="#dc2626" stroke-width="2"/>
-    <text x="680" y="222" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#dc2626">not routable</text>
+    <line x1="674" y1="159" x2="686" y2="171" stroke="#dc2626" stroke-width="2"/>
+    <line x1="674" y1="171" x2="686" y2="159" stroke="#dc2626" stroke-width="2"/>
+    <text x="680" y="187" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#dc2626">not routable</text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" dur="39.0s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4833;0.4885;0.5000;0.5077;1.0000"/>
