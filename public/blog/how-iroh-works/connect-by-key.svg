@@ -1,4 +1,5 @@
 <svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+  <style>/* transparent-canvas */ :root { background-color: transparent; color-scheme: light dark; }</style>
   <defs>
     <style><![CDATA[
       /* 14s loop:
@@ -13,24 +14,24 @@
          8-14s  IP4 valid, connection stays bidirectional */
 
       .bob-ip1-t { animation: bob-ip1-t 14s infinite linear; }
-      .bob-ip1-l { animation: bob-ip1-l 14s infinite linear; opacity: 0; }
       .bob-ip2-t { animation: bob-ip2-t 14s infinite linear; opacity: 0; }
-      .bob-ip2-l { animation: bob-ip2-l 14s infinite linear; opacity: 0; }
       .bob-ip3-t { animation: bob-ip3-t 14s infinite linear; opacity: 0; }
-      .bob-ip3-l { animation: bob-ip3-l 14s infinite linear; opacity: 0; }
       .bob-ip4-t { animation: bob-ip4-t 14s infinite linear; opacity: 0; }
+      .bob-ip1-l { animation: bob-ip1-l 14s infinite linear; opacity: 0; }
+      .bob-ip2-l { animation: bob-ip2-l 14s infinite linear; opacity: 0; }
+      .bob-ip3-l { animation: bob-ip3-l 14s infinite linear; opacity: 0; }
+
+      @keyframes bob-ip1-t { 0%, 13% { opacity: 1; } 15%, 100% { opacity: 0; } }
+      @keyframes bob-ip2-t { 0%, 13% { opacity: 0; } 15%, 28% { opacity: 1; } 30%, 100% { opacity: 0; } }
+      @keyframes bob-ip3-t { 0%, 28% { opacity: 0; } 30%, 56% { opacity: 1; } 58%, 100% { opacity: 0; } }
+      @keyframes bob-ip4-t { 0%, 56% { opacity: 0; } 58%, 100% { opacity: 1; } }
+      @keyframes bob-ip1-l { 0%, 6% { opacity: 0; } 8%, 13% { opacity: 1; } 15%, 100% { opacity: 0; } }
+      @keyframes bob-ip2-l { 0%, 20% { opacity: 0; } 22%, 28% { opacity: 1; } 30%, 100% { opacity: 0; } }
+      @keyframes bob-ip3-l { 0%, 49% { opacity: 0; } 51%, 56% { opacity: 1; } 58%, 100% { opacity: 0; } }
 
       .keys    { animation: keys    14s infinite linear; opacity: 0; }
       .uni-arr { animation: uni-arr 14s infinite linear; opacity: 0; }
       .bi-arr  { animation: bi-arr  14s infinite linear; opacity: 0; }
-
-      @keyframes bob-ip1-t { 0%, 13% { opacity: 1; } 15%, 100% { opacity: 0; } }
-      @keyframes bob-ip1-l { 0%, 6% { opacity: 0; } 8%, 13% { opacity: 1; } 15%, 100% { opacity: 0; } }
-      @keyframes bob-ip2-t { 0%, 13% { opacity: 0; } 15%, 28% { opacity: 1; } 30%, 100% { opacity: 0; } }
-      @keyframes bob-ip2-l { 0%, 20% { opacity: 0; } 22%, 28% { opacity: 1; } 30%, 100% { opacity: 0; } }
-      @keyframes bob-ip3-t { 0%, 28% { opacity: 0; } 30%, 56% { opacity: 1; } 58%, 100% { opacity: 0; } }
-      @keyframes bob-ip3-l { 0%, 49% { opacity: 0; } 51%, 56% { opacity: 1; } 58%, 100% { opacity: 0; } }
-      @keyframes bob-ip4-t { 0%, 56% { opacity: 0; } 58%, 100% { opacity: 1; } }
 
       /* Keys appear at 5s and stay */
       @keyframes keys    { 0%, 35% { opacity: 0; } 37%, 100% { opacity: 1; } }
@@ -53,17 +54,14 @@
 
   <text class="bob-ip1-t" x="600" y="30" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">192.168.1.7</text>
   <line class="bob-ip1-l" x1="560" y1="26" x2="640" y2="26" stroke="#dc2626" stroke-width="1.5"/>
-
   <text class="bob-ip2-t" x="600" y="30" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">203.0.113.15</text>
   <line class="bob-ip2-l" x1="555" y1="26" x2="645" y2="26" stroke="#dc2626" stroke-width="1.5"/>
-
   <text class="bob-ip3-t" x="600" y="30" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">172.20.4.88</text>
   <line class="bob-ip3-l" x1="560" y1="26" x2="640" y2="26" stroke="#dc2626" stroke-width="1.5"/>
-
   <text class="bob-ip4-t" x="600" y="30" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">192.168.10.55</text>
 
   <!-- ========== Alice (iPhone) ========== -->
-  <rect x="140" y="60" width="120" height="220" rx="22" fill="none" stroke="#888" stroke-width="1.5"/>
+  <rect x="140" y="60" width="120" height="220" rx="22" fill="#eee" stroke="#888" stroke-width="1.5"/>
   <path d="M 162 64
            L 177 64
            Q 180 64 180 67
@@ -82,17 +80,17 @@
            L 144 82
            A 18 18 0 0 1 162 64 Z"
         fill="none" stroke="#6366f1" stroke-width="1.5"/>
-  <rect x="170" y="150" width="60" height="40" rx="4" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <rect x="170" y="150" width="60" height="40" rx="4" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
   <text x="200" y="176" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#d97706">iroh</text>
-  <text class="keys" x="200" y="208" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#d97706">🔑 a4f7c0…</text>
+  <g class="keys"><path d="M 168.10 204.70 a 3.74 3.74 0 1 0 7.48 0 a 3.74 3.74 0 1 0 -7.48 0 Z M 170.19 204.70 a 1.65 1.65 0 1 0 3.30 0 a 1.65 1.65 0 1 0 -3.30 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="171.84" y="203.71" width="10.56" height="1.98" fill="#eab308"/><rect x="180.97" y="205.69" width="1.43" height="3.30" fill="#eab308"/><rect x="177.67" y="205.69" width="1.43" height="2.20" fill="#eab308"/><text x="185.70" y="208" text-anchor="start" font-family="'Space Mono', monospace" font-size="11" fill="#d97706">a4f7c0…</text></g>
 
   <!-- ========== Bob (Android) ========== -->
-  <rect x="540" y="60" width="120" height="220" rx="22" fill="none" stroke="#888" stroke-width="1.5"/>
-  <rect x="544" y="64" width="112" height="212" rx="18" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <rect x="540" y="60" width="120" height="220" rx="22" fill="#eee" stroke="#888" stroke-width="1.5"/>
+  <rect x="544" y="64" width="112" height="212" rx="18" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
   <circle cx="600" cy="76" r="3" fill="#888"/>
-  <rect x="570" y="150" width="60" height="40" rx="4" fill="none" stroke="#d97706" stroke-width="1.5"/>
+  <rect x="570" y="150" width="60" height="40" rx="4" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
   <text x="600" y="176" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#d97706">iroh</text>
-  <text class="keys" x="600" y="208" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#d97706">🔑 8e2b1d…</text>
+  <g class="keys"><path d="M 568.10 204.70 a 3.74 3.74 0 1 0 7.48 0 a 3.74 3.74 0 1 0 -7.48 0 Z M 570.19 204.70 a 1.65 1.65 0 1 0 3.30 0 a 1.65 1.65 0 1 0 -3.30 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="571.84" y="203.71" width="10.56" height="1.98" fill="#eab308"/><rect x="580.97" y="205.69" width="1.43" height="3.30" fill="#eab308"/><rect x="577.67" y="205.69" width="1.43" height="2.20" fill="#eab308"/><text x="585.70" y="208" text-anchor="start" font-family="'Space Mono', monospace" font-size="11" fill="#d97706">8e2b1d…</text></g>
 
   <!-- ========== User labels ========== -->
   <text x="200" y="305" text-anchor="middle" font-family="'Space Mono', monospace" font-size="16" fill="#6366f1">Alice</text>
@@ -106,9 +104,9 @@
 
   <!-- ========== Bidirectional arrow (6s onwards) ========== -->
   <line class="bi-arr" x1="230" y1="170" x2="570" y2="170" stroke="#6366f1" stroke-width="1.5" marker-start="url(#arr)" marker-end="url(#arr)"/>
+
   <!-- Timer bar (position in loop) -->
   <g>
-    <rect x="0" y="316" width="800" height="3" fill="#e5e7eb"/>
     <rect class="timer-fill" x="0" y="316" width="800" height="3" fill="#9ca3af"/>
   </g>
 </svg>

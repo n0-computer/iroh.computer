@@ -21,7 +21,7 @@ OUT_PATH = os.path.normpath(os.path.join(
     HERE, "..", "public", "blog", "how-iroh-works", "hole-punching.svg"))
 
 MONO = "'Space Mono', monospace"
-INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#374151", "#2563eb", "#dc2626", "#15803d"
+INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#111", "#2563eb", "#dc2626", "#15803d"
 FADED = "#aab2bd"   # inactive/secondary connection — clearly lighter than the structure gray
 CYCLE = 39.0   # one loop; popups fade after both checks are green, then the direct path stands alone
 T_POPUP_FADE = 29.5   # NAT bubbles fade out here (a few seconds after both mappings are validated)
@@ -49,15 +49,69 @@ def dot(color, opa_pts, mot_pts, wire="relay-path"):
   </g>'''
 
 
-def phone(px0, py0, keytext):
+def key_label(cx, y, text, size, color):
+    """A tiny drawn gold key (bow + shaft + teeth) + monospace label, centered on cx
+    (replaces the 🔑 emoji, which no pure-vector renderer can draw)."""
+    s = size
+    gold = "#eab308"
+    w = s * 1.3            # key glyph width
+    gap = s * 0.3
+    xl = cx - (w + gap + s * 0.6 * len(text)) / 2
+    cy = y - s * 0.30
+    rb, rh = s * 0.34, s * 0.15        # bow outer / hole radius
+    bx = xl + rb                       # bow center x
+    hs = s * 0.18                      # shaft thickness
+    xr = xl + w                        # right end
+    top, bot = cy - hs / 2, cy + hs / 2
+    tw = s * 0.13                      # tooth width
+    mono = "'Space Mono', monospace"
+    return (
+        f'<path d="M {bx - rb:.2f} {cy:.2f} a {rb:.2f} {rb:.2f} 0 1 0 {2 * rb:.2f} 0 '
+        f'a {rb:.2f} {rb:.2f} 0 1 0 {-2 * rb:.2f} 0 Z '
+        f'M {bx - rh:.2f} {cy:.2f} a {rh:.2f} {rh:.2f} 0 1 0 {2 * rh:.2f} 0 '
+        f'a {rh:.2f} {rh:.2f} 0 1 0 {-2 * rh:.2f} 0 Z" fill="{gold}" fill-rule="evenodd"/>'
+        f'<rect x="{bx:.2f}" y="{top:.2f}" width="{xr - bx:.2f}" height="{hs:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.30:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw - s * 0.30:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.20:.2f}" fill="{gold}"/>'
+        f'<text x="{xl + w + gap:.2f}" y="{y}" text-anchor="start" font-family="{mono}" font-size="{size}" fill="{color}">{text}</text>'
+    )
+
+
+def iphone_screen(px0, py0, pw, ph, indigo):
+    """iPhone-style screen outline path (with notch) sized to fit inside an outer body of pw x ph."""
+    sx0, sx1 = px0+3, px0+pw-3
+    sy0, sy1 = py0+3, py0+ph-3
+    cx = px0 + pw/2
+    no = 7   # outer notch half-width
+    ni = 4   # inner notch half-width
+    nd = 5   # notch depth
+    ny = sy0 + nd
+    r = 6    # screen corner radius
+    return (
+        f'<path d="M {sx0+r} {sy0} '
+        f'L {cx-no} {sy0} Q {cx-no+2} {sy0} {cx-no+2} {sy0+2} '
+        f'L {cx-no+2} {sy0+3} Q {cx-no+2} {ny} {cx-ni} {ny} '
+        f'L {cx+ni} {ny} Q {cx+no-2} {ny} {cx+no-2} {sy0+3} '
+        f'L {cx+no-2} {sy0+2} Q {cx+no-2} {sy0} {cx+no} {sy0} '
+        f'L {sx1-r} {sy0} A {r} {r} 0 0 1 {sx1} {sy0+r} '
+        f'L {sx1} {sy1-r} A {r} {r} 0 0 1 {sx1-r} {sy1} '
+        f'L {sx0+r} {sy1} A {r} {r} 0 0 1 {sx0} {sy1-r} '
+        f'L {sx0} {sy0+r} A {r} {r} 0 0 1 {sx0+r} {sy0} Z" '
+        f'fill="none" stroke="{indigo}" stroke-width="1"/>'
+    )
+
+def phone(px0, py0, keytext, iphone=False):
     pw, ph = 50, 92
     cx = px0+pw/2
-    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#fff" stroke="{INDIGO}" stroke-width="1.5"/>
-    <rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="none" stroke="{INDIGO}" stroke-width="1"/>
-    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>
-    <rect x="{px0+11}" y="{py0+28}" width="{pw-22}" height="16" rx="3" fill="none" stroke="{AMBER}" stroke-width="1.5"/>
+    if iphone:
+        screen = iphone_screen(px0, py0, pw, ph, INDIGO)
+    else:
+        screen = f'<rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="#eee" stroke="{INDIGO}" stroke-width="1"/>\n    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>'
+    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#eee" stroke="{INDIGO}" stroke-width="1.5"/>
+    {screen}
+    <rect x="{px0+11}" y="{py0+28}" width="{pw-22}" height="16" rx="3" fill="#eee" stroke="{AMBER}" stroke-width="1.5"/>
     <text x="{cx}" y="{py0+40}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">iroh</text>
-    <text x="{cx}" y="{py0+60}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">🔑 {keytext}</text>'''
+    {key_label(cx, py0+60, keytext, 8, AMBER)}'''
 
 
 def router(cx, cy, pub_ip, lan_ip):
@@ -70,7 +124,7 @@ def router(cx, cy, pub_ip, lan_ip):
     <circle cx="{bx-10}" cy="{by-10}" r="1.5" fill="{GRAY}"/>
     <polyline points="{bx+bw},{by+bh-5} {bx+bw+10},{by+bh-5} {bx+bw+10},{by-8}" fill="none" stroke="{GRAY}" stroke-width="1.5"/>
     <circle cx="{bx+bw+10}" cy="{by-10}" r="1.5" fill="{GRAY}"/>
-    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="3" fill="#fff" stroke="{GRAY}" stroke-width="1.5"/>
+    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="3" fill="#eee" stroke="{GRAY}" stroke-width="1.5"/>
     <circle cx="{cx+20}" cy="{by+bh-6}" r="1.5" fill="{AMBER}"/>
     <text x="{cx}" y="{by+bh+15}" text-anchor="middle">{lan_ip}</text>
   </g>'''
@@ -79,7 +133,7 @@ def router(cx, cy, pub_ip, lan_ip):
 def relay(cx, cy, label):
     bx, by, bw, bh = cx-32, cy-9, 64, 18
     s = ['  <g>',
-         f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#fff" stroke="{GRAY}" stroke-width="1.5"/>',
+         f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#eee" stroke="{GRAY}" stroke-width="1.5"/>',
          f'    <line x1="{bx+16}" y1="{by+3}" x2="{bx+16}" y2="{by+bh-3}" stroke="{GRAY}" stroke-width="1"/>',
          f'    <circle cx="{bx+6}" cy="{by+6}" r="1.5" fill="{AMBER}"/>',
          f'    <circle cx="{bx+6}" cy="{by+12}" r="1.5" fill="{GRAY}"/>']
@@ -142,7 +196,7 @@ addaddr_pkt = dot(BLUE,
 addaddr_co_pts = [(0, 0), (1.0, 0), (1.4, 1), (4.0, 1), (4.4, 0), (CYCLE, 0)]
 addaddr_co = f'''  <g opacity="0">
     {anim_opacity(addaddr_co_pts)}
-    <rect x="432" y="150" width="224" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="432" y="150" width="224" height="56" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="446" y="174" font-family="{MONO}" font-size="12" fill="{INK}"><tspan font-weight="bold">ADD_ADDRESS</tspan> 192.168.0.3:4153</text>
     <text x="446" y="194" font-family="{MONO}" font-size="12" fill="{INK}"><tspan font-weight="bold">ADD_ADDRESS</tspan> 4.9.8.2:4153</text>
   </g>'''
@@ -169,7 +223,7 @@ reachout_pkt = dot(BLUE,
 reachout_co_pts = [(0, 0), (6.8, 0), (7.1, 1), (9.3, 1), (9.6, 0), (CYCLE, 0)]
 reachout_co = f'''  <g opacity="0">
     {anim_opacity(reachout_co_pts)}
-    <rect x="246" y="150" width="216" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="246" y="150" width="216" height="56" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="262" y="174" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">REACH_OUT<tspan x="352" font-weight="normal">10.0.0.3:2104</tspan></text>
     <text x="262" y="194" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">REACH_OUT<tspan x="352" font-weight="normal">8.3.1.9:2104</tspan></text>
   </g>'''
@@ -200,9 +254,9 @@ T_AR = 22.9                  # Alice reply: PATH_RESPONSE + PATH_CHALLENGE
 T_BR = 25.7                  # Bob reply: PATH_RESPONSE → validated
 T_BLUE = T_BR + 2.4          # direct path turns blue once the response validates it
 
-DROP_A, DROP_B = (382, 200), (498, 200)   # local drops, band above the routers
-probe_local_a_d = f"M {acx} {A_PH[1]} L {acx} {R1[1]-20} C {acx} 205 300 200 {DROP_A[0]} {DROP_A[1]}"
-probe_local_b_d = f"M {bcx} {B_PH[1]} L {bcx} {R2[1]-20} C {bcx} 205 580 200 {DROP_B[0]} {DROP_B[1]}"
+DROP_A, DROP_B = (acx, 200), (bcx, 200)   # local drops — straight up above each router (no bend toward the other side, which read as if the packet was trying to reach the peer)
+probe_local_a_d = f"M {acx} {A_PH[1]} L {acx} {DROP_A[1]}"
+probe_local_b_d = f"M {bcx} {B_PH[1]} L {bcx} {DROP_B[1]}"
 
 # the one direct (internet) route, Alice(0) -> Bob(1). Every public packet rides it.
 ARC = 158
@@ -259,7 +313,7 @@ def callout(side, lines, t0, t1, w=164):
         for i, (txt, bold) in enumerate(lines))
     return f'''  <g opacity="0">
     {anim_opacity(pts)}
-    <rect x="{x}" y="136" width="{w}" height="{h}" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="{x}" y="136" width="{w}" height="{h}" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
 {rows}
   </g>'''
 
@@ -291,7 +345,7 @@ def nat_bubble(side, l1, l2, t_on, t_used):
       <line x1="{cx-1}" y1="258" x2="{cx+11}" y2="258" stroke="{GRAY}" stroke-width="1.5"/>
       <line x1="{cx-1}" y1="270" x2="{cx+11}" y2="270" stroke="{GRAY}" stroke-width="1.5"/>
       <polygon points="{cx+1},259 {cx+9},259 {cx+5},263.5" fill="{AMBER}" stroke="none"/>
-      <polygon points="{cx},258 {cx+10},258 {cx+5},264 {cx+10},270 {cx},270 {cx+5},264" fill="none" stroke="{GRAY}" stroke-width="1.3"/>
+      <polygon points="{cx},258 {cx+10},258 {cx+5},264 {cx+10},270 {cx},270 {cx+5},264" fill="#eee" stroke="{GRAY}" stroke-width="1.3"/>
       {anim_opacity(hg_pts)}
     </g>
     <g opacity="0">
@@ -344,13 +398,14 @@ relay_stroke = (f'<animate attributeName="stroke" dur="{CYCLE}s" repeatCount="in
 
 VB_X, VB_Y, VB_W, VB_H = 0, 30, 940, 430
 svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root {{ background-color: transparent; color-scheme: light dark; }}</style>
   <!-- relay pipe (Alice <-> relay <-> Bob); fades blue->gray once the direct path takes over -->
   <path id="relay-path" d="{relay_d}" fill="none" stroke="{BLUE}" stroke-width="1.5">{relay_stroke}</path>
   <!-- the direct path: gray as the first packet goes through, blue once validated -->
 {direct_path}
-  <!-- local links (phone <-> router) are always active, so always blue (over both paths) -->
-  <line x1="{acx}" y1="{A_PH[1]}" x2="{acx}" y2="{R1[1]+20}" stroke="{BLUE}" stroke-width="1.5"/>
-  <line x1="{bcx}" y1="{B_PH[1]}" x2="{bcx}" y2="{R2[1]+20}" stroke="{BLUE}" stroke-width="1.5"/>
+  <!-- local links (phone <-> router) — always blue, drawn AFTER the relay path so the phone↔router segment stays blue even while the relay leg fades to gray -->
+  <line x1="{acx}" y1="{A_PH[1]}" x2="{acx}" y2="{R1[1]-20}" stroke="{BLUE}" stroke-width="1.5"/>
+  <line x1="{bcx}" y1="{B_PH[1]}" x2="{bcx}" y2="{R2[1]-20}" stroke="{BLUE}" stroke-width="1.5"/>
   <!-- local probe trajectories (invisible; the packets ride them) -->
   <path id="probe-local-a" d="{probe_local_a_d}" fill="none" stroke="none"/>
   <path id="probe-local-b" d="{probe_local_b_d}" fill="none" stroke="none"/>
@@ -363,7 +418,7 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
 
   <!-- Alice -->
   <g>
-{phone(*A_PH, "1a9c…")}
+{phone(*A_PH, "1a9c…", iphone=True)}
     <text x="{acx}" y="{A_PH[1]+PH+16}" text-anchor="middle" font-family="{MONO}" font-size="13" fill="{INDIGO}">Alice</text>
   </g>
 {alice_facts}
@@ -375,19 +430,9 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
   </g>
 {bob_facts}
 
+  <!-- All packets first so they pass behind the info boxes -->
 {addaddr_pkt}
-
-{addaddr_co}
-
-{alice_knows}
-
 {reachout_pkt}
-
-{reachout_co}
-
-{bob_knows}
-
-  <!-- hole punch: packets first (so they pass behind the info boxes), then drops, then boxes on top -->
 {loc_a_pkt}
 {loc_b_pkt}
 {pub_a_pkt}
@@ -399,12 +444,23 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
 {pub_a_drop}
 {nat_a}
 {nat_b}
+
+  <!-- Callouts/boxes drawn last so they sit on top of paths and packets -->
+{addaddr_co}
+{alice_knows}
+{reachout_co}
+{bob_knows}
 {loc_a_co}
 {loc_b_co}
 {pub_a_co}
 {pub_b_co}
 {reply_co}
 {resp_co}
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="456" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="940" dur="{CYCLE}s" repeatCount="indefinite"/>
+  </rect>
 </svg>
 '''
 

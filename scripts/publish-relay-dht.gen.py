@@ -26,7 +26,7 @@ OUT_PATH = os.path.normpath(os.path.join(
     HERE, "..", "public", "blog", "how-iroh-works", "publish-relay-dht.svg"))
 
 MONO = "'Space Mono', monospace"
-INDIGO, AMBER, GRAY, INK = "#6366f1", "#d97706", "#888", "#374151"
+INDIGO, AMBER, GRAY, INK = "#6366f1", "#d97706", "#888", "#111"
 GREEN, BLUE, RED = "#15803d", "#2563eb", "#dc2626"
 SPEED = 150.0   # px/second — same for every dot
 
@@ -50,15 +50,69 @@ def arc(x1, y1, x2, y2, k=0.16):
     return d, length
 
 
-def phone(px0, py0, keytext):
+def key_label(cx, y, text, size, color):
+    """A tiny drawn gold key (bow + shaft + teeth) + monospace label, centered on cx
+    (replaces the 🔑 emoji, which no pure-vector renderer can draw)."""
+    s = size
+    gold = "#eab308"
+    w = s * 1.3            # key glyph width
+    gap = s * 0.3
+    xl = cx - (w + gap + s * 0.6 * len(text)) / 2
+    cy = y - s * 0.30
+    rb, rh = s * 0.34, s * 0.15        # bow outer / hole radius
+    bx = xl + rb                       # bow center x
+    hs = s * 0.18                      # shaft thickness
+    xr = xl + w                        # right end
+    top, bot = cy - hs / 2, cy + hs / 2
+    tw = s * 0.13                      # tooth width
+    mono = "'Space Mono', monospace"
+    return (
+        f'<path d="M {bx - rb:.2f} {cy:.2f} a {rb:.2f} {rb:.2f} 0 1 0 {2 * rb:.2f} 0 '
+        f'a {rb:.2f} {rb:.2f} 0 1 0 {-2 * rb:.2f} 0 Z '
+        f'M {bx - rh:.2f} {cy:.2f} a {rh:.2f} {rh:.2f} 0 1 0 {2 * rh:.2f} 0 '
+        f'a {rh:.2f} {rh:.2f} 0 1 0 {-2 * rh:.2f} 0 Z" fill="{gold}" fill-rule="evenodd"/>'
+        f'<rect x="{bx:.2f}" y="{top:.2f}" width="{xr - bx:.2f}" height="{hs:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.30:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw - s * 0.30:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.20:.2f}" fill="{gold}"/>'
+        f'<text x="{xl + w + gap:.2f}" y="{y}" text-anchor="start" font-family="{mono}" font-size="{size}" fill="{color}">{text}</text>'
+    )
+
+
+def iphone_screen(px0, py0, pw, ph, indigo):
+    """iPhone-style screen outline path (with notch) sized to fit inside an outer body of pw x ph."""
+    sx0, sx1 = px0+3, px0+pw-3
+    sy0, sy1 = py0+3, py0+ph-3
+    cx = px0 + pw/2
+    no = 7   # outer notch half-width
+    ni = 4   # inner notch half-width
+    nd = 5   # notch depth
+    ny = sy0 + nd
+    r = 6    # screen corner radius
+    return (
+        f'<path d="M {sx0+r} {sy0} '
+        f'L {cx-no} {sy0} Q {cx-no+2} {sy0} {cx-no+2} {sy0+2} '
+        f'L {cx-no+2} {sy0+3} Q {cx-no+2} {ny} {cx-ni} {ny} '
+        f'L {cx+ni} {ny} Q {cx+no-2} {ny} {cx+no-2} {sy0+3} '
+        f'L {cx+no-2} {sy0+2} Q {cx+no-2} {sy0} {cx+no} {sy0} '
+        f'L {sx1-r} {sy0} A {r} {r} 0 0 1 {sx1} {sy0+r} '
+        f'L {sx1} {sy1-r} A {r} {r} 0 0 1 {sx1-r} {sy1} '
+        f'L {sx0+r} {sy1} A {r} {r} 0 0 1 {sx0} {sy1-r} '
+        f'L {sx0} {sy0+r} A {r} {r} 0 0 1 {sx0+r} {sy0} Z" '
+        f'fill="none" stroke="{indigo}" stroke-width="1"/>'
+    )
+
+def phone(px0, py0, keytext, iphone=False):
     pw, ph = 48, 88
     cx = px0+pw/2
-    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#fff" stroke="{INDIGO}" stroke-width="1.5"/>
-    <rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="none" stroke="{INDIGO}" stroke-width="1"/>
-    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>
-    <rect x="{px0+10}" y="{py0+26}" width="{pw-20}" height="16" rx="3" fill="none" stroke="{AMBER}" stroke-width="1.5"/>
+    if iphone:
+        screen = iphone_screen(px0, py0, pw, ph, INDIGO)
+    else:
+        screen = f'<rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="#eee" stroke="{INDIGO}" stroke-width="1"/>\n    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>'
+    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#eee" stroke="{INDIGO}" stroke-width="1.5"/>
+    {screen}
+    <rect x="{px0+10}" y="{py0+26}" width="{pw-20}" height="16" rx="3" fill="#eee" stroke="{AMBER}" stroke-width="1.5"/>
     <text x="{cx}" y="{py0+38}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">iroh</text>
-    <text x="{cx}" y="{py0+58}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">🔑 {keytext}</text>'''
+    {key_label(cx, py0+58, keytext, 8, AMBER)}'''
 
 
 # ============================ geometry ============================
@@ -139,7 +193,7 @@ def answer_dot(wire_id, color_down, launch, reach, back):
 # ============================ static backdrop ============================
 cloud = ['  <!-- Mainline DHT cloud -->', '  <g>']
 for cx, cy, r in cloud_circles:
-    cloud.append(f'    <circle cx="{cx}" cy="{cy}" r="{r}" fill="#eceef2"/>')
+    cloud.append(f'    <circle cx="{cx}" cy="{cy}" r="{r}" fill="#d1d5db"/>')
 cloud.append(f'    <text x="418" y="104" text-anchor="middle" font-family="{MONO}" font-size="15" fill="{INK}">Mainline DHT</text>')
 cloud.append('  </g>')
 cloud = "\n".join(cloud)
@@ -170,7 +224,7 @@ result_pts = [(0, 0), (FIRST_VALID, 0), (FIRST_VALID+0.5, 1), (OUT0, 1), (OUT1, 
 alice = f'''  <!-- Alice (resolver) -->
   <g opacity="0">
     {anim_opacity(alice_pts)}
-{phone(ax0, ay0, "1a9c…")}
+{phone(ax0, ay0, "1a9c…", iphone=True)}
     <text x="{acx}" y="{ay0+PH+16}" text-anchor="middle" font-family="{MONO}" font-size="13" fill="{INDIGO}">Alice</text>
   </g>
   <text x="{ax0-14}" y="{ay0+46}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{INK}" opacity="0">8e2b… is at relay us-east{anim_opacity(result_pts)}</text>'''
@@ -180,12 +234,12 @@ pub_wire_pts = [(0, 0), (0.6, 0), (1.0, 1), (PUB_DONE, 1), (PUB_DONE+0.5, 0), (C
 look_wire_pts = [(0, 0), (LOOK_LAUNCH-0.6, 0), (LOOK_LAUNCH, 1), (LAST_RETURN, 1), (LAST_RETURN+0.6, 0), (CYCLE, 0)]
 wires, packets = [], []
 for i, (d, arr) in enumerate(pub):
-    wires.append(f'  <path id="pw{i}" d="{d}" fill="none" stroke="{BLUE}" stroke-width="1.5" opacity="0">{anim_opacity(pub_wire_pts)}</path>')
+    wires.append(f'  <path id="pw{i}" d="{d}" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0">{anim_opacity(pub_wire_pts)}</path>')
     opa = [(0, 0), (PUB_LAUNCH, 0), (PUB_LAUNCH+0.15, 1), (arr-0.05, 1), (arr+0.1, 0), (CYCLE, 0)]
     mot = [(0, 0), (PUB_LAUNCH, 0), (arr, 1), (CYCLE, 1)]
     packets.append(dot(f"pw{i}", BLUE, opa, mot))
 for i, (d, reach, back, ok) in enumerate(look):
-    wires.append(f'  <path id="lw{i}" d="{d}" fill="none" stroke="{BLUE}" stroke-width="1.5" opacity="0">{anim_opacity(look_wire_pts)}</path>')
+    wires.append(f'  <path id="lw{i}" d="{d}" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0">{anim_opacity(look_wire_pts)}</path>')
     packets.append(answer_dot(f"lw{i}", GREEN if ok else RED, LOOK_LAUNCH, reach, back))
 wires = "\n".join(wires)
 packets = "\n".join(packets)
@@ -195,7 +249,7 @@ pub_co_pts = [(0, 0), (1.6, 0), (2.0, 1), (PUB_DONE, 1), (PUB_DONE+0.5, 0), (CYC
 pub_co = f'''  <!-- DHT put callout (write) -->
   <g opacity="0">
     {anim_opacity(pub_co_pts)}
-    <rect x="40" y="150" width="216" height="70" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="40" y="150" width="216" height="70" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="54" y="172" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">DHT put</text>
     <text x="54" y="192" font-family="{MONO}" font-size="12" fill="{INK}">8e2b…</text>
     <text x="54" y="210" font-family="{MONO}" font-size="12" fill="{INK}"><tspan font-weight="bold">Relay:</tspan> us-east</text>
@@ -206,7 +260,7 @@ read_pts = [(0, 0), (LOOK_LAUNCH-0.3, 0), (LOOK_LAUNCH+0.1, 1), (FIRST_VALID-0.1
 read_co = f'''  <!-- DHT get callout (read request) -->
   <g opacity="0">
     {anim_opacity(read_pts)}
-    <rect x="452" y="236" width="300" height="54" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="452" y="236" width="300" height="54" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="466" y="258" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">DHT get</text>
     <text x="466" y="278" font-family="{MONO}" font-size="12" fill="{INK}">8e2b…</text>
   </g>'''
@@ -216,13 +270,14 @@ ans_pts = [(0, 0), (FIRST_VALID, 0), (FIRST_VALID+0.4, 1), (LAST_RETURN, 1), (LA
 ans_co = f'''  <!-- ANSWER SECTION callout (shown on first valid response) -->
   <g opacity="0">
     {anim_opacity(ans_pts)}
-    <rect x="452" y="236" width="300" height="54" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="452" y="236" width="300" height="54" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="466" y="258" font-family="{MONO}" font-size="12" fill="{INK}">;; ANSWER SECTION:</text>
     <text x="466" y="278" font-family="{MONO}" font-size="12" fill="{BLUE}" font-weight="bold">TXT "relay=https://us-east"</text>
   </g>'''
 
 VB_X, VB_Y, VB_W, VB_H = 0, 44, 820, 376
 svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root {{ background-color: transparent; color-scheme: light dark; }}</style>
 {cloud}
 
 {wires}
@@ -240,6 +295,11 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
 {read_co}
 
 {ans_co}
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="416" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="820" dur="{CYCLE:.2f}s" repeatCount="indefinite"/>
+  </rect>
 </svg>
 '''
 

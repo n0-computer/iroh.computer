@@ -26,7 +26,7 @@ OUT_PATH = os.path.normpath(os.path.join(
     HERE, "..", "public", "blog", "how-iroh-works", "hole-punching-lan.svg"))
 
 MONO = "'Space Mono', monospace"
-INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#374151", "#2563eb", "#dc2626", "#15803d"
+INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#111", "#2563eb", "#dc2626", "#15803d"
 FADED = "#aab2bd"   # inactive/secondary connection — clearly lighter than the structure gray
 CYCLE = 27.0
 T_POPUP_FADE = 23.5   # popups fade a little after the LAN path is validated
@@ -54,15 +54,69 @@ def dot(color, opa_pts, mot_pts, wire):
   </g>'''
 
 
-def phone(px0, py0, keytext):
+def key_label(cx, y, text, size, color):
+    """A tiny drawn gold key (bow + shaft + teeth) + monospace label, centered on cx
+    (replaces the 🔑 emoji, which no pure-vector renderer can draw)."""
+    s = size
+    gold = "#eab308"
+    w = s * 1.3            # key glyph width
+    gap = s * 0.3
+    xl = cx - (w + gap + s * 0.6 * len(text)) / 2
+    cy = y - s * 0.30
+    rb, rh = s * 0.34, s * 0.15        # bow outer / hole radius
+    bx = xl + rb                       # bow center x
+    hs = s * 0.18                      # shaft thickness
+    xr = xl + w                        # right end
+    top, bot = cy - hs / 2, cy + hs / 2
+    tw = s * 0.13                      # tooth width
+    mono = "'Space Mono', monospace"
+    return (
+        f'<path d="M {bx - rb:.2f} {cy:.2f} a {rb:.2f} {rb:.2f} 0 1 0 {2 * rb:.2f} 0 '
+        f'a {rb:.2f} {rb:.2f} 0 1 0 {-2 * rb:.2f} 0 Z '
+        f'M {bx - rh:.2f} {cy:.2f} a {rh:.2f} {rh:.2f} 0 1 0 {2 * rh:.2f} 0 '
+        f'a {rh:.2f} {rh:.2f} 0 1 0 {-2 * rh:.2f} 0 Z" fill="{gold}" fill-rule="evenodd"/>'
+        f'<rect x="{bx:.2f}" y="{top:.2f}" width="{xr - bx:.2f}" height="{hs:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.30:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw - s * 0.30:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.20:.2f}" fill="{gold}"/>'
+        f'<text x="{xl + w + gap:.2f}" y="{y}" text-anchor="start" font-family="{mono}" font-size="{size}" fill="{color}">{text}</text>'
+    )
+
+
+def iphone_screen(px0, py0, pw, ph, indigo):
+    """iPhone-style screen outline path (with notch) sized to fit inside an outer body of pw x ph."""
+    sx0, sx1 = px0+3, px0+pw-3
+    sy0, sy1 = py0+3, py0+ph-3
+    cx = px0 + pw/2
+    no = 7   # outer notch half-width
+    ni = 4   # inner notch half-width
+    nd = 5   # notch depth
+    ny = sy0 + nd
+    r = 6    # screen corner radius
+    return (
+        f'<path d="M {sx0+r} {sy0} '
+        f'L {cx-no} {sy0} Q {cx-no+2} {sy0} {cx-no+2} {sy0+2} '
+        f'L {cx-no+2} {sy0+3} Q {cx-no+2} {ny} {cx-ni} {ny} '
+        f'L {cx+ni} {ny} Q {cx+no-2} {ny} {cx+no-2} {sy0+3} '
+        f'L {cx+no-2} {sy0+2} Q {cx+no-2} {sy0} {cx+no} {sy0} '
+        f'L {sx1-r} {sy0} A {r} {r} 0 0 1 {sx1} {sy0+r} '
+        f'L {sx1} {sy1-r} A {r} {r} 0 0 1 {sx1-r} {sy1} '
+        f'L {sx0+r} {sy1} A {r} {r} 0 0 1 {sx0} {sy1-r} '
+        f'L {sx0} {sy0+r} A {r} {r} 0 0 1 {sx0+r} {sy0} Z" '
+        f'fill="none" stroke="{indigo}" stroke-width="1"/>'
+    )
+
+def phone(px0, py0, keytext, iphone=False):
     pw, ph = 50, 92
     cx = px0+pw/2
-    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#fff" stroke="{INDIGO}" stroke-width="1.5"/>
-    <rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="none" stroke="{INDIGO}" stroke-width="1"/>
-    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>
-    <rect x="{px0+11}" y="{py0+28}" width="{pw-22}" height="16" rx="3" fill="none" stroke="{AMBER}" stroke-width="1.5"/>
+    if iphone:
+        screen = iphone_screen(px0, py0, pw, ph, INDIGO)
+    else:
+        screen = f'<rect x="{px0+3}" y="{py0+3}" width="{pw-6}" height="{ph-6}" rx="6" fill="#eee" stroke="{INDIGO}" stroke-width="1"/>\n    <circle cx="{cx}" cy="{py0+8}" r="1.6" fill="{GRAY}"/>'
+    return f'''    <rect x="{px0}" y="{py0}" width="{pw}" height="{ph}" rx="9" fill="#eee" stroke="{INDIGO}" stroke-width="1.5"/>
+    {screen}
+    <rect x="{px0+11}" y="{py0+28}" width="{pw-22}" height="16" rx="3" fill="#eee" stroke="{AMBER}" stroke-width="1.5"/>
     <text x="{cx}" y="{py0+40}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">iroh</text>
-    <text x="{cx}" y="{py0+60}" text-anchor="middle" font-family="{MONO}" font-size="8" fill="{AMBER}">🔑 {keytext}</text>'''
+    {key_label(cx, py0+60, keytext, 8, AMBER)}'''
 
 
 def router_lan(cx, cy, lan_ip):
@@ -74,7 +128,7 @@ def router_lan(cx, cy, lan_ip):
     <circle cx="{bx-10}" cy="{by-10}" r="1.5" fill="{GRAY}"/>
     <polyline points="{bx+bw},{by+bh-5} {bx+bw+10},{by+bh-5} {bx+bw+10},{by-8}" fill="none" stroke="{GRAY}" stroke-width="1.5"/>
     <circle cx="{bx+bw+10}" cy="{by-10}" r="1.5" fill="{GRAY}"/>
-    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="3" fill="#fff" stroke="{GRAY}" stroke-width="1.5"/>
+    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="3" fill="#eee" stroke="{GRAY}" stroke-width="1.5"/>
     <circle cx="{cx+20}" cy="{by+bh-6}" r="1.5" fill="{AMBER}"/>
     <text x="{cx}" y="{by+bh+15}" text-anchor="middle">{lan_ip}</text>
   </g>'''
@@ -83,7 +137,7 @@ def router_lan(cx, cy, lan_ip):
 def relay(cx, cy, label):
     bx, by, bw, bh = cx-32, cy-9, 64, 18
     s = ['  <g>',
-         f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#fff" stroke="{GRAY}" stroke-width="1.5"/>',
+         f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#eee" stroke="{GRAY}" stroke-width="1.5"/>',
          f'    <line x1="{bx+16}" y1="{by+3}" x2="{bx+16}" y2="{by+bh-3}" stroke="{GRAY}" stroke-width="1"/>',
          f'    <circle cx="{bx+6}" cy="{by+6}" r="1.5" fill="{AMBER}"/>',
          f'    <circle cx="{bx+6}" cy="{by+12}" r="1.5" fill="{GRAY}"/>']
@@ -152,7 +206,7 @@ addaddr_pkt = dot(BLUE,
 addaddr_co_pts = [(0, 0), (1.0, 0), (1.4, 1), (4.4, 1), (4.8, 0), (CYCLE, 0)]
 addaddr_co = f'''  <g opacity="0">
     {anim_opacity(addaddr_co_pts)}
-    <rect x="660" y="108" width="224" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="660" y="108" width="224" height="56" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="674" y="132" font-family="{MONO}" font-size="12" fill="{INK}"><tspan font-weight="bold">ADD_ADDRESS</tspan> 192.168.0.5:4153</text>
     <text x="674" y="152" font-family="{MONO}" font-size="12" fill="{INK}"><tspan font-weight="bold">ADD_ADDRESS</tspan> 4.9.8.2:4153</text>
   </g>'''
@@ -177,7 +231,7 @@ reachout_pkt = dot(BLUE,
 reachout_co_pts = [(0, 0), (7.5, 0), (7.9, 1), (10.9, 1), (11.2, 0), (CYCLE, 0)]
 reachout_co = f'''  <g opacity="0">
     {anim_opacity(reachout_co_pts)}
-    <rect x="56" y="108" width="216" height="56" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="56" y="108" width="216" height="56" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
     <text x="72" y="132" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">REACH_OUT<tspan x="162" font-weight="normal">192.168.0.3:2104</tspan></text>
     <text x="72" y="152" font-family="{MONO}" font-size="12" fill="{INK}" font-weight="bold">REACH_OUT<tspan x="162" font-weight="normal">4.9.8.2:2104</tspan></text>
   </g>'''
@@ -224,7 +278,7 @@ def callout(side, lines, t0, t1, w=170):
         for i, (txt, bold) in enumerate(lines))
     return f'''  <g opacity="0">
     {anim_opacity(pts)}
-    <rect x="{x}" y="136" width="{w}" height="{h}" rx="5" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="{x}" y="136" width="{w}" height="{h}" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
 {rows}
   </g>'''
 
@@ -256,6 +310,7 @@ direct_badge = f'''  <g opacity="0">
 
 VB_X, VB_Y, VB_W, VB_H = 0, 30, 940, 430
 svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root {{ background-color: transparent; color-scheme: light dark; }}</style>
   <!-- stem: the router's uplink to the relay; fades to gray once the LAN path takes over -->
   <path id="stem" d="{stem_d}" fill="none" stroke="{BLUE}" stroke-width="1.5">{stem_stroke}</path>
   <!-- the LAN path (Alice <-> router <-> Bob): always the local link, always blue -->
@@ -270,7 +325,7 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
 
   <!-- Alice -->
   <g>
-{phone(*A_PH, "1a9c…")}
+{phone(*A_PH, "1a9c…", iphone=True)}
     <text x="{acx}" y="{A_PH[1]+PH+16}" text-anchor="middle" font-family="{MONO}" font-size="13" fill="{INDIGO}">Alice</text>
   </g>
 {alice_facts}
@@ -282,26 +337,27 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
   </g>
 {bob_facts}
 
+  <!-- All packets first so they pass behind the info boxes -->
 {addaddr_pkt}
-
-{addaddr_co}
-
-{alice_knows}
-
 {reachout_pkt}
-
-{reachout_co}
-
-{bob_knows}
-
-  <!-- LAN hole punch: packets first (behind the boxes), then callouts on top -->
 {c1_pkt}
 {c2_pkt}
 {r_pkt}
 {direct_badge}
+
+  <!-- Callouts/boxes drawn last so they sit on top of paths and packets -->
+{addaddr_co}
+{alice_knows}
+{reachout_co}
+{bob_knows}
 {c1_co}
 {c2_co}
 {r_co}
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="456" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="940" dur="{CYCLE}s" repeatCount="indefinite"/>
+  </rect>
 </svg>
 '''
 

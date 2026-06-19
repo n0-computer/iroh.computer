@@ -21,11 +21,41 @@ the right of the phone gains a line each time a packet returns.
 import math
 import os
 
+CYCLE = 14.0   # one loop; everything resets afterwards
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 LAND_PATH = os.path.join(HERE, "endpoint-startup.land.txt")
 OUT_PATH = os.path.normpath(os.path.join(
     HERE, "..",
     "public", "blog", "how-iroh-works", "endpoint-startup.svg"))
+
+def key_label(cx, y, text, size, color):
+    """A tiny drawn gold key (bow + shaft + teeth) + monospace label, centered on cx
+    (replaces the 🔑 emoji, which no pure-vector renderer can draw)."""
+    s = size
+    gold = "#eab308"
+    w = s * 1.3            # key glyph width
+    gap = s * 0.3
+    xl = cx - (w + gap + s * 0.6 * len(text)) / 2
+    cy = y - s * 0.30
+    rb, rh = s * 0.34, s * 0.15        # bow outer / hole radius
+    bx = xl + rb                       # bow center x
+    hs = s * 0.18                      # shaft thickness
+    xr = xl + w                        # right end
+    top, bot = cy - hs / 2, cy + hs / 2
+    tw = s * 0.13                      # tooth width
+    mono = "'Space Mono', monospace"
+    return (
+        f'<path d="M {bx - rb:.2f} {cy:.2f} a {rb:.2f} {rb:.2f} 0 1 0 {2 * rb:.2f} 0 '
+        f'a {rb:.2f} {rb:.2f} 0 1 0 {-2 * rb:.2f} 0 Z '
+        f'M {bx - rh:.2f} {cy:.2f} a {rh:.2f} {rh:.2f} 0 1 0 {2 * rh:.2f} 0 '
+        f'a {rh:.2f} {rh:.2f} 0 1 0 {-2 * rh:.2f} 0 Z" fill="{gold}" fill-rule="evenodd"/>'
+        f'<rect x="{bx:.2f}" y="{top:.2f}" width="{xr - bx:.2f}" height="{hs:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.30:.2f}" fill="{gold}"/>'
+        f'<rect x="{xr - tw - s * 0.30:.2f}" y="{bot:.2f}" width="{tw:.2f}" height="{s * 0.20:.2f}" fill="{gold}"/>'
+        f'<text x="{xl + w + gap:.2f}" y="{y}" text-anchor="start" font-family="{mono}" font-size="{size}" fill="{color}">{text}</text>'
+    )
+
 
 land = open(LAND_PATH).read()
 
@@ -56,7 +86,7 @@ def relay(cx, cy, label, ip):
     # location dot
     s.append(f'    <circle cx="{cx}" cy="{cy}" r="2.5" fill="#888"/>')
     # pizzabox body
-    s.append(f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#fff" stroke="#888" stroke-width="1.5"/>')
+    s.append(f'    <rect x="{bx}" y="{by}" width="{bw}" height="{bh}" rx="2" fill="#eee" stroke="#888" stroke-width="1.5"/>')
     # front bezel split line
     s.append(f'    <line x1="{bx+13}" y1="{by+2.5}" x2="{bx+13}" y2="{by+bh-2.5}" stroke="#888" stroke-width="1"/>')
     # LEDs
@@ -107,12 +137,12 @@ bob = f'''  <!-- Bob's FL position indicator + leader line to his phone -->
   </g>
   <!-- Bob (small Android phone) -->
   <g>
-    <rect x="{bx0}" y="{by0}" width="{bw}" height="{bh}" rx="9" fill="#fff" stroke="#6366f1" stroke-width="1.5"/>
-    <rect x="{bx0+3}" y="{by0+3}" width="{bw-6}" height="{bh-6}" rx="6" fill="none" stroke="#6366f1" stroke-width="1"/>
+    <rect x="{bx0}" y="{by0}" width="{bw}" height="{bh}" rx="9" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="{bx0+3}" y="{by0+3}" width="{bw-6}" height="{bh-6}" rx="6" fill="#eee" stroke="#6366f1" stroke-width="1"/>
     <circle cx="{bcx}" cy="{by0+8}" r="1.6" fill="#888"/>
-    <rect x="{bx0+10}" y="{by0+26}" width="{bw-20}" height="16" rx="3" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="{bx0+10}" y="{by0+26}" width="{bw-20}" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
     <text x="{bcx}" y="{by0+38}" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
-    <text x="{bcx}" y="{by0+58}" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">🔑 8e2b…</text>
+    {key_label(bcx, by0+58, "8e2b…", 8, "#d97706")}
   </g>'''
 
 uwx, uwy = round(proj(*seattle)[0]), round(proj(*seattle)[1])
@@ -143,11 +173,16 @@ SPEED = 120.0       # px per second (slow enough that the short us-east hop is s
 START = 3.0         # packets launch after the wires have faded in
 def packet(wid, length):
     dur = 2*length/SPEED   # there and back
+    t0 = START / CYCLE
+    t1 = (START + dur*0.04) / CYCLE
+    tmid = (START + dur*0.5) / CYCLE
+    t2 = (START + dur*0.96) / CYCLE
+    t3 = (START + dur) / CYCLE
+    opa = f'values="0;0;1;1;1;0;0" keyTimes="0;{t0:.4f};{t1:.4f};{tmid:.4f};{t2:.4f};{t3:.4f};1"'
+    mot = f'keyTimes="0;{t0:.4f};{tmid:.4f};{t3:.4f};1" keyPoints="0;0;1;0;0"'
     return f'''    <circle r="4" fill="#6366f1" opacity="0">
-      <animate attributeName="opacity" begin="{START}s" dur="{dur:.2f}s"
-               values="0;1;1;1;0" keyTimes="0;0.04;0.5;0.96;1" fill="freeze"/>
-      <animateMotion begin="{START}s" dur="{dur:.2f}s" fill="freeze"
-                     keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear">
+      <animate attributeName="opacity" begin="0s" dur="{CYCLE}s" repeatCount="indefinite" {opa}/>
+      <animateMotion begin="0s" dur="{CYCLE}s" repeatCount="indefinite" calcMode="linear" {mot}>
         <mpath href="#{wid}"/>
       </animateMotion>
     </circle>'''
@@ -163,46 +198,57 @@ packets = f'''  <!-- ========== Probe packets — equal speed, so us-east return
 def ret_time(length):
     return START + 2*length/SPEED   # packet is back at Bob at START + round-trip dur
 def readline(y, label, ms, begin):
-    return (f'    <text x="372" y="{y}" font-family="\'Space Mono\', monospace" font-size="12" fill="#374151" opacity="0">'
+    t0 = begin / CYCLE
+    t1 = (begin + 0.4) / CYCLE
+    return (f'    <text x="372" y="{y}" font-family="\'Space Mono\', monospace" font-size="12" fill="#111" opacity="0">'
             f'{label}: <tspan fill="#6366f1">{ms} ms</tspan>'
-            f'<animate attributeName="opacity" begin="{begin:.2f}s" dur="0.4s" values="0;1" fill="freeze"/></text>')
+            f'<animate attributeName="opacity" begin="0s" dur="{CYCLE}s" repeatCount="indefinite" '
+            f'values="0;0;1;1" keyTimes="0;{t0:.4f};{t1:.4f};1"/></text>')
 readout = f'''  <!-- ========== Latency readout — a line fades in as each packet returns ========== -->
   <g>
-    <rect class="wires" x="360" y="248" width="126" height="90" rx="6" fill="#fff" stroke="#d1d5db" stroke-width="1"/>
+    <rect class="wires" x="360" y="248" width="126" height="90" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
 {readline(268, "us-east", 19, ret_time(L_ue))}
 {readline(294, "us-west", 71, ret_time(L_uw))}
 {readline(320, "eu-west", 102, ret_time(L_ew))}
     <line x1="372" y1="271" x2="422" y2="271" stroke="#6366f1" stroke-width="1" opacity="0">
-      <animate attributeName="opacity" begin="{ret_time(L_ew):.2f}s" dur="0.5s" values="0;1" fill="freeze"/>
+      <animate attributeName="opacity" begin="0s" dur="{CYCLE}s" repeatCount="indefinite"
+               values="0;0;1;1" keyTimes="0;{ret_time(L_ew)/CYCLE:.4f};{(ret_time(L_ew)+0.5)/CYCLE:.4f};1"/>
     </line>
   </g>'''
 
 # When the last response is in, us-east wins: overlay its wire in connection-blue,
 # then keep it gently pulsing to show the persistent home-relay connection.
-home = f'''  <!-- us-east chosen as home relay: redraw its wire in connection-blue once all latencies are known, then pulse -->
+_rt = ret_time(L_ew)
+home = f'''  <!-- us-east chosen as home relay: blue stroke fades in once all latencies are known; gentle pulse fits into the remaining time -->
   <path d="{d_ue}" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0">
-    <animate attributeName="opacity" begin="{ret_time(L_ew):.2f}s" dur="0.5s" values="0;1" fill="freeze"/>
-    <animate attributeName="opacity" begin="{ret_time(L_ew)+0.5:.2f}s" dur="1.6s" values="1;0.35;1" repeatCount="indefinite"/>
+    <animate attributeName="opacity" begin="0s" dur="{CYCLE}s" repeatCount="indefinite"
+             values="0;0;1;0.35;1;1" keyTimes="0;{_rt/CYCLE:.4f};{(_rt+0.5)/CYCLE:.4f};{(_rt+1.1)/CYCLE:.4f};{(_rt+1.7)/CYCLE:.4f};1"/>
   </path>'''
 
 # The endpoint's public IP appears just below the phone on the first response.
+_pt0 = ret_time(L_ue) / CYCLE
+_pt1 = (ret_time(L_ue) + 0.4) / CYCLE
 phone_ip = f'''  <!-- endpoint public IP, learned from the first relay to respond -->
-  <text x="{bcx}" y="{by0+bh+16}" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888" opacity="0">{ip_bob}<animate attributeName="opacity" begin="{ret_time(L_ue):.2f}s" dur="0.4s" values="0;1" fill="freeze"/></text>'''
+  <text x="{bcx}" y="{by0+bh+16}" text-anchor="middle" font-family="'Space Mono', monospace" font-size="10" fill="#888" opacity="0">{ip_bob}<animate attributeName="opacity" begin="0s" dur="{CYCLE}s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;{_pt0:.4f};{_pt1:.4f};1"/></text>'''
 
 # Cropped viewport: trim the empty Arctic (top) and eastern Europe (right) so the
 # relevant US <-> western-Europe band fills the frame. The land path is unchanged;
 # this just clips it. Keep the MDX <div> aspectRatio in sync with VB_W / VB_H.
 VB_X, VB_Y, VB_W, VB_H = 0, 92, 705, 280
 svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root {{ background-color: transparent; color-scheme: light dark; }}</style>
   <defs>
     <style><![CDATA[
-      .wires {{ opacity: 0; animation: wires-in 1s ease 2s forwards; }}
-      @keyframes wires-in {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
+      .wires {{ opacity: 0; animation: wires-in 14s linear infinite; }}
+      @keyframes wires-in {{
+        0%, 14.29% {{ opacity: 0; }}
+        21.43%, 100% {{ opacity: 1; }}
+      }}
     ]]></style>
   </defs>
 
   <!-- ========== Land (Natural Earth 110m, plate carrée std parallel 45°, US + Europe window) ========== -->
-  <path d="{land}" fill="#e9ecf1" stroke="#c7ccd6" stroke-width="1"/>
+  <path d="{land}" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
 
 {wires}
 
@@ -221,6 +267,11 @@ svg = f'''<svg viewBox="{VB_X} {VB_Y} {VB_W} {VB_H}" xmlns="http://www.w3.org/20
 {home}
 
 {readout}
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="368" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="705" dur="14s" repeatCount="indefinite"/>
+  </rect>
 </svg>
 '''
 
