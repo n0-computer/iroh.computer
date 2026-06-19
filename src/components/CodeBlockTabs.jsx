@@ -12,7 +12,7 @@ export async function CodeBlockTabs({ snippets }) {
     highlighter ??
     (await getHighlighter({
       theme: 'css-variables',
-      langs: ['rust', 'swift', 'javascript', 'kotlin'],
+      langs: ['rust', 'swift', 'javascript', 'kotlin', 'python'],
     }));
 
   const rendered = snippets.map((snippet) => {

@@ -7,7 +7,7 @@ export const AppContext = createContext({})
 
 export function Providers({ children }) {
   return (
-    <ThemeProvider attribute="class" forcedTheme="light" disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
       {children}
     </ThemeProvider>
   );

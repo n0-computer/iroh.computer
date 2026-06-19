@@ -19,6 +19,7 @@ import logoRust from '@/images/language-logos/rust.svg';
 import logoSwift from '@/images/language-logos/swift.svg';
 import logoJavascript from '@/images/language-logos/node.svg';
 import logoKotlin from '@/images/language-logos/kotlin.svg';
+import logoPython from '@/images/language-logos/python.svg';
 import { CodeBlockTabs } from '@/components/CodeBlockTabs';
 
 export const metadata = {
@@ -32,6 +33,7 @@ const languages = [
   { name: 'Rust', logo: logoRust, href: 'https://docs.iroh.computer/languages/rust' },
   { name: 'JavaScript', logo: logoJavascript, href: 'https://docs.iroh.computer/languages/javascript' },
   { name: 'Kotlin', logo: logoKotlin, href: 'https://docs.iroh.computer/languages/kotlin' },
+  { name: 'Python', logo: logoPython, href: 'https://docs.iroh.computer/languages/python' },
 ];
 
 const platforms = [
@@ -76,43 +78,61 @@ export default function Page() {
     <div>
       <HeaderSparse />
 
-      <div className="bg-white dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
+      <div className="bg-white dark:bg-black text-irohGray-700 dark:text-irohGray-100 h-92 justify-between font-space">
         <main className="mb-auto flex flex-col min-h-92">
           {/* hero */}
-          <section className="min-h-92 pt-20 bg-cover overflow-hidden md:h-[600px]">
+          <section className="min-h-92 pt-20 bg-cover overflow-hidden md:h-[480px]">
             <div className='relative max-w-7xl mx-auto'>
               <div className='absolute z-10 overflow-hidden w-full'>
                 <HomeHero className='' />
-                {/* readability scrim: opaque under the text, fading to reveal the grid */}
-                <div className='absolute inset-0 bg-linear-to-r from-white via-white/80 to-transparent dark:from-irohGray-900 dark:via-irohGray-900/80 dark:to-transparent pointer-events-none' />
               </div>
               <div className="relative md:absolute z-40 w-full md:w-auto max-w-7xl mx-auto md:grid md:grid-cols-4 md:gap-4">
                 <div className="col-span-2 pl-8 pr-8 md:pr-0" style={{ paddingTop: 100 }}>
                   <h1 className="z-50 text-5xl font-bold leading-tight">
                     IP addresses <span className="text-irohPurple-500">break,</span> dial keys instead
                   </h1>
-                  <h3 className="text-lg mt-3 leading-normal flex items-start gap-2">
-                    <SquareCheck className="w-5 h-5 shrink-0 mt-1 text-irohPurple-500" aria-hidden="true" />
-                    <span>Add peer-to-peer connectivity to your app, agent, or workflow.</span>
-                  </h3>
-                  <h3 className="text-lg mt-3 leading-normal flex items-start gap-2">
-                    <SquareCheck className="w-5 h-5 shrink-0 mt-1 text-irohPurple-500" aria-hidden="true" />
-                    <span>Low-latency between any platform, cloud, or device.</span>
-                  </h3>
-                  <h3 className="text-lg mt-3 leading-normal flex items-start gap-2">
-                    <SquareCheck className="w-5 h-5 shrink-0 mt-1 text-irohPurple-500" aria-hidden="true" />
-                    <span>No VPNs, user accounts, or proprietary networks.</span>
+                  <h3 className="text-lg mt-3 leading-normal">
+                    Add peer-to-peer connectivity to your app, agent, or workflow.
                   </h3>
                   <div className='flex mt-3 gap-3'>
-                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white dark:bg-irohGray-800 dark:text-irohPurple-500 uppercase hover:bg-irohPurple-600 dark:hover:bg-irohGray-700 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
+                    <a href="https://docs.iroh.computer/quickstart" className="my-4 p-3 px-4 transition bg-irohPurple-500 text-white uppercase hover:bg-irohPurple-600 hover:text-white plausible-event-name=Home+Hero+Start+Project+Click">Read the Docs</a>
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* connect between platforms */}
-          <section className='max-w-7xl mx-auto px-4 pt-2 pb-6'>
+          {/* real-world use */}
+          <section className='max-w-7xl mx-auto'>
+            <LogoCloud />
+          </section>
+
+
+          <section className="relative isolate overflow-hidden bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
+            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 dark:bg-slate-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+            <div className="mx-auto max-w-2xl lg:max-w-4xl">
+              <figure className="mt">
+                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
+                  <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
+                </blockquote>
+                <figcaption className="mt-10">
+                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
+                    <div className="font-semibold text-white">Ari Lotter</div>
+                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
+                      <circle r="1" cx="1" cy="1" />
+                    </svg>
+                    <div className="text-gray-400">Principal Engineer at Nous</div>
+                    <a href="/solutions/nous" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
+                  </div>
+                </figcaption>
+              </figure>
+            </div>
+          </section>
+
+          {/* supported platforms */}
+          <section className='max-w-7xl mx-auto px-4 py-16'>
+            
             <div className='flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
               {languages.map((logo) => (
                 <PlatformLogo key={logo.name} {...logo} />
@@ -125,36 +145,12 @@ export default function Page() {
             </div>
           </section>
 
-
-          <section className="relative isolate overflow-hidden bg-irohGray-100 dark:bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
-            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white dark:bg-gray-900 shadow-xl ring-1 shadow-indigo-500/5 ring-irohGray-900/5 dark:ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-            <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <figure className="mt">
-                <blockquote className="text-center text-xl/8 font-semibold text-irohGray-900 dark:text-white sm:text-2xl/9">
-                  <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
-                </blockquote>
-                <figcaption className="mt-10">
-                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-irohGray-900 dark:text-white">Ari Lotter</div>
-                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-irohGray-900 dark:fill-white">
-                      <circle r="1" cx="1" cy="1" />
-                    </svg>
-                    <div className="text-irohGray-500 dark:text-gray-400">Principal Engineer at Nous</div>
-                    <a href="/solutions/nous" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
-                  </div>
-                </figcaption>
-              </figure>
-            </div>
-          </section>
-
           {/* reach every device */}
           <section className='max-w-7xl mx-auto py-16 px-4'>
             <div className='grid gap-12 grid-cols-1 md:grid-cols-2 items-center'>
               <div>
-                <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100'>Low-latency everywhere</p>
-                <p className='mt-4 text-xl text-irohGray-600 dark:text-irohGray-400'>Write your app once and connect it everywhere, with one API.</p>
-                <ul className='mt-8 space-y-5'>
+              <h3 className='text-5xl font-bold mb-10'> Built for environments where connectivity is unreliable or intermittent</h3>
+                <ul className='space-y-5'>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
                     <p className='text-xl text-irohGray-600 dark:text-irohGray-400'><span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Use all the radios:</span> Wi-Fi, cellular, ethernet, LAN, or <a href="https://docs.iroh.computer/transports/bluetooth" className="text-irohPurple-500 hover:underline">Bluetooth</a>, or bring your own transport.</p>
@@ -165,7 +161,7 @@ export default function Page() {
                   </li>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
-                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'><span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Built-in end-to-end encryption</span>, with opt-in <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">observability</a>.</p>
+                    <p className='text-xl text-irohGray-600 dark:text-irohGray-400'><span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Secure end-to-end encryption</span>, with opt-in <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">observability</a> to diagnose issues and improve performance.</p>
                   </li>
                 </ul>
               </div>
@@ -234,18 +230,18 @@ export default function Page() {
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
                     <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>
-                      <span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Monitored.</span> <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">Observability</a> and <a href="https://docs.iroh.computer/iroh-services/net-diagnostics/quickstart" className="text-irohPurple-500 hover:underline">network diagnostics</a> track connection health and throughput across all your devices and services.
+                      <span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Monitored.</span> <a href="https://docs.iroh.computer/iroh-services/metrics" className="text-irohPurple-500 hover:underline">Observability</a> and <a href="https://docs.iroh.computer/iroh-services/net-diagnostics/quickstart" className="text-irohPurple-500 hover:underline">network diagnostics</a> track connection health and throughput.
                     </p>
                   </li>
                   <li className='flex gap-3'>
                     <SquareCheck className='w-6 h-6 shrink-0 mt-1 text-irohPurple-500' aria-hidden='true' />
                     <p className='text-xl text-irohGray-600 dark:text-irohGray-400'>
-                      <span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Supported.</span> Every major release is supported for multiple years with extended support contracts available. <a href="/services/enterprise" className="text-irohPurple-500 hover:underline">Get help from the pros</a>.
+                      <span className='font-semibold text-irohGray-900 dark:text-irohGray-100'>Supported.</span> Every major release is <a href="https://docs.iroh.computer/about/release-policy" className="text-irohPurple-500 hover:underline">supported for multiple years</a> with extended support contracts available.
                     </p>
                   </li>
                 </ul>
-                <Link href='https://services.iroh.computer/' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
-                  Monitor your App <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
+                <Link href='/services/enterprise' className='inline-block mt-6 text-irohPurple-500 plausible-event-name=Home+Start+Building+Click'>
+                  Get help from the pros <ArrowRightIcon className='inline-block w-5 h-5 ml-2 -mt-1' />
                 </Link>
               </div>
               <div>
@@ -255,16 +251,14 @@ export default function Page() {
           </section>
 
 
-          <section className='max-w-7xl mx-auto py-16 px-4'>
-            <div className='flex flex-col md:flex-row md:items-start md:gap-12 mb-10'>
-              <p className='text-5xl font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 md:w-1/2 shrink-0'>
-                <span className='text-irohPurple-500'>Fast connections.</span>
-                <br />
-                Anywhere.
+          <section className="bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className='max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:gap-12'>
+              <p className='text-5xl font-bold tracking-tight text-white md:w-1/2 shrink-0'>
+                <span className='text-irohPurple-500'>Open source.</span>
                 <br />
                 Forever.
               </p>
-              <p className='text-xl font-medium text-irohGray-600 dark:text-irohGray-400 mt-4 md:mt-2'>
+              <p className='text-xl font-medium text-gray-300 mt-4 md:mt-2'>
                 The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
               </p>
             </div>
@@ -280,6 +274,7 @@ export default function Page() {
                     { logo: logoRust, name: 'Rust' },
                     { logo: logoJavascript, name: 'JavaScript' },
                     { logo: logoKotlin, name: 'Kotlin' },
+                    { logo: logoPython, name: 'Python' },
                   ].map(({ logo, name }) => (
                     <Image
                       key={name}
@@ -417,5 +412,27 @@ fun main() = runBlocking {
     val echoed = bi.recv().readToEnd(64u)
     println(String(echoed))
 }`,
+  },
+  {
+    title: 'Python',
+    label: 'main.py',
+    language: 'python',
+    code: `import asyncio
+from iroh import Endpoint, EndpointOptions, preset_n0
+
+async def main():
+    # Dial a peer and echo a message over a bidirectional stream.
+    endpoint = await Endpoint.bind(EndpointOptions(preset=preset_n0()))
+
+    conn = await endpoint.connect(server_addr, ALPN)
+    bi = await conn.open_bi()
+
+    await bi.send().write_all(b"hello iroh")
+    await bi.send().finish()
+
+    echoed = await bi.recv().read_to_end(64)
+    print(echoed.decode())
+
+asyncio.run(main())`,
   },
 ]
