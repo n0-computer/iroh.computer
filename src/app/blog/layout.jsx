@@ -10,7 +10,9 @@ export default function DocsLayout({children, sections = {}}) {
 
   return (
     <SectionProvider sections={sections}>
-      {children}
+      <div className="dark:bg-black min-h-screen">
+        {children}
+      </div>
     </SectionProvider>
   );
 }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {navItems} from '@/components/Header';
 import GithubStars from './GithubStars';
 import { Button } from './Button';
+import {ThemeToggle} from './ThemeToggle';
 
 function TopLevelNavItem({ href, children }) {
   return (
@@ -100,7 +101,7 @@ export function HeaderSparse() {
   return (
     <nav id="navbar" className={clsx(
       "fixed w-full top-[var(--v1-banner-height,0px)] z-50",
-      "transition-all ease-in duration-200 bg-white dark:bg-irohGray-900 animate-all",
+      "transition-all ease-in duration-200 bg-white dark:bg-black animate-all",
       mobileMenuOpen && 'backdrop-blur-md'
       )}
     >
@@ -135,6 +136,9 @@ export function HeaderSparse() {
                 <li>
                   <GithubStars />
                 </li>
+                <li className="flex items-center">
+                  <ThemeToggle />
+                </li>
               </ul>
             </div>
           </div>
@@ -142,7 +146,7 @@ export function HeaderSparse() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state. */}
-      <div id="mobile-menu" className={clsx("bg-white dark:bg-zinc-900 drop-shadow-md sm:hidden transition-colors ease-in duration-1000", mobileMenuOpen ? "block" : "hidden")} aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
+      <div id="mobile-menu" className={clsx("bg-white dark:bg-black drop-shadow-md sm:hidden transition-colors ease-in duration-1000", mobileMenuOpen ? "block" : "hidden")} aria-hidden="true" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
         <div className="px-2 pt-2 pb-3 space-y-1">
           {navItems.map((item, i ) => {
             if (item.dropdown) {
