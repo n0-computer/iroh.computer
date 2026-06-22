@@ -83,7 +83,7 @@ const featureSections = [
   {
     name: 'Hosting',
     features: [
-      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$199/relay', enterprise: 'Custom' },
+      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$0.27/relay/hour', enterprise: 'Custom' },
       { name: 'Connections per Relay', free: 'Variable', freeNote: 'Rate-limited', pro: '60k', enterprise: 'Custom' },
       { name: 'Multi-region', free: null, pro: true, enterprise: 'Custom' },
       { name: 'Multi-cloud', free: null, pro: null, enterprise: true },
