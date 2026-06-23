@@ -3,23 +3,15 @@
 import { useState } from 'react'
 
 const PRO_BASE = 19
-const INCLUDED_ENDPOINTS = 100
-const INCLUDED_DPM = 10000
-const ENDPOINT_RATE = 0.50
-const METRICS_RATE = 1.49
+const INCLUDED_CONNECTIONS = 5000
+const PER_ENDPOINT_RATE = 0.003
+const MANAGED_RATE = 1
 const RELAY_RATE = 199
+const RELAY_CAPACITY = 60000
 
 const relayOptions = [0, 1, 2, 3, 4, 5]
-const peakConnectionOptions = [100, 200, 300, 500, 1000, 2000, 5000, 10000]
-const avgConnectionOptions = [1, 10, 50, 100, 250, 500, 1000, 2000, 5000]
-const metricsPerNodeOptions = [87, 90, 100, 110]
-
-const frequencyOptions = [
-  { label: 'Every minute', value: '1', factor: 1 },
-  { label: 'Every 5 minutes', value: '0.2', factor: 0.2 },
-  { label: 'Every hour', value: '0.0167', factor: 1 / 60 },
-  { label: 'Every day', value: '0.0007', factor: 1 / 1440 },
-]
+const peakConnectionOptions = [100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+const managedEndpointOptions = [0, 10, 50, 100, 500, 1000]
 
 function formatPrice(n) {
   return `$${n.toFixed(2)}`
@@ -50,21 +42,16 @@ function SelectInput({ label, description, value, onChange, options, formatOptio
 }
 
 export function PricingCalculator() {
-  const [relays, setRelays] = useState(1)
+  const [relays, setRelays] = useState(0)
   const [peakConnections, setPeakConnections] = useState(500)
-  const [avgConnections, setAvgConnections] = useState(100)
-  const [metricsPerNode, setMetricsPerNode] = useState(87)
-  const [frequency, setFrequency] = useState('1')
+  const [managedEndpoints, setManagedEndpoints] = useState(0)
 
-  const freq = frequencyOptions.find((f) => f.value === frequency)?.factor ?? 1
-  const dpm = avgConnections * metricsPerNode * freq
-
-  const extraConnections = Math.max(0, peakConnections - INCLUDED_ENDPOINTS)
-  const connectionsCost = (extraConnections / 100) * ENDPOINT_RATE
-  const extraDpm = Math.max(0, dpm - INCLUDED_DPM)
-  const metricsCost = (extraDpm / 1000) * METRICS_RATE
+  const includedEndpoints = relays > 0 ? relays * RELAY_CAPACITY : INCLUDED_CONNECTIONS
+  const extraConnections = Math.max(0, peakConnections - includedEndpoints)
+  const connectionsCost = extraConnections * PER_ENDPOINT_RATE
+  const managedCost = managedEndpoints * MANAGED_RATE
   const relayCost = relays * RELAY_RATE
-  const total = PRO_BASE + connectionsCost + metricsCost + relayCost
+  const total = PRO_BASE + connectionsCost + managedCost + relayCost
 
   return (
     <div className="mt-16 mb-8 max-w-5xl mx-auto">
@@ -78,55 +65,26 @@ export function PricingCalculator() {
           <div className="space-y-6">
             <SelectInput
               label="Number of relays"
-              description="Dedicated relay servers for your application"
+              description="Start multitenant; add dedicated relays as you scale"
               value={relays}
               onChange={setRelays}
               options={relayOptions}
+              formatOption={(n) => (n === 0 ? 'Multitenant' : `${n} dedicated relay${n === 1 ? '' : 's'}`)}
             />
             <SelectInput
               label="Peak concurrent endpoints"
-              description="Maximum endpoints sending metrics at the same time"
+              description="Maximum endpoints connected at the same time"
               value={peakConnections}
               onChange={setPeakConnections}
               options={peakConnectionOptions}
             />
             <SelectInput
-              label="Average endpoints"
-              description="Average number of connected endpoints"
-              value={avgConnections}
-              onChange={setAvgConnections}
-              options={avgConnectionOptions}
+              label="Number of managed endpoints"
+              description="Endpoints with full metrics & remote control — $1/mo each"
+              value={managedEndpoints}
+              onChange={setManagedEndpoints}
+              options={managedEndpointOptions}
             />
-            <SelectInput
-              label="Metrics per endpoint"
-              description="Number of metric series each endpoint reports"
-              value={metricsPerNode}
-              onChange={setMetricsPerNode}
-              options={metricsPerNodeOptions}
-            />
-            <div className="space-y-2">
-              <label className="text-base font-medium text-irohGray-800 dark:text-irohGray-100">Push frequency</label>
-              <p className="text-sm text-irohGray-500 dark:text-irohGray-400">
-                How often each endpoint pushes metrics
-              </p>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value)}
-                className="w-40 rounded-md border border-irohGray-300 dark:border-irohGray-600 bg-white dark:bg-irohGray-800 text-irohGray-800 dark:text-irohGray-100 px-3 py-2 text-sm"
-              >
-                {frequencyOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <p className="text-base text-irohGray-500 dark:text-irohGray-400">
-              Calculated DPM:{' '}
-              <span className="font-medium text-irohGray-800 dark:text-irohGray-100">
-                {formatNumber(Math.round(dpm))}
-              </span>
-            </p>
           </div>
 
           {/* Cost breakdown */}
@@ -144,31 +102,31 @@ export function PricingCalculator() {
                   <span className="font-medium">{formatPrice(relayCost)}/mo</span>
                 </div>
                 <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5">
-                  {relays} &times; ${RELAY_RATE}/each
+                  {relays === 0 ? 'Multitenant (included)' : `${relays} × $${RELAY_RATE}/each`}
                 </p>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <span>Connections</span>
+                  <span>Endpoints</span>
                   <span className="font-medium">{formatPrice(connectionsCost)}/mo</span>
                 </div>
                 <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraConnections === 0 ? 'italic' : ''}`}>
                   {extraConnections === 0
-                    ? 'Included in base plan'
-                    : `${formatNumber(extraConnections)} extra \u00d7 $${ENDPOINT_RATE}/100`}
+                    ? `${formatNumber(includedEndpoints)} included`
+                    : `${formatNumber(extraConnections)} extra × $${PER_ENDPOINT_RATE}/endpoint`}
                 </p>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <span>Metrics DPM</span>
-                  <span className="font-medium">{formatPrice(metricsCost)}/mo</span>
+                  <span>Managed endpoints</span>
+                  <span className="font-medium">{formatPrice(managedCost)}/mo</span>
                 </div>
-                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraDpm === 0 ? 'italic' : ''}`}>
-                  {extraDpm === 0
-                    ? 'Included in base plan'
-                    : `${formatNumber(Math.round(extraDpm))} extra DPM \u00d7 $${METRICS_RATE}/1K`}
+                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${managedEndpoints === 0 ? 'italic' : ''}`}>
+                  {managedEndpoints === 0
+                    ? 'None selected'
+                    : `${formatNumber(managedEndpoints)} × $${MANAGED_RATE}/mo`}
                 </p>
               </div>
 

@@ -4,7 +4,7 @@ import { FooterMarketing } from '@/components/FooterMarketing'
 import { PricingCalculator } from '@/components/PricingCalculator'
 import { ContactTrigger } from '@/components/ContactButton'
 import Link from 'next/link'
-import { Check, Minus, Activity, BarChart3, Server, Headphones } from 'lucide-react'
+import { Check, Minus, BarChart3, Server, Headphones } from 'lucide-react'
 
 export const metadata = {
   title: 'Pricing | Iroh',
@@ -15,87 +15,104 @@ const SERVICES_URL = 'https://services.iroh.computer'
 
 const plans = [
   {
-    name: 'Free',
-    description: 'For local development and testing.',
+    name: 'Community',
+    description: 'Local development and testing on public infrastructure.',
     price: '$0',
     period: '/month',
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-free`,
     buttonLabel: 'Get Started',
     features: [
-      'All features in Pro, limited',
-      '7 day retention',
+
+      '1kb/sec rate limit',
+      'Public relays only',
+      '7 day metrics retention',
       'Community support',
     ],
   },
   {
     name: 'Pro',
-    description: 'For shipping your app to prod.',
+    description: 'Shipping your app to production on multi-tenant infrastructure.',
     price: '$19',
     period: '/month',
     popular: true,
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-pro`,
-    buttonLabel: 'Free trial',
+    buttonLabel: 'Start free trial',
     features: [
-      'Pay as you go pricing',
-      '30 day retention',
-      '8x5 support tickets',
+      '1mb/sec rate limit',
+      { label: '5,000 concurrent endpoints', note: 'then $0.003 per endpoint' },
+      'Authentication',
+      '30 day metrics retention',
+      { label: '250GB egress', note: 'then $0.09 / GB' },
+      'Email support',
+    ]
+  },
+  {
+    name: 'Dedicated',
+    description: 'Scaling your network with limited interruption.',
+    price: '$199',
+    period: '/month',
+    href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-dedicated`,
+    buttonLabel: 'Start free trial',
+    inherits: 'Everything in Pro, plus',
+    features: [
+      'No rate limits',
+      "Unlimited users",
+      'Dedicated infrastructure',
+      'Version locking',
+      'Uptime SLAs available'
     ],
   },
   {
     name: 'Enterprise',
-    description: 'For large-scale deployments.',
-    price: 'Contact Us',
+    description: 'For deployments that have unique requirements.',
+    price: 'Custom',
     period: '',
     contact: true,
-    buttonLabel: "Let's Chat",
+    buttonLabel: 'Get in touch',
     features: [
-      'On-prem and multi-cloud',
-      'Custom retention',
-      'SLAs',
-      'Support Engineer',
+      'BYO Cloud supported',
+      'Custom SLA & DPA',
+      'Dedicated support engineer',
+      'Extended support contracts',
+      '24x7x365 premium support',
+      'Private channel'
     ],
   },
 ]
 
 const sectionIcons = {
-  Platform: Activity,
-  Metrics: BarChart3,
-  Hosting: Server,
-  Support: Headphones,
+  Networking: Server,
+  'Endpoint Management & Observability': BarChart3,
+  'Support & Compliance': Headphones,
 }
 
 const featureSections = [
   {
-    name: 'Platform',
+    name: 'Networking',
     features: [
-      { name: 'Collaborators', free: 'One user', pro: 'Unlimited users', enterprise: 'Unlimited users' },
-      { name: 'Network Diagnostics', free: '3 reports', pro: '10 reports', proNote: 'then pay as you go', enterprise: 'Custom', enterpriseNote: 'Volume discounts' },
+      { name: 'Global relay network', community: true, pro: true, dedicated: true, enterprise: true },
+      { name: 'Dedicated infrastructure', community: null, pro: null, dedicated: true, enterprise: true },
+      { name: 'Multi-region deployment', community: null, pro: null, dedicated: true, enterprise: true },
+      { name: 'Rate limits', community: '1 KB/s', pro: '1 MB/s', dedicated: 'None', enterprise: 'None' },
+      { name: 'Peak concurrent endpoints', community: 'Shared', pro: '5,000', proNote: 'then $0.003 / ep', dedicated: 'Unlimited', enterprise: 'Custom' },
     ],
   },
   {
-    name: 'Metrics',
+    name: 'Endpoint Management & Observability',
     features: [
-      { name: 'Data Points per Minute', free: '1K DPM', freeNote: '100 metrics \u00d7 10 endpoints', pro: '10K DPM', proNote: 'then $1.49/1K DPM', enterprise: 'Custom', enterpriseNote: 'Volume discounts' },
-      { name: 'Retention', free: '7 days', pro: '30 days', enterprise: 'Custom' },
-      { name: 'Concurrent Endpoints', free: '10', pro: '100', proNote: 'then $0.50/100 endpoints', enterprise: 'Custom' },
+      { name: 'Aggregated metrics', community: true, pro: true, dedicated: true, enterprise: true },
+      { name: 'Full metrics', community: null, pro: 'Add-on', dedicated: 'Add-on', enterprise: 'Add-on' },
+      { name: 'Log collection', community: null, pro: 'Add-on', dedicated: 'Add-on', enterprise: 'Add-on' },
+      { name: 'Alerting', community: null, pro: 'Add-on', dedicated: 'Add-on', enterprise: 'Add-on' },
+      { name: 'Network diagnostics', community: null, pro: 'Add-on', dedicated: 'Add-on', enterprise: true },
     ],
   },
   {
-    name: 'Hosting',
+    name: 'Support & Compliance',
     features: [
-      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$199/relay', enterprise: 'Custom' },
-      { name: 'Connections per Relay', free: 'Variable', freeNote: 'Rate-limited', pro: '60k', enterprise: 'Custom' },
-      { name: 'Multi-region', free: null, pro: true, enterprise: 'Custom' },
-      { name: 'Multi-cloud', free: null, pro: null, enterprise: true },
-      { name: 'Dedicated DNS', free: null, pro: null, enterprise: true },
-    ],
-  },
-  {
-    name: 'Support',
-    features: [
-      { name: 'Community (Github & Discord)', free: true, pro: true, enterprise: true },
-      { name: 'SLAs', free: null, pro: null, enterprise: 'Custom' },
-      { name: 'Dedicated Support Engineer', free: null, pro: null, enterprise: true },
+      { name: 'Uptime SLA', community: null, pro: null, dedicated: 'Available', enterprise: true },
+      { name: 'Priority support', community: null, pro: null, dedicated: true, enterprise: true },
+      { name: 'Custom DPA / data residency', community: null, pro: null, dedicated: null, enterprise: true },
     ],
   },
 ]
@@ -144,8 +161,8 @@ export default function PricingPage() {
 
         {/* Plan Cards */}
         <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-5xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="container mx-auto max-w-7xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {plans.map((plan) => (
                 <div
                   key={plan.name}
@@ -174,14 +191,31 @@ export default function PricingPage() {
                   </p>
                   <div className="flex-1">
                     <div className="border-t border-irohGray-200 dark:border-irohGray-600 mt-6 pt-4" />
+                    {plan.inherits && (
+                      <p className="mb-3 text-sm font-semibold">{plan.inherits}</p>
+                    )}
                     <ul className="mt-2 space-y-3 text-sm">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex gap-x-3">
-                          <Check className="h-5 w-5 flex-none text-irohPurple-500" />
-                          {feature}
-                        </li>
-                      ))}
+                      {plan.features.map((feature) => {
+                        const label = typeof feature === 'string' ? feature : feature.label
+                        const note = typeof feature === 'string' ? null : feature.note
+                        return (
+                          <li key={label} className="flex gap-x-3">
+                            <Check className="h-5 w-5 flex-none text-irohPurple-500" />
+                            <span>
+                              {label}
+                              {note && (
+                                <span className="block text-xs text-irohGray-500 dark:text-irohGray-400">{note}</span>
+                              )}
+                            </span>
+                          </li>
+                        )
+                      })}
                     </ul>
+                    {plan.note && (
+                      <p className="mt-4 pt-3 border-t border-irohGray-200 dark:border-irohGray-600 text-xs text-irohGray-500 dark:text-irohGray-400">
+                        {plan.note}
+                      </p>
+                    )}
                   </div>
                   {plan.contact ? (
                     <ContactTrigger
@@ -217,12 +251,13 @@ export default function PricingPage() {
           <div className="container mx-auto max-w-5xl">
             <h2 className="text-3xl font-bold mb-8 text-center">Compare plans</h2>
             <div className="overflow-x-auto">
-              <table className="w-full text-base min-w-[600px]">
+              <table className="w-full text-base min-w-[760px]">
                 <thead>
                   <tr className="border-b border-irohGray-300 dark:border-irohGray-700">
                     <th className="pb-4 text-left" />
-                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Free</th>
+                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Community</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Pro</th>
+                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Dedicated</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Enterprise</th>
                   </tr>
                 </thead>
@@ -232,7 +267,7 @@ export default function PricingPage() {
                     return (
                       <Fragment key={section.name}>
                         <tr>
-                          <td className="pt-8 pb-4 pl-2 font-bold text-xl border-b-2 border-irohPurple-500/30" colSpan={4}>
+                          <td className="pt-8 pb-4 pl-2 font-bold text-xl border-b-2 border-irohPurple-500/30" colSpan={5}>
                             <span className="inline-flex items-center gap-3 text-irohPurple-500">
                               {Icon && <Icon className="h-5 w-5" />}
                               {section.name}
@@ -244,9 +279,10 @@ export default function PricingPage() {
                             <td className="pl-2 pr-8 py-4 font-medium text-irohGray-600 dark:text-irohGray-300">
                               {feature.name}
                             </td>
-                            <FeatureCell value={feature.free} note={feature.freeNote} />
+                            <FeatureCell value={feature.community} />
                             <FeatureCell value={feature.pro} note={feature.proNote} />
-                            <FeatureCell value={feature.enterprise} note={feature.enterpriseNote} />
+                            <FeatureCell value={feature.dedicated} />
+                            <FeatureCell value={feature.enterprise} />
                           </tr>
                         ))}
                       </Fragment>
