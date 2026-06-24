@@ -14,8 +14,9 @@ One master SMIL loop (CYCLE seconds): publish -> Alice resolves -> arrows fade
 out -> final state holds ~10s -> loop.
 
 Edit this script and run:  python3 publish-relay-dht.gen.py
-Writes ../public/blog/how-iroh-works/publish-relay-dht.svg.
-Keep the MDX <div> aspectRatio in sync with VB_W / VB_H.
+Writes ../public/animations/publish-relay-dht.svg.
+The page embeds this via <object>/<img src=... style='width:100%'/>; the
+intrinsic aspect ratio comes from the SVG viewBox (VB_W x VB_H).
 """
 
 import math
@@ -23,7 +24,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_PATH = os.path.normpath(os.path.join(
-    HERE, "..", "public", "blog", "how-iroh-works", "publish-relay-dht.svg"))
+    HERE, "..", "public", "animations", "publish-relay-dht.svg"))
 
 MONO = "'Space Mono', monospace"
 INDIGO, AMBER, GRAY, INK = "#6366f1", "#d97706", "#888", "#111"

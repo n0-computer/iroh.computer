@@ -35,8 +35,8 @@ We have had a lot of explanations about how iroh works in the past. But before 1
 Iroh is a lightweight native library that is meant to be embedded into applications. It can be embedded in rust applications [directly][iroh-crate], and into [C][iroh-c-ffi-repo], [C++][iroh-c-ffi-repo], [swift][iroh-swift], [python][iroh-python], [javascript][iroh-js] and [kotlin][iroh-kotlin] via [our bindings][iroh-ffi].
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%', aspectRatio: '1200 / 260'}}>
-  <object data="/blog/how-iroh-works/embedding-phone.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/embedding-phone.svg" alt="iroh embedded across six device contexts: iOS, Android, desktop, browser, server, embedded" style={{width: '100%', height: '100%'}} />
+  <object data="/animations/embedding-phone.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+    <img src="/animations/embedding-phone.svg" alt="iroh embedded across six device contexts: iOS, Android, desktop, browser, server, embedded" style={{width: '100%', height: '100%'}} />
   </object>
 </div>
 
@@ -47,8 +47,8 @@ Iroh is a lightweight native library that is meant to be embedded into applicati
 Iroh endpoints are identified by a cryptographic key. This allows us to connect no matter where the remote endpoint is.
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%', aspectRatio: '800 / 320'}}>
-  <object data="/blog/how-iroh-works/connect-by-key.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-    <img src="/blog/how-iroh-works/connect-by-key.svg" alt="Alice connects to Bob by key — IPs change, the key stays stable" style={{width: '100%', height: '100%'}} />
+  <object data="/animations/connect-by-key.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+    <img src="/animations/connect-by-key.svg" alt="Alice connects to Bob by key — IPs change, the key stays stable" style={{width: '100%', height: '100%'}} />
   </object>
 </div>
 
@@ -60,11 +60,11 @@ When conditions change, we immediately react and choose the new best path. This 
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/routing-moves.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/routing-moves.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '800 / 380'}}>
-    <object data="/blog/how-iroh-works/routing-moves.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/routing-moves.svg" alt="Alice and Bob connected via a shared router, with two more routers available for when Bob moves" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/routing-moves.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/routing-moves.svg" alt="Alice and Bob connected via a shared router, with two more routers available for when Bob moves" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>
@@ -93,11 +93,11 @@ Iroh works just fine with a single relay, but works best if you have relays in a
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '700px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/endpoint-startup.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/endpoint-startup.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '705 / 280'}}>
-    <object data="/blog/how-iroh-works/endpoint-startup.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/endpoint-startup.svg" alt="A map of the US and Europe with iroh relays in us-west (Seattle), us-east (Delaware), and eu-west (Frankfurt), and an endpoint in Florida" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/endpoint-startup.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/endpoint-startup.svg" alt="A map of the US and Europe with iroh relays in us-west (Seattle), us-east (Delaware), and eu-west (Frankfurt), and an endpoint in Florida" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>
@@ -114,11 +114,11 @@ We offer a mechanism based on DNS out of the box. Bob publishes a signed DNS rec
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/publish-relay.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/publish-relay.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '820 / 376'}}>
-    <object data="/blog/how-iroh-works/publish-relay.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/publish-relay.svg" alt="Bob publishes a signed DNS record with his home relay to dns.iroh.link via an HTTPS PUT; Alice resolves it with a DNS lookup" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/publish-relay.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/publish-relay.svg" alt="Bob publishes a signed DNS record with his home relay to dns.iroh.link via an HTTPS PUT; Alice resolves it with a DNS lookup" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>
@@ -129,11 +129,11 @@ The above mechanism works fine in most cases. But maybe you want something that 
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '760px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/publish-relay-dht.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/publish-relay-dht.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '820 / 376'}}>
-    <object data="/blog/how-iroh-works/publish-relay-dht.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/publish-relay-dht.svg" alt="Bob publishes his signed record to several random nodes of the Mainline DHT; Alice resolves it by querying several random nodes" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/publish-relay-dht.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/publish-relay-dht.svg" alt="Bob publishes his signed record to several random nodes of the Mainline DHT; Alice resolves it by querying several random nodes" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>
@@ -151,11 +151,11 @@ Hole punching happens *inside* the QUIC connection via an extension `n0_nat_trav
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '780px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/hole-punching.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/hole-punching.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '940 / 430'}}>
-    <object data="/blog/how-iroh-works/hole-punching.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/hole-punching.svg" alt="Alice and Bob, each behind a home router, connected through the relay — all data flows up to the relay and back down" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/hole-punching.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/hole-punching.svg" alt="Alice and Bob, each behind a home router, connected through the relay — all data flows up to the relay and back down" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>
@@ -167,11 +167,11 @@ If two devices are in the same network, hole punching is not needed. Each side j
 
 <div className="not-prose" style={{margin: '1.5em auto', maxWidth: '780px', width: '100%'}}>
   <div style={{textAlign: 'right', marginBottom: '0.25em'}}>
-    <a href="/blog/how-iroh-works/hole-punching-lan.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
+    <a href="/animations/hole-punching-lan.svg" target="_blank" rel="noopener noreferrer" style={{fontSize: '0.7rem', color: '#888', textDecoration: 'none'}}>open in new window ↗</a>
   </div>
   <div style={{width: '100%', aspectRatio: '940 / 430'}}>
-    <object data="/blog/how-iroh-works/hole-punching-lan.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
-      <img src="/blog/how-iroh-works/hole-punching-lan.svg" alt="Alice and Bob on the same home network discover each other over the relay, then connect directly across the LAN — the relay uplink fades away once the local path is validated" style={{width: '100%', height: '100%'}} />
+    <object data="/animations/hole-punching-lan.svg" type="image/svg+xml" style={{width: '100%', height: '100%', display: 'block'}}>
+      <img src="/animations/hole-punching-lan.svg" alt="Alice and Bob on the same home network discover each other over the relay, then connect directly across the LAN — the relay uplink fades away once the local path is validated" style={{width: '100%', height: '100%'}} />
     </object>
   </div>
 </div>

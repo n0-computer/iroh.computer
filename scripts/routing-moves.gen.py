@@ -6,14 +6,15 @@ Bob's commute story: home wifi (R1) → cellular (R2, cell tower) → in-flight
 20s loop, all SMIL so every element shares one timeline (no CSS/SMIL drift).
 
 To change it, edit this script and run:  python3 routing-moves.gen.py
-It writes ../public/blog/how-iroh-works/routing-moves.svg.
-Keep the MDX <div> aspectRatio in sync with VB_W / VB_H.
+It writes ../public/animations/routing-moves.svg.
+The page embeds this via <object>/<img src=... style='width:100%'/>; the
+intrinsic aspect ratio comes from the SVG viewBox (VB_W x VB_H).
 """
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_PATH = os.path.normpath(os.path.join(
-    HERE, "..", "public", "blog", "how-iroh-works", "routing-moves.svg"))
+    HERE, "..", "public", "animations", "routing-moves.svg"))
 
 MONO = "'Space Mono', monospace"
 INDIGO, AMBER, GRAY = "#6366f1", "#d97706", "#888"

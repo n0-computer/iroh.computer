@@ -12,8 +12,9 @@ in sync: publish once -> record added -> Alice resolves once -> arrows fade out
 -> final state holds ~10s -> loop.
 
 To change it, edit this script and run:  python3 publish-relay.gen.py
-It writes ../public/blog/how-iroh-works/publish-relay.svg.
-Keep the MDX <div> aspectRatio in sync with VB_W / VB_H.
+It writes ../public/animations/publish-relay.svg.
+The page embeds this via <object>/<img src=... style='width:100%'/>; the
+intrinsic aspect ratio comes from the SVG viewBox (VB_W x VB_H).
 """
 
 import math
@@ -21,7 +22,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_PATH = os.path.normpath(os.path.join(
-    HERE, "..", "public", "blog", "how-iroh-works", "publish-relay.svg"))
+    HERE, "..", "public", "animations", "publish-relay.svg"))
 
 MONO = "'Space Mono', monospace"
 INDIGO, AMBER, GRAY, INK = "#6366f1", "#d97706", "#888", "#111"

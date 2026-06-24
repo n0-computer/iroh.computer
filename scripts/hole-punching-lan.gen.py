@@ -15,15 +15,16 @@ gray and the two legs (the direct LAN path) carry everything.
 Same look as the other how-iroh-works figures.
 
 Edit this script and run:  python3 hole-punching-lan.gen.py
-Writes ../public/blog/how-iroh-works/hole-punching-lan.svg.
-Keep the MDX <div> aspectRatio in sync with VB_W / VB_H.
+Writes ../public/animations/hole-punching-lan.svg.
+The page embeds this via <object>/<img src=... style='width:100%'/>; the
+intrinsic aspect ratio comes from the SVG viewBox (VB_W x VB_H).
 """
 
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_PATH = os.path.normpath(os.path.join(
-    HERE, "..", "public", "blog", "how-iroh-works", "hole-punching-lan.svg"))
+    HERE, "..", "public", "animations", "hole-punching-lan.svg"))
 
 MONO = "'Space Mono', monospace"
 INDIGO, AMBER, GRAY, INK, BLUE, RED, GREEN = "#6366f1", "#d97706", "#888", "#111", "#2563eb", "#dc2626", "#15803d"
