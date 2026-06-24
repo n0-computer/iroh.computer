@@ -5,13 +5,10 @@ import References from '@/components/References'
 import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { formatDate } from '@/lib/formatDate'
-// TEMP-DARK-TOGGLE: remove this import and the <TempDarkToggle/> below to revert.
-import { TempDarkToggle } from '@/components/TempDarkToggle'
 
 export function BlogPostLayout({ article, references = [], children }) {
   return (
     <div>
-      <TempDarkToggle />
       <HeaderSparse />
       <div className="px-5 sm:px-0 mt-24 font-space">
         <div className="xl:relative">
