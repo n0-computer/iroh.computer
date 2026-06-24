@@ -7,7 +7,8 @@ const INCLUDED_ENDPOINTS = 100
 const INCLUDED_DPM = 10000
 const ENDPOINT_RATE = 0.50
 const METRICS_RATE = 1.49
-const RELAY_RATE = 199
+const RELAY_HOURLY_RATE = 0.27
+const HOURS_PER_MONTH = 730
 
 const relayOptions = [0, 1, 2, 3, 4, 5]
 const peakConnectionOptions = [100, 200, 300, 500, 1000, 2000, 5000, 10000]
@@ -63,7 +64,7 @@ export function PricingCalculator() {
   const connectionsCost = (extraConnections / 100) * ENDPOINT_RATE
   const extraDpm = Math.max(0, dpm - INCLUDED_DPM)
   const metricsCost = (extraDpm / 1000) * METRICS_RATE
-  const relayCost = relays * RELAY_RATE
+  const relayCost = relays * RELAY_HOURLY_RATE * HOURS_PER_MONTH
   const total = PRO_BASE + connectionsCost + metricsCost + relayCost
 
   return (
@@ -144,7 +145,7 @@ export function PricingCalculator() {
                   <span className="font-medium">{formatPrice(relayCost)}/mo</span>
                 </div>
                 <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5">
-                  {relays} &times; ${RELAY_RATE}/each
+                  {relays} &times; ${RELAY_HOURLY_RATE}/hour &times; {HOURS_PER_MONTH} hrs
                 </p>
               </div>
 

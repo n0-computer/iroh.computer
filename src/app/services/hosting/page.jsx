@@ -17,7 +17,7 @@ export default function HostingPage() {
     <div>
       <HeaderSparse />
 
-      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100">
+      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero Section */}
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-6xl pt-12">
@@ -85,7 +85,7 @@ export default function HostingPage() {
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Server className="h-10 w-10 text-irohPurple-500 mb-4" />
                 <h3 className="text-xl font-bold mb-2">Cloud</h3>
-                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$199<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
+                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$0.27<span className="text-base font-normal text-irohGray-500">/hour and up</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   For production applications ready to scale with low latency.
                 </p>
