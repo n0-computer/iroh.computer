@@ -23,7 +23,7 @@ const plans = [
     buttonLabel: 'Get Started',
     features: [
 
-      '1kb/sec rate limit',
+      '5kb/sec rate limit',
       'Public relays only',
       '7 day metrics retention',
       'Community support',
@@ -39,7 +39,7 @@ const plans = [
     buttonLabel: 'Start free trial',
     features: [
       '1mb/sec rate limit',
-      { label: '5,000 concurrent endpoints', note: 'then $0.003 per endpoint' },
+      { label: '10,000 concurrent endpoints', note: 'then $0.003 per endpoint' },
       'Authentication',
       '30 day metrics retention',
       { label: '250GB egress', note: 'then $0.09 / GB' },
@@ -93,8 +93,8 @@ const featureSections = [
       { name: 'Global relay network', community: true, pro: true, dedicated: true, enterprise: true },
       { name: 'Dedicated infrastructure', community: null, pro: null, dedicated: true, enterprise: true },
       { name: 'Multi-region deployment', community: null, pro: null, dedicated: true, enterprise: true },
-      { name: 'Rate limits', community: '1 KB/s', pro: '1 MB/s', dedicated: 'None', enterprise: 'None' },
-      { name: 'Peak concurrent endpoints', community: 'Shared', pro: '5,000', proNote: 'then $0.003 / ep', dedicated: 'Unlimited', enterprise: 'Custom' },
+      { name: 'Rate limits', community: '5 KB/s', pro: '1 MB/s', dedicated: 'None', enterprise: 'None' },
+      { name: 'Peak concurrent endpoints', community: 'Shared', pro: '10,000', proNote: 'then $0.003 / ep', dedicated: 'Unlimited', enterprise: 'Custom' },
     ],
   },
   {

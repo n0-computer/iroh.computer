@@ -3,15 +3,18 @@
 import { useState } from 'react'
 
 const PRO_BASE = 19
-const INCLUDED_CONNECTIONS = 5000
+const INCLUDED_CONNECTIONS = 10000
 const PER_ENDPOINT_RATE = 0.003
 const MANAGED_RATE = 1
 const RELAY_RATE = 199
 const RELAY_CAPACITY = 60000
+const EGRESS_INCLUDED = 250
+const EGRESS_RATE = 0.09
 
 const relayOptions = [0, 1, 2, 3, 4, 5]
 const peakConnectionOptions = [100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
 const managedEndpointOptions = [0, 10, 50, 100, 500, 1000]
+const egressOptions = [100, 250, 500, 1000, 2500, 5000, 10000]
 
 function formatPrice(n) {
   return `$${n.toFixed(2)}`
@@ -45,13 +48,16 @@ export function PricingCalculator() {
   const [relays, setRelays] = useState(0)
   const [peakConnections, setPeakConnections] = useState(500)
   const [managedEndpoints, setManagedEndpoints] = useState(0)
+  const [egressGb, setEgressGb] = useState(250)
 
   const includedEndpoints = relays > 0 ? relays * RELAY_CAPACITY : INCLUDED_CONNECTIONS
   const extraConnections = Math.max(0, peakConnections - includedEndpoints)
   const connectionsCost = extraConnections * PER_ENDPOINT_RATE
   const managedCost = managedEndpoints * MANAGED_RATE
   const relayCost = relays * RELAY_RATE
-  const total = PRO_BASE + connectionsCost + managedCost + relayCost
+  const extraEgress = Math.max(0, egressGb - EGRESS_INCLUDED)
+  const egressCost = extraEgress * EGRESS_RATE
+  const total = PRO_BASE + connectionsCost + managedCost + relayCost + egressCost
 
   return (
     <div className="mt-16 mb-8 max-w-5xl mx-auto">
@@ -84,6 +90,13 @@ export function PricingCalculator() {
               value={managedEndpoints}
               onChange={setManagedEndpoints}
               options={managedEndpointOptions}
+            />
+            <SelectInput
+              label="Relay egress (GB / mo)"
+              description="Data relayed through your relays — 250 GB included"
+              value={egressGb}
+              onChange={setEgressGb}
+              options={egressOptions}
             />
           </div>
 
@@ -127,6 +140,18 @@ export function PricingCalculator() {
                   {managedEndpoints === 0
                     ? 'None selected'
                     : `${formatNumber(managedEndpoints)} × $${MANAGED_RATE}/mo`}
+                </p>
+              </div>
+
+              <div>
+                <div className="flex justify-between">
+                  <span>Egress</span>
+                  <span className="font-medium">{formatPrice(egressCost)}/mo</span>
+                </div>
+                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraEgress === 0 ? 'italic' : ''}`}>
+                  {extraEgress === 0
+                    ? `${formatNumber(EGRESS_INCLUDED)} GB included`
+                    : `${formatNumber(extraEgress)} GB extra × $${EGRESS_RATE}/GB`}
                 </p>
               </div>
 
