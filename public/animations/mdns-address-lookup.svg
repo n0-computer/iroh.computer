@@ -1,0 +1,144 @@
+<svg viewBox="0 26 820 439" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root { background-color: transparent; color-scheme: light dark; }</style>
+
+  <!-- multicast group label (two lines) -->
+  <text x="410" y="44" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">mDNS multicast</text>
+  <text x="410" y="59" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" fill="#888">224.0.0.251:5353</text>
+
+  <!-- LAN legs (device <-> router) -->
+  <path d="M 150 250 C 150 190 394 187 394 115" fill="none" stroke="#b4bac4" stroke-width="1.5"/>
+  <path d="M 410 250 C 410 190 410 187 410 115" fill="none" stroke="#b4bac4" stroke-width="1.5"/>
+  <path d="M 670 250 C 670 190 426 187 426 115" fill="none" stroke="#b4bac4" stroke-width="1.5"/>
+
+  <!-- invisible motion paths for the multicast dots -->
+  <path id="mw01" d="M 150 250 C 150 190 394 187 394 115 L 410 105 L 410 115 C 410 187 410 190 410 250" fill="none" stroke="none"/>
+  <path id="mw02" d="M 150 250 C 150 190 394 187 394 115 L 410 105 L 426 115 C 426 187 670 190 670 250" fill="none" stroke="none"/>
+  <path id="mw10" d="M 410 250 C 410 190 410 187 410 115 L 410 105 L 394 115 C 394 187 150 190 150 250" fill="none" stroke="none"/>
+  <path id="mw12" d="M 410 250 C 410 190 410 187 410 115 L 410 105 L 426 115 C 426 187 670 190 670 250" fill="none" stroke="none"/>
+  <path id="mw20" d="M 670 250 C 670 190 426 187 426 115 L 410 105 L 394 115 C 394 187 150 190 150 250" fill="none" stroke="none"/>
+  <path id="mw21" d="M 670 250 C 670 190 426 187 426 115 L 410 105 L 410 115 C 410 187 410 190 410 250" fill="none" stroke="none"/>
+
+  <g>
+    <polyline points="380,110 370,110 370,67" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="370" cy="65" r="1.5" fill="#888"/>
+    <polyline points="440,110 450,110 450,67" fill="none" stroke="#888" stroke-width="1.5"/>
+    <circle cx="450" cy="65" r="1.5" fill="#888"/>
+    <rect x="380" y="75" width="60" height="40" rx="3" fill="#eee" stroke="#888" stroke-width="1.5"/>
+    <circle cx="430" cy="109" r="1.5" fill="#d97706"/>
+  </g>
+
+  <!-- devices (no names; identified by key id + local address) -->
+  <g>
+    <rect x="125.0" y="250" width="50" height="92" rx="9" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <path d="M 134.0 253 L 143.0 253 Q 145.0 253 145.0 255 L 145.0 256 Q 145.0 258 146.0 258 L 154.0 258 Q 155.0 258 155.0 256 L 155.0 255 Q 155.0 253 157.0 253 L 166.0 253 A 6 6 0 0 1 172.0 259 L 172.0 333 A 6 6 0 0 1 166.0 339 L 134.0 339 A 6 6 0 0 1 128.0 333 L 128.0 259 A 6 6 0 0 1 134.0 253 Z" fill="none" stroke="#6366f1" stroke-width="1"/>
+    <rect x="136.0" y="278" width="28" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <text x="150" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <path d="M 131.60 307.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 133.12 307.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="134.32" y="306.88" width="7.68" height="1.44" fill="#eab308"/><rect x="140.96" y="308.32" width="1.04" height="2.40" fill="#eab308"/><rect x="138.56" y="308.32" width="1.04" height="1.60" fill="#eab308"/><text x="144.40" y="310" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">a4f7…</text>
+    <text x="150" y="358" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">192.168.0.3</text>
+  </g>
+  <g>
+    <rect x="385.0" y="250" width="50" height="92" rx="9" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="388.0" y="253" width="44" height="86" rx="6" fill="#eee" stroke="#6366f1" stroke-width="1"/><circle cx="410" cy="258" r="1.6" fill="#888"/>
+    <rect x="396.0" y="278" width="28" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <text x="410" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <path d="M 391.60 307.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 393.12 307.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="394.32" y="306.88" width="7.68" height="1.44" fill="#eab308"/><rect x="400.96" y="308.32" width="1.04" height="2.40" fill="#eab308"/><rect x="398.56" y="308.32" width="1.04" height="1.60" fill="#eab308"/><text x="404.40" y="310" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">8e2b…</text>
+    <text x="410" y="358" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">192.168.0.5</text>
+  </g>
+  <g>
+    <line x1="632.0" y1="264.0" x2="640.0" y2="264.0" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="264.0" x2="708.0" y2="264.0" stroke="#888" stroke-width="1.5"/>
+    <line x1="632.0" y1="276.8" x2="640.0" y2="276.8" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="276.8" x2="708.0" y2="276.8" stroke="#888" stroke-width="1.5"/>
+    <line x1="632.0" y1="289.6" x2="640.0" y2="289.6" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="289.6" x2="708.0" y2="289.6" stroke="#888" stroke-width="1.5"/>
+    <line x1="632.0" y1="302.4" x2="640.0" y2="302.4" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="302.4" x2="708.0" y2="302.4" stroke="#888" stroke-width="1.5"/>
+    <line x1="632.0" y1="315.2" x2="640.0" y2="315.2" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="315.2" x2="708.0" y2="315.2" stroke="#888" stroke-width="1.5"/>
+    <line x1="632.0" y1="328.0" x2="640.0" y2="328.0" stroke="#888" stroke-width="1.5"/>
+    <line x1="700.0" y1="328.0" x2="708.0" y2="328.0" stroke="#888" stroke-width="1.5"/>
+    <rect x="640.0" y="250" width="60" height="92" rx="3" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <circle cx="647.0" cy="257" r="1.6" fill="#888"/>
+    <rect x="650" y="278" width="40" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <text x="670" y="290" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <path d="M 651.60 307.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 653.12 307.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="654.32" y="306.88" width="7.68" height="1.44" fill="#eab308"/><rect x="660.96" y="308.32" width="1.04" height="2.40" fill="#eab308"/><rect x="658.56" y="308.32" width="1.04" height="1.60" fill="#eab308"/><text x="664.40" y="310" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">c1d9…</text>
+    <text x="670" y="358" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">192.168.0.7</text>
+  </g>
+
+  <!-- knowledge panels -->
+  <g>
+    <rect x="66" y="364" width="168" height="64" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="78" y="383" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1" font-weight="bold">local knowledge</text>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4740;0.4967;0.9262;0.9660;1.0000"/><path d="M 80.00 399.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 81.90 399.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="83.40" y="398.10" width="9.60" height="1.80" fill="#eab308"/><rect x="91.70" y="399.90" width="1.30" height="3.00" fill="#eab308"/><rect x="88.70" y="399.90" width="1.30" height="2.00" fill="#eab308"/><text x="96.00" y="402" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">8e2b…  192.168.0.5</text></g>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.7078;0.7305;0.9262;0.9660;1.0000"/><path d="M 80.00 419.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 81.90 419.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="83.40" y="418.10" width="9.60" height="1.80" fill="#eab308"/><rect x="91.70" y="419.90" width="1.30" height="3.00" fill="#eab308"/><rect x="88.70" y="419.90" width="1.30" height="2.00" fill="#eab308"/><text x="96.00" y="422" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">c1d9…  192.168.0.7</text></g>
+  </g>
+  <g>
+    <rect x="326" y="364" width="168" height="64" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="338" y="383" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1" font-weight="bold">local knowledge</text>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2403;0.2630;0.9262;0.9660;1.0000"/><path d="M 340.00 399.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 341.90 399.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="343.40" y="398.10" width="9.60" height="1.80" fill="#eab308"/><rect x="351.70" y="399.90" width="1.30" height="3.00" fill="#eab308"/><rect x="348.70" y="399.90" width="1.30" height="2.00" fill="#eab308"/><text x="356.00" y="402" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">a4f7…  192.168.0.3</text></g>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.6604;0.6831;0.9262;0.9660;1.0000"/><path d="M 340.00 419.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 341.90 419.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="343.40" y="418.10" width="9.60" height="1.80" fill="#eab308"/><rect x="351.70" y="419.90" width="1.30" height="3.00" fill="#eab308"/><rect x="348.70" y="419.90" width="1.30" height="2.00" fill="#eab308"/><text x="356.00" y="422" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">c1d9…  192.168.0.7</text></g>
+  </g>
+  <g>
+    <rect x="586" y="364" width="168" height="64" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="598" y="383" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1" font-weight="bold">local knowledge</text>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2876;0.3103;0.9262;0.9660;1.0000"/><path d="M 600.00 399.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 601.90 399.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="603.40" y="398.10" width="9.60" height="1.80" fill="#eab308"/><rect x="611.70" y="399.90" width="1.30" height="3.00" fill="#eab308"/><rect x="608.70" y="399.90" width="1.30" height="2.00" fill="#eab308"/><text x="616.00" y="402" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">a4f7…  192.168.0.3</text></g>
+    <g opacity="0"><animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4740;0.4967;0.9262;0.9660;1.0000"/><path d="M 600.00 419.00 a 3.40 3.40 0 1 0 6.80 0 a 3.40 3.40 0 1 0 -6.80 0 Z M 601.90 419.00 a 1.50 1.50 0 1 0 3.00 0 a 1.50 1.50 0 1 0 -3.00 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="603.40" y="418.10" width="9.60" height="1.80" fill="#eab308"/><rect x="611.70" y="419.90" width="1.30" height="3.00" fill="#eab308"/><rect x="608.70" y="419.90" width="1.30" height="2.00" fill="#eab308"/><text x="616.00" y="422" text-anchor="start" font-family="'Space Mono', monospace" font-size="10" fill="#111">8e2b…  192.168.0.5</text></g>
+  </g>
+
+  <!-- multicast packets (drawn before callouts so boxes sit on top) -->
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.1021;0.1089;0.2261;0.2346;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.1021;0.2318;1.0000"><mpath href="#mw01"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.1021;0.1089;0.2735;0.2820;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.1021;0.2791;1.0000"><mpath href="#mw02"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3359;0.3427;0.4598;0.4684;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.3359;0.4655;1.0000"><mpath href="#mw10"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3359;0.3427;0.4598;0.4684;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.3359;0.4655;1.0000"><mpath href="#mw12"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5223;0.5291;0.6936;0.7021;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.5223;0.6993;1.0000"><mpath href="#mw20"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5223;0.5291;0.6462;0.6547;1.0000"/>
+    <animateMotion dur="17.62s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.5223;0.6519;1.0000"><mpath href="#mw21"/></animateMotion>
+  </g>
+
+  <!-- announce callouts -->
+  <g opacity="0">
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0681;0.0851;0.3018;0.3189;1.0000"/>
+    <rect x="62.0" y="198" width="176" height="44" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="74.0" y="216" font-family="'Space Mono', monospace" font-size="12" fill="#111" font-weight="bold">mDNS announce</text>
+    <text x="74.0" y="233" font-family="'Space Mono', monospace" font-size="12" fill="#111">a4f7… @ 192.168.0.3</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3018;0.3189;0.4882;0.5052;1.0000"/>
+    <rect x="322.0" y="198" width="176" height="44" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="334.0" y="216" font-family="'Space Mono', monospace" font-size="12" fill="#111" font-weight="bold">mDNS announce</text>
+    <text x="334.0" y="233" font-family="'Space Mono', monospace" font-size="12" fill="#111">8e2b… @ 192.168.0.5</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" dur="17.62s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4882;0.5052;0.7220;0.7390;1.0000"/>
+    <rect x="582.0" y="198" width="176" height="44" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="594.0" y="216" font-family="'Space Mono', monospace" font-size="12" fill="#111" font-weight="bold">mDNS announce</text>
+    <text x="594.0" y="233" font-family="'Space Mono', monospace" font-size="12" fill="#111">c1d9… @ 192.168.0.7</text>
+  </g>
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="452" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="820" dur="17.62s" repeatCount="indefinite"/>
+  </rect>
+</svg>
