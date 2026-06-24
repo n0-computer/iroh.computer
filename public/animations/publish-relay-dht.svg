@@ -1,0 +1,149 @@
+<svg viewBox="0 44 820 376" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root { background-color: transparent; color-scheme: light dark; }</style>
+  <!-- Mainline DHT cloud -->
+  <g>
+    <circle cx="320" cy="150" r="56" fill="#d1d5db"/>
+    <circle cx="392" cy="124" r="62" fill="#d1d5db"/>
+    <circle cx="462" cy="130" r="58" fill="#d1d5db"/>
+    <circle cx="524" cy="156" r="50" fill="#d1d5db"/>
+    <circle cx="360" cy="172" r="56" fill="#d1d5db"/>
+    <circle cx="442" cy="178" r="56" fill="#d1d5db"/>
+    <circle cx="292" cy="174" r="40" fill="#d1d5db"/>
+    <circle cx="548" cy="182" r="38" fill="#d1d5db"/>
+    <text x="418" y="104" text-anchor="middle" font-family="'Space Mono', monospace" font-size="15" fill="#111">Mainline DHT</text>
+  </g>
+
+  <path id="pw0" d="M 120 296 Q 199 197 320 162" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0356;0.0594;0.2612;0.2909;1.0000"/></path>
+  <path id="pw1" d="M 120 296 Q 223 176 376 138" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0356;0.0594;0.2612;0.2909;1.0000"/></path>
+  <path id="pw2" d="M 120 296 Q 256 184 432 172" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0356;0.0594;0.2612;0.2909;1.0000"/></path>
+  <path id="pw3" d="M 120 296 Q 277 161 484 142" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0356;0.0594;0.2612;0.2909;1.0000"/></path>
+  <path id="pw4" d="M 120 296 Q 304 167 528 168" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0356;0.0594;0.2612;0.2909;1.0000"/></path>
+  <path id="lw0" d="M 376 138 Q 557 167 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3146;0.3503;0.6318;0.6675;1.0000"/></path>
+  <path id="lw1" d="M 432 172 Q 580 193 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3146;0.3503;0.6318;0.6675;1.0000"/></path>
+  <path id="lw2" d="M 484 142 Q 611 186 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3146;0.3503;0.6318;0.6675;1.0000"/></path>
+  <path id="lw3" d="M 528 168 Q 628 206 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3146;0.3503;0.6318;0.6675;1.0000"/></path>
+  <path id="lw4" d="M 402 196 Q 561 200 688 296" fill="none" stroke="#b4bac4" stroke-width="1.5" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3146;0.3503;0.6318;0.6675;1.0000"/></path>
+
+  <!-- DHT nodes (black; turn green when Bob's record arrives) -->
+  <g>
+    <circle cx="320" cy="162" r="4.5" fill="#111"/>
+    <circle cx="376" cy="138" r="4.5" fill="#111"/>
+    <circle cx="432" cy="172" r="4.5" fill="#111"/>
+    <circle cx="484" cy="142" r="4.5" fill="#111"/>
+    <circle cx="528" cy="168" r="4.5" fill="#111"/>
+    <circle cx="402" cy="196" r="4.5" fill="#111"/>
+    <circle cx="320" cy="162" r="4.5" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.1860;0.2038;0.9644;0.9881;1.0000"/></circle>
+    <circle cx="376" cy="138" r="4.5" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2102;0.2280;0.9644;0.9881;1.0000"/></circle>
+    <circle cx="432" cy="172" r="4.5" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2242;0.2420;0.9644;0.9881;1.0000"/></circle>
+    <circle cx="484" cy="142" r="4.5" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2482;0.2660;0.9644;0.9881;1.0000"/></circle>
+    <circle cx="528" cy="168" r="4.5" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2612;0.2790;0.9644;0.9881;1.0000"/></circle>
+  </g>
+
+  <!-- Bob (publisher) -->
+  <g>
+    <rect x="96" y="296" width="48" height="88" rx="9" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="99" y="299" width="42" height="82" rx="6" fill="#eee" stroke="#6366f1" stroke-width="1"/>
+    <circle cx="120.0" cy="304" r="1.6" fill="#888"/>
+    <rect x="106" y="322" width="28" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <text x="120.0" y="334" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <path d="M 101.60 351.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 103.12 351.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="104.32" y="350.88" width="7.68" height="1.44" fill="#eab308"/><rect x="110.96" y="352.32" width="1.04" height="2.40" fill="#eab308"/><rect x="108.56" y="352.32" width="1.04" height="1.60" fill="#eab308"/><text x="114.40" y="354" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">8e2b…</text>
+    <text x="120" y="400" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#6366f1">Bob</text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="11" fill="#888">
+    <text x="162" y="326"><tspan font-weight="bold">NodeId:</tspan> 8e2b…</text>
+    <text x="162" y="346"><tspan font-weight="bold">Home relay:</tspan> us-east</text>
+  </g>
+
+  <!-- Alice (resolver) -->
+  <g opacity="0">
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.2790;0.3146;0.9644;0.9881;1.0000"/>
+    <rect x="664" y="296" width="48" height="88" rx="9" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <path d="M 673 299 L 681.0 299 Q 683.0 299 683.0 301 L 683.0 302 Q 683.0 304 684.0 304 L 692.0 304 Q 693.0 304 693.0 302 L 693.0 301 Q 693.0 299 695.0 299 L 703 299 A 6 6 0 0 1 709 305 L 709 375 A 6 6 0 0 1 703 381 L 673 381 A 6 6 0 0 1 667 375 L 667 305 A 6 6 0 0 1 673 299 Z" fill="none" stroke="#6366f1" stroke-width="1"/>
+    <rect x="674" y="322" width="28" height="16" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <text x="688.0" y="334" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">iroh</text>
+    <path d="M 669.60 351.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 671.12 351.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="672.32" y="350.88" width="7.68" height="1.44" fill="#eab308"/><rect x="678.96" y="352.32" width="1.04" height="2.40" fill="#eab308"/><rect x="676.56" y="352.32" width="1.04" height="1.60" fill="#eab308"/><text x="682.40" y="354" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#d97706">1a9c…</text>
+    <text x="688" y="400" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#6366f1">Alice</text>
+  </g>
+  <text x="650" y="342" text-anchor="end" font-family="'Space Mono', monospace" font-size="11" fill="#111" opacity="0">8e2b… is at relay us-east<animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5152;0.5449;0.9644;0.9881;1.0000"/></text>
+
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0891;0.0980;0.1830;0.1919;1.0000"/>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.0891;0.1860;1.0000"><mpath href="#pw0"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0891;0.0980;0.2072;0.2161;1.0000"/>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.0891;0.2102;1.0000"><mpath href="#pw1"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0891;0.0980;0.2213;0.2302;1.0000"/>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.0891;0.2242;1.0000"><mpath href="#pw2"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0891;0.0980;0.2452;0.2541;1.0000"/>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.0891;0.2482;1.0000"><mpath href="#pw3"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <circle r="4" fill="#2563eb"/>
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0891;0.0980;0.2582;0.2671;1.0000"/>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0.0000;0.0891;0.2612;1.0000"><mpath href="#pw4"/></animateMotion>
+  </g>
+  <g>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;1;1" keyTimes="0.0000;0.3503;0.4911;0.6318;1.0000"><mpath href="#lw0"/></animateMotion>
+    <circle r="4" fill="#2563eb" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3503;0.3592;0.4881;0.4911;1.0000"/></circle>
+    <circle r="4" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4911;0.4940;0.6289;0.6378;1.0000"/></circle>
+  </g>
+  <g>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;1;1" keyTimes="0.0000;0.3503;0.4648;0.5793;1.0000"><mpath href="#lw1"/></animateMotion>
+    <circle r="4" fill="#2563eb" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3503;0.3592;0.4618;0.4648;1.0000"/></circle>
+    <circle r="4" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4648;0.4677;0.5763;0.5852;1.0000"/></circle>
+  </g>
+  <g>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;1;1" keyTimes="0.0000;0.3503;0.4532;0.5561;1.0000"><mpath href="#lw2"/></animateMotion>
+    <circle r="4" fill="#2563eb" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3503;0.3592;0.4502;0.4532;1.0000"/></circle>
+    <circle r="4" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4532;0.4561;0.5531;0.5620;1.0000"/></circle>
+  </g>
+  <g>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;1;1" keyTimes="0.0000;0.3503;0.4328;0.5152;1.0000"><mpath href="#lw3"/></animateMotion>
+    <circle r="4" fill="#2563eb" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3503;0.3592;0.4298;0.4328;1.0000"/></circle>
+    <circle r="4" fill="#15803d" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4328;0.4357;0.5123;0.5212;1.0000"/></circle>
+  </g>
+  <g>
+    <animateMotion dur="16.84s" repeatCount="indefinite" calcMode="linear" keyPoints="1;1;0;1;1" keyTimes="0.0000;0.3503;0.4722;0.5942;1.0000"><mpath href="#lw4"/></animateMotion>
+    <circle r="4" fill="#2563eb" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3503;0.3592;0.4693;0.4722;1.0000"/></circle>
+    <circle r="4" fill="#dc2626" opacity="0"><animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.4722;0.4752;0.5912;0.6001;1.0000"/></circle>
+  </g>
+
+  <!-- DHT put callout (write) -->
+  <g opacity="0">
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.0950;0.1188;0.2612;0.2909;1.0000"/>
+    <rect x="40" y="150" width="216" height="70" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="54" y="172" font-family="'Space Mono', monospace" font-size="12" fill="#111" font-weight="bold">DHT put</text>
+    <text x="54" y="192" font-family="'Space Mono', monospace" font-size="12" fill="#111">8e2b…</text>
+    <text x="54" y="210" font-family="'Space Mono', monospace" font-size="12" fill="#111"><tspan font-weight="bold">Relay:</tspan> us-east</text>
+  </g>
+
+  <!-- DHT get callout (read request) -->
+  <g opacity="0">
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.3325;0.3562;0.5093;0.5330;1.0000"/>
+    <rect x="452" y="236" width="300" height="54" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="466" y="258" font-family="'Space Mono', monospace" font-size="12" fill="#111" font-weight="bold">DHT get</text>
+    <text x="466" y="278" font-family="'Space Mono', monospace" font-size="12" fill="#111">8e2b…</text>
+  </g>
+
+  <!-- ANSWER SECTION callout (shown on first valid response) -->
+  <g opacity="0">
+    <animate attributeName="opacity" dur="16.84s" repeatCount="indefinite" calcMode="linear" values="0;0;1;1;0;0" keyTimes="0.0000;0.5152;0.5390;0.6318;0.6675;1.0000"/>
+    <rect x="452" y="236" width="300" height="54" rx="5" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="466" y="258" font-family="'Space Mono', monospace" font-size="12" fill="#111">;; ANSWER SECTION:</text>
+    <text x="466" y="278" font-family="'Space Mono', monospace" font-size="12" fill="#2563eb" font-weight="bold">TXT "relay=https://us-east"</text>
+  </g>
+
+  <!-- Timer bar (position in loop) -->
+  <rect x="0" y="416" width="0" height="3" fill="#9ca3af">
+    <animate attributeName="width" from="0" to="820" dur="16.84s" repeatCount="indefinite"/>
+  </rect>
+</svg>
