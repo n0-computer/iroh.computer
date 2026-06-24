@@ -186,14 +186,21 @@ ax0, ay0 = 664, 296
 acx = ax0+24
 alice_pts = [(0, 0), (3.8, 0), (4.4, 1), (13.8, 1), (14.2, 0), (CYCLE, 0)]
 result_pts = [(0, 0), (8.0, 0), (8.5, 1), (13.8, 1), (14.2, 0), (CYCLE, 0)]
+RES_LABEL = "8e2b… is at relay us-east"
+res_w = len(RES_LABEL) * 11 * 0.6   # Space Mono advance ≈ 0.6em at 11px
+res_xr, res_yb = ax0 - 14, ay0 + 46  # right edge / baseline of the result text
 alice = f'''  <!-- Alice (resolver) — appears after Bob's record is published -->
   <g opacity="0">
     {anim_opacity(alice_pts)}
 {phone(ax0, ay0, "1a9c…", iphone=True)}
     <text x="{acx}" y="{ay0+PH+16}" text-anchor="middle" font-family="{MONO}" font-size="13" fill="{INDIGO}">Alice</text>
   </g>
-  <!-- resolved result, appears as the answer comes back -->
-  <text x="{ax0-14}" y="{ay0+46}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{INK}" opacity="0">8e2b… is at relay us-east{anim_opacity(result_pts)}</text>'''
+  <!-- resolved result; boxed so the dark ink stays readable in dark mode -->
+  <g opacity="0">
+    {anim_opacity(result_pts)}
+    <rect x="{res_xr - res_w - 7:.1f}" y="{res_yb - 13}" width="{res_w + 14:.1f}" height="18" rx="4" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="{res_xr}" y="{res_yb}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{INK}">{RES_LABEL}</text>
+  </g>'''
 
 # ============================ wires ============================
 put_d = arc(bcx, by0, sx+18, sy+sh, k=0.18)            # Bob -> server

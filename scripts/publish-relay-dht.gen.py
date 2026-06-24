@@ -222,13 +222,21 @@ bob = f'''  <!-- Bob (publisher) -->
 
 alice_pts = [(0, 0), (ALICE_IN, 0), (ALICE_IN+0.6, 1), (OUT0, 1), (OUT1, 0), (CYCLE, 0)]
 result_pts = [(0, 0), (FIRST_VALID, 0), (FIRST_VALID+0.5, 1), (OUT0, 1), (OUT1, 0), (CYCLE, 0)]
+RES_LABEL = "8e2b… is at relay us-east"
+res_w = len(RES_LABEL) * 11 * 0.6   # Space Mono advance ≈ 0.6em at 11px
+res_xr, res_yb = ax0 - 14, ay0 + 46  # right edge / baseline of the result text
 alice = f'''  <!-- Alice (resolver) -->
   <g opacity="0">
     {anim_opacity(alice_pts)}
 {phone(ax0, ay0, "1a9c…", iphone=True)}
     <text x="{acx}" y="{ay0+PH+16}" text-anchor="middle" font-family="{MONO}" font-size="13" fill="{INDIGO}">Alice</text>
   </g>
-  <text x="{ax0-14}" y="{ay0+46}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{INK}" opacity="0">8e2b… is at relay us-east{anim_opacity(result_pts)}</text>'''
+  <!-- resolved result; boxed so the dark ink stays readable in dark mode -->
+  <g opacity="0">
+    {anim_opacity(result_pts)}
+    <rect x="{res_xr - res_w - 7:.1f}" y="{res_yb - 13}" width="{res_w + 14:.1f}" height="18" rx="4" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+    <text x="{res_xr}" y="{res_yb}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{INK}">{RES_LABEL}</text>
+  </g>'''
 
 # ============================ wires + dots ============================
 pub_wire_pts = [(0, 0), (0.6, 0), (1.0, 1), (PUB_DONE, 1), (PUB_DONE+0.5, 0), (CYCLE, 0)]
