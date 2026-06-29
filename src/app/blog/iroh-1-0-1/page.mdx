@@ -1,0 +1,62 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'Floris Bruynooghe',
+  date: '2026-06-29',
+  title: 'iroh 1.0.1 - Just Boring',
+  description: 'Release of iroh v1.0.1',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+The headline feature of this release is... nothing.
+
+The 1.x.y releases are stable.
+And this release is our first, extremely boring release.
+Which is exciting!
+Iroh 1.0.1 contains a handful of bugfixes for corner cases.
+That's it.
+
+The most visible change is that on Android the DNS resolver will no longer panic if the JNI context was not initialised.
+At least when it is possible to catch a panic, if compiled using `panic = abort` it will still panic.
+This makes the behaviour a bit more consistent between release builds and debug builds,
+and is slightly more forgiving.
+
+Otherwise there are a number of smaller bugfixes in [iroh](https://github.com/n0-computer/iroh/releases/tag/v1.0.1),
+[netwatch](https://github.com/n0-computer/net-tools/commits/main/?since=2026-06-16&until=2026-06-29),
+and mostly [noq](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1).
+Some of you who ran into specific issues will see some improvements,
+but mostly things will just work that little bit better. 
+We are delighted to be this boring.
+
+## What's next?
+
+For now we expect the next few releases to be more of the same: 
+happy maintenance releases every few weeks,
+small fixes for corner cases and invisible improvements.
+Right now we aren't yet planning our next feature release.
+But we also won't hold any features up and,
+are not worried to bump that remaining middle zero if there's a reason to.
+
+See you on the next release, and keep filing those bugs!
