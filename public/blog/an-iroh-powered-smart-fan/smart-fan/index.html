@@ -316,7 +316,7 @@ if ($secret && $slider) {
     const value = Number($slider.value);
     $status.textContent = `setting threshold to ${value}°C…`;
     try {
-      const resp = await node.set_threshold(connectedTicket, secret, value);
+      const resp = await node.set_threshold(connectedTicket, secret, value, onReading);
       if (resp === "ok") {
         deviceThreshold = value;
         $status.textContent = `threshold set to ${value}°C`;
