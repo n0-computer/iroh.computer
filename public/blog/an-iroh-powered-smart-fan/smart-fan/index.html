@@ -175,9 +175,13 @@ let connectedTicket = null; // the ticket `current` is polling
 let lastReading = null;
 let deviceThreshold = null; // the threshold the device last reported
 
-// Prefill the ticket: ?ticket=… on the URL wins (and auto-connects below); otherwise
-// fall back to the last ticket we stored.
-const urlTicket = new URLSearchParams(location.search).get("ticket");
+// Prefill the ticket: a ticket on the URL wins (and auto-connects below); otherwise
+// fall back to the last ticket we stored. We accept it in the query (?ticket=) or the
+// fragment (#ticket=) — the fragment survives a host's trailing-slash redirect and
+// never reaches the server, so it's what the `qr` command emits.
+const urlTicket =
+  new URLSearchParams(location.search).get("ticket") ??
+  new URLSearchParams(location.hash.replace(/^#/, "")).get("ticket");
 $ticket.value = (urlTicket ?? localStorage.getItem(TICKET_KEY) ?? "").trim();
 
 // Restore the API secret if this variant can control the fan.
