@@ -6,7 +6,7 @@ export const post = {
   author: 'Rüdiger Klaehn',
   date: '2026-07-02',
   title: 'An iroh powered smart fan',
-  description: 'Putting iroh on a bare ESP32 to build a humidity-driven smart fan you can check on from anywhere.',
+  description: 'Putting iroh on a bare ESP32 to build a temperature-driven smart fan you can check on from anywhere.',
 }
 
 export const metadata = {
@@ -32,9 +32,9 @@ If you live in Europe you are probably suffering from the heat wave. So let's do
 
 The previous ESP32 examples were just an echo protocol. But that is not what ESP32s are typically used for. You use an ESP32 as a cheap means to read sensors and drive actuators.
 
-So we are going to write a very simple end to end example using an ESP32 to measure temperature and control a fan.
+So we are going to write a very simple end to end example using an ESP32 to measure temperature and control a fan. Unlike most IoT devices, there won't be any cloud component. Just a tiny website that you can use from anywhere in the world using any browser that supports WebAssembly.
 
-As the base we are going to use an esp32-WROOM devkit with 4 MiB of PSRAM, so we can use full iroh including a relay connection and remote control it from anywhere in the world. You can also use a M5StickC-Plus2.
+As the base we are going to use an ESP32-WROVER devkit with 4 MiB of PSRAM, so we can use full iroh including a relay connection and remote control it from anywhere in the world. You can also use a M5StickC-Plus2.
 
 <Note>
 If all you have is an ESP32 without PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from the examples project as base.
@@ -42,23 +42,23 @@ If all you have is an ESP32 without PSRAM, you can still use iroh. But you need 
 
 # Basic setup
 
-As the first step, we are going to copy over an echo example from [iroh-esp32-examples][esp32-examples]. We will use `server-esp32-psram` for the esp32 binary.
+As the first step, we are going to copy over an echo example from [iroh-esp32-examples][esp32-examples]. We will use `server-esp32-psram` for the ESP32 binary.
 
 For the client side we just use `client`, it runs on a desktop PC and is as vanilla as it gets.
 
 This is going to be a smart fan example, so we just rename `server-esp32-psram` to `server-smart-fan`, and `client` to `smart-fan-cli`.
 
-Note that we need different toolchains and want to keep the option to use a patch of iroh for the esp32 variant, so the two directories are completely separate rust projects. We do not use a workspace.
+Note that we need different toolchains and want to keep the option to use a patch of iroh for the ESP32 variant, so the two directories are completely separate Rust projects. We do not use a workspace.
 
 # First flash
 
-Let's try it out once before we do modifications. 'cargo run` on the server project will search for an esp32 connected via USB and flash it. So we just connect our esp32 with an USB cable.
+Let's try it out once before we do modifications. `cargo run` on the server project will search for an ESP32 connected via USB and flash it. So we just connect our ESP32 with a USB cable.
 
 The initial release build will take some time, since we are compiling not just iroh, but also the operating system to the xtensa architecture. Subsequent builds will be faster, since the compilation results are cached in the .embuild directory.
 
 Flashing itself will never be really fast, because the data rate to the chip is very limited. We can make it go a bit faster by setting the ESPFLASH_BAUD environment variable. My chip supports 230400 baud, but YMMV. If it doesn't work just run without the environment variable set, then it will use safe defaults.
 
-We need to tell the esp32 how to connect to WLAN. In the example we just use another environment variable `WIFI_CONFIG=<access point name>:<password>`. Set this to your local WLAN.
+We need to tell the ESP32 how to connect to WLAN. In the example we just use another environment variable `WIFI_CONFIG=<access point name>:<password>`. Set this to your local WLAN.
 
 You can do a single `export WIFI_CONFIG=<access point name>:<password>` so you don't have to pass it every single time.
 
@@ -86,7 +86,7 @@ As you can see from the flash output, we are pretty close to the limit of the fl
 App/part. size:    3,953,296/4,128,768 bytes, 95.75%
 ```
 
-You might think that every single added line of code will get you over the limit, but that is not the case. Additional pure rust dependencies such as [irpc] add very little size.
+You might think that every single added line of code will get you over the limit, but that is not the case. Additional pure Rust dependencies such as [irpc] add very little size.
 
 # Trying it out
 
@@ -102,10 +102,10 @@ That way we get a stable endpoint id after each flash and can reboot the device 
 
 ## Startup
 
-On startup the device will try to connect to the WIFI using the given credentials. If that doesn't work it will hang. This happens before any iroh endpoint setup.
+On startup the device will try to connect to WiFi using the given credentials. If that doesn't work it will hang. This happens before any iroh endpoint setup.
 
 <Note>
-For a real product you would want two alternative WIFI configs and some recovery option, but we are going to skip this for the example.
+For a real product you would want two alternative WiFi configs and some recovery option, but we are going to skip this for the example.
 </Note>
 
 Once the endpoint on the ESP32 starts up, we get very familiar output:
@@ -162,14 +162,14 @@ Locally you can use the long ticket and bypass the relay, but as soon as the end
 <Note>
 The client has an option to disable relay. If you do that you will only be able to use the long ticket.
 
-It also has options for mdns, but we are not using mdns for this project.
+It also has options for mDNS, but we are not using mDNS for this project.
 </Note>
 
 ## Shutdown
 
 You might think that stopping the cargo run --release will stop the binary. But this is not the case. It just stops the *connection* to the device. The endpoint will happily continue to run as long as it has power.
 
-You can even disconnect it and plug it into a separate USB-C power supply, and it will boot up again with the same endpoint id. This is the whole point. The ESP32 is a fully self contained embedded computer. It just needs power.
+You can even disconnect it and plug it into a separate USB-C power supply, and it will boot up again with the same endpoint id. This is the whole point. The ESP32 is a fully self-contained embedded computer. It just needs power.
 
 If you really want to shut it down, unplug it or delete the flash.
 
@@ -218,7 +218,7 @@ To do that we are going to use irpc. If all we wanted to do is to read a single 
 
 ## Protocol crate
 
-We will define the protocol in a separate crate, since it will be used by both the client and the esp32 itself.
+We will define the protocol in a separate crate, since it will be used by both the client and the ESP32 itself.
 
 The first rpc call will be just reading the current sensor values. For now this is just a temperature and humidity, but in the future there might be more. So we are going to use a sensor state struct.
 
@@ -307,10 +307,10 @@ let _router = Router::builder(endpoint)
 
 # A proper GUI
 
-The CLI tool is nice for debugging, but what we really want is a GUI to show the temperature and later to control the fan. We could write a native GUI using dioxus that works on all major platforms. But who wants to install an app for this? So let's do a WASM gui that runs in the browser.
+The CLI tool is nice for debugging, but what we really want is a GUI to show the temperature and later to control the fan. We could write a native GUI using dioxus that works on all major platforms. But who wants to install an app for this? So let's do a WASM GUI that runs in the browser.
 
 <Note>
-I am not a javascript developer, so the WASM gui is vibe coded. I just briefly checked it.
+I am not a javascript developer, so the WASM GUI is vibe coded. I just briefly checked it.
 </Note>
 
 This first version is just a remote thermometer: paste a ticket from your device to see its temperature and humidity, live over the relay.
@@ -326,7 +326,7 @@ This first version is just a remote thermometer: paste a ticket from your device
 
 # Adding an actuator
 
-At this point we have a remote accessible temperature and humidity meter. But we want a smart fan. So let's add an output. We are going to use a 5V desktop computer fan like for example the [noctura nf-a14-5v]. This connects to the +5V and GND rail and has a single PWM control wire to switch or throttle the fan.
+At this point we have a remote accessible temperature and humidity meter. But we want a smart fan. So let's add an output. We are going to use a 5V desktop computer fan like for example the [Noctua NF-A14-5V]. This connects to the +5V and GND rail and has a single PWM control wire to switch or throttle the fan.
 
 If you don't have such a fan, you can also just wire up a LED with a 300 Ω resistor, or wire up a relay to control a household fan. It's more fun with a real fan though!
 
@@ -353,7 +353,7 @@ During development, you could just change the protocol at will and make sure bot
 
 For a new production deployment, we would just change the ALPN to make it clear that this is a new protocol.
 
-But what if we wanted the old weather station GUI to still work? In that case we have to be careful to only add new methods to the RPC protocol, and leave the current methods in the same place in the enum with the same structures. Unlike json or protobuf, postcard makes zero attempts to be self-describing. Trying to read a different struct than what was written will just fail or produce weird results.
+But what if we wanted the old remote thermometer GUI to still work? In that case we have to be careful to only add new methods to the RPC protocol, and leave the current methods in the same place in the enum with the same structures. Unlike json or protobuf, postcard makes zero attempts to be self-describing. Trying to read a different struct than what was written will just fail or produce weird results.
 
 We can still evolve the protocol without changing ALPNs by *adding* new RPC methods at the end of the protocol enum. Then we can keep the ALPN, and old GUI versions will continue to work.
 
@@ -387,7 +387,7 @@ The read-only GUI uses only `GetStatus`: it shows temperature, humidity, and whe
 
 # Controlling the fan threshold
 
-We now want the ability to set the threshold above which the fan starts to work. But we still want the ability to have the smart fan GUI hosted on a public website. We could rely on the endpoint id being secret, but that is not a good idea. If we use discovery, data is published for the endpoint id on dns.iroh.link. Also, we might want to retain the ability to share a readonly view of the fan state.
+We now want the ability to set the threshold above which the fan starts to work. But we still want the ability to have the smart fan GUI hosted on a public website. We could rely on the endpoint id being secret, but that is not a good idea. If we use discovery, data is published for the endpoint id on dns.iroh.link. Also, we might want to retain the ability to share a read-only view of the fan state.
 
 So let's extend the RPC protocol with a call to set the threshold, but add some authentication. We will use a simple secret that is baked into the code, then use it only in the new RPC call.
 
@@ -438,9 +438,9 @@ At this point we have a bunch of code and a breadboard with some sensors wired u
 
 # What else can you do
 
-There are a wide variety of input and output devices available that work out of the box with an esp32. For input, there is everything from simple temperature and light sensors to precise CO2 and VOC sensors, accelerometers, GPS, microphones, even various cameras. The ESP32 can configure the GPIOs as analog digital converters, so you can easily use simple analog sensors such as potentiometers, photoresistors or switches.
+There are a wide variety of input and output devices available that work out of the box with an ESP32. For input, there is everything from simple temperature and light sensors to precise CO2 and VOC sensors, accelerometers, GPS, microphones, even various cameras. The ESP32 can configure the GPIOs as analog-to-digital converters, so you can easily use simple analog sensors such as potentiometers, photoresistors or switches.
 
-The ESP32 also comes with a powerful built in sensor suite - since you can get a lot of details about the WIFI signal. WIFI scanners or even complete pose estimation can be done without any external sensors.
+The ESP32 also comes with a powerful built-in sensor suite - since you can get a lot of details about the WiFi signal. WiFi scanners or even complete [pose estimation] can be done without any external sensors.
 
 For output, there is everything from LEDs to displays. One nice trick is to drive a normal RC servo directly from the +5V bus and a GPIO configured as PWM output. If you want to drive larger loads, you can either use a transistor or mosfet for amplifying the GPIO output signal, or use a PWM compatible solid state relay to drive any household appliance (at your own risk!).
 
@@ -453,8 +453,7 @@ If you use the long tickets and the local LAN, then yes. If you use existing rel
 
 
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
-[iroh]: https://iroh.computer
 [QAD]: /blog/qad
-[ping protocol]: https://docs.rs/iroh-ping/latest/iroh_ping/
 [irpc]: https://docs.rs/irpc/latest/irpc/
-[noctura nf-a14-5v]: https://www.noctua.at/en/products/nf-a14-5v-pwm
+[Noctua NF-A14-5V]: https://www.noctua.at/en/products/nf-a14-5v-pwm
+[pose estimation]: https://www.cnx-software.com/2026/03/26/ruview-project-leverages-esp32-nodes-for-presence-detection-pose-estimation-and-breathing-heart-rate-monitoring/
