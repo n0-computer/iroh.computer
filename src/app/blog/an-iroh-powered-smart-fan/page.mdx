@@ -52,15 +52,15 @@ Note that we need different toolchains and want to keep the option to use a patc
 
 # First flash
 
-Let's try it out once before we do modifications. `cargo run` on the server project will search for an ESP32 connected via USB and flash it. So we just connect our ESP32 with a USB cable.
+Let's try it out once before we do modifications. `cargo run` on the server project will search for an ESP32 connected via USB and flash it. So we just connect our ESP32 with a USB-C cable.
 
-The initial release build will take some time, since we are compiling not just iroh, but also the operating system to the xtensa architecture. Subsequent builds will be faster, since the compilation results are cached in the .embuild directory.
+The initial release build will take some time, since we are compiling not just iroh, but also the operating system to the xtensa architecture. Subsequent builds will be faster, since the compilation results are cached in the `.embuild` directory.
 
 Flashing itself will never be really fast, because the data rate to the chip is very limited. We can make it go a bit faster by setting the ESPFLASH_BAUD environment variable. My chip supports 230400 baud, but YMMV. If it doesn't work just run without the environment variable set, then it will use safe defaults.
 
-We need to tell the ESP32 how to connect to WLAN. In the example we just use another environment variable `WIFI_CONFIG=<access point name>:<password>`. Set this to your local WLAN.
+We need to tell the ESP32 how to connect to WLAN. In the example we just use another environment variable `WIFI_CONFIG=SSID:PASSWORD`. Set this to your local WLAN.
 
-You can do a single `export WIFI_CONFIG=<access point name>:<password>` so you don't have to pass it every single time.
+You can do a single `export WIFI_CONFIG=SSID:PASSWORD` so you don't have to pass it every single time.
 
 ```
 ESPFLASH_BAUD=230400 WIFI_CONFIG=myap:mypass cargo run --release
@@ -162,12 +162,12 @@ Locally you can use the long ticket and bypass the relay, but as soon as the end
 <Note>
 The client has an option to disable relay. If you do that you will only be able to use the long ticket.
 
-It also has options for mDNS, but we are not using mDNS for this project.
+It also has options for [mDNS], but we are not using mDNS for this project.
 </Note>
 
 ## Shutdown
 
-You might think that stopping the cargo run --release will stop the binary. But this is not the case. It just stops the *connection* to the device. The endpoint will happily continue to run as long as it has power.
+You might think that stopping the `cargo run --release` will stop the binary. But this is not the case. It just stops the *connection* to the device. The endpoint will happily continue to run as long as it has power.
 
 You can even disconnect it and plug it into a separate USB-C power supply, and it will boot up again with the same endpoint id. This is the whole point. The ESP32 is a fully self-contained embedded computer. It just needs power.
 
@@ -188,7 +188,7 @@ Since we want to build a smart fan, the first thing we need is a temperature sen
 
 Wiring up the sensor is very simple. It has three wires, two for +3.3V **(do not use +5V!)** and GND and one for data.
 
-If you use the ESP32 dev kit with the extension board and a breadboard, it will power the breadboard rails with +3.3V and +5V from the USB port. You can pull only ~100 mA without an external power supply, but it is enough for the DHT22, which only takes 1.5 mA while measuring and even less when idle.
+If you use the ESP32 dev kit with the extension board and a [breadboard], it will power the breadboard rails with +3.3V and +5V from the USB port. You can pull only ~100 mA without an external power supply, but it is enough for the DHT22, which only takes 1.5 mA while measuring and even less when idle.
 
 We need to connect the middle wire to one of the many GPIO ports of the ESP32. We will choose GPIO 26, but you can use almost all GPIOs for this. Some GPIOs have special functions during boot, but GPIO26 does not.
 
@@ -292,7 +292,7 @@ We will add more in the future, but for now the client side just does a single r
 
 ## Can we still have something simple?
 
-Maybe we still want a simple way to check that the endpoint is up. We could of course add a ping endpoint to the irpc protocol, but we can also just keep supporting the echo protocol.
+Maybe we still want a simple way to check that the endpoint is up. We could of course add a dummy endpoint to the irpc protocol, but we can also just keep supporting the echo protocol.
 
 <Note>
 When using the router, you can combine as many protocols as you want!
@@ -448,12 +448,15 @@ I was never much of an electronics expert, but wiring stuff up to an ESP32 is li
 
 # Is this local-first?
 
-If you use the long tickets and the local LAN, then yes. If you use existing relays, you do have a small component in the cloud. But it is a completely application independent, open source, commodity component. You can use our public relays to play around, our hosted relays for a production deployment, or even self host if you don't mind the complexity of operating relays in multiple regions and don't dread the 3AM phone call.
+If you use the long tickets and the local LAN, then yes. If you use existing relays, you do have a small component in the cloud. But it is a completely application independent, open source, commodity component. You can use our public relays to play around, our [hosted relays] for a production deployment, or even self host if you don't mind the complexity of operating relays in multiple regions and don't dread the 3AM phone call.
 
 
 
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
 [QAD]: /blog/qad
+[hosted relays]: https://docs.iroh.computer/concepts/relays#deploy-your-own-relay
+[breadboard]: https://en.wikipedia.org/wiki/Breadboard
+[mDNS]: https://en.wikipedia.org/wiki/Multicast_DNS
 [irpc]: https://docs.rs/irpc/latest/irpc/
 [Noctua NF-A14-5V]: https://www.noctua.at/en/products/nf-a14-5v-pwm
 [pose estimation]: https://www.cnx-software.com/2026/03/26/ruview-project-leverages-esp32-nodes-for-presence-detection-pose-estimation-and-breathing-heart-rate-monitoring/

@@ -173,23 +173,29 @@ let connectedTicket = null; // the ticket `current` is polling
 let lastReading = null;
 let deviceThreshold = null; // the threshold the device last reported
 
-// Read a ticket from the URL — the query (?ticket=) or the fragment (#ticket=). The
-// fragment never reaches the server (so it stays out of logs) and is what the `qr`
-// command emits.
-function ticketFromUrl() {
-  return (
-    new URLSearchParams(location.search).get("ticket") ??
-    new URLSearchParams(location.hash.replace(/^#/, "")).get("ticket")
-  );
+// Params in the URL fragment (#…) — never sent to the server, so they stay out of
+// access logs. This is where the secret must live.
+function fragmentParams() {
+  return new URLSearchParams(location.hash.replace(/^#/, ""));
+}
+// The ticket is lower-stakes, so accept it from the query (?ticket=) or the fragment.
+function paramFromUrl(name) {
+  return new URLSearchParams(location.search).get(name) ?? fragmentParams().get(name);
 }
 
 // Prefill the ticket: a ticket on the URL wins (and auto-connects below); otherwise
 // fall back to the last ticket we stored.
-const urlTicket = ticketFromUrl();
+const urlTicket = paramFromUrl("ticket");
 $ticket.value = (urlTicket ?? localStorage.getItem(TICKET_KEY) ?? "").trim();
 
-// Restore the API secret if this variant can control the fan.
-if ($secret) $secret.value = localStorage.getItem(API_SECRET_KEY) ?? "";
+// The API secret (only present in the control variant) can also come from the URL, but
+// the fragment ONLY — never a query string, which would reach the server. That's the
+// "control" QR. Persist it like a manually-entered one.
+if ($secret) {
+  const urlSecret = fragmentParams().get("secret");
+  $secret.value = (urlSecret ?? localStorage.getItem(API_SECRET_KEY) ?? "").trim();
+  if (urlSecret) localStorage.setItem(API_SECRET_KEY, $secret.value);
+}
 refreshSlider();
 
 // The flourish: both numbers share one color driven off `lastReading` — mid-blue when
