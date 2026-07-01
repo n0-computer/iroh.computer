@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>smart fan (read-only)</title>
+    <style>
+:root {
+  color-scheme: light dark;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 3rem 1rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+}
+main {
+  width: 100%;
+  max-width: 22rem;
+}
+h1 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 1.25rem;
+  text-align: center;
+  opacity: 0.75;
+}
+.connect {
+  display: flex;
+  gap: 0.5rem;
+}
+input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: transparent;
+  color: inherit;
+}
+input:disabled {
+  opacity: 0.5;
+}
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #2b6cff;
+  color: white;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.readings {
+  display: flex;
+  gap: 2.5rem;
+  margin: 3rem 0 1.5rem;
+  justify-content: center;
+}
+.reading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+}
+.value {
+  font-variant-numeric: tabular-nums;
+  font-size: 3.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #8a8f98; /* settled gray, until the first reading arrives */
+}
+.unit {
+  font-size: 1.15rem;
+  font-weight: 600;
+  opacity: 0.55;
+}
+.fan {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.25rem;
+}
+.fan-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #8a8f98; /* muted, static when off */
+  transition: color 0.3s;
+}
+.fan-icon.spinning {
+  color: #2b6cff;
+  animation: spin 1.4s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 1.25rem;
+}
+#secret {
+  width: 100%;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.slider {
+  flex: 1;
+  min-width: 0;
+  accent-color: #2b6cff;
+}
+.slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.threshold-label {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 3.5ch;
+  text-align: right;
+}
+.slider:disabled + .threshold-label {
+  opacity: 0.4;
+}
+.status {
+  font-size: 0.8rem;
+  opacity: 0.55;
+  text-align: center;
+  margin: 0;
+}
+</style>
+    <script type="module">
+const $ticket = document.querySelector("#ticket");
+const $connect = document.querySelector("#connect");
+const $temp = document.querySelector("#temp");
+const $hum = document.querySelector("#hum");
+const $fan = document.querySelector("#fan-icon"); // absent in the thermometer variant
+const $secret = document.querySelector("#secret"); // absent unless the fan is controllable
+const $slider = document.querySelector("#threshold"); // "
+const $thresholdLabel = document.querySelector("#threshold-label");
+const $status = document.querySelector("#status");
+
+// Namespace persisted state by the page's path segment, so multiple GUI variants
+// embedded on one page (each in its own same-origin iframe) don't share an endpoint
+// identity / ticket / secret via localStorage.
+const NS = location.pathname.replace(/\/(index\.html)?$/, "").split("/").pop() || "smart-fan";
+const SECRET_KEY = `${NS}:secret`;
+const TICKET_KEY = `${NS}:ticket`;
+const API_SECRET_KEY = `${NS}:api-secret`;
+
+// Fresh readings are mid-blue and fade to a readable gray over FADE_MS.
+const FRESH = [43, 108, 255]; // #2b6cff
+const STALE = [138, 143, 152]; // #8a8f98
+const FADE_MS = 30_000;
+
+let node = null;
+let current = null; // active Subscription handle
+let connectedTicket = null; // the ticket `current` is polling
+let lastReading = null;
+let deviceThreshold = null; // the threshold the device last reported
+
+// Params in the URL fragment (#…) — never sent to the server, so they stay out of
+// access logs. This is where the secret must live.
+function fragmentParams() {
+  return new URLSearchParams(location.hash.replace(/^#/, ""));
+}
+// The ticket is lower-stakes, so accept it from the query (?ticket=) or the fragment.
+function paramFromUrl(name) {
+  return new URLSearchParams(location.search).get(name) ?? fragmentParams().get(name);
+}
+
+// Prefill the ticket: a ticket on the URL wins (and auto-connects below); otherwise
+// fall back to the last ticket we stored.
+const urlTicket = paramFromUrl("ticket");
+$ticket.value = (urlTicket ?? localStorage.getItem(TICKET_KEY) ?? "").trim();
+
+// The API secret (only present in the control variant) can also come from the URL, but
+// the fragment ONLY — never a query string, which would reach the server. That's the
+// "control" QR. Persist it like a manually-entered one.
+if ($secret) {
+  const urlSecret = fragmentParams().get("secret");
+  $secret.value = (urlSecret ?? localStorage.getItem(API_SECRET_KEY) ?? "").trim();
+  if (urlSecret) localStorage.setItem(API_SECRET_KEY, $secret.value);
+}
+refreshSlider();
+
+// The flourish: both numbers share one color driven off `lastReading` — mid-blue when
+// fresh, fading to gray over FADE_MS. Driving it from the shared timestamp keeps them
+// exactly in sync.
+function paintFreshness() {
+  const t = lastReading ? Math.min((Date.now() - lastReading) / FADE_MS, 1) : 1;
+  const c = FRESH.map((f, i) => Math.round(f + (STALE[i] - f) * t));
+  const color = `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+  $temp.style.color = color;
+  $hum.style.color = color;
+  requestAnimationFrame(paintFreshness);
+}
+requestAnimationFrame(paintFreshness);
+
+function setFan(on) {
+  if (!$fan) return;
+  $fan.classList.toggle("spinning", on);
+  $fan.setAttribute("aria-label", on ? "fan on" : "fan off");
+}
+
+// The slider is greyed out unless it exists and an API secret is present.
+function refreshSlider() {
+  if (!$slider) return;
+  $slider.disabled = !$secret || $secret.value.trim() === "";
+}
+
+function setThresholdLabel(v) {
+  if ($thresholdLabel) $thresholdLabel.textContent = `${Math.round(v)}°C`;
+}
+
+// Snap the slider back to the device's actual threshold (used when a set is refused).
+function snapBack() {
+  if ($slider && deviceThreshold != null) {
+    $slider.value = deviceThreshold;
+    setThresholdLabel(deviceThreshold);
+  }
+}
+
+function onReading(temp, hum, fan, threshold) {
+  $temp.textContent = temp.toFixed(1);
+  $hum.textContent = hum.toFixed(1);
+  setFan(fan);
+  deviceThreshold = threshold;
+  // Sync the slider to the device — but don't yank it while the user is adjusting it.
+  if ($slider && document.activeElement !== $slider) {
+    $slider.value = threshold;
+    setThresholdLabel(threshold);
+  }
+  lastReading = Date.now();
+  $status.textContent = `last reading ${new Date(lastReading).toLocaleTimeString()}`;
+}
+
+function onStatus(text) {
+  // Once we've had a reading, keep showing when it was rather than clobbering it with
+  // raw rpc/connection errors — the greyed-out numbers already signal stale.
+  if (lastReading) {
+    $status.textContent = `last reading ${new Date(lastReading).toLocaleTimeString()}`;
+  } else {
+    $status.textContent = text;
+  }
+}
+
+// Offer "connect" only once the node is up, the field is non-empty, and it differs
+// from what we're already polling.
+function refreshConnectButton() {
+  const t = $ticket.value.trim();
+  $connect.disabled = !node || t === "" || t === connectedTicket;
+}
+
+function connect() {
+  const ticket = $ticket.value.trim();
+  if (!node || !ticket || ticket === connectedTicket) return;
+  localStorage.setItem(TICKET_KEY, ticket);
+  // Switch devices: stop the previous poll loop (and close its connection) first.
+  if (current) {
+    current.free();
+    current = null;
+  }
+  // Reset the display for the new device.
+  lastReading = null;
+  deviceThreshold = null;
+  $temp.textContent = "—";
+  $hum.textContent = "—";
+  if ($thresholdLabel) $thresholdLabel.textContent = "—";
+  setFan(false);
+  onStatus("connecting…");
+  current = node.subscribe(ticket, onReading, onStatus);
+  connectedTicket = ticket;
+  refreshConnectButton();
+}
+
+$connect.addEventListener("click", connect);
+$ticket.addEventListener("input", refreshConnectButton);
+$ticket.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !$connect.disabled) connect();
+});
+
+// Fan control wiring only exists when this variant has the secret + slider.
+if ($secret && $slider) {
+  $secret.addEventListener("input", () => {
+    localStorage.setItem(API_SECRET_KEY, $secret.value);
+    refreshSlider();
+  });
+
+  // Live label while dragging.
+  $slider.addEventListener("input", () => setThresholdLabel($slider.value));
+
+  // Commit on release: try to set it; on any refusal or error, snap back.
+  $slider.addEventListener("change", async () => {
+    const secret = $secret.value.trim();
+    if (!secret) return;
+    if (!connectedTicket) {
+      snapBack();
+      $status.textContent = "connect first to set the threshold";
+      return;
+    }
+    const value = Number($slider.value);
+    $status.textContent = `setting threshold to ${value}°C…`;
+    try {
+      const resp = await node.set_threshold(connectedTicket, secret, value, onReading);
+      if (resp === "ok") {
+        deviceThreshold = value;
+        $status.textContent = `threshold set to ${value}°C`;
+      } else {
+        snapBack();
+        $status.textContent =
+          resp === "unauthorized" ? "rejected — wrong secret" : "rejected — out of range";
+      }
+    } catch (err) {
+      snapBack();
+      $status.textContent = `set failed: ${err}`;
+    }
+  });
+}
+
+// Boot the endpoint.
+try {
+  // Resolve the wasm relative to THIS page's directory. The page may be served with
+  // or without a trailing slash (Vercel with trailingSlash:false canonicalizes to no
+  // slash) — a bare `./wasm/…` import would then resolve against the parent dir and
+  // 404. Normalize to a directory path, then import from there.
+  let dir = location.pathname;
+  if (!dir.endsWith("/")) {
+    dir = dir.endsWith(".html") ? dir.slice(0, dir.lastIndexOf("/") + 1) : `${dir}/`;
+  }
+  const { default: init, Node } = await import(`${dir}wasm/smart_fan_wasm.js`);
+  await init();
+  node = await Node.spawn(localStorage.getItem(SECRET_KEY));
+  localStorage.setItem(SECRET_KEY, node.secret_hex());
+  $status.textContent = "ready — paste a ticket and connect";
+  refreshConnectButton();
+  if (urlTicket && $ticket.value) connect();
+} catch (err) {
+  $status.textContent = `failed to start: ${err}`;
+  console.error(err);
+}
+</script>
+  </head>
+  <body>
+    <main>
+      <h1>smart&nbsp;fan</h1>
+
+      <div class="connect">
+        <input
+          id="ticket"
+          type="text"
+          placeholder="paste endpoint ticket"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="connect" type="button" disabled>connect</button>
+      </div>
+
+      <div class="readings">
+        <div class="reading">
+          <span id="temp" class="value">—</span><span class="unit">°C</span>
+        </div>
+        <div class="reading">
+          <span id="hum" class="value">—</span><span class="unit">%</span>
+        </div>
+      </div>
+
+      <div class="fan">
+        <svg
+          id="fan-icon"
+          class="fan-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          role="img"
+          aria-label="fan off"
+        >
+          <path
+            d="M10.827 16.379a6.082 6.082 0 0 1-8.618-7.002l5.412 1.45a6.082 6.082 0 0 1 7.002-8.618l-1.45 5.412a6.082 6.082 0 0 1 8.618 7.002l-5.412-1.45a6.082 6.082 0 0 1-7.002 8.618z"
+          />
+          <path d="M12 12v.01" />
+        </svg>
+      </div>
+
+      <p id="status" class="status">loading…</p>
+    </main>
+  </body>
+</html>
