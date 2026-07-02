@@ -26,28 +26,53 @@ h1 {
   font-size: 1.3rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  margin: 0 0 1.25rem;
-  text-align: center;
+  margin: 0;
   opacity: 0.75;
 }
-/* Collapsible panel grouping the ticket + secret setup fields. Folds away once a
-   ticket is set so the readings become the main view; click the summary to reopen. */
+/* Title row: headline centered, connection toggle at the right. The 1fr side columns
+   keep the headline truly centered regardless of the gear's width. */
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 0 0 1.25rem;
+}
+.head h1 {
+  grid-column: 2;
+  text-align: center;
+}
+/* Gear that shows/hides the ticket + secret setup panel below. */
+.conn-toggle {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  padding: 0.3rem;
+  border: none;
+  background: none;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  border-radius: 0.4rem;
+}
+.conn-toggle:hover,
+.conn-toggle.active {
+  opacity: 0.85;
+}
+.conn-toggle svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+}
+/* Panel grouping the ticket + secret setup fields; toggled by the gear, and hidden
+   once a ticket is set so the readings are the main view. */
 .conn {
   border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
   border-radius: 0.5rem;
-  padding: 0.5rem 0.65rem;
+  padding: 0.65rem;
+  margin: 0 0 0.5rem;
 }
-.conn > summary {
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  opacity: 0.6;
-  letter-spacing: 0.02em;
-  user-select: none;
-  list-style-position: inside;
-}
-.conn[open] > summary {
-  margin-bottom: 0.6rem;
+.conn[hidden] {
+  display: none;
 }
 .conn > #secret {
   margin-top: 0.6rem;
@@ -139,6 +164,14 @@ button:disabled {
   align-items: center;
   gap: 0.75rem;
 }
+/* Positioned box around the slider so the current-temp marker can overlay the track
+   and stay aligned on resize (it's positioned as a % of this box's width). */
+.slider-wrap {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+}
 .slider {
   flex: 1;
   min-width: 0;
@@ -148,6 +181,28 @@ button:disabled {
      drifts to the right of the knob. Reset them so fill and thumb line up. */
   padding: 0;
   border: none;
+}
+/* Subtle vertical tick marking the current temperature on the threshold track.
+   `--pct` (0..1) is set from the reading in JS; the `--thumb` term reproduces the
+   thumb-width inset so the tick lines up with where the knob sits at that value. */
+.temp-marker {
+  --thumb: 16px;
+  position: absolute;
+  top: 50%;
+  left: calc(var(--thumb) / 2 + var(--pct, 0) * (100% - var(--thumb)));
+  width: 2px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  background: currentColor;
+  border-radius: 1px;
+  opacity: 0; /* fades in once the first reading arrives (.visible) */
+  pointer-events: none;
+  transition:
+    left 0.6s ease,
+    opacity 0.4s ease;
+}
+.temp-marker.visible {
+  opacity: 0.32;
 }
 .slider:disabled {
   opacity: 0.4;
@@ -178,9 +233,10 @@ const $fan = document.querySelector("#fan-icon"); // absent in the thermometer v
 const $secret = document.querySelector("#secret"); // absent unless the fan is controllable
 const $slider = document.querySelector("#threshold"); // "
 const $thresholdLabel = document.querySelector("#threshold-label");
+const $tempMarker = document.querySelector("#temp-marker"); // subtle current-temp tick (control variant only)
 const $status = document.querySelector("#status");
-const $conn = document.querySelector("#conn"); // <details> grouping ticket + secret
-const $connLabel = document.querySelector("#conn-label");
+const $conn = document.querySelector("#conn"); // panel grouping ticket + secret
+const $connToggle = document.querySelector("#conn-toggle"); // gear that shows/hides it
 
 // Namespace persisted state by the page's path segment, so multiple GUI variants
 // embedded on one page (each in its own same-origin iframe) don't share an endpoint
@@ -227,15 +283,16 @@ if ($secret) {
 }
 refreshSlider();
 
-// The connection group (ticket + secret) is just setup clutter once you have a ticket.
-// Reflect the state in the summary and collapse it when there's a ticket to hide behind
-// — clicking the summary always reopens it to edit.
+// The connection group (ticket + secret) is just setup clutter once you have a ticket,
+// so it's hidden behind the gear. The gear lights up while the panel is open.
 function refreshConn() {
-  if ($connLabel) $connLabel.textContent = connectedTicket ? "connection · connected" : "connection";
+  // Highlight the gear while the setup panel is open.
+  if ($connToggle && $conn) $connToggle.classList.toggle("active", !$conn.hidden);
 }
 // Start collapsed if a ticket is already prefilled; open otherwise so the first thing
 // you see is where to paste one. (Not tied to typing, so it never folds mid-edit.)
-if ($conn) $conn.open = $ticket.value.trim() === "";
+// Hidden when a ticket is already set (URL fragment or stored); open when blank.
+if ($conn) $conn.hidden = $ticket.value.trim() !== "";
 refreshConn();
 
 // The flourish: the numbers and the fan share one color driven off `lastReading` —
@@ -287,6 +344,14 @@ function onReading(temp, hum, fan, threshold) {
     $slider.value = threshold;
     setThresholdLabel(threshold);
   }
+  // Mark where the current temperature sits on the threshold track.
+  if ($tempMarker && $slider) {
+    const min = Number($slider.min);
+    const max = Number($slider.max);
+    const pct = Math.min(1, Math.max(0, (temp - min) / (max - min)));
+    $tempMarker.style.setProperty("--pct", pct);
+    $tempMarker.classList.add("visible");
+  }
   lastReading = Date.now();
   $status.textContent = `last reading ${new Date(lastReading).toLocaleTimeString()}`;
 }
@@ -329,7 +394,7 @@ function connect() {
   connectedTicket = ticket;
   refreshConnectButton();
   // Fold the setup fields away now that we're connected.
-  if ($conn) $conn.open = false;
+  if ($conn) $conn.hidden = true;
   refreshConn();
 }
 
@@ -338,6 +403,15 @@ $ticket.addEventListener("input", refreshConnectButton);
 $ticket.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !$connect.disabled) connect();
 });
+
+// Gear toggles the connection setup panel (ticket + secret).
+if ($connToggle) {
+  $connToggle.addEventListener("click", () => {
+    if (!$conn) return;
+    $conn.hidden = !$conn.hidden;
+    refreshConn();
+  });
+}
 
 // Fast reconnect after the tab/phone was frozen. While suspended, the endpoint's relay
 // and device connections go stale, and iroh would otherwise wait out its reconnect
@@ -446,10 +520,23 @@ try {
   </head>
   <body>
     <main>
-      <h1>remote&nbsp;thermometer</h1>
+      <header class="head">
+        <h1>remote&nbsp;thermometer</h1>
+        <button
+          class="conn-toggle"
+          id="conn-toggle"
+          type="button"
+          aria-label="connection settings"
+          title="connection settings"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </header>
 
-      <details class="conn" id="conn" open>
-        <summary><span id="conn-label">connection</span></summary>
+      <div class="conn" id="conn">
         <div class="connect">
           <input
             id="ticket"
@@ -460,7 +547,7 @@ try {
           />
           <button id="connect" type="button" disabled>connect</button>
         </div>
-      </details>
+      </div>
 
       <div class="readings">
         <div class="reading">
