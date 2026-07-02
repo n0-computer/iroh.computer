@@ -143,6 +143,11 @@ button:disabled {
   flex: 1;
   min-width: 0;
   accent-color: #2b6cff;
+  /* The generic `input` rule adds padding + a border, which on a range input
+     offsets its native track from the thumb's travel — the blue accent-color fill
+     drifts to the right of the knob. Reset them so fill and thumb line up. */
+  padding: 0;
+  border: none;
 }
 .slider:disabled {
   opacity: 0.4;
@@ -191,6 +196,7 @@ const STALE = [138, 143, 152]; // #8a8f98
 const FADE_MS = 30_000;
 
 let node = null;
+let NodeClass = null; // the wasm `Node` class, captured at boot so we can re-spawn
 let current = null; // active Subscription handle
 let connectedTicket = null; // the ticket `current` is polling
 let lastReading = null;
@@ -333,6 +339,49 @@ $ticket.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !$connect.disabled) connect();
 });
 
+// Fast reconnect after the tab/phone was frozen. While suspended, the endpoint's relay
+// and device connections go stale, and iroh would otherwise wait out its reconnect
+// backoff — slow. A manual reload is instant because it starts from scratch, so on
+// return to the foreground we do the same thing in place: tear the node down and
+// re-spawn + resubscribe (keeping the page — chart, fade — intact, unlike a reload).
+let hiddenAt = null;
+async function reconnectFresh() {
+  const ticket = connectedTicket;
+  if (!ticket || !NodeClass) return;
+  onStatus("reconnecting…");
+  if (current) {
+    current.free();
+    current = null;
+  }
+  if (node) {
+    try {
+      node.free();
+    } catch (_) {}
+    node = null;
+  }
+  connectedTicket = null; // so connect() proceeds with the same (still-filled) ticket
+  try {
+    node = await NodeClass.spawn(localStorage.getItem(SECRET_KEY));
+    localStorage.setItem(SECRET_KEY, node.secret_hex());
+    connect();
+  } catch (err) {
+    $status.textContent = `reconnect failed: ${err}`;
+    console.error(err);
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    hiddenAt = Date.now();
+    return;
+  }
+  const staleFor = hiddenAt == null ? 0 : Date.now() - hiddenAt;
+  hiddenAt = null;
+  // Only rebuild if we were connected and away long enough to have gone stale — a quick
+  // tab flip doesn't need it (and would waste a history backfill).
+  if (connectedTicket && staleFor > 5000) reconnectFresh();
+});
+
 // Fan control wiring only exists when this variant has the secret + slider.
 if ($secret && $slider) {
   $secret.addEventListener("input", () => {
@@ -383,6 +432,7 @@ try {
   }
   const { default: init, Node } = await import(`${dir}wasm/smart_fan_wasm.js`);
   await init();
+  NodeClass = Node;
   node = await Node.spawn(localStorage.getItem(SECRET_KEY));
   localStorage.setItem(SECRET_KEY, node.secret_hex());
   $status.textContent = "ready — paste a ticket and connect";
