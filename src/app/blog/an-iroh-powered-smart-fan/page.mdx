@@ -281,7 +281,7 @@ impl ProtocolHandler for SensorServer {
 
 We will add more in the future, but for now the client side just does a single reading.
 
-```
+```rust
     // Wrap the QUIC connection as an irpc client and make one call.
     let client: Client<SensorProtocol> = Client::boxed(IrohRemoteConnection::new(conn));
     match client.rpc(GetLatest).await? {
@@ -315,14 +315,14 @@ I am not a javascript developer, so the WASM GUI is vibe coded. I just briefly c
 
 This first version is just a remote thermometer: paste a ticket from your device to see its temperature and humidity live over the relay.
 
+To run the GUI, go into smart-fan-wasm and run `npm run build; npm run serve`, and then open the GUI on `localhost:8080`. But you don't have to! The GUI in this blog post is live, you can just paste your ticket and try it out.
+
 <iframe
   src="/blog/an-iroh-powered-smart-fan/remote-thermometer/index.html"
   title="Remote thermometer GUI"
   loading="lazy"
   style={{ width: '100%', height: '360px', border: '1px solid #8883', borderRadius: '0.5rem' }}
 />
-
-
 
 # Adding an actuator
 
