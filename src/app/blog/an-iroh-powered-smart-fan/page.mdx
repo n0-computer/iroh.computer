@@ -28,16 +28,16 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-If you live in Europe you are probably suffering from the heat wave. So let's do something against this, using iroh.
+If you live in Europe you are probably suffering through a heat wave right now. Let's do something to bring back some chill, using iroh.
 
-The previous ESP32 examples were just an echo protocol. But that is not what ESP32s are typically used for. You use an ESP32 as a cheap means to read sensors and drive actuators.
+The [previous ESP32 examples][esp32-examples] demonstrated echo protocols. But  typically ESP32s are used for more than just echoing data; you use an ESP32 as a cheap means to read sensors and drive actuators.
 
-So we are going to write a very simple end to end example using an ESP32 to measure temperature and control a fan. Unlike most IoT devices, there won't be any cloud component. Just a tiny website that you can use from anywhere in the world using any browser that supports WebAssembly.
+So we are going to write a very simple end-to-end example using an ESP32 to measure temperature and control a fan. Unlike most IoT devices, there won't be any cloud component. Just a tiny website that you can use from anywhere in the world using any browser that supports WebAssembly.
 
-As the base we are going to use an ESP32-WROVER devkit with 4 MiB of PSRAM, so we can use full iroh including a relay connection and remote control it from anywhere in the world. You can also use a M5StickC-Plus2, but you will have to adapt the GPIO pins.
+As the base, we are going to use an ESP32-WROVER devkit with 4 MiB of PSRAM, so we have all of iroh's networking capabilities available, including a relay connection, and remote control it from anywhere in the world. You can also use a M5StickC-Plus2, but you will have to adapt the GPIO pins.
 
 <Note>
-If all you have is an ESP32 without PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from the examples project as base.
+If all you have is an ESP32 without PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from [iroh-esp32-examples][esp32-examples] as base.
 </Note>
 
 # Basic setup
@@ -94,7 +94,7 @@ What we should have now is a simple echo server running on the ESP32.
 
 ## Endpoint Id
 
-First of all, how do we assign the endpoint id? We want the ability to assign an endpoint id, but even if we don't do so we want the endpoint id to be stable after reboots. So the ESP32 *should not* generate a random one on each startup.
+First of all, how do we assign the [endpoint id]? We want the ability to assign an endpoint id, but even if we don't do so we want the endpoint id to be stable after reboots. So the ESP32 *should not* generate a random one on each startup.
 
 To solve that the example has a little addition to the build.rs file that generates IROH_SECRET during build unless it is set via an environment variable.
 
@@ -179,12 +179,12 @@ Now that we have confirmed that the example works, we can start making it actual
 
 Since we want to build a smart fan, the first thing we need is a temperature sensor. We are going to use a DHT22 temperature and humidity sensor.
 
-<div className="not-prose mx-auto max-w-md">
+<figure className="not-prose mx-auto max-w-md">
   <img src="/blog/an-iroh-powered-smart-fan/dht22.jpg" width={2560} height={1440} alt="A DHT22 temperature and humidity sensor" />
-  <p className="text-center text-sm opacity-60 mt-2">
+  <figcaption className="text-center text-sm opacity-60 mt-2">
     A DHT22 sensor. Photo by <a href="https://commons.wikimedia.org/wiki/File:DHT_22_Sensor.jpg">L293D</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, via Wikimedia Commons.
-  </p>
-</div>
+  </figcaption>
+</figure>
 
 Wiring up the sensor is very simple. It has three wires, two for +3.3V **(do not use +5V!)** and GND and one for data.
 
@@ -307,13 +307,13 @@ let _router = Router::builder(endpoint)
 
 # A proper GUI
 
-The CLI tool is nice for debugging, but what we really want is a GUI to show the temperature and later to control the fan. We could write a native GUI using dioxus that works on all major platforms. But who wants to install an app for this? So let's do a WASM GUI that runs in the browser.
+The CLI tool is nice for debugging, but what we really want is a GUI to show the temperature and, eventually, to control the fan. We could write a native GUI using dioxus that works on all major platforms. But who wants to install an app for this? So let's do a WASM GUI that runs in the browser.
 
 <Note>
 I am not a javascript developer, so the WASM GUI is vibe coded. I just briefly checked it.
 </Note>
 
-This first version is just a remote thermometer: paste a ticket from your device to see its temperature and humidity, live over the relay.
+This first version is just a remote thermometer: paste a ticket from your device to see its temperature and humidity live over the relay.
 
 <iframe
   src="/blog/an-iroh-powered-smart-fan/remote-thermometer/index.html"
@@ -326,7 +326,7 @@ This first version is just a remote thermometer: paste a ticket from your device
 
 # Adding an actuator
 
-At this point we have a remote accessible temperature and humidity meter. But we want a smart fan. So let's add an output. We are going to use a 5V desktop computer fan like for example the [Noctua NF-A14-5V]. This connects to the +5V and GND rail and has a single PWM control wire to switch or throttle the fan.
+At this point we have a remote accessible temperature and humidity meter. But we want a smart fan. So let's add an output. We are going to use a 5V desktop computer fan like, for example, the [Noctua NF-A14-5V]. This connects to the +5V and GND rail and has a single PWM control wire to switch or throttle the fan.
 
 If you don't have such a fan, you can also just wire up a LED with a 300 Ω resistor, or wire up a relay to control a household fan. It's more fun with a real fan though!
 
@@ -358,7 +358,7 @@ But what if we wanted the old remote thermometer GUI to still work? In that case
 We can still evolve the protocol without changing ALPNs by *adding* new RPC methods at the end of the protocol enum. Then we can keep the ALPN, and old GUI versions will continue to work.
 
 <Note>
-We have a much more principled approach for schema evolution, irpc-schema, but that will be the subject of another blog post.
+We have a much more principled approach for schema evolution, [`irpc-schema`](https://github.com/n0-computer/irpc-schema), but that will be the subject of another blog post.
 </Note>
 
 So here is our new compatible schema enum:
@@ -453,6 +453,7 @@ If you use the long tickets and the local LAN, then yes. If you use existing rel
 
 
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
+[endpoint id]: https://docs.iroh.computer/concepts/endpoints#endpoint-identifiers
 [QAD]: /blog/qad
 [hosted relays]: https://docs.iroh.computer/concepts/relays#deploy-your-own-relay
 [breadboard]: https://en.wikipedia.org/wiki/Breadboard
