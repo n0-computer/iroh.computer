@@ -34,7 +34,7 @@ The [previous ESP32 examples][esp32-examples] demonstrated echo protocols. But  
 
 So we are going to write a very simple end-to-end example using an ESP32 to measure temperature and control a fan. Unlike most IoT devices, there won't be any cloud component. Just a tiny website that you can use from anywhere in the world using any browser that supports WebAssembly.
 
-As the base, we are going to use an ESP32-WROVER devkit with 4 MiB of [PSRAM][psram], so we have all of iroh's networking capabilities available, including a relay connection, and remote control it from anywhere in the world. You can also use a M5StickC-Plus2, but you will have to adapt the GPIO pins.
+As the base, we are going to use an [ESP32-WROVER devkit](https://store.freenove.com/products/fnk0047) with 4 MiB of [PSRAM][psram], so we have all of iroh's networking capabilities available, including a relay connection, and remote control it from anywhere in the world. You can also use a M5StickC-Plus2, but you will have to adapt the GPIO pins.
 
 <Note>
 If all you have is an ESP32 without PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from [iroh-esp32-examples][esp32-examples] as base.
