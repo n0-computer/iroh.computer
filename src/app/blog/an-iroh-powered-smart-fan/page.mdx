@@ -96,9 +96,7 @@ What we should have now is a simple echo server running on the ESP32.
 
 First of all, how do we assign the [endpoint id]? We want the ability to assign an endpoint id, but even if we don't do so we want the endpoint id to be stable after reboots. So the ESP32 *should not* generate a random one on each startup.
 
-To solve that the example has a little addition to the build.rs file that generates IROH_SECRET during build unless it is set via an environment variable.
-
-That way we get a stable endpoint id after each flash and can reboot the device as many times as we want.
+Instead we generate and store the secret key in non volatile memory on first startup and reuse it on subsequent startups. Non volatile memory is not overwritten by flashing, so we will get the same endpoint id for the same device unless we explicitly delete non volatile memory.
 
 ## Startup
 
@@ -171,7 +169,7 @@ You might think that stopping the `cargo run --release` will stop the binary. Bu
 
 You can even disconnect it and plug it into a separate USB-C power supply, and it will boot up again with the same endpoint id. This is the whole point. The ESP32 is a fully self-contained embedded computer. It just needs power.
 
-If you really want to shut it down, unplug it or delete the flash.
+If you really want to shut it down, unplug it or delete the flash using `espflash erase-flash`.
 
 # Adding a sensor
 
@@ -218,7 +216,7 @@ To do that we are going to use irpc. If all we wanted to do is to read a single 
 
 ## Protocol crate
 
-We will define the protocol in a separate crate, since it will be used by both the client and the ESP32 itself.
+We will define the protocol in a separate crate `smart-fan-proto`, since it will be used by both the client and the ESP32 itself.
 
 The first rpc call will be just reading the current sensor values. For now this is just a temperature and humidity, but in the future there might be more. So we are going to use a sensor state struct.
 
@@ -315,7 +313,7 @@ I am not a javascript developer, so the WASM GUI is vibe coded. I just briefly c
 
 This first version is just a remote thermometer: paste a ticket from your device to see its temperature and humidity live over the relay.
 
-To run the GUI, go into smart-fan-wasm and run `npm run build; npm run serve`, and then open the GUI on `localhost:8080`. But you don't have to! The GUI in this blog post is live, you can just paste your ticket and try it out.
+To run the GUI, go into `smart-fan-wasm` and run `npm run build; npm run serve`, and then open the GUI on `http://localhost:8080`. But you *don't have to*! The GUI in this blog post is live, you can just paste your ticket and try it out.
 
 <iframe
   src="/blog/an-iroh-powered-smart-fan/remote-thermometer/index.html"
@@ -432,6 +430,10 @@ Here it is, running live in the browser as WebAssembly. Paste a ticket from your
   style={{ width: '100%', height: '540px', border: '1px solid #8883', borderRadius: '0.5rem' }}
 />
 
+# Try it out
+
+The complete code for this blog post can be found in [iroh-smart-fan].
+
 # What else can you do
 
 There are a wide variety of input and output devices available that work out of the box with an ESP32. For input, there is everything from simple temperature and light sensors to precise CO2 and VOC sensors, accelerometers, GPS, microphones, even various cameras. The ESP32 can configure the GPIOs as analog-to-digital converters, so you can easily use simple analog sensors such as potentiometers, photoresistors or switches.
@@ -446,8 +448,7 @@ I was never much of an electronics expert, but wiring stuff up to an ESP32 is li
 
 If you use the long tickets and the local LAN, then yes. If you use existing relays, you do have a small component in the cloud. But it is a completely application independent, open source, commodity component. You can use our public relays to play around, our [hosted relays] for a production deployment, or even self host if you don't mind the complexity of operating relays in multiple regions and don't dread the 3AM phone call.
 
-
-
+[iroh-smart-fan]: https://github.com/n0-computer/iroh-smart-fan
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
 [endpoint id]: https://docs.iroh.computer/concepts/endpoints#endpoint-identifiers
 [QAD]: /blog/qad
