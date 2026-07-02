@@ -30,6 +30,28 @@ h1 {
   text-align: center;
   opacity: 0.75;
 }
+/* Collapsible panel grouping the ticket + secret setup fields. Folds away once a
+   ticket is set so the readings become the main view; click the summary to reopen. */
+.conn {
+  border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
+}
+.conn > summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.6;
+  letter-spacing: 0.02em;
+  user-select: none;
+  list-style-position: inside;
+}
+.conn[open] > summary {
+  margin-bottom: 0.6rem;
+}
+.conn > #secret {
+  margin-top: 0.6rem;
+}
 .connect {
   display: flex;
   gap: 0.5rem;
@@ -92,11 +114,10 @@ button:disabled {
 .fan-icon {
   width: 3rem;
   height: 3rem;
-  color: #8a8f98; /* muted, static when off */
-  transition: color 0.3s;
+  color: #8a8f98; /* fallback until paintFreshness drives the color from freshness */
 }
+/* Resting vs. spinning is motion only — the blue/gray color is freshness-driven in JS. */
 .fan-icon.spinning {
-  color: #2b6cff;
   animation: spin 1.4s linear infinite;
 }
 @keyframes spin {
@@ -153,6 +174,8 @@ const $secret = document.querySelector("#secret"); // absent unless the fan is c
 const $slider = document.querySelector("#threshold"); // "
 const $thresholdLabel = document.querySelector("#threshold-label");
 const $status = document.querySelector("#status");
+const $conn = document.querySelector("#conn"); // <details> grouping ticket + secret
+const $connLabel = document.querySelector("#conn-label");
 
 // Namespace persisted state by the page's path segment, so multiple GUI variants
 // embedded on one page (each in its own same-origin iframe) don't share an endpoint
@@ -198,15 +221,28 @@ if ($secret) {
 }
 refreshSlider();
 
-// The flourish: both numbers share one color driven off `lastReading` — mid-blue when
-// fresh, fading to gray over FADE_MS. Driving it from the shared timestamp keeps them
-// exactly in sync.
+// The connection group (ticket + secret) is just setup clutter once you have a ticket.
+// Reflect the state in the summary and collapse it when there's a ticket to hide behind
+// — clicking the summary always reopens it to edit.
+function refreshConn() {
+  if ($connLabel) $connLabel.textContent = connectedTicket ? "connection · connected" : "connection";
+}
+// Start collapsed if a ticket is already prefilled; open otherwise so the first thing
+// you see is where to paste one. (Not tied to typing, so it never folds mid-edit.)
+if ($conn) $conn.open = $ticket.value.trim() === "";
+refreshConn();
+
+// The flourish: the numbers and the fan share one color driven off `lastReading` —
+// mid-blue when fresh, fading to gray over FADE_MS. The fan is blue whether resting or
+// spinning; only staleness greys it out. Driving it all from the shared timestamp keeps
+// them exactly in sync.
 function paintFreshness() {
   const t = lastReading ? Math.min((Date.now() - lastReading) / FADE_MS, 1) : 1;
   const c = FRESH.map((f, i) => Math.round(f + (STALE[i] - f) * t));
   const color = `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
   $temp.style.color = color;
   $hum.style.color = color;
+  if ($fan) $fan.style.color = color;
   requestAnimationFrame(paintFreshness);
 }
 requestAnimationFrame(paintFreshness);
@@ -286,6 +322,9 @@ function connect() {
   current = node.subscribe(ticket, onReading, onStatus);
   connectedTicket = ticket;
   refreshConnectButton();
+  // Fold the setup fields away now that we're connected.
+  if ($conn) $conn.open = false;
+  refreshConn();
 }
 
 $connect.addEventListener("click", connect);
@@ -359,16 +398,19 @@ try {
     <main>
       <h1>remote&nbsp;thermometer</h1>
 
-      <div class="connect">
-        <input
-          id="ticket"
-          type="text"
-          placeholder="paste endpoint ticket"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <button id="connect" type="button" disabled>connect</button>
-      </div>
+      <details class="conn" id="conn" open>
+        <summary><span id="conn-label">connection</span></summary>
+        <div class="connect">
+          <input
+            id="ticket"
+            type="text"
+            placeholder="paste endpoint ticket"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="connect" type="button" disabled>connect</button>
+        </div>
+      </details>
 
       <div class="readings">
         <div class="reading">
