@@ -1,0 +1,61 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2026-06-29',
+  title: 'iroh 1.0.2 - `iroh-relay` Security Fix',
+  description: 'Release of iroh v1.0.2',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+Last release [we were delighted to be boring](/blog/iroh-1-0-1). This time we're *almost* boring: iroh 1.0.2 is another maintenance release with a couple of bugfixes and one small relay feature, but it also fixes a vulnerability in the relay server. If you run your own relays, you should upgrade now. If you don't, the n0-operated relays are already patched, and you can go back to enjoying the boredom.
+
+P.S. The `0.35` relays were not effected by this bug, so no patch release for those relays are needed.
+
+## 🚨 Relay server vulnerability
+
+The relay server was missing a length check when parsing client-to-relay datagram frames. A frame that is shorter than the length of an endpoint id would trigger an out-of-bounds slice and panic. Since we recommend building relays with `panic = "abort"` (and our release binaries do), any client that could connect to a relay could crash the whole server with a single malformed message.
+
+The fix is exactly the boring one-liner you'd hope for: the relay now rejects the frame as invalid and carries on. Clients are not affected — this only impacts `iroh-relay` server deployments. If you operate a relay, upgrade to `iroh-relay@1.0.2`. This bug was fixed in [#4389](https://github.com/n0-computer/iroh/pull/4389), which also expanded proptest coverage of the relay protocol parsers so this class of bug gets caught before it ships.
+
+## 🔄 Live-updatable relay rate limits
+
+Until now, the relay server's per-client rate limit was locked in when a connection was accepted. Changing it meant rebuilding the and dropping every live connection. Now you can set the limit dynamically, so you can change it on a running service and every connection (existing and new) picks it up on its next read.
+
+
+```rust
+  use iroh_relay::server::ClientRateLimit;
+
+  let limit = ClientRateLimit::new(NonZeroU32::new(100_000).unwrap());
+  relay_service.set_client_rate_limit(Some(limit));
+```
+
+See PR #4381 (https://github.com/n0-computer/iroh/pull/4381) for more details.
+
+## What's next?
+
+We expect the next few releases to be back to business as usual: happy maintenance releases every few weeks, small fixes for corner cases and invisible improvements.
+
+See you at the next release, and keep filing those bugs!
