@@ -48,7 +48,7 @@ We refer to logical TLS messages as just messages. Messages can be split into mu
 
 ## Normal TLS handshake
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/1rtt.png" width={1200} height={754} alt="minimal 0rtt interaction" />
 </div>
 
@@ -104,7 +104,7 @@ For latency critical protocols, you simply get your answer faster. But even for 
 
 0-RTT is only possible if a client has received pre-shared keys from the server via `NewSessionTicket` messages, which is the case if they performed a full handshake in the recent past.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/0rtt-norenew.png" width={1200} height={754} alt="Normal TLS handshake" />
 </div>
 
@@ -311,7 +311,7 @@ tokio::spawn(async move {
 
 In the future we would want to replace the crude sleep with a more precise API that waits exactly until at least one NewSessionTicket message has been received.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/0rtt-renew.png" width={1200} height={754} alt="0rtt communication with ticket renewal" />
 </div>
 
@@ -369,7 +369,7 @@ This is sufficient, since there is no other traffic going to that host.
 
 Now run the program with a small number of rounds and see what is being captured.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/wireshark-encrypted.png" width={1200} height={754} alt="Encrypted packages" />
 </div>
 
@@ -405,13 +405,13 @@ But really, there is no deep magic going on here. These are just the secrets tha
 
 Once we tell wireshark to use the keylog file, we can inspect the decrypted packet content and can also see a bit more information in the text view:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/wireshark-decrypted.png" width={1200} height={754} alt="Decrypted packages" />
 </div>
 
 Explaining the packet content would be a blog post of its own. But we can now drill down to an individual packet, look at the decrypted content, and find our big endian encoded ping sequence number.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/0rtt-api/decryptedpayload.png" width={1200} height={754} alt="Decrypted packages" />
 </div>
 

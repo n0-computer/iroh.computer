@@ -30,15 +30,13 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-<div className='not-prose mb-5'>
-  <ThemeImage
+<ThemeImage
     lightSrc='/diagrams/dag_sync_post.svg'
     darkSrc='/diagrams/dag_sync_post_dark.svg'
     alt='a diagram of a directed acyclic graph with a root node and several children, synchronized between a phone and a computer'
     width={800}
     height={450}
-  />
-</div>
+/>
 
 ## Problem
 

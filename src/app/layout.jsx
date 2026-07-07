@@ -2,6 +2,7 @@ import glob from 'fast-glob';
 import Script from 'next/script';
 
 import {Providers} from '@/app/providers';
+import {V1Banner} from '@/components/V1Banner';
 import '@/styles/tailwind.css';
 
 export const metadata = {
@@ -43,9 +44,10 @@ export default async function RootLayout({children}) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet" />
       </head>
-      <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900 font-space">
+      <body className="flex min-h-full bg-white antialiased dark:bg-black font-space">
         <Providers>
-          <div className="w-full overflow-x-clip">
+          <div className="w-full overflow-x-clip pt-[var(--v1-banner-height,0px)]">
+            <V1Banner />
             {children}
           </div>
         </Providers>

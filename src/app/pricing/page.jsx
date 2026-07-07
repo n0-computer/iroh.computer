@@ -83,7 +83,7 @@ const featureSections = [
   {
     name: 'Hosting',
     features: [
-      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$199/relay', enterprise: 'Custom' },
+      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$0.27/relay/hour', enterprise: 'Custom' },
       { name: 'Connections per Relay', free: 'Variable', freeNote: 'Rate-limited', pro: '60k', enterprise: 'Custom' },
       { name: 'Multi-region', free: null, pro: true, enterprise: 'Custom' },
       { name: 'Multi-cloud', free: null, pro: null, enterprise: true },
@@ -128,7 +128,7 @@ export default function PricingPage() {
     <div>
       <HeaderSparse />
 
-      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100">
+      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero */}
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl pt-12 text-center">

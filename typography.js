@@ -46,7 +46,10 @@ module.exports = ({ theme }) => ({
 
       // Layout
       '> *': {
-        maxWidth: 'none',
+        // We configure the max width and margins here to allow individual items to self-overwrite.
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        maxWidth: theme('maxWidth.2xl'),
       },
 
       // Text

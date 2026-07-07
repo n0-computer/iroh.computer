@@ -14,7 +14,7 @@ export default function VideoSolutionsPage() {
     <div>
       <HeaderSparse />
 
-      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100">
+      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero Section */}
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800 relative overflow-hidden">
           {/* Background Logo */}
@@ -132,7 +132,7 @@ export default function VideoSolutionsPage() {
             </p>
             <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg mb-10">
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 italic">
-                &ldquo;Media over QUIC has real legs. It works on mobile and handles packet loss so much better.&rdquo;
+                &ldquo;Media over QUIC has real legs. It works on mobile and handles packet loss so much better than WebRTC.&rdquo;
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 text-center">

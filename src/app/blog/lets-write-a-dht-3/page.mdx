@@ -135,27 +135,27 @@ We are using the [textplots] crate to get nice plots in the console, with some o
 > cargo test perfect_routing_tables_1k -- --nocapture
 ```
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 So far, so good. We get a 100% overlap with the perfect set of ids.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 Data is evenly distributed over the DHT nodes. The histogram also looks reasonable. Since we have 100% overlap with the perfect set of nodes, the little bump at the end is just a blip, provided or XOR metric works.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/perfect_routing_tables_1k_-_histogram_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
@@ -175,7 +175,7 @@ So let's see how bad it is.
 ❯ cargo test just_bootstrap_1k -- --nocapture
 ```
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
@@ -183,13 +183,13 @@ Pretty bad. The routing gives between 0 and 11 correct nodes. Note that even wit
 
 Let's look at more stats:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_storage_usage_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 We interact with the node with index 500, and since each node only knows about nodes further right on the ring, the nodes to the left of our initial node are not used at all.
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/just_bootstrap_1k_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
@@ -205,19 +205,19 @@ cargo test --release self_lookup_strategy -- --nocapture
 
 Initially things look just as bad as with just bootstrap nodes:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-0_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 But after just a few random lookups, routing results are close to perfect for this small DHT
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-9_-_histogram_-_commonality_with_perfect_set_of_20_ids.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
 The node that is being probed can still be clearly seen, but after just a few self lookups at least all nodes have reasonably sized routing tables:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/self_lookup_strategy-9_-_routing_table_size_per_node.png" width={1000} alt="Removal of 100 nodes" />
 </div>
 
@@ -290,7 +290,7 @@ But now we need to additionally show evolution of this bitmap over time. Fortuna
 
 Here it is:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/partition_1k.gif" width={1000} height={1000} alt="Addition of 100 partitioned nodes" />
 </div>
 
@@ -335,7 +335,7 @@ async fn remove_1k() -> TestResult<()> {
 
 And here is the resulting gif:
 
-<div className="not-prose">
+<div className="not-prose mx-auto max-w-2xl">
   <img src="/blog/lets-write-a-dht-3/remove_1k.gif" width={1000} height={1000} alt="Removal of 100 nodes" />
 </div>
 

@@ -2,18 +2,18 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 
 import { Prose } from '@/components/Prose'
 import References from '@/components/References'
-import BlogHeader from '@/components/BlogHeader'
+import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { formatDate } from '@/lib/formatDate'
 
 export function BlogPostLayout({ article, references = [], children }) {
   return (
     <div>
-      <BlogHeader />
-      <div className="px-5 sm:px-0 mt-16 lg:mt-32 font-space">
+      <HeaderSparse />
+      <div className="px-5 sm:px-0 mt-24 font-space">
         <div className="xl:relative">
-          <div className="mx-auto mt-32 mb-64 max-w-6xl">
-            <div>
+          <div className="mb-64">
+            <div className="mx-auto max-w-2xl">
               <a
                 href="/blog"
                 aria-label="Go back to articles"
@@ -24,11 +24,11 @@ export function BlogPostLayout({ article, references = [], children }) {
               </a>
             </div>
             <article>
-              <header className="flex flex-col">
+              <header className="mx-auto max-w-2xl flex flex-col">
                 <h1 className="text-4xl font-space font-bold tracking-tight text-irohGray-900 dark:text-irohGray-100 sm:text-5xl">
                   {article.title}
                 </h1>
-                <span className='mt-1 text-base text-irohGray-400 dark:text-irohGray-500'>
+                <span className='mt-1 text-base text-irohGray-400 dark:text-slate-400'>
                   <time dateTime={article.date}>
                     {formatDate(article.date)}
                   </time>
@@ -40,7 +40,7 @@ export function BlogPostLayout({ article, references = [], children }) {
                 {references.length > 0 && (
                   <References references={references} />
                 )}
-                <div className="text-base text-irohGray-400 dark:text-irohGray-500 italic">
+                <div className="text-base text-irohGray-400 dark:text-slate-400 italic">
                   Iroh is a dial-any-device networking library that just works. Compose from an ecosystem of ready-made protocols to get the features you need, or go fully custom on a clean abstraction over dumb pipes. Iroh is open source, and already running in production on hundreds of thousands of devices.<br/>
                   To get started, take a look at our <a href="https://iroh.computer/docs">docs</a>, dive directly into <a href="https://github.com/n0-computer/iroh">the code</a>, or chat with us in our <a href="https://iroh.computer/discord">discord channel</a>.
                 </div>

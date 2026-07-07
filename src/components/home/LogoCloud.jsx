@@ -5,13 +5,14 @@ import {ThemeImage} from '@/components/ThemeImage'
 import { useEffect, useRef } from "react"
 
 const companies = [
-  { name: "spacedrive", ext: "png" },
-  { name: "nous", ext: "png" },
-  { name: "shaga", ext: "png" },
-  { name: "paycode", ext: "svg" },
-  { name: "rave", ext: "png" },
-  { name: "delta_chat", ext: "png" },
-  { name: "holochain", ext: "svg" },
+  { name: "spacedrive", ext: "png", href: "https://www.spacedrive.com" },
+  { name: "nous", ext: "png", href: "https://nousresearch.com" },
+  { name: "meshllm", ext: "svg", imgClassName: "max-h-12 grayscale", href: "https://meshllm.cloud" },
+  { name: "strada", ext: "png", label: "Strada", href: "https://strada.tech" },
+  { name: "paycode", ext: "svg", href: "https://www.paycode.com.mx" },
+  { name: "rave", ext: "png", href: "https://rave.io" },
+  { name: "delta_chat", ext: "png", href: "https://delta.chat" },
+  { name: "ottomatic", ext: "png", label: "Ottomatic", href: "https://ottomatic.io" },
 ];
 
 // interface LogoCloudProps {
@@ -19,7 +20,7 @@ const companies = [
 //   speed?: number
 //   height?: number
 // }
-export function LogoCloud({ speed = 0.85, height = 150 }) {
+export function LogoCloud({ speed = 0.85, height = 100 }) {
   const scrollerRef = useRef(null)
   const innerScrollerRef = useRef(null)
 
@@ -64,25 +65,32 @@ export function LogoCloud({ speed = 0.85, height = 150 }) {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="relative w-full overflow-hidden py-4">
-        {/* Gradient masks for fading edges */}
-        <div className="absolute left-0 top-0 z-10 h-full w-[100px] bg-linear-to-r from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
-        <div className="absolute right-0 top-0 z-10 h-full w-[100px] bg-linear-to-l from-irohGray-50 dark:from-irohGray-900 to-transparent"></div>
-
+      <div className="relative w-full overflow-hidden py-2">
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map(({ name, ext }, index) => (
-              <div key={`${name}-${index}`} style={{ height, width: height * 1.4 }} className="flex items-center justify-center px-4">
-                <ThemeImage
-                  alt={`${name} logo`}
-                  darkSrc={`/img/user-logos/${name}.${ext}`}
-                  lightSrc={`/img/user-logos/${name}.${ext}`}
-                  width={height * 1.4}
-                  height={height}
-                  className="object-contain max-h-12 w-auto"
-                />
-              </div>
+            {companies.map(({ name, ext, imgClassName, label, href }, index) => (
+              <a
+                key={`${name}-${index}`}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ height, width: height * (label ? 2 : 1.4) }}
+                className="flex items-center justify-center gap-2.5 px-4 transition-opacity hover:opacity-70"
+              >
+                {label ? (
+                  <span className="text-2xl font-bold text-irohGray-500 dark:text-irohGray-400">{label}</span>
+                ) : (
+                  <ThemeImage
+                    alt={`${name} logo`}
+                    darkSrc={`/img/user-logos/${name}.${ext}`}
+                    lightSrc={`/img/user-logos/${name}.${ext}`}
+                    width={height * 1.4}
+                    height={height}
+                    className={`object-contain w-auto ${imgClassName || 'max-h-12'}`}
+                  />
+                )}
+              </a>
             ))}
           </div>
         </div>

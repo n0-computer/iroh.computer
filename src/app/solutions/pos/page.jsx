@@ -18,7 +18,7 @@ export default function PaycodeUseCasePage() {
     <div>
       <HeaderSparse />
 
-      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-irohGray-900 text-irohGray-700 dark:text-irohGray-100">
+      <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero Section */}
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800 relative overflow-hidden">
           <div className="container mx-auto max-w-6xl pt-12 relative z-10">
