@@ -30,23 +30,24 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
 
-Last release [we were delighted to be boring](/blog/iroh-1-0-1). This time we're *almost* boring: iroh 1.0.2 is another maintenance release with a couple of bugfixes and one small relay feature that allows you to live-update relay rate limits, but it also fixes a vulnerability in the relay server. If you run your own relays, you should upgrade now. Those of you who use [iroh services](https://services.iroh.computer) to manage your relays can simply log in and update them using our UI. The n0-operated public relays are already patched.
-
-Big thanks V12 for finding this bug!
-
-<blockquote className="twitter-tweet"><p lang="en" dir="ltr">Iroh is a P2P networking Rust library used by (among others) Paycode and Nous.<br /><br />We found a preauth DoS in iroh-relay where malformed messages could crash relays.<br /><br />The iroh team fixed it in iroh-relay 1.0.2 and patched public relays. Thanks to <a href="https://x.com/n0computer?ref_src=twsrc%5Etfw">@n0computer</a> for the fast response!</p>&mdash; V12 (@v12sec) <a href="https://x.com/v12sec/status/2074553107384500265?ref_src=twsrc%5Etfw">July 7, 2026</a></blockquote> <script async src="https://platform.x.com/widgets.js" charSet="utf-8"></script>
+Last release [we were delighted to be boring](/blog/iroh-1-0-1). This time we're *almost* boring: iroh 1.0.2 is another maintenance release with a couple of bugfixes and one small relay feature that allows you to live-update relay rate limits...buuuut one of those bugfixes fixes a vulnerability in the relay server. If you run your own relays, you should upgrade now. Those of you who use [iroh services](https://services.iroh.computer) to manage your relays can simply log in and update them using our UI. The n0-operated public relays are already patched. So, *almost* boring.
 
 P.S. The `0.35` relays were not effected by this bug, so no patch release for those relays are needed.
 
 ## 🚨 Relay server vulnerability
 
-The relay server was missing a length check when parsing client-to-relay datagram frames. A frame that is shorter than the length of an endpoint id would trigger an out-of-bounds slice and panic. Since we recommend building relays with `panic = "abort"` (and our release binaries do), any client that could connect to a relay could crash the whole server with a single malformed message.
+The relay server was missing a length check when parsing client-to-relay datagram frames. A frame shorter than the length of an endpoint id would trigger a panic via an an out-of-bounds slice. Since we recommend building relays with `panic = "abort"` (and our release binaries build with this), any client that could connect to a relay could crash the whole server with a single malformed message.
 
-The fix is exactly the boring one-liner you'd hope for: the relay now rejects the frame as invalid and carries on. Clients are not affected — this only impacts `iroh-relay` server deployments. If you operate a relay, upgrade to `iroh-relay@1.0.2`. This bug was fixed in [#4389](https://github.com/n0-computer/iroh/pull/4389), which also expanded proptest coverage of the relay protocol parsers so this class of bug gets caught before it ships.
+The fix is exactly the boring one-liner you'd hope for: the relay now rejects a frame that is the wrong size as invalid and carries on. Clients are not affected — this only impacts `iroh-relay` server deployments. If you operate a relay, upgrade to `iroh-relay@1.0.2`. This bug was fixed in [#4389](https://github.com/n0-computer/iroh/pull/4389), which also expanded proptest coverage of the relay protocol parsers so this class of bug will get caught before it ships.
+
+Big thanks V12 for finding this bug!
+
+<blockquote className="twitter-tweet"><p lang="en" dir="ltr">Iroh is a P2P networking Rust library used by (among others) Paycode and Nous.<br /><br />We found a preauth DoS in iroh-relay where malformed messages could crash relays.<br /><br />The iroh team fixed it in iroh-relay 1.0.2 and patched public relays. Thanks to <a href="https://x.com/n0computer?ref_src=twsrc%5Etfw">@n0computer</a> for the fast response!</p>&mdash; V12 (@v12sec) <a href="https://x.com/v12sec/status/2074553107384500265?ref_src=twsrc%5Etfw">July 7, 2026</a></blockquote> <script async src="https://platform.x.com/widgets.js" charSet="utf-8"></script>
+
 
 ## 🔄 Live-updatable relay rate limits
 
-Until now, the relay server's per-client rate limit was locked in when a connection was accepted. Changing it meant rebuilding the and dropping every live connection. Now you can set the limit dynamically, so you can change it on a running service and every connection (existing and new) picks it up on its next read.
+Until now, the relay server's per-client rate limit was locked in when a connection was accepted. Changing it meant rebuilding the `RelayService` and dropping every live connection. Now you can set the limit dynamically, allowing you to change it on a running service. Every connection (existing and new) will pick it up on any subsequent reads.
 
 
 ```rust
@@ -60,6 +61,6 @@ See PR #4381 (https://github.com/n0-computer/iroh/pull/4381) for more details.
 
 ## What's next?
 
-We expect the next few releases to be back to business as usual: happy maintenance releases every few weeks, small fixes for corner cases and invisible improvements.
+We expect the next few releases to be back to business as usual: happy maintenance releases every few weeks, with small fixes for corner cases and invisible improvements.
 
-See you at the next release, and keep filing those bugs!
+See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
