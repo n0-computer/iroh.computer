@@ -1,0 +1,205 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'b5',
+  date: '2026-07-01',
+  title: 'Stuffing QUIC frames into datagrams',
+  description: 'About the surprising complexity of trying to stuff QUIC frames into datagrams.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+One would think stuffing QUIC frames into datagrams would be an easy task.
+Let's assume something else has already prepared *which* frames we want to write into our datagrams, but not necessarily their size.
+In a simple case, constructing a datagram from a bunch of QUIC frames can look like this:
+
+```
+- One big box
+- Outside has written: `src_ip: 192.168.0.101` and `dest: 200.200.200.200:443`
+- Inside:
+  - A smaller box with the text "QUIC Header" inside
+  - The majority of the outer box filled with boxes that say "QUIC Frame 0", "QUIC Frame 1", and so on
+  - A small box at the bottom that says "Authentication tag"
+```
+
+But that's just the tip of the iceberg.
+Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and frame padding.
+
+# First: Wait, what key do we actually use to encrypt?
+
+QUIC datagrams are encrypted, as the authentication tag above might already hint to.
+But if the client sends the first datagram in the connection, which key does it actually use to encrypt?
+
+## QUIC's encryption levels: Initial, Handshake and Data
+
+It's kind of impossible to start a connection encrypted right away (assuming you don't have exchanged secrets some other way previously).
+This means that the client won't actually be able to encrypt initially!
+Well, in QUIC, even the initial packets are encrypted, but you derive the key from a hard-coded secret and some randomness you attach to the first datagram.
+In effect this means that your packet can be encrypted by anyone who reads it, if they know it might be a QUIC packet, but at least it makes it easer for me to talk about the encryption levels.
+I can just say: All datagrams are encrypted (even if the ones in the initial encryption level are trivially decryptable by anyone).
+
+So, when do we actually start to *really* encrypt datagrams? Like, in a way that makes it impossible for network observers to read them?
+Well, the client sends the initial datagram to the server.
+This datagram contains what we call a "`CRYPTO`" frame.
+Which in turn contains whatever the underlying cryptography library (be that TLS or some libnoise implementation) needs to start doing its key exchange.
+The server receives this datagram, and derives the first key using said key exchange algorithm!
+The server can now talk to the client in the so-called "handshake encryption level" or sometimes also called the "handshake space".
+
+But for the client to be able to decrypt packets in the handshake space, it needs to receive the server's key share, which the client needs to be able to read.
+That means the server will send the key share in a CRYPTO frame encrypted using the initial encryption level, and then also send the first parts of actually-encrypted data in a CRYPTO frame encrypted using the handshake key.
+
+Once the client receives those two packets, it does something similar: It sends a key share in the handshake space and can at the same time start sending in the data encryption level.
+
+# Wait. Send in two encryption levels simultaneously?
+
+Ah yes, right. Here comes the first optimization that complicates the simple picture from above:
+Almost every handshake in QUIC will want to send data in two encryption levels essentially "at once".
+
+If we had to send these two *packets* in two different *UDP datagrams*, we'd be wasting datagrams!
+It would also needlessly waste bytes on UDP datagram header and QUIC header overhead (and padding! but that's for a section further down...).
+
+So the actual response to a datagram from the server will look like this:
+```
+- One big box again
+- Outside has written: `src_ip: 192.168.0.101` and `dest: 200.200.200.200:443`
+- Inside:
+  - Two medium sized boxes with different titles:
+    - One box saying "In Initial Space:" containing two QUIC frames: An "ACK" and a "CRYPTO" frame.
+    - One box saying "In Handshake Space:" containing one "CRYPTO" QUIC frame.
+  - Both the above boxes have a QUIC header at the top and an authentication tag at the bottom
+```
+
+This optimization is called "coalescing packets into datagrams".
+
+# Politely Pleading: Please Properly Prepare Packets Padded!
+
+The above diagram is not quite what is happening (again).
+The QUIC RFC requires checking that the minimal transmissible unit (MTU) that the network can handle is at least datagrams of 1200 bytes.
+How do you check this? Well, by sending such datagrams and seeing if they make it through!
+(If they don't, then we won't support those network conditions.)
+
+<Note>This also helps with navigating anti-amplification protection: The more bytes the client sends, the more bytes the server will allow itself to answer with.</Note>
+
+Our above datagrams are not that big, though.
+Let's pad them.
+
+## Okay, but where do we put the bytes?
+
+Sure, just add some bytes.
+Seems like there's a QUIC frame for exactly this! The `PADDING` frame. Its identifier is `0x00`: Just a zero byte.
+This means that if you encode a QUIC packet and the last 20 bytes are just zeroes, they will be interpreted as twenty `PADDING` frames.
+Isn't that neat?
+
+So let's put in some bytes.
+
+```
+- Same diagram as the last one
+- In the handshake space packet, "PADDING" frames below the CRYPTO frame.
+```
+
+For anyone who wants to work on QUIC implementations, I want to point out how deviously complicated this part of building packets actually is:
+- Before you begin the handshake packet, you need to finish the initial packet.
+- Before you finish the initial packet, you need to know if you need to put in padding into the initial packet or not.
+- To decide whether you need to put padding into the initial packet or not, you need to figure out whether you'll coalesce with another handshake packet.
+- To know whether you can fit the handshake packet, you need to know if frames will fit into it.
+
+This kind of predicting-if-you-need-padding logic is can be really brittle and complicated!
+It's usually safer to go with just some "minimum required remaining space" bytes constant to ensure that you'll be able to fit a handshake packet before coalescing, but deciding what constant to use here is not trivial.
+
+<Note>
+
+  Padding can also be added *outside* the QUIC packets by just appending random bytes to the end of your datagram.
+  These are required to be ignored by receivers when they can't be parsed as a QUIC header.
+  This is something we're [considering doing in noq](https://github.com/n0-computer/noq/issues/507) and we expect that to simplify datagram construction
+
+</Note>
+
+## DPLPMTUD and other causes of padding
+
+(No, there's not a cat that walked over my keyboard!)
+
+There are other cases where we need to pad packets.
+Specifically, just like we make sure that the initial network path that the handshake uses can support a 1200 MTU, we also need to ensure any other paths we use can support a 1200 MTU.
+This is not only important if you intend to implement QUIC multipath, as plain QUIC also supports migrating the main path it uses to new network paths.
+Anytime you do so, you need to verify the new path can also support the 1200 MTU, otherwise you try to keep using the old path.
+
+Another case is when we probe to see if we can send packets *bigger* than the 1200 MTU.
+Ethernet might support packets of up to around 1500 bytes, with the payload being as big as 1472 bytes maximum.
+This can help goodput by reducing the propotion of headers to actual payloads.
+But we can't know if the network will support these kinds of packets in advance of sending them, which is why we're occasionally sending bigger packets intentionally by padding them.
+This is what's behind the incredible DPLPMTUD acronym: "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
+
+So unfortunately this means we can't have padding be a special-case for handshake packets only.
+
+---
+
+Is your head spinning yet?
+Well, I hope it's not due to bad explanations!
+But buckle up, there are even more constraints coming to our frame stuffing.
+
+# GSO and more constraints for producing datagrams
+
+There's a pretty cricital performance improvement for linux systems: generic segmentation offload (GSO).
+It's something you can enable on your UDP socket in linux to allow you to send multiple datagrams with a single syscall.
+This helps a ton in getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measily 1472 bytes of data at a time in a single syscall for the operation system to send.
+(Typical values for what a single TCP syscall will copy into kernel memory for sending it are between 16KiB and 4MiB, depending on OS configuration and how big the congestion window is.)
+With GSO, you can send a full "batch" of UDP packets in one syscall.
+On my linux system I'm writing this blog post on right now, the GSO maximum batch size is 64.
+So with our 1472 bytes of data per UDP packet, I'll be able to queue up to ~`1472 * 64 = 94208` in the good case.
+Great! This reduces syscall overhead a *ton*.
+
+What's the catch?
+Well, in order to make the syscall as efficient as possible, you specify datagram metadata only once for all of the datagrams you want to send in the batch.
+This includes:
+1. The interface you want to use for sending all datagrams.
+2. The destination socket address you want to use for all datagrams.
+3. The *size* of all datagrams.
+
+Oh yes.
+Yet another size constraint :)
+
+## Clipping to Segment Size
+
+Because we need to provide one "segment size"/"stride" for all datagrams in a GSO batch, the first datagram we produce determines the exact size of all further datagrams (except for the last one, but that's yet another edge case).
+Let's look at an example:
+There's a QUIC extension for sending "datagrams" in a QUIC connection.
+This allows an application to re-use a QUIC connection's congestion control and encryption for its own purposes, all while the connection can still use streams at the same time, without having to initiate a secondary connection (again, neat!).
+These "datagrams" (yo dawg, what if we put a datagram into your datagram) are guaranteed to be sent in one UDP datagram or otherwise are dropped, but not fragmented by the QUIC implementation itself.
+So let's say an application queues two 800-byte "datagrams" via the QUIC datagram extension.
+The first datagram will be put into the first *actual* UDP datagram in the GSO batch.
+At this point, we have less than 800 bytes of space left in our packet, so we end the packet.
+Because we still have more data to send, we continue our GSO batch and start another datagram.
+However, the first datagram in our GSO batch is now set to an exact size (TODO: find out what that would be in practice) ~850 bytes.
+This means the second datagram in our GSO batch can't be bigger than 850 bytes.
+
+```
+- Yet another diagram similar to the one above, with src_ip and destination
+- However this one shows two boxes and 
+
+# But do we send at all?
+
+- congestion control
+- multipath
+- CC being per-PNS, because PNs are used for accounting in CCers, so multiple CCs on the same network path possible
+- packet coalescing makes this even weirder:
+  - we only want to account for CC in coalesced packets *once*, because either the whole datagram goes through or it's dropped. If CC allows, we always send at least 1200 bytes.
+  - which CCer do you use though?
