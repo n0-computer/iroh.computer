@@ -38,7 +38,7 @@ P.S. The `0.35` relays were not effected by this bug, so no patch release for th
 
 The relay server was missing a length check when parsing client-to-relay datagram frames. A frame shorter than the length of an endpoint id would trigger a panic via an an out-of-bounds slice. Since we recommend building relays with `panic = "abort"` (and our release binaries build with this), any client that could connect to a relay could crash the whole server with a single malformed message.
 
-The fix is exactly the boring one-liner you'd hope for: the relay now rejects a frame that is the wrong size as invalid and carries on. Clients are not affected — this only impacts `iroh-relay` server deployments. If you operate a relay, upgrade to `iroh-relay@1.0.2`. This bug was fixed in [#4389](https://github.com/n0-computer/iroh/pull/4389), which also expanded proptest coverage of the relay protocol parsers so this class of bug will get caught before it ships.
+The fix is exactly the boring one-liner you'd hope for: the relay now rejects a frame that is the wrong size as invalid and carries on. Clients are not affected — this only impacts `iroh-relay` server deployments. If you operate a relay, upgrade to `iroh-relay@1.0.2`. This bug was fixed in [#4389](https://github.com/n0-computer/iroh/pull/4389). This PR also added extensive fuzz testing to the relay protocol parsers so to ensure this type of bug gets caught before it ships.
 
 Big thanks V12 for finding this bug!
 
