@@ -3,7 +3,7 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
-  date: '2026-06-16',
+  date: '2026-07-09',
   title: 'The road to iroh 1.0',
   description: '',
 }
@@ -31,7 +31,9 @@ It is done. After four years of work and various pivots we have released iroh 1.
 
 ## A trip down github memory lane
 
-We have an expanding web site describing how iroh works under the hood, but we think it is important to also understand *why* we made the decisions that led to the current iroh. So here is a trip down memory lane / our commit history which highlights major turning points and design decisions.
+We have an expanding web site describing *how* iroh works under the hood, but we think it is important to also understand *why* we made the decisions that led to the current iroh. So here is a trip down memory lane / our commit history which highlights major turning points and design decisions.
+
+Perhaps more importantly, this post also covers some things we considered but ended up **not doing**.
 
 <div className="not-prose" style={{margin: '2em 0'}}>
   <object data="/blog/the-road-to-iroh-1-0/timeline.svg" type="image/svg+xml" style={{width: '100%', height: 'auto'}}>
@@ -51,7 +53,9 @@ For that working group, we worked on a proposal for new blob transfer protocol. 
 
 After a few days we had a bare algorithm, and wanted to add networking to it to make the demo feel more real. We had only two days before the next meeting, and adding networking via [rust-libp2p] seemed impossible (Remember that this was before LLM coding assistants!).
 
-I had a tiny bit of previous experience with [QUIC], and remembered from a project of a friend of mine, [quinn-noise] that quinn is both hackable and has a simple idiomatic rust API. So I tried to add networking via quinn and found it **an absolute joy** to work with.
+<Note author="Rüdiger">
+I had a tiny bit of previous experience with [QUIC], and remembered from a project of a friend of mine, [quinn-noise] that [quinn] is both hackable and has a simple idiomatic rust API. So I tried to add networking via quinn and found it **an absolute joy** to work with.
+</Note>
 
 ## A real world use case
 
@@ -67,9 +71,19 @@ Despite our best efforts, our main project was still far away from the theoretic
 
 Instead of [multiaddrs], nodes were identified by an [Ed25519] public key.  
 Instead of [multihashes], we had BLAKE3.  
-And instead of multiple protocols we had QUIC.
+And instead of multiple transport protocols we had just QUIC.
 
 The new iroh was just QUIC based networking using [quinn] and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base][deltachat-iroh-merge]. And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android).
+
+## TLS or noise
+
+We decided to use just QUIC. But QUIC as specified in RFC 9000 has clear client and server roles, where the server is identified by a certificate chain. At the time we had to add a somewhat Rube Goldberg construction on top to make QUIC work for peer-to-peer connections, [a self-signed certificate carrying the real public key in a custom X.509 extension][libp2p-tls], with a signature binding the two.
+
+Also, rustls is a heavy dependency, and its default crypto provider is a C dependency. So there was a temptation to replace the entire TLS encryption scheme with a protocol based on [noise] that is made for peer-to-peer connections from the start.
+
+We ended up sticking with TLS as the industry standard. Without using TLS iroh would not really be QUIC, just reuse some of its parts. But we were still unhappy about the self-signed cert.
+
+Thankfully right around the time when we were discussing this [raw public keys] in TLS support was [merged into rustls][rustls-rpk]. So we didn't waste any time and published support for raw public keys in TLS soon after.
 
 ## Hole punching
 
@@ -85,7 +99,25 @@ But even with blobs included, it was not enough. We had very useful functionalit
 
 ## Bindings
 
-As part of the push to make iroh approachable to more developers, we started to publish language bindings to almost all major languages. This worked well and was frequently used, but turned out to be a lot of work for us because of the frequent API changes on the road to 1.0. So we ended up [pausing the bindings][ffi-updates].
+As part of the push to make iroh approachable to more developers, we started to publish language bindings to almost all major languages. This worked well and was frequently used, but turned out to be a lot of work for us because of the frequent API changes on the road to 1.0.
+
+## Protocol negotiation
+
+As we were adding protocols we also had to solve protocol *negotiation*.
+
+One common pattern is to add a [little handshake protocol][multistream-select] on each stream where one side can propose a protocol and the other side can either accept or reject. But that would add overhead for *every single stream* and take us further away from just peer-to-peer QUIC.
+
+<Note>
+We found that complex schemes for protocol evolution are often a mirage. Truly evolving a protocol in a backwards compatible way leads to a combinatorial explosion of variants that have to be tested. It is really hard to get this right.
+</Note>
+
+So we decided to keep things simple and use the [ALPN TLS extension]. The connecting side proposes a list of ALPNs, and the server side either chooses one of the ALPNs or refuses the handshake. This happens directly during the QUIC handshake, so it has no overhead other than the raw bytes of the ALPN string.
+
+All in all we are very happy with this decision. Projects like [Media over QUIC] use QUIC streams extensively in [a very creative way][moq-streams], and since we provide just raw QUIC streams we can support these approaches out of the box.
+
+It is not entirely without downsides. The `ClientHello` containing the ALPN is unencrypted, so on-path observers can see which protocol is used by decoding `ClientHello`s. One way to work around this is to use a common ALPN such as `h3` and then just negotiate the exact protocol later. In a future version of iroh we might support [encrypted client hello].
+
+Another consequence of the decision to use ALPNs is that two iroh endpoints talking multiple protocols will have not one but *multiple* connections open (A QUIC connection is always for *exactly one* ALPN). We share some internal state for these connections so that e.g. hole punching doesn't have to start from zero.
 
 ### Sendme and dumbpipe
 
@@ -102,9 +134,17 @@ Dumbpipe also inspired a number of projects: [pai-sho], [iroh-ssh], [do-ssh], an
 
 ## Node discovery
 
-For a long time we did not have the ability to dial an iroh node by node id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. But this information is not stable. An iroh node can frequently change its public IP address, e.g. when the ISP assigns a new public IP address. It can also change its home relay when it moves to another geographic region. In addition, dealing with tickets is cumbersome for large scale systems where you work with a large number of peers.
+For a long time we did not have the ability to dial an iroh node by node id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. Sendme works like this to this day.
 
-So we added a pluggable mechanism to look up the current connection info for a node id. We looked 
+But the additional information is not stable. An iroh node can frequently change its public IP address, e.g. when the ISP assigns a new public IP address. It can also change its home relay when it moves to another geographic region. In addition, dealing with tickets is cumbersome for large scale systems where you work with a large number of peers.
+
+In many peer-to-peer projects the mechanism to implement such discovery is a distributed hash table. But our previous experience with DHTs was somewhat traumatic. We deciced very quickly that we did not have the resources to implement a DHT and *get adoption for it*. So just like with the relays, we compromised a bit on peer-to-peer purity. We explored various centralized options such as cloudflare workers.
+
+But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the mainline DHT. We ended up using the pkarr format for our centralized node discovery service but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized node discovery system.
+
+<Note author="Rüdiger">
+Mainline has some unfortunate limitations that are unlikely to go away any time soon. So [I started writing a DHT][dht-part-1], using on iroh [0-rtt] connections. But as of now this is strictly an experiment that pushes the limits for iroh connections, not a production tool.
+</Note>
 
 ## Iroh as just connections
 
@@ -120,7 +160,7 @@ In retrospect it would have been fine to call this iroh 1.0. It is a rock solid 
 
 ## Nodes, Endpoints, which is it?
 
-You might have noticed that so far I have talked about nodes and node ids. In iroh 0.35 these are indeed the terms we used. But now that iroh is just connections, we decided to correct this. The endpoint id identifies an individual iroh endpoint. You can have multiple endpoints per process, and multiple processes using iroh on a machine. So the term node id doesn't make sense anymore.
+You might have noticed that so far I have talked about nodes and node ids. In iroh 0.35 these are indeed the terms we used. But now that iroh is just connections, we decided to correct this. The *endpoint id* identifies an individual iroh *endpoint*. You can have multiple endpoints per process, and multiple processes using iroh on a machine. So the term node id doesn't make sense anymore.
 
 ## Multipath
 
@@ -132,7 +172,22 @@ So we [made the decision][multipath-decision] to fundamentally rework how iroh w
 
 So far we had used quinn and contributed a few improvements. But now we were doing something fundamentally new: extending quinn to support multipath. For a long time we worked with the assumption that we would upstream our changes, but as the diff grew this became increasingly unlikely. So we [decided to fork quinn][noq-announcement] and maintain our own QUIC implementation, [noq].
 
-We felt that while this was
+## Things that didn't make it into 1.0
+
+### Configurable key algorithms
+
+A frequent request for iroh was to use key algorithms other than Ed25519. We ended up deciding against it. Many of our current systems such as pkarr address lookup are only ever going to work with Ed25519 keys. So while an iroh version with support for e.g. secp256k1 or P-256 would technically be straightforward, it would make iroh more complex. Our [key encoding][rpk-encoding] for the TLS handshake is already key agnostic, so we can likely add support for additional key algorithms without breaking the wire format.
+
+### Post quantum signatures
+
+Currently standardized post quantum signature algorithms have very large public key sizes. So supporting them would require us to change from the endpoint id *being* the public key to the endpoint id being something *derived from* the public key to keep the size manageable.
+
+<Note>We do support optional post quantum key exchange in iroh 1.0</Note>
+
+### Encrypted ClientHello
+
+Encrypted ClientHello has recently been standardized. We might want to use it or a very similar mechanism to hide handshake metadata such as the ALPN.
+
 
 Major phases
 
@@ -321,17 +376,31 @@ quinn -> noq
 [krakensync]: https://github.com/n0-computer/krakensync
 [rust-libp2p]: https://docs.rs/libp2p
 [Lightning P2P]: https://github.com/Kerim-Sabic/lightning-p2p
+[Media over QUIC]: https://datatracker.ietf.org/group/moq/about/
+[moq-streams]: https://moq-wg.github.io/moq-transport/draft-ietf-moq-transport.html#name-data-streams-and-datagrams
+[libp2p-tls]: https://github.com/libp2p/specs/blob/master/tls/tls.md
 [move-the-bytes-wg]: https://www.youtube.com/playlist?list=PLuhRWgmPaHtQ--aQ5GlgCyKkQYXUfQpVf
 [mtu-reset-pr]: https://github.com/n0-computer/iroh/pull/2835
 [multiaddrs]: https://github.com/multiformats/multiaddr
 [multihashes]: https://github.com/multiformats/multihash
+[multistream-select]: https://github.com/multiformats/multistream-select
 [multipath-decision]: /blog/iroh-on-QUIC-multipath
 [noq]: https://docs.rs/noq
 [noq-announcement]: /blog/noq-announcement
 [pai-sho]: https://github.com/cablehead/pai-sho
 [quinn]: https://docs.rs/quinn
+[noise]: https://noiseprotocol.org/
 [quinn-noise]: https://docs.rs/quinn-noise
+[encrypted client hello]: https://datatracker.ietf.org/doc/draft-ietf-tls-esni/
 [Ed25519]: https://www.rfc-editor.org/rfc/rfc8032.html
+[raw public keys]: https://www.rfc-editor.org/rfc/rfc7250.html
+[rustls-rpk]: https://github.com/rustls/rustls/pull/2062
+[cloudflare workers]: https://developers.cloudflare.com/workers/
+[Pkarr]: https://github.com/pubky/pkarr
+[iroh-mainline-address-lookup]: https://docs.rs/iroh-mainline-address-lookup
+[dht-part-1]: /blog/lets-write-a-dht-1
+[0-rtt]: /blog/0rtt-api
+[rpk-encoding]: https://www.rfc-editor.org/rfc/rfc7250.html#section-3
 [QUIC]: https://www.rfc-editor.org/rfc/rfc9000.html
 [sendme]: /sendme
 [sendme-egui]: https://github.com/zignig/sendme-egui

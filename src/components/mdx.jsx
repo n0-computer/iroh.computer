@@ -43,12 +43,27 @@ function InfoIcon(props) {
   );
 }
 
-export function Note({children}) {
+function PersonIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
+      <circle cx="8" cy="5" r="3" strokeWidth="0" />
+      <path strokeWidth="0" d="M8 9.5c-3 0-5 1.8-5 4 0 .3.2.5.5.5h9c.3 0 .5-.2.5-.5 0-2.2-2-4-5-4Z" />
+    </svg>
+  );
+}
+
+export function Note({children, author}) {
+  const Icon = author ? PersonIcon : InfoIcon;
   return (
     <div className="my-6 flex gap-2.5 rounded-2xl border border-irohPurple-200 bg-irohPurple-50 p-4 leading-6 text-irohPurple-900 dark:border-irohPurple-500/30 dark:bg-irohPurple-500/5 dark:text-irohPurple-200 dark:[--tw-prose-links-hover:theme(colors.irohPurple.300)] dark:[--tw-prose-links:var(--color-white)]">
-      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-irohPurple-500 stroke-white dark:fill-irohPurple-200/20 dark:stroke-irohPurple-200" />
+      <Icon className="mt-1 h-4 w-4 flex-none fill-irohPurple-500 stroke-white dark:fill-irohPurple-200/20 dark:stroke-irohPurple-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
+        {author && (
+          <p className="not-prose mt-2 text-sm font-medium text-irohPurple-500 dark:text-irohPurple-300">
+            — {author}
+          </p>
+        )}
       </div>
     </div>
   );
