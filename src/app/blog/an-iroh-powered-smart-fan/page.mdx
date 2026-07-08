@@ -28,7 +28,7 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-If you live in Europe you are probably suffering through a heat wave right now. Let's do something to bring back some chill, using iroh.
+If you live in ~Europe~ the northern hemisphere, you are probably suffering through a heat wave right now. Let's do something to bring back some chill, using iroh.
 
 The [previous ESP32 examples][esp32-examples] demonstrated echo protocols. But  typically ESP32s are used for more than just echoing data; you use an ESP32 as a cheap means to read sensors and drive actuators.
 
@@ -37,10 +37,12 @@ So we are going to write a very simple end-to-end example using an ESP32 to meas
 As the base, we are going to use an [ESP32-WROVER devkit](https://store.freenove.com/products/fnk0047) with 4 MiB of [PSRAM][psram], so we have all of iroh's networking capabilities available, including a relay connection, and remote control it from anywhere in the world. You can also use a M5StickC-Plus2, but you will have to adapt the GPIO pins.
 
 <Note>
-If all you have is an ESP32 without PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from [iroh-esp32-examples][esp32-examples] as base.
+If you have another devkit such as an [ESP32-S3](https://store.freenove.com/products/fnk0084) *with* PSRAM, you should be able to run the examples with small config tweaks.
+
+If all you have is an ESP32 *without* PSRAM, you can still use iroh. But you need to disable the relay connection and tweak QUIC buffers so we don't run out of memory. Use an appropriate example from [iroh-esp32-examples][esp32-examples] as base.
 </Note>
 
-# Basic setup
+## Basic setup
 
 As the first step, we are going to copy over an echo example from [iroh-esp32-examples][esp32-examples]. We will use `server-esp32-psram` for the ESP32 binary.
 
@@ -52,7 +54,7 @@ Note that we need different toolchains and want to keep the option to use a patc
 
 [Initial state](https://github.com/n0-computer/iroh-smart-fan/tree/d16fee122f21076872724b45f1773f9a7908d39a)
 
-# First flash
+## First flash
 
 Let's try it out once before we do modifications. `cargo run` on the server project will search for an ESP32 connected via USB and flash it. So we just connect our ESP32 with a USB-C cable.
 
@@ -90,17 +92,17 @@ App/part. size:    3,953,296/4,128,768 bytes, 95.75%
 
 You might think that every single added line of code will get you over the limit, but that is not the case. Additional pure Rust dependencies such as [irpc] add very little size.
 
-# Trying it out
+## Trying it out
 
 What we should have now is a simple echo server running on the ESP32.
 
-## Endpoint Id
+### Endpoint Id
 
 First of all, how do we assign the [endpoint id]? We want the ability to assign an endpoint id, but even if we don't do so we want the endpoint id to be stable after reboots. So the ESP32 *should not* generate a random one on each startup.
 
 Instead we generate and store the secret key in non volatile memory on first startup and reuse it on subsequent startups. Non volatile memory is not overwritten by flashing, so we will get the same endpoint id for the same device unless we explicitly delete non volatile memory.
 
-## Startup
+### Startup
 
 On startup the device will try to connect to WiFi using the given credentials. If that doesn't work it will hang. This happens before any iroh endpoint setup.
 
@@ -138,7 +140,7 @@ I (8963) iroh::socket::transports::relay::actor: home is now relay https://euc1-
 
 At this point it is reachable from anywhere in the world using the short ticket that contains just the endpoint id.
 
-## Connecting
+### Connecting
 
 So now let's try it out using the client binary.
 
@@ -161,7 +163,7 @@ The client has an option to disable relay. If you do that you will only be able 
 It also has options for [mDNS], but we are not using mDNS for this project.
 </Note>
 
-## Shutdown
+### Shutdown
 
 You might think that stopping the `cargo run --release` will stop the binary. But this is not the case. It just stops the *connection* to the device. The endpoint will happily continue to run as long as it has power.
 
@@ -169,7 +171,7 @@ You can even disconnect it and plug it into a separate USB-C power supply, and i
 
 If you really want to shut it down, unplug it or delete the flash using `espflash erase-flash`.
 
-# Adding a sensor
+## Adding a sensor
 
 Now that we have confirmed that the example works, we can start making it actually do something.
 
@@ -190,7 +192,7 @@ We need to connect the middle wire to one of the many GPIO ports of the ESP32. W
 
 Just to test the sensor, we will print out the sensor readings using tracing.
 
-## Running it
+### Running it
 
 ```
 I (322812) smart_fan_esp32: DHT22: 26.9°C  36.7%
@@ -208,13 +210,13 @@ Don't be afraid to get things wrong. Both the DHT22 and the ESP32 are pretty rob
 
 [Commit that adds sensor reading](https://github.com/n0-computer/iroh-smart-fan/commit/aae5ced530dfc5e3e995719ad0d80d70640efc18)
 
-# Adding a protocol
+## Adding a protocol
 
 At this point we have an iroh endpoint that supports our echo protocol, and local sensor readings. Obviously we want to read the sensor remotely as well.
 
 To do that we are going to use [irpc]. If all we wanted to do is to read a single sensor, this would be overkill. But using irpc will make it easier to extend the protocol in the future.
 
-## Protocol crate
+### Protocol crate
 
 We will define the protocol in a separate crate `smart-fan-proto`, since it will be used by both the client and the ESP32 itself.
 
@@ -246,7 +248,7 @@ pub enum SensorProtocol {
 }
 ```
 
-## Server side
+### Server side
 
 On the server side we have a struct that carries the current sensor state in a mutex:
 
@@ -275,7 +277,7 @@ impl ProtocolHandler for SensorServer {
 }
 ```
 
-## Client side
+### Client side
 
 We will add more in the future, but for now the client side just does a single reading.
 
@@ -288,7 +290,7 @@ We will add more in the future, but for now the client side just does a single r
     }
 ```
 
-## Can we still have something simple?
+### Can we still have something simple?
 
 Maybe we still want a simple way to check that the endpoint is up. We could of course add a dummy endpoint to the irpc protocol, but we can also just keep supporting the echo protocol.
 
@@ -305,7 +307,7 @@ let _router = Router::builder(endpoint)
 
 [Commit that adds separate protocol crate](https://github.com/n0-computer/iroh-smart-fan/commit/83ee4359775b5376afcf0a61fbccd17ab77a68b6)
 
-# A proper GUI
+## A proper GUI
 
 The CLI tool is nice for debugging, but what we really want is a GUI to show the temperature and, eventually, to control the fan. We could write a native GUI using [dioxus] that works on all major platforms. But who wants to install an app for this? So let's do a WASM GUI that runs in the browser.
 
@@ -326,7 +328,7 @@ To run the GUI, go into `smart-fan-wasm` and run `npm run build; npm run serve`,
 
 [Commit that adds WebAssembly GUI](https://github.com/n0-computer/iroh-smart-fan/commit/f31695de041aa6d3f0f47e1612efe892f4b73615#diff-1407a3c103152b8c2e47b76b36d350b24906cd2501aeafa4b17d803adc56a3dd)
 
-# Adding an actuator
+## Adding an actuator
 
 At this point we have a remote accessible temperature and humidity meter. But we want a smart fan. So let's add an output. We are going to use a 5V desktop computer fan like, for example, the [Noctua NF-A14-5V]. This connects to the +5V and GND rail and has a single PWM control wire to switch or throttle the fan.
 
@@ -355,7 +357,7 @@ So far, so good.
 At this point the major components are in place, and I stopped keeping the commit history clean.
 </Note>
 
-# Protocol evolution
+## Protocol evolution
 
 During development, you could just change the protocol at will and make sure both client and server are up to date.
 
@@ -393,13 +395,13 @@ The read-only GUI uses only `GetStatus`: it shows temperature, humidity, and whe
   style={{ width: '100%', height: '440px', border: '1px solid #8883', borderRadius: '0.5rem' }}
 />
 
-# Controlling the fan threshold
+## Controlling the fan threshold
 
 We now want the ability to set the threshold above which the fan starts to work. But we still want the ability to have the smart fan GUI hosted on a public website. We could rely on the endpoint id being secret, but that is not a good idea. If we use discovery, data is published for the endpoint id on dns.iroh.link. Also, we might want to retain the ability to share a read-only view of the fan state.
 
 So let's extend the RPC protocol with a call to set the threshold, but add some authentication. We will use a simple secret that is baked into the code, then use it only in the new RPC call.
 
-## Added RPC methods
+### Added RPC methods
 
 ```rust
 #[rpc_requests(message = SensorMessage)]
@@ -427,7 +429,7 @@ pub enum SetThresholdResponse {
 }
 ```
 
-## GUI additions
+### GUI additions
 
 For the new GUI, we just add a slider that shows the current threshold and can be used to change it.
 
@@ -440,11 +442,51 @@ Here it is, running live in the browser as WebAssembly. Paste a ticket from your
   style={{ width: '100%', height: '540px', border: '1px solid #8883', borderRadius: '0.5rem' }}
 />
 
-# Try it out
+## Making it real
 
-The complete code for this blog post can be found in [iroh-smart-fan].
+So far we got a breadboard with an ESP32, a LED or fan, and a DHT22 sensor wired up. In many cases this is where it ends for such projects - you confirm that it works, then have it sit on the desk for a few days, then disassemble it because you need the parts for the next fun project or because you want to clean up.
 
-# What else can you do
+In this case I wanted to assemble the parts into an usable widget. So I designed an enclosure to hold the fan and the breadboard.
+
+<figure className="not-prose mx-auto max-w-lg my-6">
+  <a href="/blog/an-iroh-powered-smart-fan/case.stl" download>
+    <img src="/blog/an-iroh-powered-smart-fan/STL.jpg" width={750} height={567} alt="The enclosure model loaded on the print bed in Bambu Studio" />
+  </a>
+  <figcaption className="text-center text-sm opacity-60 mt-2">
+    The enclosure in Bambu Studio. <a href="/blog/an-iroh-powered-smart-fan/case.stl" download className="text-irohPurple-500 underline hover:text-irohPurple-600">Download the STL</a>.
+  </figcaption>
+</figure>
+
+I didn't bother with using a soldered prototype board or even a custom PCB. Here is the end result:
+
+<div className="not-prose mx-auto max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  <figure>
+    <img src="/blog/an-iroh-powered-smart-fan/smart_fan_assembled.jpg" width={1200} height={1600} alt="The assembled smart fan: a Noctua NF-A14 5V PWM fan in the 3D-printed housing, standing on a wooden floor, with a vent for the sensor" />
+    <figcaption className="text-center text-sm opacity-60 mt-2">
+      The finished fan: a Noctua NF-A14 in the printed housing, with an opening for the DHT22.
+    </figcaption>
+  </figure>
+  <figure>
+    <img src="/blog/an-iroh-powered-smart-fan/smart_fan_base.jpg" width={1200} height={1600} alt="The ESP32 devkit on a breadboard, wired to the DHT22 sensor and an external antenna, mounted in the base of the 3D-printed enclosure" />
+    <figcaption className="text-center text-sm opacity-60 mt-2">
+      The electronics — ESP32 on a breadboard, DHT22 sensor and fan connected — glued into the base.
+    </figcaption>
+  </figure>
+</div>
+
+I used an ESP32-S3 because I had a spare lying around, and also changed the GPIO pins to simplify wiring. With the ESP32-S3 you only get one side of the breadboard accessible.
+
+I put a QR code on the outside that opens the readonly web UI, and a QR code inside that opens the web UI with the secret for controlling the temperature threshold.
+
+<Note>
+The QR codes are blurred, but if you manage to recover the original image with some fancy deconvolution algorithm, you can control my fan until I change the endpoint id.
+</Note>
+
+## Try it out
+
+The complete code for this blog post can be found in [iroh-smart-fan]. The 3D-printable enclosure is available as [case.stl].
+
+## What else can you do
 
 There are a wide variety of input and output devices available that work out of the box with an ESP32. For input, there is everything from simple temperature and light sensors to precise CO2 and VOC sensors, accelerometers, GPS, microphones, even various cameras. The ESP32 can configure the GPIOs as analog-to-digital converters, so you can easily use simple analog sensors such as potentiometers, photoresistors or switches.
 
@@ -454,13 +496,14 @@ For output, there is everything from LEDs to displays. One nice trick is to driv
 
 I was never much of an electronics expert, but wiring stuff up to an ESP32 is like lego, it is very simple, and the ESP32 is also very forgiving of small wiring mistakes.
 
-# Is this local-first?
+## Is this local-first?
 
 If you use the long tickets and the local LAN, then yes. If you use existing relays, you do have a small component in the cloud. But it is a completely application independent, open source, commodity component. You can use our public relays to play around, our [hosted relays] for a production deployment, or even self host if you don't mind the complexity of operating relays in multiple regions and don't dread the 3AM phone call.
 
 If you have a special requirement for a commercial project, [talk to us].
 
 [iroh-smart-fan]: https://github.com/n0-computer/iroh-smart-fan
+[case.stl]: /blog/an-iroh-powered-smart-fan/case.stl
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
 [endpoint id]: https://docs.iroh.computer/concepts/endpoints#endpoint-identifiers
 [QAD]: /blog/qad
