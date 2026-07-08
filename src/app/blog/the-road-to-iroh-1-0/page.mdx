@@ -69,7 +69,7 @@ So we started writing a lightweight sync library from scratch, using QUIC as the
 
 Despite our best efforts, our main project was still far away from the theoretical limits. Meanwhile our sync side project showed what is possible. So we [made the decision][a-new-direction-for-iroh] to no longer pursue the goal of staying compatible with existing ipfs implementations.
 
-Instead of [multiaddrs], nodes were identified by an [Ed25519] public key.  
+Instead of [multiaddrs], endpoints were identified by an [Ed25519] public key.  
 Instead of [multihashes], we had BLAKE3.  
 And instead of multiple transport protocols we had just QUIC.
 
@@ -132,17 +132,17 @@ To show off iroh, we published two small tools: [sendme] and [dumbpipe]. These w
 
 To this day we use sendme every day to send logs around. And there are a large number of popular sendme clones: [Lightning P2P], [alt-sendme], [ARK Drop Desktop], [DataBeam], [sendme-egui], and [iroh-send].
 
-Dumbpipe also inspired a number of projects: [pai-sho], [iroh-ssh], [do-ssh], and [iroh-ssh-android]. But more importantly it showed **how useful** just direct connections by node id are a building block.
+Dumbpipe also inspired a number of projects: [pai-sho], [iroh-ssh], [do-ssh], and [iroh-ssh-android]. But more importantly it showed **how useful** just direct connections by endpoint id are a building block.
 
-## Node discovery
+## Address lookup
 
-For a long time we did not have the ability to dial an iroh node by node id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. Sendme works like this to this day.
+For a long time we did not have the ability to dial an iroh endpoint by endpoint id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. Sendme works like this to this day.
 
-But the additional information is not stable. An iroh node can frequently change its public IP address, e.g. when the ISP assigns a new public IP address. It can also change its home relay when it moves to another geographic region. In addition, dealing with tickets is cumbersome for large scale systems where you work with a large number of peers.
+But the additional information is not stable. An iroh endpoint can frequently change its public IP address, e.g. when the ISP assigns a new public IP address. It can also change its home relay when it moves to another geographic region. In addition, dealing with tickets is cumbersome for large scale systems where you work with a large number of peers.
 
 In many peer-to-peer projects the mechanism to implement such discovery is a distributed hash table. But our previous experience with DHTs was somewhat traumatic. We deciced very quickly that we did not have the resources to implement a DHT and *get adoption for it*. So just like with the relays, we compromised a bit on peer-to-peer purity. We explored various centralized options such as cloudflare workers.
 
-But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the mainline DHT. We ended up using the pkarr format for our centralized node discovery service, but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized node discovery system.
+But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the mainline DHT. We ended up using the pkarr format for our centralized address lookup service, but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized address lookup system.
 
 <Note author="Rüdiger">
 Mainline has some unfortunate limitations that are unlikely to go away any time soon. So [I started writing a DHT][dht-part-1], using on iroh [0-rtt] connections. But as of now this is strictly an experiment that pushes the limits for iroh connections, not a production tool.
@@ -150,7 +150,7 @@ Mainline has some unfortunate limitations that are unlikely to go away any time 
 
 ## Iroh as just connections
 
-After working on iroh as a batteries included toolkit for some time, the API surface was increasing substantially. And we could not guarantee the same level of quality for all parts of the API. In addition, we noticed that each of our users was using a different subset of the API. The one thing everybody had in common was that they needed dial by node id and connections that reliably hole punch. So we [made the decision][smaller-is-better] to narrow the scope of what iroh is significantly. From now on iroh would be just direct connections dialed by node id. The other functionality, that several teams depend on, was [moved into separate crates][iroh-0-28-let-them-have-crates].
+After working on iroh as a batteries included toolkit for some time, the API surface was increasing substantially. And we could not guarantee the same level of quality for all parts of the API. In addition, we noticed that each of our users was using a different subset of the API. The one thing everybody had in common was that they needed dial by endpoint id and connections that reliably hole punch. So we [made the decision][smaller-is-better] to narrow the scope of what iroh is significantly. From now on iroh would be just direct connections dialed by endpoint id. The other functionality, that several teams depend on, was [moved into separate crates][iroh-0-28-let-them-have-crates].
 
 ## A long term stable release, and the canary series
 
@@ -160,9 +160,13 @@ We were now at the enviable position that several important projects depended on
 In retrospect it would have been fine to call this iroh 1.0. It is a rock solid version of iroh that many projects depend on even today. But we are happy with the decision to develop on main and let people follow along.
 </Note>
 
-## Nodes, Endpoints, which is it?
+## Naming is hard
 
-You might have noticed that so far I have talked about nodes and node ids. In iroh 0.35 these are indeed the terms we used. But now that iroh is just connections, we decided to correct this. The *endpoint id* identifies an individual iroh *endpoint*. You can have multiple endpoints per process, and multiple processes using iroh on a machine. So the term node id doesn't make sense anymore.
+In addition to various functionality changes we also spent quite some time thinking about naming. For example, the identity of an iroh endpoint used to be called `NodeId`. Back when iroh came as a large binary with several different built in protocols, this made a lot of sense. Also what is now known as address lookup used to be called just `Discovery`. But we found that discovery isn't really a good name for the process of finding relay or ip addresses for an existing endpoint id. After all you don't *discover* the endpoint id, you just look up additional data for it.
+
+<Note>
+There are some address lookup providers such as mDNS that *actually* discover new endpoints. But this is not covered by the AddressLookup trait.
+</Note>
 
 ## Multipath
 
