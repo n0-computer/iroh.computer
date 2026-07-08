@@ -442,9 +442,49 @@ Here it is, running live in the browser as WebAssembly. Paste a ticket from your
   style={{ width: '100%', height: '540px', border: '1px solid #8883', borderRadius: '0.5rem' }}
 />
 
+# Making it real
+
+So far we got a breadboard with an ESP32, a LED or fan, and a DHT22 sensor wired up. In many cases this is where it ends for such projects - you confirm that it works, then have it sit on the desk for a few days, then disassemble it because you need the parts for the next fun project or because you want to clean up.
+
+In this case I wanted to assemble the parts into a product. So I designed an enclosure to hold the fan and the breadboard.
+
+<figure className="not-prose mx-auto max-w-lg my-6">
+  <a href="/blog/an-iroh-powered-smart-fan/case.stl" download>
+    <img src="/blog/an-iroh-powered-smart-fan/STL.jpg" width={750} height={567} alt="The enclosure model loaded on the print bed in Bambu Studio" />
+  </a>
+  <figcaption className="text-center text-sm opacity-60 mt-2">
+    The enclosure in Bambu Studio. <a href="/blog/an-iroh-powered-smart-fan/case.stl" download className="text-irohPurple-500 underline hover:text-irohPurple-600">Download the STL</a>.
+  </figcaption>
+</figure>
+
+I didn't bother with using a soldered prototype board or even a custom PCB. Here is the end result:
+
+<div className="not-prose mx-auto max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  <figure>
+    <img src="/blog/an-iroh-powered-smart-fan/smart_fan_assembled.jpg" width={1200} height={1600} alt="The assembled smart fan: a Noctua NF-A14 5V PWM fan in the 3D-printed housing, standing on a wooden floor, with a vent for the sensor" />
+    <figcaption className="text-center text-sm opacity-60 mt-2">
+      The finished fan: a Noctua NF-A14 in the printed housing, with an opening for the DHT22.
+    </figcaption>
+  </figure>
+  <figure>
+    <img src="/blog/an-iroh-powered-smart-fan/smart_fan_base.jpg" width={1200} height={1600} alt="The ESP32 devkit on a breadboard, wired to the DHT22 sensor and an external antenna, mounted in the base of the 3D-printed enclosure" />
+    <figcaption className="text-center text-sm opacity-60 mt-2">
+      The electronics — ESP32 on a breadboard, DHT22 sensor and fan connected — glued into the base.
+    </figcaption>
+  </figure>
+</div>
+
+I used an ESP32-S3 because I had a spare lying around, and also changed the GPIO pins to simplify wiring. With the ESP32-S3 you only get one side of the breadboard accessible.
+
+I put a QR code on the outside that opens the readonly web UI, and a QR code inside that opens the web UI with the secret for controlling the temperature threshold.
+
+<Note>
+The QR codes are blurred, but if you manage to recover the original image with some fancy deconvolution algorithm, you can control my fan until I change the endpoint id.
+</Note>
+
 # Try it out
 
-The complete code for this blog post can be found in [iroh-smart-fan].
+The complete code for this blog post can be found in [iroh-smart-fan]. The 3D-printable enclosure is available as [case.stl].
 
 # What else can you do
 
@@ -463,6 +503,7 @@ If you use the long tickets and the local LAN, then yes. If you use existing rel
 If you have a special requirement for a commercial project, [talk to us].
 
 [iroh-smart-fan]: https://github.com/n0-computer/iroh-smart-fan
+[case.stl]: /blog/an-iroh-powered-smart-fan/case.stl
 [esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
 [endpoint id]: https://docs.iroh.computer/concepts/endpoints#endpoint-identifiers
 [QAD]: /blog/qad
