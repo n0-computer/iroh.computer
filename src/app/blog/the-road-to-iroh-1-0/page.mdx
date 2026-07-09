@@ -1,0 +1,438 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-07-09',
+  title: 'The road to iroh 1.0',
+  description: '',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+It is done. After four years of work and various pivots we have released iroh 1.0.
+
+## A trip down github memory lane
+
+We have an expanding web site describing *how* iroh works under the hood, but we think it is important to also understand *why* we made the decisions that led to the current iroh. So here is a trip down memory lane / our commit history which highlights major turning points and design decisions.
+
+Perhaps more importantly, this post also covers some things we considered but ended up **not doing**.
+
+<div className="not-prose" style={{margin: '2em 0'}}>
+  <object data="/blog/the-road-to-iroh-1-0/timeline.svg" type="image/svg+xml" style={{width: '100%', height: 'auto'}}>
+    <img src="/blog/the-road-to-iroh-1-0/timeline.svg" alt="Timeline of major iroh decisions from 2022 to 2026" style={{width: '100%', height: 'auto'}} />
+  </object>
+</div>
+
+## The early days
+
+Iroh started as a rust implementation of [ipfs]. We got pretty far implementing various ipfs protocols and had interop with existing ipfs implementations working. Our goal with iroh was to target lightweight and resource constrained devices such as mobile phones.
+
+One area where we were unhappy with existing protocols was blob transfer. We started a working group within the ipfs community to come up with a new protocol, called the [move the bytes working group][move-the-bytes-wg].
+
+## First steps with QUIC
+
+For that working group, we worked on a proposal for new blob transfer protocol. We wrote a small library called [krakensync]. Krakensync used [BLAKE3] exclusively for content addressing because BLAKE3 supports verified incremental streaming of large blobs.
+
+After a few days we had a bare algorithm, and wanted to add networking to it to make the demo feel more real. We had only two days before the next meeting, and adding networking via [rust-libp2p] seemed impossible (Remember that this was before LLM coding assistants!).
+
+<Note author="Rüdiger">
+I had a tiny bit of previous experience with [QUIC], and remembered from a project of a friend of mine, [quinn-noise] that [quinn] is both hackable and has a simple idiomatic rust API. So I tried to add networking via quinn and found it *an absolute joy* to work with.
+</Note>
+
+## A real world use case
+
+In parallel to working on the ipfs compatible iroh, we worked on a side project to implement a single narrow real world use case: transfer of [deltachat] chat history when provisioning a new device. The technical task was to transfer a single large blob of backup data to a new device. There were hard constraints regarding disk and network usage. And the transfer had to be resumable.
+
+We found that *we could not* implement this very narrow use case with our ipfs based iroh implementation. Doing so would have had less than optimal network performance, and would have pulled in a very large dependency tree.
+
+So we started writing a lightweight sync library from scratch, using QUIC as the networking layer and BLAKE3 verified streaming for large blob transfer.
+
+## Abstraction fatigue
+
+Despite our best efforts, our main project was still far away from the theoretical limits. Meanwhile our sync side project showed what is possible. So we [made the decision][a-new-direction-for-iroh] to no longer pursue the goal of staying compatible with existing ipfs implementations.
+
+Instead of [multiaddrs], endpoints were identified by an [Ed25519] public key.<br/>
+Instead of [multihashes], we had BLAKE3.<br/>
+And instead of multiple transport protocols we had just QUIC.
+
+The new iroh was just QUIC based networking using [quinn] and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base][deltachat-iroh-merge]. And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android). The old code lives on in [beetle](https://github.com/n0-computer/beetle).
+
+## TLS or noise
+
+We decided to use just QUIC. But QUIC as specified in RFC 9000 has clear client and server roles, where the server is identified by a certificate chain. At the time we had to add a somewhat Rube Goldberg construction on top to make QUIC work for peer-to-peer connections, [a self-signed certificate carrying the real public key in a custom X.509 extension][libp2p-tls], with a signature binding the two.
+
+Also, rustls is a heavy dependency, and its default crypto provider is a C dependency. So there was a temptation to replace the entire TLS encryption scheme with a protocol based on [noise] that is made for peer-to-peer connections from the start.
+
+We ended up sticking with TLS as the industry standard. Without using TLS iroh would not really be QUIC, just reuse some of its parts. But we were still unhappy about the self-signed cert.
+
+Thankfully right around the time when we were discussing this [raw public keys] in TLS support was [merged into rustls][rustls-rpk]. So we didn't waste any time and switched to [raw public keys in TLS] soon after.
+
+## Hole punching
+
+One thing we were not yet happy with: for the deltachat chat history transfer to work, both devices had to be in the same network. Ideally this should work in all cases where the two devices are *somehow* connected to the internet. We also wanted these transfers to be *fast*. So what we needed was [hole punching]. We looked at various systems that implement hole punching. Our goal was to get holepunching to work reliably, even at the expense of compromising p2p purity. If we would need a small server to help, so be it.
+
+Of all the existing open source implementations of holepunching, we found the [tailscale] approach best suited to our requirements. So we implemented something that was initially very similar, with good results. This was a [huge effort][holepunching-pr], but once we merged it we had hole punch rates to be proud of. In most normal circumstances we punched holes almost immediately, and in the few corporate networks where hole punching was impossible, at least we could still transfer data via relays. It **just worked**.
+
+## Iroh as a batteries included p2p application toolkit
+
+We achieved our goal of having a simple p2p library that just worked. But the API was still anemic. It was something that experienced rust teams such as deltachat could include, but not yet attractive to p2p application developers. So we decided to gradually add more functionality. One of the first things we did was extending the blob related API to expose more functionality for BLAKE3 verified streaming. In parallel we also optimized the verified streaming by implementing some advanced features such as [BLAKE3 chunk groups][chunk-groups-pr].
+
+But even with blobs included, it was not enough. We had very useful functionality for experienced rust teams, but at the time that wasn't exactly a large group. So we decided to add a [document abstraction][docs-pr] that would make iroh viable as a batteries included p2p application development framework, where ideally you would only need to add application specific code.
+
+## Bindings
+
+As part of the push to make iroh approachable to more developers, we started to publish language bindings to almost all major languages. This worked well and was frequently used, but turned out to be a lot of work for us because of the frequent API changes on the road to 1.0.
+
+## Protocol negotiation
+
+As we were adding protocols we also had to solve protocol *negotiation*.
+
+One common pattern is to add a [little handshake protocol][multistream-select] on each stream where one side can propose a protocol and the other side can either accept or reject. But that would add overhead for *every single stream* and take us further away from just peer-to-peer QUIC.
+
+<Note>
+We found that complex schemes for protocol evolution are often a mirage. Truly evolving a protocol in a backwards compatible way leads to a combinatorial explosion of variants that have to be tested. It is really hard to get this right.
+</Note>
+
+So we decided to keep things simple and use the [ALPN TLS extension]. The connecting side proposes a list of ALPNs, and the server side either chooses one of the ALPNs or refuses the handshake. This happens directly during the QUIC handshake, so it has no overhead other than the raw bytes of the ALPN string.
+
+All in all we are very happy with this decision. Projects like [Media over QUIC] use QUIC streams extensively in [a very creative way][moq-streams], and since we provide just raw QUIC streams we can support these approaches out of the box.
+
+It is not entirely without downsides. The `ClientHello` containing the ALPN is unencrypted, so on-path observers can see which protocol is used by decoding `ClientHello`s. One way to work around this is to use a common ALPN such as `h3` and then just negotiate the actual protocol later. In a future version of iroh we might support [encrypted client hello].
+
+Another consequence of the decision to use ALPNs is that two iroh endpoints talking multiple protocols will have not one but *multiple* connections open (A QUIC connection is always for *exactly one* ALPN). We share some internal state for these connections so that e.g. hole punching doesn't have to start from zero.
+
+### Sendme and dumbpipe
+
+<div className="not-prose" style={{display: 'flex', justifyContent: 'center', margin: '1.5em 0'}}>
+  <div style={{display: 'flex', gap: '2rem', alignItems: 'center', background: '#fff', padding: '1rem 1.75rem', borderRadius: '12px', border: '1px solid #e5e7eb'}}>
+    <a href="/sendme"><img src="/svg/sendme_icon.svg" alt="sendme" style={{width: '120px', height: 'auto', display: 'block'}} /></a>
+    <a href="https://www.dumbpipe.dev/"><img src="/svg/dumbpipe_icon.svg" alt="dumbpipe" style={{width: '120px', height: 'auto', display: 'block'}} /></a>
+  </div>
+</div>
+
+To show off iroh, we published two small tools: [sendme] and [dumbpipe]. These were meant to just show off different iroh capabilities, but also be useful on their own.
+
+To this day we use sendme every day to send logs around. And there are a large number of popular sendme clones: [Lightning P2P], [alt-sendme], [ARK Drop Desktop], [DataBeam], [sendme-egui], and [iroh-send].
+
+Dumbpipe also inspired a number of projects: [pai-sho], [iroh-ssh], [do-ssh], and [iroh-ssh-android]. But more importantly it showed **how useful** just direct connections by endpoint id are a building block.
+
+## Address lookup
+
+For a long time we did not have the ability to dial an iroh endpoint by endpoint id only. You needed the id of course, but you also needed an additional piece of info: either an ip address or a relay url. Sendme works like this to this day.
+
+But the additional information is not stable. An iroh endpoint can frequently change its public IP address, e.g. when the ISP assigns a new public IP address. It can also change its home relay when it moves to another geographic region. In addition, dealing with tickets is cumbersome for large scale systems where you work with a large number of peers.
+
+In many peer-to-peer projects the mechanism to implement such discovery is a distributed hash table. But our previous experience with DHTs was somewhat traumatic. We deciced very quickly that we did not have the resources to implement a DHT and *get adoption for it*. So just like with the relays, we compromised a bit on peer-to-peer purity. We explored various centralized options such as cloudflare workers.
+
+But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the mainline DHT. We ended up using the pkarr format for our centralized address lookup service, but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized address lookup system.
+
+<Note author="Rüdiger">
+Mainline has some unfortunate limitations that are unlikely to go away any time soon. So [I started writing a DHT][dht-part-1], using on iroh [0-rtt] connections. But as of now this is strictly an experiment that pushes the limits for iroh connections, not a production tool.
+</Note>
+
+## Iroh as just connections
+
+After working on iroh as a batteries included toolkit for some time, the API surface was increasing substantially. And we could not guarantee the same level of quality for all parts of the API. In addition, we noticed that each of our users was using a different subset of the API. The one thing everybody had in common was that they needed dial by endpoint id and connections that reliably hole punch. So we [made the decision][smaller-is-better] to narrow the scope of what iroh is significantly. From now on iroh would be just direct connections dialed by endpoint id. The other functionality, that several teams depend on, was [moved into separate crates][iroh-0-28-let-them-have-crates].
+
+## A long term stable release, and the canary series
+
+We were now at the enviable position that several important projects depended on iroh. But we needed freedom to evolve iroh, and did not want to do so on a feature branch due to previous bad experiences with this approach. So we made our first long term stable release, [0.35][iroh-0-35-prepping-for-1-0] and started the [canary series] for people that wanted to stay on the bleeding edge on the way to 1.0.
+
+<Note>
+In retrospect it would have been fine to call this iroh 1.0. It is a rock solid version of iroh that many projects depend on even today. But we are happy with the decision to develop on main and let people follow along.
+</Note>
+
+## Naming is hard
+
+In addition to various functionality changes we also spent quite some time thinking about naming. For example, the identity of an iroh endpoint used to be called `NodeId`. Back when iroh came as a large binary with several different built in protocols, this made a lot of sense. Also what is now known as address lookup used to be called just `Discovery`. But we found that discovery isn't really a good name for the process of finding relay or ip addresses for an existing endpoint id. After all you don't *discover* the endpoint id, you just look up additional data for it.
+
+<Note>
+There are some address lookup providers such as mDNS that *actually* discover new endpoints. But this is not covered by the [AddressLookup trait].
+</Note>
+
+## Multipath
+
+Iroh was working just fine in most cases. But there were some dark clouds on the horizon. To get one of the main features of iroh, seamless migration of the underlying transport, to work reliably, we had to do some [not so nice hacks][mtu-reset-pr]. In the short term this wasn't really a big problem. But we knew that the current approach would limit us substantially in the future.
+
+So we [made the decision][multipath-decision] to fundamentally rework how iroh works under the hood. We were already using multiple paths of course, but QUIC was unaware of all of this. Which was the root cause for various problems.
+
+## Forking quinn
+
+So far we had used quinn and contributed a few improvements. But now we were doing something fundamentally new: extending quinn to support multipath. For a long time we worked with the assumption that we would upstream our changes, but as the diff grew this became increasingly unlikely. So we [decided to fork quinn][noq-announcement] and maintain our own QUIC implementation, [noq].
+
+## Things that didn't make it into 1.0
+
+### Configurable key algorithms
+
+A frequent request for iroh was to use key algorithms other than Ed25519. We ended up deciding against it. Many of our current systems such as pkarr address lookup are only ever going to work with Ed25519 keys. So while an iroh version with support for e.g. secp256k1 or P-256 would technically be straightforward, it would make iroh more complex. Our [key encoding][rpk-encoding] for the TLS handshake is already key agnostic, so we can likely add support for additional key algorithms without breaking the wire format.
+
+### Post quantum signatures
+
+Currently standardized post quantum signature algorithms have very large public key sizes. So supporting them would require us to change from the endpoint id *being* the public key to the endpoint id being something *derived from* the public key to keep the size manageable.
+
+<Note>We do support optional [post quantum key exchange] in iroh 1.0</Note>
+
+### Encrypted ClientHello
+
+Encrypted ClientHello has [recently been standardized]. We might want to use it or a very similar mechanism to hide handshake metadata such as the ALPN.
+
+## The road goes ever on and on
+
+In the four years we have been working on iroh we have written a lot of code, without any LLM assistance. We have thrown away almost as much code. What remains is a minimal library that heavily relies on existing standards and gives you authenticated, encrypted, direct connections to any endpoint, addressed by nothing but its public key.
+
+The road to 1.0 was anything but straight, but certainly extremely exciting and interesting. And we are not at the end. Iroh 1.0 just means that the wire format and API are stable. But there are various extension points both in the wire format and in the API, and we continue to improve things under the hood.
+
+Meanwhile we can't wait to see what you build on iroh.
+
+{/*
+Major phases
+
+IPFS implementation
+
+{/* refs (old IPFS-era code now lives at https://github.com/n0-computer/beetle):
+- 2022-03-10 first iroh repo commit (8470b0800a, "initial commit")
+- 2022-03-10 iroh@0.1.0 on crates.io
+- 2022-04-27 iroh-gateway first impl, PR #4
+- 2022-05-02 iroh-bitswap, iroh-p2p placeholders (9c4ab10879)
+- 2022-05-04 iroh-car added, PR #27
+- 2022-08-31 iroh-one single-binary IPFS, PR #212
+- 2022-10-28 v0.1.0 tag (6324d832a2)
+- 2022-12-21 final IPFS-era publishes (iroh-resolver/bitswap/gateway v0.2.0)
+- 2023-02-17 blog: /blog/a-new-direction-for-iroh — pivot announced, old code → beetle
+- 2023-02-22 v0.3.0 removes iroh-api/bitswap/car/embed/gateway/localops/metrics/one/p2p/resolver/rpc-client/rpc-types/share/store/util/unixfs
+*/}
+
+{/* precursors — pre-iroh experiments that shaped the QUIC choice and seeded the (later rejected) "replace TLS with noise" idea:
+- 2021-05-10 quinn-noise 0.1.0 (https://crates.io/crates/quinn-noise, repo https://github.com/ipfs-rust/quinn-noise) — rklaehn's earlier crate. Two takeaways: (1) reinforced the opinion that quinn is the most hackable QUIC impl; (2) planted the idea (later rejected) that we could replace TLS with something else, e.g. noise.
+- 2022-11-27 quinn-noise 0.4.0 — last release, contemporaneous with krakensync below.
+- 2022-11-07 krakensync repo created (https://github.com/n0-computer/krakensync) — "Sync experiment: Can we use bitmaps with memesync?". rklaehn designed a sync protocol for IPFS and reached for quinn to add networking quickly.
+- 2022-11-11 first networking commit: "Add basic quic ping pong" — https://github.com/n0-computer/krakensync/commit/ed01a8df61dbf7c3152bbf266bc37c6567eab858
+- 2022-12-14 last push to krakensync (PR #4: "Use quic-rpc and the http2 transport")
+*/}
+
+{/*
+Sendme (minimal quic based content addressed storage)
+  account migration for deltachat
+
+{/* refs:
+- 2023-01-09 first commit of the reboot (59fc6c84c3) — Cargo.toml name = sendme, deps: libp2p-tls, s2n-quic, tokio
+- 2023-01-09 framing (9fd0496a71), blake3 verification (836c125cc0)
+- 2023-01-13 custom libp2p-tls, PR #24 (c3cd9e63c2); s2n-quic → quinn shortly after
+- 2023-02-20 "feat: rename to iroh" (292fd9c6f1)
+- 2023-02-23 CI move sendme → iroh, PR #788
+- 2023-03-29 v0.4.0 — multi-addr tickets, run_ticket, get-ticket, PR #893
+- deltachat account migration: not in iroh git history, lives in the deltachat repo
+*/}
+
+{/*
+Holepunching
+
+{/* refs:
+- 2023-03-02 first magicsock commits (bb14bf6548, a3309e6fb3, 4311313af3) — DERP design imported from Tailscale
+- 2023-03-13 DERP server-side impl, PR #826
+- 2023-04-03 magicsock + DERP holepunching first merged, PR #897
+- 2023-06-09 holepunching feature branch lands on main, PR #830
+- 2023-06-28 MagicEndpoint introduced in iroh-net (59a99304a5, 4597cb36e0); workspace split into iroh / iroh-bytes / iroh-net / iroh-metrics
+- 2023-07-18 v0.5.1 "Connectivity Intensifies" — first iroh with built-in NAT traversal
+- 2024-03-21 DERP → relay terminology, PR #2091
+- 2024-04-19 derper binary renamed to iroh-relay
+*/}
+
+{/*
+Iroh as a batteries included p2p application toolkit
+
+  iroh with blobs/docs/gossip
+
+{/* refs:
+- 2023-07-02 first iroh-sync prototype integration (a8f5cba339, 3ef3bd957d)
+- 2023-07-12 sync + gossip prototype (9e129d5d61, 4aa6a9f71b "iroh-gossip initial commit")
+- 2023-07-26 iroh-gossip formal initial commit (af42faea55)
+- 2023-08-04 iroh-gossip merged to mainline, PR #1149
+- 2023-08-07 iroh-sync integrated, file-system backed docs, PR #1315
+- 2023-08-28 v0.6.0-alpha.0 — full sync/docs/gossip stack
+- 2023-10-23 v0.8.0 — leave/drop docs, ticket prefixes, console UX
+- 2024-04-15 v0.14.0 "Dial the world", blog /blog/iroh-0-14-0-dial-the-world (2024-04-18)
+- 2024-04-29 v0.15.0 "Shut me down", blog /blog/iroh-0-15-0-shut-me-down
+- 2024-06-19 ProtocolHandler / Router — register custom protocols, PR #2358 (13ded8478a) — first crack toward "iroh as substrate"
+- 2024-09-02 v0.24.0 "Upgrading to Quinn 11", blog /blog/iroh-0-24-0-quinn-11
+- 2024-09-23 blog /blog/smaller-is-better — sets up the pivot
+*/}
+
+{/*
+Iroh as just p2p connections
+
+{/* refs — extraction (blobs/docs/gossip leave the iroh crate):
+- 2024-10-29 move blobs protocol to iroh-blobs, PR #2853 (30f3e03cde, 9e5edad333)
+- 2024-10-31 extract docs RPC (4d303024b2)
+- 2024-11-04 v0.28.0 "Let them have crates", blog /blog/iroh-0-28-let-them-have-crates
+- 2024-11-13 docs RPC extraction merged, PR #2868
+- 2024-11 iroh-gossip out (PR #2826), iroh-docs out (PR #2830), iroh-blobs removed from workspace (PR #2829)
+- 2024-12-02 v0.29.0 "net is the new iroh" — iroh-net contents become the iroh crate proper
+- 2024-12-16 v0.30.0 "slimming down"
+*/}
+
+{/*
+  TLS + libp2p crypto / TLS + raw public keys / custom noise based encryption
+
+{/* refs:
+- 2023-01-13 original libp2p-style TLS with x509 cert containing peer ID, PR #24 (c3cd9e63c2)
+- 2025-02-14 raw public keys impl (f070000aa1); default switched (b3a17cfce5)
+- 2025-03-14 v0.34.0 ships RFC 7250 raw public keys as TLS default, PR #2937, blog /blog/iroh-0-34-0-raw-public-keys
+- 2025-06-03 remove deprecated x509 libp2p TLS (136b855087), PR #3330 — ships in v0.90.0 (2025-06-26)
+- custom noise-based encryption: not in the iroh repo — alternative considered (vs. TLS-with-raw-public-keys) but never prototyped inside iroh. Origin is the earlier quinn-noise crate (2021-05-10, see precursors block above); that experiment is what put the option on the table, and it's what ultimately got rejected when raw public keys landed.
+*/}
+
+{/*
+  iroh streams = QUIC streams?
+    connection close problems
+
+{/* refs:
+- "iroh streams = QUIC streams" is not a single decision in the repo — it's the default since the sendme reboot. Connection::open_bi()/open_uni() have always returned (a wrapper around) raw quinn/noq streams. No alternative was ever implemented. The cost of that choice surfaces in the close-semantics refs below.
+- 2024-08-13 blog /blog/closing-a-quic-connection — close semantics gotchas (~v0.22 era)
+- 2025-05-28 ProtocolHandler async, PR #3320 (e36ac776fe) — enables graceful close hooks
+- 2025-06-26 v0.90.0 "Allow protocols to gracefully shutdown connections", PR #3319
+- 2026-05-21 skip draining period on Endpoint::close, PR #4270 (c61757322c)
+*/}
+
+{/*
+  ALPN for content negotiation vs. small protocol header
+
+{/* refs:
+- "ALPN vs. small mandatory per-stream header" — the per-stream-header alternative was never implemented; no PR rejecting it. The closest visible artifact is the *removal* of an in-stream connection-level handshake (e321d9f76c, see below), which is adjacent but not the same decision.
+- 2023-07-06 "remove handshake and rely on ALPN only" (e321d9f76c) — first decision against in-stream handshake
+- 2023-10-06 remove custom get and custom collections, PR #1575 (89377a9c32) — fully on ALPN
+- 2024-06-19 Router dispatches by ALPN to user-registered handlers, PR #2358
+- 2024-11-26 router.accept takes AsRef<[u8]>, PR #2963 — ALPN API generalization
+- 2025-04-30 fallback ALPNs, PR #3282 — ships in v0.35.0
+*/}
+
+{/*
+  multiple QUIC connections or multiplexing multiple protocols over one
+
+{/* refs — landed on: one QUIC connection per (remote, ALPN), QUIC streams within:
+- 2025-11-04 Connection::remote_id and Connection::alpn made infallible, PR #3556 — solidifies "ALPN identifies the connection's protocol"
+- 2025-11-17 Connection<State> generic over connection state, PR #3619 — type-safe pre/post-handshake
+*/}
+
+{/*
+iroh 0.35 as "de facto 1.0"
+
+{/* refs:
+- 2025-05-12 v0.35.0 released
+- 2025-05-13 blog /blog/iroh-0-35-prepping-for-1-0 — explicitly titled "Prepping for 1.0"
+- notable v0.35: fallback ALPNs (839bfaa35d), net-report watchable on Endpoint (3448b4bce4), 0-RTT API stabilization
+- 2025-06-26 v0.90.0 "The Canary Series" — version jump signals approach to 1.0, blog /blog/iroh-0-90-the-canary-series
+*/}
+
+{/*
+multipath
+  having to reset the congestion controller without multipath
+
+{/* refs:
+- 2024-11-04 pre-multipath canonical workaround: reset MTU on path switch, PR #2835 (f54983d8e1) — the "having to reset things without multipath" example
+- 2025-08-01 first "feat: use quinn multipath" on feat-multipath branch (c17a870e1c)
+- 2025-08-05 blog /blog/iroh-on-QUIC-multipath
+- 2025-10-01 congestion metrics (a89e698794) — instrumenting CC behavior, relates to needing CC reset on path switch
+- 2025-10-07 congestion metrics merged, PR #3491 — ships in v0.93.0
+- 2025-10-09 v0.93.0
+- 2025-11-12 multipath stabilization: stop inactive endpoint actors (PR #3643), async magicsock registration (PR #3629)
+- 2025-12-04 encapsulate quinn::TransportConfig to enforce multipath minimums, PR #3721 (cc932eff9f)
+- 2025-12-18 feat-multipath merged to main, PR #3381 (7fc3bb1704)
+- 2026-01-28 v0.96.0 "The QUIC Multipaths to 1.0" — multipath default-on, blog /blog/iroh-0-96-0-the-quic-multipaths-to-1-0
+- 2026-05-22 configurable path selection, PR #4232 (70751de320)
+*/}
+
+{/*
+quinn -> noq
+
+{/* refs:
+- 2024-05-20 blog /blog/why-we-forked-quinn — early signal, iroh-quinn fork still tracking upstream
+- 2024-09-02 v0.24.0 "Upgrading to Quinn 11", blog /blog/iroh-0-24-0-quinn-11
+- 2026-02-24 noq@0.0.1 first published on crates.io
+- 2026-03-03 README link quinn → noq (3a93670fdb); merged 2026-03-05 PR #3989
+- 2026-03-09 "feat!: switch noq", PR #4005 (b32c927774) — fully switches, types re-exported from noq
+- 2026-03-16 v0.97.0 "Custom Transports & noq" — first iroh release officially on noq, blog /blog/iroh-0-97-0-custom-transports-and-noq
+- 2026-03-19 blog /blog/noq-announcement
+- 2026-04-17 v0.98.0 "Getting back to traversing NATs"
+- 2026-05-07 v1.0.0-rc.0 paired with noq@1.0.0-rc.0, blog /blog/iroh-1-0-0-rc-0
+- 2026-05-22 noq patch for holepunch when server is behind a hard NAT, PR #4254 (b8a596844a)
+- 2026-05-27 v1.0.0-rc.1 "The last one", PR #4287, blog /blog/iroh-1-0-0-rc-1
+*/}
+
+[a-new-direction-for-iroh]: /blog/a-new-direction-for-iroh
+[alt-sendme]: https://github.com/tonyantony300/alt-sendme
+[ARK Drop Desktop]: https://github.com/ARK-Builders/ARK-Drop-Desktop
+[blake3]: https://github.com/BLAKE3-team/BLAKE3
+[canary series]: /blog/iroh-0-90-the-canary-series
+[chunk-groups-pr]: https://github.com/n0-computer/iroh/pull/798
+[databeam]: https://github.com/vinay-winai/DataBeam
+[deltachat]: https://delta.chat/
+[deltachat-iroh-merge]: https://github.com/chatmail/core/commit/24856f3050be9a7705f9df736ab575fd856454d5
+[do-ssh]: https://github.com/doEggi/do-ssh
+[docs-pr]: https://github.com/n0-computer/iroh/pull/1333
+[dumbpipe]: https://www.dumbpipe.dev/
+[ffi-updates]: /blog/ffi-updates
+[hole punching]: https://en.wikipedia.org/wiki/Hole_punching_(networking)
+[holepunching-pr]: https://github.com/n0-computer/iroh/pull/830
+[ipfs]: https://ipfs.tech/
+[iroh-0-28-let-them-have-crates]: /blog/iroh-0-28-let-them-have-crates
+[iroh-0-35-prepping-for-1-0]: /blog/iroh-0-35-prepping-for-1-0
+[iroh-send]: https://github.com/thiswillbeyourgithub/iroh-send
+[iroh-ssh]: https://github.com/rustonbsd/iroh-ssh
+[iroh-ssh-android]: https://github.com/futpib/iroh-ssh-android
+[krakensync]: https://github.com/n0-computer/krakensync
+[rust-libp2p]: https://docs.rs/libp2p
+[Lightning P2P]: https://github.com/Kerim-Sabic/lightning-p2p
+[Media over QUIC]: https://datatracker.ietf.org/group/moq/about/
+[moq-streams]: https://moq-wg.github.io/moq-transport/draft-ietf-moq-transport.html#name-data-streams-and-datagrams
+[libp2p-tls]: https://github.com/libp2p/specs/blob/master/tls/tls.md
+[move-the-bytes-wg]: https://www.youtube.com/playlist?list=PLuhRWgmPaHtQ--aQ5GlgCyKkQYXUfQpVf
+[mtu-reset-pr]: https://github.com/n0-computer/iroh/pull/2835
+[multiaddrs]: https://github.com/multiformats/multiaddr
+[multihashes]: https://github.com/multiformats/multihash
+[multistream-select]: https://github.com/multiformats/multistream-select
+[multipath-decision]: /blog/iroh-on-QUIC-multipath
+[noq]: https://docs.rs/noq
+[noq-announcement]: /blog/noq-announcement
+[pai-sho]: https://github.com/cablehead/pai-sho
+[quinn]: https://docs.rs/quinn
+[noise]: https://noiseprotocol.org/
+[quinn-noise]: https://docs.rs/quinn-noise
+[encrypted client hello]: https://datatracker.ietf.org/doc/draft-ietf-tls-esni/
+[ALPN TLS extension]: https://www.rfc-editor.org/rfc/rfc7301.html
+[AddressLookup trait]: https://docs.rs/iroh/latest/iroh/address_lookup/trait.AddressLookup.html
+[Ed25519]: https://www.rfc-editor.org/rfc/rfc8032.html
+[post quantum key exchange]: /blog/iroh-post-quantum-handshakes
+[recently been standardized]: https://www.rfc-editor.org/rfc/rfc9849.html
+[raw public keys]: https://www.rfc-editor.org/rfc/rfc7250.html
+[raw public keys in TLS]: /blog/iroh-0-34-0-raw-public-keys
+[rustls-rpk]: https://github.com/rustls/rustls/pull/2062
+[cloudflare workers]: https://developers.cloudflare.com/workers/
+[Pkarr]: https://github.com/pubky/pkarr
+[iroh-mainline-address-lookup]: https://docs.rs/iroh-mainline-address-lookup
+[dht-part-1]: /blog/lets-write-a-dht-1
+[0-rtt]: /blog/0rtt-api
+[rpk-encoding]: https://www.rfc-editor.org/rfc/rfc7250.html#section-3
+[QUIC]: https://www.rfc-editor.org/rfc/rfc9000.html
+[sendme]: /sendme
+[sendme-egui]: https://github.com/zignig/sendme-egui
+[smaller-is-better]: /blog/smaller-is-better
+[tailscale]: https://tailscale.com/

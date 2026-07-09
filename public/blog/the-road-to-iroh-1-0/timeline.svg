@@ -1,0 +1,91 @@
+<svg viewBox="0 0 1400 170" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>/* transparent-canvas */ :root { background-color: transparent; color-scheme: light dark; }</style>
+  <text x="700" y="20" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#6366f1">The road to iroh 1.0 — major decisions</text>
+
+  <line x1="80" y1="95" x2="1345" y2="95" stroke="#888" stroke-width="1.5"/>
+
+  <g font-family="'Space Mono', monospace" font-size="10" fill="#888" text-anchor="middle">
+    <line x1="80" y1="95" x2="80" y2="101" stroke="#888"/>
+    <text x="80" y="115">2022</text>
+    <line x1="323" y1="95" x2="323" y2="101" stroke="#888"/>
+    <text x="323" y="115">2023</text>
+    <line x1="615" y1="95" x2="615" y2="101" stroke="#888"/>
+    <text x="615" y="115">2024</text>
+    <line x1="906" y1="95" x2="906" y2="101" stroke="#888"/>
+    <text x="906" y="115">2025</text>
+    <line x1="1198" y1="95" x2="1198" y2="101" stroke="#888"/>
+    <text x="1198" y="115">2026</text>
+  </g>
+
+  <a href="/blog/the-road-to-iroh-1-0#the-early-days" xlink:href="/blog/the-road-to-iroh-1-0#the-early-days" target="_top">
+    <circle cx="80" cy="95" r="4" fill="#888"/>
+    <line x1="80" y1="91" x2="80" y2="65" stroke="#888" stroke-width="1"/>
+    <text x="80" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">iroh as IPFS</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#the-early-days" xlink:href="/blog/the-road-to-iroh-1-0#the-early-days" target="_top">
+    <circle cx="104" cy="95" r="4" fill="#888"/>
+    <line x1="104" y1="99" x2="104" y2="130" stroke="#888" stroke-width="1"/>
+    <text x="104" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#888">n0 founded</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#abstraction-fatigue" xlink:href="/blog/the-road-to-iroh-1-0#abstraction-fatigue" target="_top">
+    <circle cx="362" cy="95" r="5" fill="#6366f1"/>
+    <line x1="362" y1="90" x2="362" y2="65" stroke="#6366f1" stroke-width="1"/>
+    <text x="362" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">pivot from IPFS</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#a-real-world-use-case" xlink:href="/blog/the-road-to-iroh-1-0#a-real-world-use-case" target="_top">
+    <circle cx="386" cy="95" r="5" fill="#6366f1"/>
+    <line x1="386" y1="100" x2="386" y2="130" stroke="#6366f1" stroke-width="1"/>
+    <text x="386" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">deltachat sync</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#hole-punching" xlink:href="/blog/the-road-to-iroh-1-0#hole-punching" target="_top">
+    <circle cx="483" cy="95" r="5" fill="#6366f1"/>
+    <line x1="483" y1="90" x2="483" y2="65" stroke="#6366f1" stroke-width="1"/>
+    <text x="483" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">holepunching</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#iroh-as-a-batteries-included-p2p-application-toolkit" xlink:href="/blog/the-road-to-iroh-1-0#iroh-as-a-batteries-included-p2p-application-toolkit" target="_top">
+    <circle cx="512" cy="95" r="5" fill="#6366f1"/>
+    <line x1="512" y1="100" x2="512" y2="130" stroke="#6366f1" stroke-width="1"/>
+    <text x="512" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">batteries on</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#node-discovery-via-dns" xlink:href="/blog/the-road-to-iroh-1-0#node-discovery-via-dns" target="_top">
+    <circle cx="699" cy="95" r="5" fill="#6366f1"/>
+    <line x1="699" y1="100" x2="699" y2="130" stroke="#6366f1" stroke-width="1"/>
+    <text x="699" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">dial by node id</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#iroh-as-just-connections" xlink:href="/blog/the-road-to-iroh-1-0#iroh-as-just-connections" target="_top">
+    <circle cx="826" cy="95" r="5" fill="#6366f1"/>
+    <line x1="826" y1="90" x2="826" y2="65" stroke="#6366f1" stroke-width="1"/>
+    <text x="826" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">just connections</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#a-long-term-stable-release" xlink:href="/blog/the-road-to-iroh-1-0#a-long-term-stable-release" target="_top">
+    <circle cx="1013" cy="95" r="5" fill="#6366f1"/>
+    <line x1="1013" y1="90" x2="1013" y2="65" stroke="#6366f1" stroke-width="1"/>
+    <text x="1013" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">stable release</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#multipath" xlink:href="/blog/the-road-to-iroh-1-0#multipath" target="_top">
+    <circle cx="1081" cy="95" r="5" fill="#6366f1"/>
+    <line x1="1081" y1="100" x2="1081" y2="130" stroke="#6366f1" stroke-width="1"/>
+    <text x="1081" y="145" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">multipath</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0#forking-quinn" xlink:href="/blog/the-road-to-iroh-1-0#forking-quinn" target="_top">
+    <circle cx="1259" cy="95" r="5" fill="#6366f1"/>
+    <line x1="1259" y1="90" x2="1259" y2="65" stroke="#6366f1" stroke-width="1"/>
+    <text x="1259" y="55" text-anchor="middle" font-family="'Space Mono', monospace" font-size="11" fill="#6366f1">quinn → noq</text>
+  </a>
+
+  <a href="/blog/the-road-to-iroh-1-0" xlink:href="/blog/the-road-to-iroh-1-0" target="_top">
+    <circle cx="1331" cy="95" r="7" fill="#d97706"/>
+    <line x1="1331" y1="102" x2="1331" y2="130" stroke="#d97706" stroke-width="1"/>
+    <text x="1331" y="146" text-anchor="middle" font-family="'Space Mono', monospace" font-size="12" font-weight="bold" fill="#d97706">iroh 1.0</text>
+  </a>
+</svg>
