@@ -42,7 +42,7 @@ In a simple case, constructing a datagram from a bunch of QUIC frames can look l
 ```
 
 But that's just the tip of the iceberg.
-Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and frame padding.
+Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and packet padding.
 
 # First: Wait, what key do we actually use to encrypt?
 
@@ -285,34 +285,96 @@ The reason for this is quite technical.
 At the end of the day you have certain "packet number spaces", and they roughly correspond with which keys you use for encryption.
 If you encrypt packets with different keys, most of the time, you'll use a different "counter" (packet number) to identify these packets.
 
-This makes it somewhat awkward if you consider packet loss of coalesced packets: If you lose a datagram with a handshake and a data packet inside, you don't want to count this loss twice in your congestion controller.
+This makes it somewhat awkward if you consider packet loss of coalesced packets: If you lose a datagram with both handshake and data packets inside, you don't want to count this loss twice in your congestion controller.
 
 The way that QUIC implementations deal with this in practice is different. 
-Some implementations just flat out ignore loss in the initial and handshake spaces.
+Some QUIC implementations just flat out ignore loss in the initial and handshake spaces for congestion control.
 This simplifies the congestion controller: It can assume just one type of "packet number" and e.g. assume there will always be one "latest packet number" that's monotonically increasing.
 
-In noq, we actually store a congestion controller for each "packet number space" separately.
-And yes, this is again really weird if you're building coalesced packets, because e.g. you'll ask the congestion controller for the "handshake" space if you have congestion window first, even though and won't ask the congestion controller for the data space next, because you're coalescing into the same datagram, even if you might not actually have congestion window for the data space.
-This is weird!
+We don't do this in noq though, instead, we let the congestion controller look at only the highest space that we've sent in.
+This makes it ignore loss in the inital and handshake space, if we've already sent in the data space.
+In practice this works reasonably well, since the initial and handshake spaces are active only for a relatively short time.
 
-Also - clearly the three congestion controllers share the same network path, so they should measure the *same thing*, right?
-Luckily this doesn't have a strong effect on performance in the grand scheme of things, and only has an affect while the intial and handshake spaces are in play, which is during the handshake which usually is relatively uneventful when it comes to congestion events.
+There's another approach to doing this where you could be using unique packet numbers across the initial, handshake and data spaces.
+Skipping packet numbers is allowed by the QUIC specification and doing it this way has the benefit of making it much easier to manage a single congestion controller across all three encryption levels simultaneously.
+We haven't done this work yet, but are definitely considering it.
 
-That said, this is definitely an area where we'd love to improve in the future.
+
+## Enter multipath, again
+
+Now with multipath, this situation gets more complicated yet again.
+
+There are now many "packet number spaces" associated with the data encryption level.
+And according to the QUIC multipath specification, these packet number spaces need to be backed by different congestion controllers.
+
+In the general case, you'll have separate paths on separate actual *network paths*, so this makes sense, but in theory there's nothing preventing you from opening two paths on the same 4-tuple.
+This means there now exist both cases in which a single congestion controller is managing multiple packet number spaces that all run on the same 4-tuple (the initial, handshake, and data in path 0), while other times the congestion controller is *not* shared across packet number spaces, even though they're on the same 4-tuple.
+
+```
+- Diagram with a table with three columns with rows of differnt rowspans.
+  - Column 1: The different 4-tuples/network paths
+    - one 4-tuple spans 4 rows, one 4-tuple spans 1 row
+  - Column 2: The encryption levels
+    - init and hs span 1 row, dat spans 3 rows
+  - Column 3: The multipath path IDs
+    - path 0 spans 3 rows, path 1 and path 2 one row each
+  - There are "circled regions" across some rows and all columns marking what congestion controllers cover:
+    - first 3 rows are one CC, then two more CCs per row
+```
 
 
-## Wait. Packet number space or encryption level?
+## Oh, did we tell you about migrations yet?
 
-Which one is it?
+QUIC even without multipath actually allows you to switch from one 4-tuple to another one (if you don't use zero-length connection IDs).
 
-Ehm right. Yeah, they're encryption levels. But congestion control *actually* works on packet number spaces.
-This distinction in terminology is useful when you consider multipath:
-The data space gains the ability to have *many packet number spaces* under the same encryption level: One for each path.
+Sometimes in those cases, you need to reset your congestion controller state.
+And additionally, you need to protect yourself from spoofed datagram remote IPs: An attacker can intercept a datagram in a QUIC connection and spoof its source address to make the peer think the connection migrated.
+In those cases, you need to keep "looking for datagrams" on both "old" and new 4-tuples, accepting packets from both.
+You simulatenously start probing both paths, and the first path that successfully proves it is authentic will be switched to.
+In the mean time, you already start using the new path, but you remember the congestion controller state from the old path, in case you need to revert back to it.
 
-The packets on each path are counter up sequentially independently of all other paths.
-But the same keys from the data encryption level are used across all paths.
+This means you now have two congestion controllers on the same path!
+Yay to yet again a little more complexity.
 
-Now what does this mean for congestion control?
+Unfortunately, multipath doesn't absolve us of this complexity.
+In fact, we need to handle both migrations of paths and multiple paths at the same time, so the complexity just multiplies.
+That is because although multipath would allow really seamless switching to another path, it doesn't solve cases where clients need to migrate involutarily due to NAT rebinding or default interface switching.
+(needs a footnote: We can protect against default interface switching by specifying the interface we want to send datagram on. However, we can only do that if we actually know which one that is supposed to be, which can be tricky to figure out. Using the default interface is often preferrable, but figuring that one out is OS- and application-specific)
 
-Each path has its own congestion controller.
-This is quite useful: Different paths have different RTTs, and different loss characteristics and different bandwidth available.
+
+# Putting it all together
+
+All of this complexity ends up being handled by one public function in noq-proto: `noq_proto::Connection::poll_transmit`.
+That function essentially allows the user to say "Hey, I'm ready to send a GSO batch, tell me if you have one for me right now":
+
+```rs
+let socket = /* your socket implementation */;
+let mut conn: noq_proto::Connection = /* ... */;
+let mut buf = Vec::new();
+// this is ignoring other APIs like feeding the connection with received packets or handling timers
+while let Some(transmit) = conn.poll_transmit(Instant::now(), socket.max_gso_batch_size(), &mut buf); {
+    socket.send_gso_batch(
+        transmit.destination,
+        transmit.src_ip,
+        transmit.segment_size,
+        transmit.size,
+        &buf,
+    );
+}
+```
+
+Then it's `noq_proto::Connection::poll_transmit`'s job to handle all of the complexity around choosing the above complexity we were talking about:
+- Coalescing packets
+- Deciding on padding
+- Handling GSO segment size
+- Suspending sending based on congestion control
+- Choosing the path to send on
+and a bunch of other things.
+
+Since the start of implementing QUIC multipath on top of Quinn, `poll_transmit` is where we've spent most of our time.
+We've since split up its definition into many separate functions, added helpers to make it easier to create packets, handle padding, and deal with congestion control.
+
+We're now in a much better place than just half a year ago, but there's still lots of things to improve and bugs to squash, given this just ends up being something somewhat complex to handle.
+
+Anyways, there's not really a conclusion to this piece, and I'm sorry if you were looking for one.
+In any case, I hope you enojyed this braindump of *some* of the things that are going on in a QUIC multipath implementation.
