@@ -69,11 +69,11 @@ So we started writing a lightweight sync library from scratch, using QUIC as the
 
 Despite our best efforts, our main project was still far away from the theoretical limits. Meanwhile our sync side project showed what is possible. So we [made the decision][a-new-direction-for-iroh] to no longer pursue the goal of staying compatible with existing ipfs implementations.
 
-Instead of [multiaddrs], endpoints were identified by an [Ed25519] public key.  
-Instead of [multihashes], we had BLAKE3.  
+Instead of [multiaddrs], endpoints were identified by an [Ed25519] public key.<br/>
+Instead of [multihashes], we had BLAKE3.<br/>
 And instead of multiple transport protocols we had just QUIC.
 
-The new iroh was just QUIC based networking using [quinn] and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base][deltachat-iroh-merge]. And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android).
+The new iroh was just QUIC based networking using [quinn] and blob transfer using BLAKE3 verified streaming. Compared to the previous version, the functionality was anemic. But the single thing it did, it did with close to optimal performance. It was a lightweight enough dependency that [deltachat could justify including it into their rust code base][deltachat-iroh-merge]. And suddenly we had both networking and sync deployed in a real app used by thousands of people across various platforms (windows, linux, iOS, android). The old code lives on in [beetle](https://github.com/n0-computer/beetle).
 
 ## TLS or noise
 
@@ -165,7 +165,7 @@ In retrospect it would have been fine to call this iroh 1.0. It is a rock solid 
 In addition to various functionality changes we also spent quite some time thinking about naming. For example, the identity of an iroh endpoint used to be called `NodeId`. Back when iroh came as a large binary with several different built in protocols, this made a lot of sense. Also what is now known as address lookup used to be called just `Discovery`. But we found that discovery isn't really a good name for the process of finding relay or ip addresses for an existing endpoint id. After all you don't *discover* the endpoint id, you just look up additional data for it.
 
 <Note>
-There are some address lookup providers such as mDNS that *actually* discover new endpoints. But this is not covered by the AddressLookup trait.
+There are some address lookup providers such as mDNS that *actually* discover new endpoints. But this is not covered by the [AddressLookup trait].
 </Note>
 
 ## Multipath
@@ -418,6 +418,7 @@ quinn -> noq
 [quinn-noise]: https://docs.rs/quinn-noise
 [encrypted client hello]: https://datatracker.ietf.org/doc/draft-ietf-tls-esni/
 [ALPN TLS extension]: https://www.rfc-editor.org/rfc/rfc7301.html
+[AddressLookup trait]: https://docs.rs/iroh/latest/iroh/address_lookup/trait.AddressLookup.html
 [Ed25519]: https://www.rfc-editor.org/rfc/rfc8032.html
 [post quantum key exchange]: /blog/iroh-post-quantum-handshakes
 [recently been standardized]: https://www.rfc-editor.org/rfc/rfc9849.html
