@@ -142,7 +142,7 @@ But the additional information is not stable. An iroh endpoint can frequently ch
 
 In many peer-to-peer projects the mechanism to implement such discovery is a distributed hash table. But our previous experience with DHTs was somewhat traumatic. We deciced very quickly that we did not have the resources to implement a DHT and *get adoption for it*. So just like with the relays, we compromised a bit on peer-to-peer purity. We explored various centralized options such as cloudflare workers.
 
-But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the mainline DHT. We ended up using the pkarr format for our centralized address lookup service, but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized address lookup system.
+But right at this time we discovered an emerging project that would allow us to have our cake and eat it too. [Pkarr] is the incredibly simple idea of storing signed DNS records on the [bittorrent mainline DHT][bittorrent-mainline-dht]. We ended up using the pkarr format for our centralized address lookup service, but also giving iroh users the option to [use the mainline dht directly][iroh-mainline-address-lookup] to get a fully decentralized address lookup system.
 
 <Note author="Rüdiger">
 Mainline has some unfortunate limitations that are unlikely to go away any time soon. So [I started writing a DHT][dht-part-1], using on iroh [0-rtt] connections. But as of now this is strictly an experiment that pushes the limits for iroh connections, not a production tool.
@@ -426,6 +426,7 @@ quinn -> noq
 [raw public keys in TLS]: /blog/iroh-0-34-0-raw-public-keys
 [rustls-rpk]: https://github.com/rustls/rustls/pull/2062
 [cloudflare workers]: https://developers.cloudflare.com/workers/
+[bittorrent-mainline-dht]: https://en.wikipedia.org/wiki/Mainline_DHT
 [Pkarr]: https://github.com/pubky/pkarr
 [iroh-mainline-address-lookup]: https://docs.rs/iroh-mainline-address-lookup
 [dht-part-1]: /blog/lets-write-a-dht-1
