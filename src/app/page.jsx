@@ -213,6 +213,12 @@ export default function Page() {
                   <p className="text-irohGray-600 dark:text-irohGray-300">Move files and large blobs directly between devices with content-addressed, resumable transfers that verify every byte.</p>
                 </div>
               </Link>
+              <Link href="https://rayfish.xyz" className="block h-full">
+                <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Built-in VPN</p>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open. Rayfish and cmux use iroh to connect phones and machines peer-to-peer, wherever they are.</p>
+                </div>
+              </Link>
             </div>
           </section>
 

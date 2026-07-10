@@ -13,6 +13,10 @@ const companies = [
   { name: "rave", ext: "png", href: "https://rave.io" },
   { name: "delta_chat", ext: "png", href: "https://delta.chat" },
   { name: "ottomatic", ext: "png", label: "Ottomatic", href: "https://ottomatic.io" },
+  { name: "rayfish", ext: "png", label: "Rayfish", imgClassName: "max-h-8", href: "https://rayfish.xyz" },
+  { name: "outl", label: "Outl", href: "https://outl.app" },
+  { name: "datum", ext: "svg", href: "https://www.datum.net" },
+  { name: "fedimint", ext: "png", href: "https://fedimint.org" },
 ];
 
 // interface LogoCloudProps {
@@ -75,20 +79,21 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ height, width: height * (label ? 2 : 1.4) }}
-                className="flex items-center justify-center gap-2.5 px-4 transition-opacity hover:opacity-70"
+                style={{ height, width: height * (label && ext ? 2 : label ? 2 : 1.4) }}
+                className={`flex items-center justify-center ${label && ext ? 'gap-1' : 'gap-2.5'} px-4 transition-opacity hover:opacity-70`}
               >
-                {label ? (
-                  <span className="text-2xl font-bold text-irohGray-500 dark:text-irohGray-400">{label}</span>
-                ) : (
+                {ext && (
                   <ThemeImage
                     alt={`${name} logo`}
                     darkSrc={`/img/user-logos/${name}.${ext}`}
                     lightSrc={`/img/user-logos/${name}.${ext}`}
-                    width={height * 1.4}
+                    width={label ? height : height * 1.4}
                     height={height}
-                    className={`object-contain w-auto ${imgClassName || 'max-h-12'}`}
+                    className={`object-contain ${label ? 'w-auto flex-shrink-0' : 'w-auto'} ${imgClassName || 'max-h-12'}`}
                   />
+                )}
+                {label && (
+                  <span className="text-2xl font-bold text-irohGray-500 dark:text-irohGray-400">{label}</span>
                 )}
               </a>
             ))}
