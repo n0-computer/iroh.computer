@@ -21,6 +21,7 @@ import logoJavascript from '@/images/language-logos/node.svg';
 import logoKotlin from '@/images/language-logos/kotlin.svg';
 import logoPython from '@/images/language-logos/python.svg';
 import logoGo from '@/images/language-logos/go.svg';
+import logoC from '@/images/language-logos/c.svg';
 import { CodeBlockTabs } from '@/components/CodeBlockTabs';
 
 export const metadata = {
@@ -36,6 +37,7 @@ const languages = [
   { name: 'Kotlin', logo: logoKotlin, href: 'https://docs.iroh.computer/languages/kotlin' },
   { name: 'Python', logo: logoPython, href: 'https://docs.iroh.computer/languages/python' },
   { name: 'Go', logo: logoGo, href: 'https://docs.iroh.computer/languages/go' },
+  { name: 'C', logo: logoC, href: 'https://docs.iroh.computer/languages/c' },
 ];
 
 const platforms = [
@@ -284,6 +286,7 @@ export default function Page() {
                     { logo: logoKotlin, name: 'Kotlin' },
                     { logo: logoPython, name: 'Python' },
                     { logo: logoGo, name: 'Go' },
+                    { logo: logoC, name: 'C' },
                   ].map(({ logo, name }) => (
                     <Image
                       key={name}
