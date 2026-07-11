@@ -1,0 +1,155 @@
+- generic [ref=f1e3]:
+  - navigation [ref=f1e4]:
+    - generic [ref=f1e7]:
+      - link [ref=f1e8] [cursor=pointer]:
+        - /url: /
+        - img "Iroh" [ref=f1e9]
+      - list [ref=f1e11]:
+        - listitem [ref=f1e12]:
+          - button "Services" [ref=f1e13]
+        - listitem [ref=f1e16]:
+          - button "Use Cases" [ref=f1e17]
+        - listitem [ref=f1e20]:
+          - link "Docs" [ref=f1e21] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/
+        - listitem [ref=f1e22]:
+          - link "Blog" [ref=f1e23] [cursor=pointer]:
+            - /url: /blog
+        - listitem [ref=f1e24]:
+          - link "Pricing" [ref=f1e25] [cursor=pointer]:
+            - /url: /pricing
+        - listitem [ref=f1e26]:
+          - link "Sign Up" [ref=f1e27] [cursor=pointer]:
+            - /url: https://services.iroh.computer?utm_source=website&utm_content=nav-signup
+        - listitem [ref=f1e28]:
+          - link "10k" [ref=f1e29] [cursor=pointer]:
+            - /url: https://github.com/n0-computer/iroh
+        - listitem [ref=f1e34]:
+          - button "Toggle theme" [ref=f1e35] [cursor=pointer]
+  - generic [ref=f1e38]:
+    - generic [ref=f1e40]:
+      - heading "Solutions" [level=1] [ref=f1e41]
+      - paragraph [ref=f1e42]: See how companies use iroh to build fast, reliable, distributed applications that work everywhere.
+    - generic [ref=f1e44]:
+      - link [ref=f1e45] [cursor=pointer]:
+        - /url: /solutions/nous
+        - generic [ref=f1e46]:
+          - generic [ref=f1e47]:
+            - paragraph [ref=f1e48]: AI/ML
+            - paragraph [ref=f1e49]: Distributed AI Training
+            - paragraph [ref=f1e50]: Train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.
+            - paragraph [ref=f1e51]: Read case study →
+          - img "Nous logo" [ref=f1e53]
+      - link [ref=f1e54] [cursor=pointer]:
+        - /url: /solutions/video
+        - generic [ref=f1e55]:
+          - generic [ref=f1e56]:
+            - paragraph [ref=f1e57]: Streaming Video
+            - paragraph [ref=f1e58]: Video Streaming at Global Scale
+            - paragraph [ref=f1e59]: Stream video between millions of devices around the world every day, with over 1 million concurrent connections per relay.
+            - paragraph [ref=f1e60]: Read case study →
+          - img "Rave logo" [ref=f1e62]
+      - link [ref=f1e63] [cursor=pointer]:
+        - /url: /solutions/delta-chat
+        - generic [ref=f1e64]:
+          - generic [ref=f1e65]:
+            - paragraph [ref=f1e66]: Real-time Sync for Mobile
+            - paragraph [ref=f1e67]: Real-time Sync for Mobile Applications
+            - paragraph [ref=f1e68]: Power apps for hundreds of thousands of devices around the world, even when internet access is precarious.
+            - paragraph [ref=f1e69]: Read case study →
+          - img "Delta Chat logo" [ref=f1e71]
+      - link [ref=f1e72] [cursor=pointer]:
+        - /url: /solutions/pos
+        - generic [ref=f1e73]:
+          - generic [ref=f1e74]:
+            - paragraph [ref=f1e75]: Payments / Point of Sale
+            - paragraph [ref=f1e76]: PCI-Compliant Peer-to-Peer Payments
+            - paragraph [ref=f1e77]: Connect payment terminals directly to point of sale systems with no additional servers and full PCI compliance.
+            - paragraph [ref=f1e78]: Read case study →
+          - img "Payments logo" [ref=f1e80]
+      - link [ref=f1e81] [cursor=pointer]:
+        - /url: /solutions/iot
+        - generic [ref=f1e82]:
+          - generic [ref=f1e83]:
+            - paragraph [ref=f1e84]: IoT & Embedded Devices
+            - paragraph [ref=f1e85]: Connect Every Device, Everywhere
+            - paragraph [ref=f1e86]: Run iroh on ESP32, Raspberry Pi, and Linux with the same API. No brokers, no gateways, no custom protocols.
+            - paragraph [ref=f1e87]: Read case study →
+          - paragraph [ref=f1e89]: IoT
+      - link [ref=f1e90] [cursor=pointer]:
+        - /url: /solutions/vpn
+        - generic [ref=f1e91]:
+          - generic [ref=f1e92]:
+            - paragraph [ref=f1e93]: Networking
+            - paragraph [ref=f1e94]: Reach Any Device, No VPN Required
+            - paragraph [ref=f1e95]: Teams are replacing Tailscale, WireGuard, and reverse SSH tunnels with iroh to reach devices directly, with no coordination server to run.
+            - paragraph [ref=f1e96]: Read case study →
+          - paragraph [ref=f1e98]: VPN Alternative
+    - generic [ref=f1e100]:
+      - heading "Ready to Build Something Amazing?" [level=2] [ref=f1e101]
+      - paragraph [ref=f1e102]: Get started with iroh in minutes. No complex configuration required.
+      - generic [ref=f1e103]:
+        - link [ref=f1e104] [cursor=pointer]:
+          - /url: https://docs.iroh.computer/quickstart
+          - button "Read the Docs" [ref=f1e105]
+        - link [ref=f1e106] [cursor=pointer]:
+          - /url: /services/enterprise
+          - button "Enterprise Solutions" [ref=f1e107]
+    - contentinfo [ref=f1e108]:
+      - heading "Footer" [level=2] [ref=f1e109]
+      - generic [ref=f1e110]:
+        - generic [ref=f1e111]:
+          - generic [ref=f1e112]:
+            - paragraph [ref=f1e117]: Less net work for networks.
+            - generic [ref=f1e118]:
+              - link "Discord" [ref=f1e119] [cursor=pointer]:
+                - /url: https://iroh.computer/discord
+              - link "Twitter" [ref=f1e123] [cursor=pointer]:
+                - /url: https://twitter.com/iroh_n0
+              - link "Bluesky" [ref=f1e127] [cursor=pointer]:
+                - /url: https://bsky.app/profile/iroh.computer
+              - link "Mastodon" [ref=f1e131] [cursor=pointer]:
+                - /url: https://mastodon.social/@n0iroh
+              - link "GitHub" [ref=f1e135] [cursor=pointer]:
+                - /url: https://github.com/n0-computer
+              - link "YouTube" [ref=f1e139] [cursor=pointer]:
+                - /url: https://www.youtube.com/@n0computer
+          - generic [ref=f1e143]:
+            - generic [ref=f1e146]:
+              - heading "Build" [level=3] [ref=f1e147]
+              - list [ref=f1e148]:
+                - listitem [ref=f1e149]:
+                  - link "Documentation" [ref=f1e150] [cursor=pointer]:
+                    - /url: /docs
+                - listitem [ref=f1e151]:
+                  - link "Github" [ref=f1e152] [cursor=pointer]:
+                    - /url: https://github.com/n0-computer/iroh
+            - generic [ref=f1e153]:
+              - generic [ref=f1e154]:
+                - heading "Learn" [level=3] [ref=f1e155]
+                - list [ref=f1e156]:
+                  - listitem [ref=f1e157]:
+                    - link "Blog" [ref=f1e158] [cursor=pointer]:
+                      - /url: /blog
+                  - listitem [ref=f1e159]:
+                    - link "Examples" [ref=f1e160] [cursor=pointer]:
+                      - /url: /docs/examples
+                  - listitem [ref=f1e161]:
+                    - link "dumbpipe" [ref=f1e162] [cursor=pointer]:
+                      - /url: https://dumbpipe.dev
+                  - listitem [ref=f1e163]:
+                    - link "sendme" [ref=f1e164] [cursor=pointer]:
+                      - /url: /sendme
+              - generic [ref=f1e165]:
+                - heading "Connect" [level=3] [ref=f1e166]
+                - list [ref=f1e167]:
+                  - listitem [ref=f1e168]:
+                    - link "Discord" [ref=f1e169] [cursor=pointer]:
+                      - /url: https://iroh.computer/discord
+                  - listitem [ref=f1e170]:
+                    - link "Discussion" [ref=f1e171] [cursor=pointer]:
+                      - /url: https://github.com/n0-computer/iroh/discussions
+                  - listitem [ref=f1e172]:
+                    - link "Twitter" [ref=f1e173] [cursor=pointer]:
+                      - /url: https://twitter.com/iroh_n0
+        - paragraph [ref=f1e175]: © 2025 n0, inc.

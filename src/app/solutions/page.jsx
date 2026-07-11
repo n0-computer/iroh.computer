@@ -12,11 +12,10 @@ export const metadata = {
 const solutions = [
   {
     category: "AI/ML",
-    company: "Nous",
-    headline: "Distributed AI Training",
-    description: "Train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.",
-    href: "/solutions/nous",
-    logo: "nous",
+    company: "Distributed AI",
+    headline: "Distributed AI Training & Inference",
+    description: "Train foundation LLMs and pool GPUs across machines into a single API, with compute distributed around the world across AWS, GCP, Azure, and self-hosted infrastructure.",
+    href: "/solutions/distributed-ai",
   },
   {
     category: "Streaming Video",

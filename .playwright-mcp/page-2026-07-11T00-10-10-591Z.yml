@@ -1,0 +1,361 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e7]:
+      - link [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img "Iroh" [ref=e9]
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - button "Services" [ref=e13]
+        - listitem [ref=e16]:
+          - button "Use Cases" [ref=e17]
+        - listitem [ref=e20]:
+          - link "Docs" [ref=e21] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/
+        - listitem [ref=e22]:
+          - link "Blog" [ref=e23] [cursor=pointer]:
+            - /url: /blog
+        - listitem [ref=e24]:
+          - link "Pricing" [ref=e25] [cursor=pointer]:
+            - /url: /pricing
+        - listitem [ref=e26]:
+          - link "Sign Up" [ref=e27] [cursor=pointer]:
+            - /url: https://services.iroh.computer?utm_source=website&utm_content=nav-signup
+        - listitem [ref=e28]:
+          - link "10k" [ref=e29] [cursor=pointer]:
+            - /url: https://github.com/n0-computer/iroh
+        - listitem [ref=e34]:
+          - button "Toggle theme" [ref=e35] [cursor=pointer]
+  - generic [ref=e38]:
+    - main [ref=e39]:
+      - generic [ref=e43]:
+        - heading "IP addresses break, dial keys instead" [level=1] [ref=e44]
+        - heading "Add peer-to-peer connectivity to your app, agent, or workflow." [level=3] [ref=e45]
+        - link "Read the Docs" [ref=e47] [cursor=pointer]:
+          - /url: https://docs.iroh.computer/quickstart
+      - generic [ref=e52]:
+        - link [ref=e53] [cursor=pointer]:
+          - /url: https://www.spacedrive.com
+          - img "spacedrive logo" [ref=e54]
+        - link [ref=e55] [cursor=pointer]:
+          - /url: https://nousresearch.com
+          - img "nous logo" [ref=e56]
+        - link [ref=e57] [cursor=pointer]:
+          - /url: https://meshllm.cloud
+          - img "meshllm logo" [ref=e58]
+        - link "strada logo Strada" [ref=e59] [cursor=pointer]:
+          - /url: https://strada.tech
+          - img "strada logo" [ref=e60]
+          - generic [ref=e61]: Strada
+        - link [ref=e62] [cursor=pointer]:
+          - /url: https://www.paycode.com.mx
+          - img "paycode logo" [ref=e63]
+        - link [ref=e64] [cursor=pointer]:
+          - /url: https://rave.io
+          - img "rave logo" [ref=e65]
+        - link [ref=e66] [cursor=pointer]:
+          - /url: https://delta.chat
+          - img "delta_chat logo" [ref=e67]
+        - link "ottomatic logo Ottomatic" [ref=e68] [cursor=pointer]:
+          - /url: https://ottomatic.io
+          - img "ottomatic logo" [ref=e69]
+          - generic [ref=e70]: Ottomatic
+        - link "rayfish logo Rayfish" [ref=e71] [cursor=pointer]:
+          - /url: https://rayfish.xyz
+          - img "rayfish logo" [ref=e72]
+          - generic [ref=e73]: Rayfish
+        - link "Outl" [ref=e74] [cursor=pointer]:
+          - /url: https://outl.app
+        - link "datum logo" [ref=e76] [cursor=pointer]:
+          - /url: https://www.datum.net
+          - img "datum logo"
+        - link "fedimint logo" [ref=e77] [cursor=pointer]:
+          - /url: https://fedimint.org
+          - img "fedimint logo"
+      - figure "Ari Lotter Principal Engineer at Nous Read the Case Study" [ref=e82]:
+        - blockquote [ref=e83]:
+          - paragraph [ref=e84]: “Doubling the network speed halves our compute budget.”
+        - generic [ref=e86]:
+          - generic [ref=e87]: Ari Lotter
+          - generic [ref=e90]: Principal Engineer at Nous
+          - link "Read the Case Study" [ref=e91] [cursor=pointer]:
+            - /url: /solutions/nous
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - link "Swift" [ref=e96] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/languages/swift
+          - link "Rust" [ref=e99] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/languages/rust
+          - link "JavaScript" [ref=e102] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/languages/javascript
+          - link "Kotlin" [ref=e105] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/languages/kotlin
+          - link "Python" [ref=e108] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/languages/python
+        - generic [ref=e111]:
+          - generic [ref=e112]: Raspberry Pi
+          - generic [ref=e115]: Espressif
+          - generic [ref=e118]: Linux
+          - generic [ref=e121]: Windows
+          - generic [ref=e124]: Apple
+          - generic [ref=e127]: Android
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - heading "Built for environments where connectivity is unreliable or intermittent" [level=3] [ref=e133]
+          - list [ref=e134]:
+            - listitem [ref=e135]:
+              - paragraph [ref=e139]:
+                - text: "Use all the radios: Wi-Fi, cellular, ethernet, LAN, or"
+                - link "Bluetooth" [ref=e140] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/transports/bluetooth
+                - text: ", or bring your own transport."
+            - listitem [ref=e141]:
+              - paragraph [ref=e145]:
+                - text: Lean on the cloud less with direct links that bypass NATs and firewalls, with
+                - link "stateless relays" [ref=e146] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/concepts/relays
+                - text: as fallback.
+            - listitem [ref=e147]:
+              - paragraph [ref=e151]:
+                - text: Secure end-to-end encryption, with opt-in
+                - link "observability" [ref=e152] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/iroh-services/metrics
+                - text: to diagnose issues and improve performance.
+        - img [ref=e155]:
+          - generic [ref=e205]: AWS
+          - generic [ref=e209]: GCP
+          - generic [ref=e213]: Azure
+          - generic [ref=e217]: Self-Host
+          - generic [ref=e224]: Edge
+          - generic [ref=e229]: Hybrid
+          - generic [ref=e234]: Private
+      - generic [ref=e247]:
+        - heading "How are people using iroh?" [level=3] [ref=e249]
+        - generic [ref=e250]:
+          - link [ref=e251] [cursor=pointer]:
+            - /url: /solutions/nous
+            - generic [ref=e252]:
+              - paragraph [ref=e253]: Distributed AI Training
+              - paragraph [ref=e254]: Train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.
+          - link [ref=e255] [cursor=pointer]:
+            - /url: /solutions/rave
+            - generic [ref=e256]:
+              - paragraph [ref=e257]: Video Streaming
+              - paragraph [ref=e258]: Stream video between devices, using peer to peer technology. Create encrypted connections built on open standards, across the globe or across the room.
+          - link [ref=e259] [cursor=pointer]:
+            - /url: /solutions/delta-chat
+            - generic [ref=e260]:
+              - paragraph [ref=e261]: Real-time Sync for Mobile Applications
+              - paragraph [ref=e262]: Powers apps for hundreds of thousands of devices around the world, even when internet access is precarious.
+          - link [ref=e263] [cursor=pointer]:
+            - /url: /solutions/pos
+            - generic [ref=e264]:
+              - paragraph [ref=e265]: Point of Sale Payments
+              - paragraph [ref=e266]: Connect payment terminals directly to point of sale systems over Bluetooth, LAN, or Wi-Fi with full PCI compliance and no additional servers.
+          - link [ref=e267] [cursor=pointer]:
+            - /url: /solutions/iot
+            - generic [ref=e268]:
+              - paragraph [ref=e269]: IoT & Embedded Devices
+              - paragraph [ref=e270]: Run iroh on ESP32, Raspberry Pi, and Linux with the same API. Devices discover each other automatically. No brokers, no gateways.
+          - link [ref=e271] [cursor=pointer]:
+            - /url: https://docs.iroh.computer
+            - generic [ref=e272]:
+              - paragraph [ref=e273]: File Transfer & Sync
+              - paragraph [ref=e274]: Move files and large blobs directly between devices with content-addressed, resumable transfers that verify every byte.
+          - link [ref=e275] [cursor=pointer]:
+            - /url: https://rayfish.xyz
+            - generic [ref=e276]:
+              - paragraph [ref=e277]: Built-in VPN
+              - paragraph [ref=e278]: Reach your devices directly, with no VPN to configure and no ports to open. Rayfish and cmux use iroh to connect phones and machines peer-to-peer, wherever they are.
+      - generic [ref=e280]:
+        - generic [ref=e281]:
+          - paragraph [ref=e282]: Ready for production
+          - list [ref=e283]:
+            - listitem [ref=e284]:
+              - paragraph [ref=e288]:
+                - text: Performant. Every commit to iroh's main branch runs through a growing set of
+                - link "simulations & tests" [ref=e289] [cursor=pointer]:
+                  - /url: https://perf.iroh.computer
+                - text: .
+            - listitem [ref=e290]:
+              - paragraph [ref=e294]:
+                - text: Monitored.
+                - link "Observability" [ref=e295] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/iroh-services/metrics
+                - text: and
+                - link "network diagnostics" [ref=e296] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/iroh-services/net-diagnostics/quickstart
+                - text: track connection health and throughput.
+            - listitem [ref=e297]:
+              - paragraph [ref=e301]:
+                - text: Supported. Every major release is
+                - link "supported for multiple years" [ref=e302] [cursor=pointer]:
+                  - /url: https://docs.iroh.computer/about/release-policy
+                - text: with extended support contracts available.
+          - link "Get help from the pros" [ref=e303] [cursor=pointer]:
+            - /url: /services/enterprise
+        - img [ref=e308]:
+          - generic [ref=e319]: Connections
+          - generic [ref=e323]: Latency
+          - generic [ref=e327]: Throughput
+          - generic [ref=e331]: Custom
+          - generic [ref=e335]:
+            - generic [ref=e338]: Σ
+            - generic [ref=e340]: Aggregator
+          - generic [ref=e341]: Dashboard
+          - generic [ref=e352]: Mobile
+          - generic [ref=e356]: Server
+          - generic [ref=e363]: IoT
+      - generic [ref=e373]:
+        - paragraph [ref=e374]: Open source.Forever.
+        - paragraph [ref=e375]:
+          - text: The core peer-to-peer technology is
+          - link "open source" [ref=e376] [cursor=pointer]:
+            - /url: https://github.com/n0-computer/iroh
+          - text: "and built on open standards, so you're never locked in: connect over our free community"
+          - link "relays" [ref=e377] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/concepts/relays
+          - text: ", self-host your own, let us"
+          - link "run them for you" [ref=e378] [cursor=pointer]:
+            - /url: /services/hosting
+          - text: ", and switch between them whenever you want."
+      - generic [ref=e380]:
+        - generic [ref=e381]:
+          - generic [ref=e382]:
+            - img "Swift" [ref=e383]
+            - img "Rust" [ref=e384]
+            - img "JavaScript" [ref=e385]
+            - img "Kotlin" [ref=e386]
+            - img "Python" [ref=e387]
+          - heading "Start building." [level=1] [ref=e388]
+          - link "Read the Docs" [ref=e389] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/what-is-iroh
+        - generic [ref=e393]:
+          - tablist [ref=e395]:
+            - tab "Swift" [selected] [ref=e396]
+            - tab "Rust" [ref=e397]
+            - tab "JavaScript" [ref=e398]
+            - tab "Kotlin" [ref=e399]
+            - tab "Python" [ref=e400]
+          - tabpanel [ref=e402]:
+            - generic [ref=e403]:
+              - generic [ref=e404]: App.swift
+              - generic [ref=e406]:
+                - code [ref=e408]:
+                  - generic [ref=e409]: import IrohLib
+                  - generic [ref=e410]: "@main"
+                  - generic [ref=e411]: "struct App {"
+                  - generic [ref=e412]: "static func main() async throws {"
+                  - generic [ref=e413]: // Dial a peer and echo a message over a bidirectional stream.
+                  - generic [ref=e414]: let endpoint = try await Endpoint.bind(
+                  - generic [ref=e415]: "options: EndpointOptions(preset: presetN0())"
+                  - generic [ref=e416]: )
+                  - generic [ref=e417]: "let conn = try await endpoint.connect(addr: serverAddr, alpn: ALPN)"
+                  - generic [ref=e418]: let bi = try await conn.openBi()
+                  - generic [ref=e419]: "try await bi.send().writeAll(buf: Data(\"hello iroh\".utf8))"
+                  - generic [ref=e420]: try await bi.send().finish()
+                  - generic [ref=e421]: "let echoed = try await bi.recv().readToEnd(sizeLimit: 64)"
+                  - generic [ref=e422]: "print(String(decoding: echoed, as: UTF8.self))"
+                  - generic [ref=e423]: "}"
+                  - generic [ref=e424]: "}"
+                - button "Copy" [ref=e425]:
+                  - generic: Copied!
+      - generic [ref=e426]:
+        - heading "Modular toolkit" [level=3] [ref=e427]
+        - paragraph [ref=e428]: Dozens of open-source, composable protocols built on top of iroh. Mix & match to get the feature set you need.
+        - generic [ref=e429]:
+          - link [ref=e430] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/protocols/blobs/
+            - generic [ref=e432]:
+              - heading "Blobs" [level=2] [ref=e433]
+              - paragraph [ref=e434]: Resumable, verifiable data transfer
+          - link [ref=e435] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/connecting/gossip/
+            - generic [ref=e437]:
+              - heading "Gossip" [level=2] [ref=e438]
+              - paragraph [ref=e439]: Broadcast messages to groups of endpoints by topic.
+          - link [ref=e440] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/protocols/kv-crdts/
+            - generic [ref=e442]:
+              - heading "Documents" [level=2] [ref=e443]
+              - paragraph [ref=e444]: Realtime, multiwriter, key-value sync
+          - link [ref=e446] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/concepts/protocols
+            - heading "Learn more" [level=1] [ref=e447]
+      - generic [ref=e450]:
+        - heading "From the Blog" [level=3] [ref=e452]
+        - generic [ref=e453]:
+          - article [ref=e454]:
+            - generic [ref=e455]:
+              - time [ref=e456]: July 9, 2026
+              - heading [level=2] [ref=e457]:
+                - link "The road to iroh 1.0" [ref=e459] [cursor=pointer]:
+                  - /url: /blog/the-road-to-iroh-1-0
+              - paragraph
+              - generic [ref=e461]: Read Post
+          - article [ref=e464]:
+            - generic [ref=e465]:
+              - time [ref=e466]: July 7, 2026
+              - heading [level=2] [ref=e467]:
+                - 'link "iroh 1.0.2 - `iroh-relay` Security Fix" [ref=e469] [cursor=pointer]':
+                  - /url: /blog/iroh-1-0-2
+              - paragraph [ref=e471]: Release of iroh v1.0.2
+              - generic [ref=e472]: Read Post
+    - contentinfo [ref=e475]:
+      - heading "Footer" [level=2] [ref=e476]
+      - generic [ref=e477]:
+        - generic [ref=e478]:
+          - generic [ref=e479]:
+            - paragraph [ref=e484]: Less net work for networks.
+            - generic [ref=e485]:
+              - link "Discord" [ref=e486] [cursor=pointer]:
+                - /url: https://iroh.computer/discord
+              - link "Twitter" [ref=e490] [cursor=pointer]:
+                - /url: https://twitter.com/iroh_n0
+              - link "Bluesky" [ref=e494] [cursor=pointer]:
+                - /url: https://bsky.app/profile/iroh.computer
+              - link "Mastodon" [ref=e498] [cursor=pointer]:
+                - /url: https://mastodon.social/@n0iroh
+              - link "GitHub" [ref=e502] [cursor=pointer]:
+                - /url: https://github.com/n0-computer
+              - link "YouTube" [ref=e506] [cursor=pointer]:
+                - /url: https://www.youtube.com/@n0computer
+          - generic [ref=e510]:
+            - generic [ref=e513]:
+              - heading "Build" [level=3] [ref=e514]
+              - list [ref=e515]:
+                - listitem [ref=e516]:
+                  - link "Documentation" [ref=e517] [cursor=pointer]:
+                    - /url: /docs
+                - listitem [ref=e518]:
+                  - link "Github" [ref=e519] [cursor=pointer]:
+                    - /url: https://github.com/n0-computer/iroh
+            - generic [ref=e520]:
+              - generic [ref=e521]:
+                - heading "Learn" [level=3] [ref=e522]
+                - list [ref=e523]:
+                  - listitem [ref=e524]:
+                    - link "Blog" [ref=e525] [cursor=pointer]:
+                      - /url: /blog
+                  - listitem [ref=e526]:
+                    - link "Examples" [ref=e527] [cursor=pointer]:
+                      - /url: /docs/examples
+                  - listitem [ref=e528]:
+                    - link "dumbpipe" [ref=e529] [cursor=pointer]:
+                      - /url: https://dumbpipe.dev
+                  - listitem [ref=e530]:
+                    - link "sendme" [ref=e531] [cursor=pointer]:
+                      - /url: /sendme
+              - generic [ref=e532]:
+                - heading "Connect" [level=3] [ref=e533]
+                - list [ref=e534]:
+                  - listitem [ref=e535]:
+                    - link "Discord" [ref=e536] [cursor=pointer]:
+                      - /url: https://iroh.computer/discord
+                  - listitem [ref=e537]:
+                    - link "Discussion" [ref=e538] [cursor=pointer]:
+                      - /url: https://github.com/n0-computer/iroh/discussions
+                  - listitem [ref=e539]:
+                    - link "Twitter" [ref=e540] [cursor=pointer]:
+                      - /url: https://twitter.com/iroh_n0
+        - paragraph [ref=e542]: © 2025 n0, inc.

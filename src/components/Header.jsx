@@ -22,7 +22,7 @@ export const navItems = [
     {label: 'Enterprise', href: '/services/enterprise'},
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
-    {label: 'Distributed AI', href: '/solutions/nous'},
+    {label: 'Distributed AI', href: '/solutions/distributed-ai'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},

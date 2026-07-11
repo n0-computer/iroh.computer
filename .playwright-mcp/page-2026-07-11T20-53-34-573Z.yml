@@ -1,0 +1,227 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "🎉 version 1.0 is here! Read the blog post" [ref=e4] [cursor=pointer]:
+        - /url: /blog/v1
+        - generic [ref=e5]: 🎉 version 1.0 is here!
+        - generic [ref=e6]: Read the blog post
+      - button "Dismiss" [ref=e7]
+    - generic [ref=e10]:
+      - navigation [ref=e11]:
+        - generic [ref=e14]:
+          - link [ref=e15] [cursor=pointer]:
+            - /url: /
+            - img "Iroh" [ref=e16]
+          - list [ref=e18]:
+            - listitem [ref=e19]:
+              - button "Services" [ref=e20]
+            - listitem [ref=e23]:
+              - button "Use Cases" [ref=e24]
+            - listitem [ref=e27]:
+              - link "Docs" [ref=e28] [cursor=pointer]:
+                - /url: https://docs.iroh.computer/
+            - listitem [ref=e29]:
+              - link "Blog" [ref=e30] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e31]:
+              - link "Pricing" [ref=e32] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e33]:
+              - link "Sign Up" [ref=e34] [cursor=pointer]:
+                - /url: https://services.iroh.computer?utm_source=website&utm_content=nav-signup
+            - listitem [ref=e35]:
+              - link "10k" [ref=e36] [cursor=pointer]:
+                - /url: https://github.com/n0-computer/iroh
+            - listitem [ref=e41]:
+              - button "Switch to light theme" [ref=e42] [cursor=pointer]
+      - generic [ref=e45]:
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - paragraph [ref=e50]: "Use Case: AI/ML"
+            - heading "Distributed AI, Training to Inference" [level=1] [ref=e51]
+            - paragraph [ref=e52]:
+              - link "Nous Research" [ref=e53] [cursor=pointer]:
+                - /url: https://nousresearch.com
+              - text: uses iroh to train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.
+              - link "Mesh LLM" [ref=e54] [cursor=pointer]:
+                - /url: https://meshllm.cloud
+              - text: uses it to pool GPUs across machines into a single inference API. Neither needed a data center to do it.
+            - generic [ref=e55]:
+              - link [ref=e56] [cursor=pointer]:
+                - /url: https://docs.iroh.computer/quickstart
+                - button "Get Started" [ref=e57]
+              - link [ref=e58] [cursor=pointer]:
+                - /url: https://nousresearch.com
+                - button "Visit Nous Research" [ref=e59]
+              - link [ref=e60] [cursor=pointer]:
+                - /url: https://meshllm.cloud
+                - button "Visit Mesh LLM" [ref=e61]
+          - img [ref=e64]:
+            - generic [ref=e114]: AWS
+            - generic [ref=e118]: GCP
+            - generic [ref=e122]: Azure
+            - generic [ref=e126]: Self-Host
+            - generic [ref=e133]: Edge
+            - generic [ref=e138]: Hybrid
+            - generic [ref=e143]: Private
+        - generic [ref=e157]:
+          - paragraph [ref=e158]: "Nous Research: Training"
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - paragraph [ref=e161]: 10x
+              - paragraph [ref=e162]: Bandwidth reduction (10Gbps → 1Gbps)
+            - generic [ref=e163]:
+              - paragraph [ref=e164]: 50%
+              - paragraph [ref=e165]: Cost reduction ($1M → $500K models)
+            - generic [ref=e166]:
+              - paragraph [ref=e167]: 30-50
+              - paragraph [ref=e168]: Nodes in training runs
+            - generic [ref=e169]:
+              - paragraph [ref=e170]: 100%
+              - paragraph [ref=e171]: GPU & network utilization
+        - generic [ref=e173]:
+          - 'heading "The Problem: Training LLMs is Brutally Expensive" [level=2] [ref=e174]'
+          - paragraph [ref=e175]: The amount of data that needs to be sent between every GPU during training is intense—basically the entire model. Traditional approaches require building massive data centers with specialized high-bandwidth interconnects. There's been no way to do this without concentrated infrastructure.
+          - paragraph [ref=e177]: “Doubling the network speed halves our compute budget. That's the difference between a $1M model and a $500K model.”
+          - paragraph [ref=e178]: But what if you could run distributed training over the internet? What if you could use the cheapest compute anywhere in the world and link them all together?
+        - generic [ref=e181]:
+          - generic [ref=e182]:
+            - 'heading "The Solution: Psyche" [level=2] [ref=e183]'
+            - paragraph [ref=e184]:
+              - link "Psyche" [ref=e185] [cursor=pointer]:
+                - /url: https://github.com/psychefoundation/psyche
+              - text: is Nous's distributed training framework. It brings the bandwidth requirements between each machine down from 10Gbps to just 1Gbps—making internet-based distributed training viable.
+            - paragraph [ref=e186]:
+              - text: Data center operators can download a binary and use iroh to connect to every other node in a training run. They do training on their GPUs and communicate information through
+              - link "gossip" [ref=e187] [cursor=pointer]:
+                - /url: https://docs.iroh.computer/proto/iroh-gossip
+              - text: ", transferring large amounts of data via"
+              - link "blobs" [ref=e188] [cursor=pointer]:
+                - /url: https://docs.iroh.computer/proto/iroh-blobs
+              - text: .
+            - paragraph [ref=e189]:
+              - text: "The core question was simple:"
+              - strong [ref=e190]: how do you get something to talk to something else?
+              - text: Iroh solves this. Gossip is especially useful because Psyche is building a swarm, not just a centralized service.
+          - generic [ref=e191]:
+            - generic [ref=e198]:
+              - heading "Swarm Architecture" [level=3] [ref=e199]
+              - paragraph [ref=e200]: Built as a decentralized swarm, not a centralized service. Gossip enables coordination across all nodes.
+            - generic [ref=e205]:
+              - heading "100% Utilization" [level=3] [ref=e206]
+              - paragraph [ref=e207]: Most training frameworks do a train step then synchronize. Psyche's asynchronous approach pegs GPUs at 100% and network connections at 100% simultaneously.
+            - generic [ref=e211]:
+              - heading "Saturated Connections" [level=3] [ref=e212]
+              - paragraph [ref=e213]: "The use case: saturate all connections 100%. From iroh, they need reliable delivery of messages and file transfer as fast as it can possibly go."
+            - generic [ref=e218]:
+              - heading "Blockchain Coordination" [level=3] [ref=e219]
+              - paragraph [ref=e220]: High-level coordination through blockchain integration—useful when you need to pay someone and you don't know who they are.
+        - generic [ref=e222]:
+          - paragraph [ref=e223]: "Mesh LLM: Inference"
+          - heading "Pool GPUs Into One API" [level=2] [ref=e224]
+          - generic [ref=e225]:
+            - generic [ref=e226]:
+              - paragraph [ref=e227]:
+                - link "Mesh LLM" [ref=e228] [cursor=pointer]:
+                  - /url: https://meshllm.cloud
+                - text: pools existing GPU resources across multiple machines and exposes them through a single OpenAI-compatible API, with no central server coordinating the mesh. Every node runs an iroh endpoint, so nodes connect directly to each other over authenticated QUIC instead of routing through a coordinator.
+              - paragraph [ref=e230]: “Control over when models change, where your data goes, and what hardware runs your workloads.”
+            - generic [ref=e231]:
+              - generic [ref=e236]:
+                - heading "Local Execution" [level=3] [ref=e237]
+                - paragraph [ref=e238]: A request runs on the requesting machine's GPU, if it's big enough.
+              - generic [ref=e245]:
+                - heading "Peer Routing" [level=3] [ref=e246]
+                - paragraph [ref=e247]: Otherwise, it routes directly to a peer node that already has the model loaded.
+              - generic [ref=e251]:
+                - heading "Pipeline Splitting" [level=3] [ref=e252]
+                - paragraph [ref=e253]: Models too large for any single machine get partitioned by layer ranges across multiple nodes, so modest machines can collectively run what none of them could load alone.
+        - generic [ref=e255]:
+          - heading "Why Relays Matter" [level=2] [ref=e256]
+          - paragraph [ref=e257]:
+            - text: "Nous runs 5 iroh relays to ensure reliable connectivity across their distributed training network. Mesh LLM runs two, in different regions, for the same reason. The key insight:"
+            - strong [ref=e258]: when things deteriorate, they can't break
+            - text: .
+          - paragraph [ref=e259]: Iroh automatically establishes direct connections when possible for maximum throughput. When direct connections aren't possible—due to NATs, firewalls, or network conditions—traffic flows through relays. This fallback mechanism means training and inference keep running even when network conditions change.
+        - generic [ref=e262]:
+          - generic [ref=e263]:
+            - heading "Managed Relays & Monitoring" [level=2] [ref=e264]
+            - paragraph [ref=e265]:
+              - text: The
+              - link "n0.computer" [ref=e266] [cursor=pointer]:
+                - /url: https://n0.computer
+              - text: team hosts relays for Nous through the
+              - link "iroh services" [ref=e267] [cursor=pointer]:
+                - /url: https://services.iroh.computer
+              - text: service. This provides reliable relay infrastructure without Nous having to manage it themselves.
+            - paragraph [ref=e268]: We're also partnering with Nous to build better monitoring tools for distributed training—making it easy to understand what's happening at the network level during training runs.
+          - paragraph [ref=e271]: “iroh does so much low-level networking for us. We don't have to learn about the low-level details of QUIC. When things go wrong, we want to look at the metrics and logs to understand what happened.”
+        - generic [ref=e273]:
+          - heading "Ready to Connect Your Distributed Infrastructure?" [level=2] [ref=e274]
+          - paragraph [ref=e275]: Get started with iroh in minutes. No complex configuration required.
+          - generic [ref=e276]:
+            - link [ref=e277] [cursor=pointer]:
+              - /url: https://services.iroh.computer/signup?utm_source=website&utm_content=distributed-ai-cta
+              - button "Sign Up" [ref=e278]
+            - link [ref=e279] [cursor=pointer]:
+              - /url: https://docs.iroh.computer/quickstart
+              - button "Read the Docs" [ref=e280]
+        - contentinfo [ref=e281]:
+          - heading "Footer" [level=2] [ref=e282]
+          - generic [ref=e283]:
+            - generic [ref=e284]:
+              - generic [ref=e285]:
+                - paragraph [ref=e290]: Less net work for networks.
+                - generic [ref=e291]:
+                  - link "Discord" [ref=e292] [cursor=pointer]:
+                    - /url: https://iroh.computer/discord
+                  - link "Twitter" [ref=e296] [cursor=pointer]:
+                    - /url: https://twitter.com/iroh_n0
+                  - link "Bluesky" [ref=e300] [cursor=pointer]:
+                    - /url: https://bsky.app/profile/iroh.computer
+                  - link "Mastodon" [ref=e304] [cursor=pointer]:
+                    - /url: https://mastodon.social/@n0iroh
+                  - link "GitHub" [ref=e308] [cursor=pointer]:
+                    - /url: https://github.com/n0-computer
+                  - link "YouTube" [ref=e312] [cursor=pointer]:
+                    - /url: https://www.youtube.com/@n0computer
+              - generic [ref=e316]:
+                - generic [ref=e319]:
+                  - heading "Build" [level=3] [ref=e320]
+                  - list [ref=e321]:
+                    - listitem [ref=e322]:
+                      - link "Documentation" [ref=e323] [cursor=pointer]:
+                        - /url: /docs
+                    - listitem [ref=e324]:
+                      - link "Github" [ref=e325] [cursor=pointer]:
+                        - /url: https://github.com/n0-computer/iroh
+                - generic [ref=e326]:
+                  - generic [ref=e327]:
+                    - heading "Learn" [level=3] [ref=e328]
+                    - list [ref=e329]:
+                      - listitem [ref=e330]:
+                        - link "Blog" [ref=e331] [cursor=pointer]:
+                          - /url: /blog
+                      - listitem [ref=e332]:
+                        - link "Examples" [ref=e333] [cursor=pointer]:
+                          - /url: /docs/examples
+                      - listitem [ref=e334]:
+                        - link "dumbpipe" [ref=e335] [cursor=pointer]:
+                          - /url: https://dumbpipe.dev
+                      - listitem [ref=e336]:
+                        - link "sendme" [ref=e337] [cursor=pointer]:
+                          - /url: /sendme
+                  - generic [ref=e338]:
+                    - heading "Connect" [level=3] [ref=e339]
+                    - list [ref=e340]:
+                      - listitem [ref=e341]:
+                        - link "Discord" [ref=e342] [cursor=pointer]:
+                          - /url: https://iroh.computer/discord
+                      - listitem [ref=e343]:
+                        - link "Discussion" [ref=e344] [cursor=pointer]:
+                          - /url: https://github.com/n0-computer/iroh/discussions
+                      - listitem [ref=e345]:
+                        - link "Twitter" [ref=e346] [cursor=pointer]:
+                          - /url: https://twitter.com/iroh_n0
+            - paragraph [ref=e348]: © 2025 n0, inc.
+  - alert [ref=e349]

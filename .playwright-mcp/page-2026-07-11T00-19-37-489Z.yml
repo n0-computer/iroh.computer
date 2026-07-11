@@ -1,0 +1,201 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e7]:
+      - link [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img "Iroh" [ref=e9]
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - button "Services" [ref=e13]
+        - listitem [ref=e16]:
+          - button "Use Cases" [ref=e17]
+        - listitem [ref=e20]:
+          - link "Docs" [ref=e21] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/
+        - listitem [ref=e22]:
+          - link "Blog" [ref=e23] [cursor=pointer]:
+            - /url: /blog
+        - listitem [ref=e24]:
+          - link "Pricing" [ref=e25] [cursor=pointer]:
+            - /url: /pricing
+        - listitem [ref=e26]:
+          - link "Sign Up" [ref=e27] [cursor=pointer]:
+            - /url: https://services.iroh.computer?utm_source=website&utm_content=nav-signup
+        - listitem [ref=e28]:
+          - link "10k" [ref=e29] [cursor=pointer]:
+            - /url: https://github.com/n0-computer/iroh
+        - listitem [ref=e34]:
+          - button "Toggle theme" [ref=e35] [cursor=pointer]
+  - generic [ref=e38]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - paragraph [ref=e43]: "Use Case: Networking"
+        - heading "Reach Any Device, No VPN Required" [level=1] [ref=e44]
+        - paragraph [ref=e45]: Teams are replacing Tailscale, WireGuard, and reverse SSH tunnels with iroh—dial a device's public key and get a direct, encrypted connection. No coordination server to run, no ports to open.
+        - generic [ref=e46]:
+          - link [ref=e47] [cursor=pointer]:
+            - /url: https://docs.iroh.computer/quickstart
+            - button "Get Started" [ref=e48]
+          - button "Talk to Us" [ref=e49] [cursor=pointer]
+      - img [ref=e52]:
+        - generic [ref=e53]:
+          - generic [ref=e66]: DIRECT
+          - generic [ref=e67]: DIRECT
+          - generic [ref=e68]: RELAY
+          - generic [ref=e71]: DIRECT
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - paragraph [ref=e82]: Direct
+        - paragraph [ref=e83]: Peer-to-peer connections, no relay in the hot path
+      - generic [ref=e84]:
+        - paragraph [ref=e85]: Encrypted
+        - paragraph [ref=e86]: Every connection encrypted end-to-end by default
+      - generic [ref=e87]:
+        - paragraph [ref=e88]: Embedded
+        - paragraph [ref=e89]: A library in your app, not a client to install
+      - generic [ref=e90]:
+        - paragraph [ref=e91]: Anywhere
+        - paragraph [ref=e92]: Automatic NAT & firewall traversal, with relay fallback
+    - generic [ref=e94]:
+      - 'heading "The Problem: VPNs Are Infrastructure You Didn''t Want to Own" [level=2] [ref=e95]'
+      - paragraph [ref=e96]: "Reaching a device that isn't sitting on the public internet usually means standing up a VPN: a coordination server to run and secure, client software to distribute, and firewall rules to get right. Or it means reverse SSH tunnels and all the operational shenanigans that come with them."
+      - paragraph [ref=e98]: “Thinking about implementing a SOCKS proxy on top of iroh to get into my self-hosted service at home without WireGuard infra and all the related network shenanigans.”
+      - paragraph [ref=e99]: But what if your app could just dial the other device directly—no separate network to join, no client to install, no infrastructure to babysit?
+    - generic [ref=e101]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - 'heading "The Solution: Dial Keys, Not IPs" [level=2] [ref=e104]'
+          - paragraph [ref=e105]: Every iroh node has a public key as its address. To reach a device, you dial that key directly from inside your own application—there's no separate VPN client for your users to install, and no central network your traffic has to join.
+          - paragraph [ref=e106]: "One developer building an agentic coding app described swapping out planned reverse SSH tunnel infrastructure for iroh in about a day:"
+        - generic [ref=e107]:
+          - generic [ref=e112]:
+            - heading "Dial Keys, Not IPs" [level=3] [ref=e113]
+            - paragraph [ref=e114]: Every node has a cryptographic identity. Connect to a device by its public key, wherever it is.
+          - generic [ref=e120]:
+            - heading "Direct Connections" [level=3] [ref=e121]
+            - paragraph [ref=e122]: Iroh punches through NATs and firewalls automatically to connect devices directly.
+          - generic [ref=e126]:
+            - heading "Encrypted by Default" [level=3] [ref=e127]
+            - paragraph [ref=e128]: Every connection is end-to-end encrypted, so your platform can't see or modify traffic between devices.
+          - generic [ref=e134]:
+            - heading "A Library, Not a Client" [level=3] [ref=e135]
+            - paragraph [ref=e136]: Iroh ships inside your app, so the connection is just part of your product—not a separate piece of software your users manage.
+      - paragraph [ref=e138]: “I read iroh's headline ‘dial keys, not IPs’…I think that was last Tuesday. By Wednesday it was in our app as one of the most load-bearing pieces.”
+    - generic [ref=e140]:
+      - heading "Why Relays Matter" [level=2] [ref=e141]
+      - paragraph [ref=e142]: Iroh automatically establishes direct connections when possible, for the lowest latency and highest throughput. When a direct connection isn't possible—due to symmetric NATs, restrictive firewalls, or carrier-grade NAT—traffic falls back to an encrypted relay, so the connection stays up either way.
+      - paragraph [ref=e143]:
+        - text: Use
+        - link "n0's hosted relays" [ref=e144] [cursor=pointer]:
+          - /url: https://services.iroh.computer
+        - text: ", or run your own for full control over that part of the stack."
+    - generic [ref=e146]:
+      - generic [ref=e147]:
+        - paragraph [ref=e148]: Why iroh
+        - heading "iroh vs. Tailscale & WireGuard" [level=2] [ref=e149]
+      - table [ref=e151]:
+        - rowgroup [ref=e152]:
+          - row [ref=e153]:
+            - columnheader [ref=e154]
+            - columnheader "iroh" [ref=e155]
+            - columnheader "Tailscale / WireGuard" [ref=e156]
+        - rowgroup [ref=e157]:
+          - row [ref=e158]:
+            - cell "Embeds directly in your app" [ref=e159]
+            - cell [ref=e160]:
+              - img "yes" [ref=e161]
+            - cell [ref=e163]:
+              - img "no" [ref=e164]
+          - row [ref=e166]:
+            - cell "No separate client to install" [ref=e167]
+            - cell [ref=e168]:
+              - img "yes" [ref=e169]
+            - cell [ref=e171]:
+              - img "no" [ref=e172]
+          - row [ref=e174]:
+            - cell "NAT & firewall traversal" [ref=e175]
+            - cell [ref=e176]:
+              - img "yes" [ref=e177]
+            - cell [ref=e179]:
+              - img "yes" [ref=e180]
+          - row [ref=e182]:
+            - cell "End-to-end encrypted by default" [ref=e183]
+            - cell [ref=e184]:
+              - img "yes" [ref=e185]
+            - cell [ref=e187]:
+              - img "yes" [ref=e188]
+          - row [ref=e190]:
+            - cell "Whole-device network overlay" [ref=e191]
+            - cell [ref=e192]:
+              - img "no" [ref=e193]
+            - cell [ref=e195]:
+              - img "yes" [ref=e196]
+      - paragraph [ref=e198]: Iroh connects your app's own devices directly—it's not a general-purpose replacement for joining a whole network of unrelated machines.
+    - generic [ref=e200]:
+      - heading "Ready to Skip the VPN Infrastructure?" [level=2] [ref=e201]
+      - paragraph [ref=e202]: Get started with iroh in minutes. No complex configuration required.
+      - generic [ref=e203]:
+        - link [ref=e204] [cursor=pointer]:
+          - /url: https://services.iroh.computer/signup?utm_source=website&utm_content=vpn-cta
+          - button "Sign Up" [ref=e205]
+        - link [ref=e206] [cursor=pointer]:
+          - /url: https://docs.iroh.computer/quickstart
+          - button "Read the Docs" [ref=e207]
+    - contentinfo [ref=e208]:
+      - heading "Footer" [level=2] [ref=e209]
+      - generic [ref=e210]:
+        - generic [ref=e211]:
+          - generic [ref=e212]:
+            - paragraph [ref=e217]: Less net work for networks.
+            - generic [ref=e218]:
+              - link "Discord" [ref=e219] [cursor=pointer]:
+                - /url: https://iroh.computer/discord
+              - link "Twitter" [ref=e223] [cursor=pointer]:
+                - /url: https://twitter.com/iroh_n0
+              - link "Bluesky" [ref=e227] [cursor=pointer]:
+                - /url: https://bsky.app/profile/iroh.computer
+              - link "Mastodon" [ref=e231] [cursor=pointer]:
+                - /url: https://mastodon.social/@n0iroh
+              - link "GitHub" [ref=e235] [cursor=pointer]:
+                - /url: https://github.com/n0-computer
+              - link "YouTube" [ref=e239] [cursor=pointer]:
+                - /url: https://www.youtube.com/@n0computer
+          - generic [ref=e243]:
+            - generic [ref=e246]:
+              - heading "Build" [level=3] [ref=e247]
+              - list [ref=e248]:
+                - listitem [ref=e249]:
+                  - link "Documentation" [ref=e250] [cursor=pointer]:
+                    - /url: /docs
+                - listitem [ref=e251]:
+                  - link "Github" [ref=e252] [cursor=pointer]:
+                    - /url: https://github.com/n0-computer/iroh
+            - generic [ref=e253]:
+              - generic [ref=e254]:
+                - heading "Learn" [level=3] [ref=e255]
+                - list [ref=e256]:
+                  - listitem [ref=e257]:
+                    - link "Blog" [ref=e258] [cursor=pointer]:
+                      - /url: /blog
+                  - listitem [ref=e259]:
+                    - link "Examples" [ref=e260] [cursor=pointer]:
+                      - /url: /docs/examples
+                  - listitem [ref=e261]:
+                    - link "dumbpipe" [ref=e262] [cursor=pointer]:
+                      - /url: https://dumbpipe.dev
+                  - listitem [ref=e263]:
+                    - link "sendme" [ref=e264] [cursor=pointer]:
+                      - /url: /sendme
+              - generic [ref=e265]:
+                - heading "Connect" [level=3] [ref=e266]
+                - list [ref=e267]:
+                  - listitem [ref=e268]:
+                    - link "Discord" [ref=e269] [cursor=pointer]:
+                      - /url: https://iroh.computer/discord
+                  - listitem [ref=e270]:
+                    - link "Discussion" [ref=e271] [cursor=pointer]:
+                      - /url: https://github.com/n0-computer/iroh/discussions
+                  - listitem [ref=e272]:
+                    - link "Twitter" [ref=e273] [cursor=pointer]:
+                      - /url: https://twitter.com/iroh_n0
+        - paragraph [ref=e275]: © 2025 n0, inc.
