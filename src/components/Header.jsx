@@ -27,6 +27,7 @@ export const navItems = [
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
     {label: 'IoT & Embedded', href: '/solutions/iot'},
+    {label: 'Built-in VPN', href: '/solutions/vpn'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},

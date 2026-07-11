@@ -20,6 +20,7 @@ import logoSwift from '@/images/language-logos/swift.svg';
 import logoJavascript from '@/images/language-logos/node.svg';
 import logoKotlin from '@/images/language-logos/kotlin.svg';
 import logoPython from '@/images/language-logos/python.svg';
+import logoGo from '@/images/language-logos/go.svg';
 import { CodeBlockTabs } from '@/components/CodeBlockTabs';
 
 export const metadata = {
@@ -34,6 +35,7 @@ const languages = [
   { name: 'JavaScript', logo: logoJavascript, href: 'https://docs.iroh.computer/languages/javascript' },
   { name: 'Kotlin', logo: logoKotlin, href: 'https://docs.iroh.computer/languages/kotlin' },
   { name: 'Python', logo: logoPython, href: 'https://docs.iroh.computer/languages/python' },
+  { name: 'Go', logo: logoGo, href: 'https://docs.iroh.computer/languages/go' },
 ];
 
 const platforms = [
@@ -213,10 +215,10 @@ export default function Page() {
                   <p className="text-irohGray-600 dark:text-irohGray-300">Move files and large blobs directly between devices with content-addressed, resumable transfers that verify every byte.</p>
                 </div>
               </Link>
-              <Link href="https://rayfish.xyz" className="block h-full">
+              <Link href="/solutions/vpn" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Built-in VPN</p>
-                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open. Rayfish and cmux use iroh to connect phones and machines peer-to-peer, wherever they are.</p>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open.</p>
                 </div>
               </Link>
             </div>
@@ -281,6 +283,7 @@ export default function Page() {
                     { logo: logoJavascript, name: 'JavaScript' },
                     { logo: logoKotlin, name: 'Kotlin' },
                     { logo: logoPython, name: 'Python' },
+                    { logo: logoGo, name: 'Go' },
                   ].map(({ logo, name }) => (
                     <Image
                       key={name}

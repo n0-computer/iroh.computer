@@ -50,6 +50,13 @@ const solutions = [
     description: "Run iroh on ESP32, Raspberry Pi, and Linux with the same API. No brokers, no gateways, no custom protocols.",
     href: "/solutions/iot",
   },
+  {
+    category: "Networking",
+    company: "VPN Alternative",
+    headline: "Reach Any Device, No VPN Required",
+    description: "Teams are replacing Tailscale, WireGuard, and reverse SSH tunnels with iroh to reach devices directly, with no coordination server to run.",
+    href: "/solutions/vpn",
+  },
 ]
 
 export default function SolutionsPage() {

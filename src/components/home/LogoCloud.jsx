@@ -8,7 +8,7 @@ const companies = [
   { name: "spacedrive", ext: "png", href: "https://www.spacedrive.com" },
   { name: "nous", ext: "png", href: "https://nousresearch.com" },
   { name: "meshllm", ext: "svg", imgClassName: "max-h-12 grayscale", href: "https://meshllm.cloud" },
-  { name: "strada", ext: "png", label: "Strada", imgClassName: "max-h-6", href: "https://strada.tech" },
+  { name: "strada", ext: "png", label: "strada", labelClassName: "font-black", imgClassName: "max-h-6", href: "https://strada.tech" },
   { name: "paycode", ext: "svg", href: "https://www.paycode.com.mx" },
   { name: "rave", ext: "png", href: "https://rave.io" },
   { name: "delta_chat", ext: "png", href: "https://delta.chat" },
@@ -73,7 +73,7 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map(({ name, ext, imgClassName, label, href }, index) => (
+            {companies.map(({ name, ext, imgClassName, label, labelClassName, href }, index) => (
               <a
                 key={`${name}-${index}`}
                 href={href}
@@ -93,7 +93,7 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
                   />
                 )}
                 {label && (
-                  <span className="text-2xl font-bold text-irohGray-500 dark:text-irohGray-400">{label}</span>
+                  <span className={`text-2xl text-irohGray-500 dark:text-irohGray-400 ${labelClassName || 'font-bold'}`}>{label}</span>
                 )}
               </a>
             ))}
