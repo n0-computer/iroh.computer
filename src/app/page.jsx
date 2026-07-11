@@ -182,7 +182,7 @@ export default function Page() {
               <Link href="/solutions/vpn" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">VPN and Remote Access</p>
-                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open.</p>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">Tailscale at the application layer, not the network layer. Embed direct, encrypted connections right in your app, with public relays to start and your own relays when you outgrow them.</p>
                 </div>
               </Link>
               <Link href="/solutions/nous" className="block h-full">
