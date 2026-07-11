@@ -1,5 +1,4 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
-import { GlobalRelayIllustration } from '@/components/GlobalRelayIllustration'
 
 export const post = {
   draft: false,
@@ -61,8 +60,6 @@ For the giants, Mesh LLM has a split mode (internally, "Skippy"). A model gets p
 Every node, whether it serves models or only sends requests, boots an iroh endpoint. That endpoint is the node's identity, a public key, and its only network surface. There is no central server. iroh handles the hole-punching, NAT traversal, and relay fallback needed to open a direct, authenticated QUIC connection between any two nodes, wherever they sit.
 
 To keep that working across the open internet, Mesh LLM runs two iroh relays in different regions, so nodes that cannot reach each other directly always have a fallback path nearby.
-
-<GlobalRelayIllustration className="w-full max-w-2xl mx-auto my-8" />
 
 The whole protocol rides on QUIC's ALPN negotiation. There are three:
 | ALPN | What it carries |
