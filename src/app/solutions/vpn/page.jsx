@@ -106,6 +106,43 @@ export default function VPNUseCasePage() {
           </div>
         </section>
 
+        {/* Comparison */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12">
+              <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Why iroh</p>
+              <h2 className="text-4xl font-bold">iroh vs. Tailscale & WireGuard</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-irohGray-300 dark:border-irohGray-700">
+                    <th className="py-4 px-4 text-left text-sm uppercase tracking-wide text-irohGray-600 dark:text-irohGray-400 font-medium"></th>
+                    <th className="py-4 px-4 text-center text-sm uppercase tracking-wide text-irohPurple-500 font-bold">iroh</th>
+                    <th className="py-4 px-4 text-center text-sm uppercase tracking-wide text-irohGray-600 dark:text-irohGray-400 font-medium">Tailscale / WireGuard</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparison.map((row) => (
+                    <tr
+                      key={row.feature}
+                      className="border-b border-irohGray-200 dark:border-irohGray-800"
+                    >
+                      <td className="py-4 px-4 font-medium">{row.feature}</td>
+                      <td className="py-4 px-4 text-center"><Mark value={row.iroh} accent /></td>
+                      <td className="py-4 px-4 text-center"><Mark value={row.other} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mt-6 text-center">
+              Iroh connects your app&apos;s own devices directly&mdash;it&apos;s not a general-purpose
+              replacement for joining a whole network of unrelated machines.
+            </p>
+          </div>
+        </section>
+
         {/* The Problem */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl">
@@ -206,43 +243,6 @@ export default function VPNUseCasePage() {
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
               Use <Link href="https://services.iroh.computer" className="text-irohPurple-500 hover:underline">n0&apos;s hosted relays</Link>,
               or run your own for full control over that part of the stack.
-            </p>
-          </div>
-        </section>
-
-        {/* Comparison */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-4xl">
-            <div className="text-center mb-12">
-              <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Why iroh</p>
-              <h2 className="text-4xl font-bold">iroh vs. Tailscale & WireGuard</h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-irohGray-300 dark:border-irohGray-700">
-                    <th className="py-4 px-4 text-left text-sm uppercase tracking-wide text-irohGray-600 dark:text-irohGray-400 font-medium"></th>
-                    <th className="py-4 px-4 text-center text-sm uppercase tracking-wide text-irohPurple-500 font-bold">iroh</th>
-                    <th className="py-4 px-4 text-center text-sm uppercase tracking-wide text-irohGray-600 dark:text-irohGray-400 font-medium">Tailscale / WireGuard</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparison.map((row) => (
-                    <tr
-                      key={row.feature}
-                      className="border-b border-irohGray-200 dark:border-irohGray-800"
-                    >
-                      <td className="py-4 px-4 font-medium">{row.feature}</td>
-                      <td className="py-4 px-4 text-center"><Mark value={row.iroh} accent /></td>
-                      <td className="py-4 px-4 text-center"><Mark value={row.other} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="text-sm text-irohGray-600 dark:text-irohGray-400 mt-6 text-center">
-              Iroh connects your app&apos;s own devices directly&mdash;it&apos;s not a general-purpose
-              replacement for joining a whole network of unrelated machines.
             </p>
           </div>
         </section>

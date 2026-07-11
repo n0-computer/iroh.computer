@@ -22,12 +22,12 @@ export const navItems = [
     {label: 'Enterprise', href: '/services/enterprise'},
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
+    {label: 'VPN and Remote Access', href: '/solutions/vpn'},
     {label: 'Distributed AI', href: '/solutions/nous'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
     {label: 'IoT & Embedded', href: '/solutions/iot'},
-    {label: 'Built-in VPN', href: '/solutions/vpn'},
   ]},
   {content: 'Docs', href: 'https://docs.iroh.computer/'},
   {content: 'Blog', href: '/blog'},

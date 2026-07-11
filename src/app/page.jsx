@@ -179,6 +179,12 @@ export default function Page() {
               <h3 className='text-5xl font-bold mb-2'>How are people using iroh?</h3>
             </div>
             <div className='grid gap-6 md:grid-cols-2'>
+              <Link href="/solutions/vpn" className="block h-full">
+                <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
+                  <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">VPN and Remote Access</p>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open.</p>
+                </div>
+              </Link>
               <Link href="/solutions/nous" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Distributed AI Training</p>
@@ -213,12 +219,6 @@ export default function Page() {
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">File Transfer &amp; Sync</p>
                   <p className="text-irohGray-600 dark:text-irohGray-300">Move files and large blobs directly between devices with content-addressed, resumable transfers that verify every byte.</p>
-                </div>
-              </Link>
-              <Link href="/solutions/vpn" className="block h-full">
-                <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
-                  <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Built-in VPN</p>
-                  <p className="text-irohGray-600 dark:text-irohGray-300">Reach your devices directly, with no VPN to configure and no ports to open.</p>
                 </div>
               </Link>
             </div>
