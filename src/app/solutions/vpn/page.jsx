@@ -153,12 +153,6 @@ export default function VPNUseCasePage() {
               rules to get right. Or it means reverse SSH tunnels and all the operational shenanigans
               that come with them.
             </p>
-            <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg mb-6">
-              <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 italic">
-                &ldquo;Thinking about implementing a SOCKS proxy on top of iroh to get into my self-hosted
-                service at home without WireGuard infra and all the related network shenanigans.&rdquo;
-              </p>
-            </div>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
               But what if your app could just dial the other device directly&mdash;no separate network
               to join, no client to install, no infrastructure to babysit?
@@ -172,14 +166,10 @@ export default function VPNUseCasePage() {
             <div className="grid lg:grid-cols-2 gap-16 items-start">
               <div>
                 <h2 className="text-3xl font-bold mb-6">The Solution: Dial Keys, Not IPs</h2>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
                   Every iroh node has a public key as its address. To reach a device, you dial that key
                   directly from inside your own application&mdash;there&apos;s no separate VPN client for
                   your users to install, and no central network your traffic has to join.
-                </p>
-                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                  One developer building an agentic coding app described swapping out planned reverse SSH
-                  tunnel infrastructure for iroh in about a day:
                 </p>
               </div>
               <div className="space-y-6">
@@ -221,29 +211,6 @@ export default function VPNUseCasePage() {
                 </div>
               </div>
             </div>
-            <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg mt-12">
-              <p className="text-xl text-irohGray-600 dark:text-irohGray-300 italic">
-                &ldquo;I read iroh&apos;s headline &lsquo;dial keys, not IPs&rsquo;&hellip;I think that was
-                last Tuesday. By Wednesday it was in our app as one of the most load-bearing pieces.&rdquo;
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Why Relays Matter */}
-        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-4xl">
-            <h2 className="text-3xl font-bold mb-6">Why Relays Matter</h2>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
-              Iroh automatically establishes direct connections when possible, for the lowest latency
-              and highest throughput. When a direct connection isn&apos;t possible&mdash;due to symmetric
-              NATs, restrictive firewalls, or carrier-grade NAT&mdash;traffic falls back to an encrypted
-              relay, so the connection stays up either way.
-            </p>
-            <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-              Use <Link href="https://services.iroh.computer" className="text-irohPurple-500 hover:underline">n0&apos;s hosted relays</Link>,
-              or run your own for full control over that part of the stack.
-            </p>
           </div>
         </section>
 
