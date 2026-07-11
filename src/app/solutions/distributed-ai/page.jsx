@@ -3,14 +3,14 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from "@/components/FooterMarketing"
 import { OpenSourceIllustration } from "@/components/OpenSourceIllustration"
 import Link from "next/link"
-import { Server, Zap, Globe, Shield, Cpu, MessageSquare, BarChart3, Network } from "lucide-react"
+import { Server, Zap, Globe, Shield, Cpu, Network } from "lucide-react"
 
 export const metadata = {
-  title: 'Nous Research - Use Case | Iroh',
-  description: 'How Nous uses iroh to train foundation LLMs with compute distributed around the world.',
+  title: 'Distributed AI - Use Case | Iroh',
+  description: 'How Nous and Mesh LLM use iroh to train foundation LLMs and pool GPUs across machines, with compute distributed around the world instead of centralized in one data center.',
 }
 
-export default function NousUseCasePage() {
+export default function DistributedAIUseCasePage() {
   return (
     <div>
       <HeaderSparse />
@@ -18,20 +18,18 @@ export default function NousUseCasePage() {
       <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero Section */}
         <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800 relative overflow-hidden">
-          {/* Background Logo */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-10 pointer-events-none">
-            <img src="/img/user-logos/nous.png" alt="" className="w-full h-full object-contain" />
-          </div>
           <div className="container mx-auto max-w-6xl pt-12 relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Use Case: AI/ML</p>
                 <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                  Distributed AI Training at Global Scale
+                  Distributed AI, Training to Inference
                 </h1>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
-                  Nous Research uses iroh to train foundation LLMs with compute distributed around the world,
-                  across AWS, GCP, Azure, and self-hosted infrastructure.
+                  <a href="https://nousresearch.com" target="_blank" rel="noopener noreferrer" className="text-irohPurple-500 hover:underline">Nous Research</a> uses
+                  iroh to train foundation LLMs with compute distributed around the world, across AWS, GCP,
+                  Azure, and self-hosted infrastructure. <a href="https://meshllm.cloud" target="_blank" rel="noopener noreferrer" className="text-irohPurple-500 hover:underline">Mesh LLM</a> uses
+                  it to pool GPUs across machines into a single inference API. Neither needed a data center to do it.
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <Link href="https://docs.iroh.computer/quickstart">
@@ -44,9 +42,9 @@ export default function NousUseCasePage() {
                       Visit Nous Research
                     </Button>
                   </Link>
-                  <Link href="https://docs.psyche.network" target="_blank" rel="noopener noreferrer">
+                  <Link href="https://meshllm.cloud" target="_blank" rel="noopener noreferrer">
                     <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
-                      Psyche Docs
+                      Visit Mesh LLM
                     </Button>
                   </Link>
                 </div>
@@ -58,9 +56,10 @@ export default function NousUseCasePage() {
           </div>
         </section>
 
-        {/* Results */}
+        {/* Nous: Results */}
         <section className="py-16 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-5xl">
+            <p className="text-irohPurple-500 font-medium mb-8 uppercase tracking-wide text-sm text-center">Nous Research: Training</p>
             <div className="grid md:grid-cols-4 gap-8 text-center">
               <div>
                 <p className="text-5xl font-bold text-irohPurple-500 mb-2">10x</p>
@@ -171,19 +170,75 @@ export default function NousUseCasePage() {
           </div>
         </section>
 
+        {/* Mesh LLM: Inference */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-6xl">
+            <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Mesh LLM: Inference</p>
+            <h2 className="text-3xl font-bold mb-6">Pool GPUs Into One API</h2>
+            <div className="grid lg:grid-cols-2 gap-16 items-start">
+              <div>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
+                  <a href="https://meshllm.cloud" className="text-irohPurple-500 hover:underline">Mesh LLM</a> pools
+                  existing GPU resources across multiple machines and exposes them through a single
+                  OpenAI-compatible API, with no central server coordinating the mesh. Every node runs an
+                  iroh endpoint, so nodes connect directly to each other over authenticated QUIC instead of
+                  routing through a coordinator.
+                </p>
+                <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg">
+                  <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 italic">
+                    &ldquo;Control over when models change, where your data goes, and what hardware runs
+                    your workloads.&rdquo;
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <Server className="h-8 w-8 text-irohPurple-500 shrink-0 mt-1" />
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Local Execution</h3>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">
+                      A request runs on the requesting machine&apos;s GPU, if it&apos;s big enough.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Network className="h-8 w-8 text-irohPurple-500 shrink-0 mt-1" />
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Peer Routing</h3>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">
+                      Otherwise, it routes directly to a peer node that already has the model loaded.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Shield className="h-8 w-8 text-irohPurple-500 shrink-0 mt-1" />
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Pipeline Splitting</h3>
+                    <p className="text-irohGray-600 dark:text-irohGray-300">
+                      Models too large for any single machine get partitioned by layer ranges across
+                      multiple nodes, so modest machines can collectively run what none of them could load alone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Why Relays Matter */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-3xl font-bold mb-6">Why Relays Matter</h2>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
               Nous runs 5 iroh relays to ensure reliable connectivity across their distributed training network.
-              The key insight: <strong>when things deteriorate, they can&apos;t break</strong>.
+              Mesh LLM runs two, in different regions, for the same reason. The key insight: <strong>when things
+              deteriorate, they can&apos;t break</strong>.
             </p>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
               Iroh automatically establishes direct connections when possible for maximum throughput. When direct
               connections aren&apos;t possible&mdash;due to NATs, firewalls, or network conditions&mdash;traffic
-              flows through relays. This fallback mechanism means training runs continue even when network
-              conditions change.
+              flows through relays. This fallback mechanism means training and inference keep running even when
+              network conditions change.
             </p>
           </div>
         </section>
@@ -228,7 +283,7 @@ export default function NousUseCasePage() {
               Get started with iroh in minutes. No complex configuration required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=nous-cta">
+              <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=distributed-ai-cta">
                 <Button
                   arrow="none"
                   className="bg-irohGray-800 hover:bg-irohGray-700 text-irohPurple-500 px-8 py-3"
