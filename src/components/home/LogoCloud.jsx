@@ -79,7 +79,7 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ height, width: height * (label && ext ? 2 : label ? 2 : 1.4) }}
+                style={{ height, width: label ? undefined : height * 1.4 }}
                 className={`flex items-center justify-center ${label && ext ? 'gap-1' : 'gap-2.5'} px-4 transition-opacity hover:opacity-70`}
               >
                 {ext && (
