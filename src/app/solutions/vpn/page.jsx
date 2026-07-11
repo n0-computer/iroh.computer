@@ -82,30 +82,6 @@ export default function VPNUseCasePage() {
           </div>
         </section>
 
-        {/* Highlights */}
-        <section className="py-16 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
-          <div className="container mx-auto max-w-5xl">
-            <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p className="text-3xl font-bold text-irohPurple-500 mb-2">Direct</p>
-                <p className="text-irohGray-600 dark:text-irohGray-300">Peer-to-peer connections, no relay in the hot path</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-irohPurple-500 mb-2">Encrypted</p>
-                <p className="text-irohGray-600 dark:text-irohGray-300">Every connection encrypted end-to-end by default</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-irohPurple-500 mb-2">Embedded</p>
-                <p className="text-irohGray-600 dark:text-irohGray-300">A library in your app, not a client to install</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-irohPurple-500 mb-2">Anywhere</p>
-                <p className="text-irohGray-600 dark:text-irohGray-300">Automatic NAT & firewall traversal, with relay fallback</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Comparison */}
         <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
           <div className="container mx-auto max-w-4xl">
@@ -153,6 +129,14 @@ export default function VPNUseCasePage() {
               rules to get right. Or it means reverse SSH tunnels and all the operational shenanigans
               that come with them.
             </p>
+            <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg mb-6">
+              <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 italic">
+                &ldquo;It&apos;s Tailscale, but as a library. Instead of standing up VPN
+                infrastructure&mdash;coordination servers, client software, all the network
+                shenanigans&mdash;we dial a device&apos;s public key directly from inside our own app
+                and get a direct, encrypted connection.&rdquo;
+              </p>
+            </div>
             <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
               But what if your app could just dial the other device directly&mdash;no separate network
               to join, no client to install, no infrastructure to babysit?
