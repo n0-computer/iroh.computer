@@ -182,7 +182,7 @@ export default function Page() {
               <Link href="/solutions/vpn" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Remote Access</p>
-                  <p className="text-irohGray-600 dark:text-irohGray-300">Embed direct, encrypted connections right in your app and create tunnels for remote access instead of using third-party VPNs.</p>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">Embed direct, encrypted connections right in your app and create tunnels for remote access instead of third-party VPNs.</p>
                 </div>
               </Link>
               <Link href="/solutions/distributed-ai" className="block h-full">

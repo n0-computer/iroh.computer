@@ -30,6 +30,11 @@ const builtWithIroh = [
     description: "SSH to any machine without an IP address, behind a NAT or firewall, without port forwarding or VPN setup.",
     href: "https://github.com/n0-computer/pigeons",
   },
+  {
+    name: "Rayfish",
+    description: "Your own private network. No servers, no setup.",
+    href: "https://rayfish.xyz/",
+  },
 ]
 
 function Mark({ value, accent = false }) {
@@ -207,6 +212,28 @@ export default function VPNUseCasePage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Built With Iroh */}
+        <section className="py-20 px-6 border-t border-irohGray-300 dark:border-irohGray-800">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12">
+              <p className="text-irohPurple-500 font-medium mb-3 uppercase tracking-wide text-sm">Built With Iroh</p>
+              <h2 className="text-4xl font-bold">Open Source VPN Solutions</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {builtWithIroh.map((project) => (
+                <a
+                  key={project.name}
+                  href={project.href}
+                  className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors"
+                >
+                  <h3 className="text-lg font-medium mb-2">{project.name}</h3>
+                  <p className="text-irohGray-600 dark:text-irohGray-300">{project.description}</p>
+                </a>
+              ))}
             </div>
           </div>
         </section>
