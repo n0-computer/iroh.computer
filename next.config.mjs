@@ -17,6 +17,7 @@ const redirects = async () => {
   return [
     // Solutions page renames
     { source: '/solutions/rave', destination: '/solutions/video', permanent: true },
+    { source: '/solutions/nous', destination: '/solutions/distributed-ai', permanent: true },
 
     // Enterprise & support redirects
     { source: '/enterprise', destination: '/services/enterprise', permanent: true },

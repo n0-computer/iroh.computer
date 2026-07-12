@@ -125,7 +125,7 @@ export default function Page() {
                       <circle r="1" cx="1" cy="1" />
                     </svg>
                     <div className="text-gray-400">Principal Engineer at Nous</div>
-                    <a href="/solutions/nous" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
+                    <a href="/solutions/distributed-ai" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
                   </div>
                 </figcaption>
               </figure>
@@ -185,7 +185,7 @@ export default function Page() {
                   <p className="text-irohGray-600 dark:text-irohGray-300">Tailscale at the application layer, not the network layer. Embed direct, encrypted connections right in your app, with public relays to start and your own relays when you outgrow them.</p>
                 </div>
               </Link>
-              <Link href="/solutions/nous" className="block h-full">
+              <Link href="/solutions/distributed-ai" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
                   <p className="text-xl font-medium text-irohGray-800 dark:text-irohGray-100 mb-2">Distributed AI Training</p>
                   <p className="text-irohGray-600 dark:text-irohGray-300">Train foundation LLMs with compute distributed around the world, across AWS, GCP, Azure, and self-hosted infrastructure.</p>

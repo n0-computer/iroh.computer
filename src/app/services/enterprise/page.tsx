@@ -221,10 +221,10 @@ export default function EnterprisePage() {
                 <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Real-time video for millions of concurrent connections.</p>
                 <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
               </Link>
-              <Link href="/solutions/nous" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
+              <Link href="/solutions/distributed-ai" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">
                 <img src="/img/user-logos/nous.png" alt="Nous logo" className="object-contain max-h-10 mb-4" />
-                <p className="font-semibold mb-1">Distributed AI Training</p>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Train foundation LLMs across AWS, GCP, Azure, and self-hosted compute.</p>
+                <p className="font-semibold mb-1">Distributed AI Training &amp; Inference</p>
+                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">Train foundation LLMs across AWS, GCP, Azure, and self-hosted compute, or pool GPUs into a single inference API.</p>
                 <p className="text-sm text-irohPurple-500 mt-3">Read the case study &rarr;</p>
               </Link>
               <Link href="/solutions/pos" className="block p-6 rounded-lg border border-irohGray-300 dark:border-irohGray-700 hover:border-irohPurple-500 transition-colors">

@@ -23,7 +23,7 @@ export const navItems = [
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'VPN and Remote Access', href: '/solutions/vpn'},
-    {label: 'Distributed AI', href: '/solutions/nous'},
+    {label: 'Distributed AI', href: '/solutions/distributed-ai'},
     {label: 'Video Streaming', href: '/solutions/rave'},
     {label: 'Real-time Sync', href: '/solutions/delta-chat'},
     {label: 'Payments & POS', href: '/solutions/pos'},
