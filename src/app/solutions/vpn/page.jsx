@@ -19,6 +19,19 @@ const comparison = [
   { feature: "Whole-device network overlay", iroh: false, other: true },
 ]
 
+const builtWithIroh = [
+  {
+    name: "TunTun",
+    description: "Open-source mesh networking. Connect your machines into a private network, wherever they are.",
+    href: "https://github.com/orielhaim/TunTun",
+  },
+  {
+    name: "Pigeons",
+    description: "SSH to any machine without an IP address, behind a NAT or firewall, without port forwarding or VPN setup.",
+    href: "https://github.com/n0-computer/pigeons",
+  },
+]
+
 function Mark({ value, accent = false }) {
   if (value) {
     return (
