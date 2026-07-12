@@ -8,11 +8,15 @@ const companies = [
   { name: "spacedrive", ext: "png", href: "https://www.spacedrive.com" },
   { name: "nous", ext: "png", href: "https://nousresearch.com" },
   { name: "meshllm", ext: "svg", imgClassName: "max-h-12 grayscale", href: "https://meshllm.cloud" },
-  { name: "strada", ext: "png", label: "Strada", href: "https://strada.tech" },
+  { name: "strada", ext: "png", label: "strada", labelClassName: "font-black", imgClassName: "max-h-6", href: "https://strada.tech" },
   { name: "paycode", ext: "svg", href: "https://www.paycode.com.mx" },
   { name: "rave", ext: "png", href: "https://rave.io" },
   { name: "delta_chat", ext: "png", href: "https://delta.chat" },
-  { name: "ottomatic", ext: "png", label: "Ottomatic", href: "https://ottomatic.io" },
+  { name: "ottomatic", ext: "png", label: "Ottomatic", imgClassName: "max-h-6", href: "https://ottomatic.io" },
+  { name: "rayfish", ext: "png", label: "Rayfish", imgClassName: "max-h-6", href: "https://rayfish.xyz" },
+  { name: "outl", label: "Outl", href: "https://outl.app" },
+  { name: "datum", ext: "svg", href: "https://www.datum.net" },
+  { name: "fedimint", ext: "png", href: "https://fedimint.org" },
 ];
 
 // interface LogoCloudProps {
@@ -69,26 +73,27 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map(({ name, ext, imgClassName, label, href }, index) => (
+            {companies.map(({ name, ext, imgClassName, label, labelClassName, href }, index) => (
               <a
                 key={`${name}-${index}`}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ height, width: height * (label ? 2 : 1.4) }}
-                className="flex items-center justify-center gap-2.5 px-4 transition-opacity hover:opacity-70"
+                style={{ height, width: label ? undefined : height * 1.4 }}
+                className={`flex items-center justify-center ${label && ext ? 'gap-1' : 'gap-2.5'} px-4 transition-opacity hover:opacity-70`}
               >
-                {label ? (
-                  <span className="text-2xl font-bold text-irohGray-500 dark:text-irohGray-400">{label}</span>
-                ) : (
+                {ext && (
                   <ThemeImage
                     alt={`${name} logo`}
                     darkSrc={`/img/user-logos/${name}.${ext}`}
                     lightSrc={`/img/user-logos/${name}.${ext}`}
-                    width={height * 1.4}
+                    width={label ? height : height * 1.4}
                     height={height}
-                    className={`object-contain w-auto ${imgClassName || 'max-h-12'}`}
+                    className={`object-contain ${label ? 'w-auto flex-shrink-0' : 'w-auto'} ${imgClassName || 'max-h-12'}`}
                   />
+                )}
+                {label && (
+                  <span className={`text-2xl text-irohGray-500 dark:text-irohGray-400 ${labelClassName || 'font-bold'}`}>{label}</span>
                 )}
               </a>
             ))}

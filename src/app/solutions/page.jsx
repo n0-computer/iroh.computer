@@ -11,6 +11,13 @@ export const metadata = {
 
 const solutions = [
   {
+    category: "Networking",
+    company: "VPN Alternative",
+    headline: "Reach Any Device, No VPN Required",
+    description: "Teams are replacing Tailscale, WireGuard, and reverse SSH tunnels with iroh to reach devices directly, with no coordination server to run.",
+    href: "/solutions/vpn",
+  },
+  {
     category: "AI/ML",
     company: "Distributed AI",
     headline: "Distributed AI Training & Inference",
