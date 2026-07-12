@@ -75,12 +75,12 @@ export default function VPNUseCasePage() {
               <div>
                 <p className="text-irohPurple-500 font-medium mb-4 uppercase tracking-wide">Use Case: Networking</p>
                 <h1 className="text-5xl md:text-6xl mb-6 leading-tight font-bold">
-                  Reach Any Device, No VPN Required
+                  Zero-trust connectivity 
                 </h1>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                   Teams are replacing Tailscale, WireGuard, and reverse SSH tunnels with iroh&mdash;dial
                   a device&apos;s public key and get a direct, encrypted connection. No coordination
-                  server to run, no ports to open.
+                  server to run, no ports to open, no third-party app to install.
                 </p>
                 <div className="flex gap-4 flex-wrap">
                   <Link href="https://docs.iroh.computer/quickstart">
