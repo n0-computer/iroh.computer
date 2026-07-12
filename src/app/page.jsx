@@ -116,16 +116,15 @@ export default function Page() {
             <div className="mx-auto max-w-2xl lg:max-w-4xl">
               <figure className="mt">
                 <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
-                  <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
+                  <p>&ldquo;Iroh let us drop zero-trust identity and connectivity straight into our app&mdash;we ripped out the old stuff and this is so much cleaner.&rdquo;</p>
                 </blockquote>
                 <figcaption className="mt-10">
                   <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-white">Ari Lotter</div>
+                    <div className="font-semibold text-white">Dario</div>
                     <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
                       <circle r="1" cx="1" cy="1" />
                     </svg>
-                    <div className="text-gray-400">Principal Engineer at Nous</div>
-                    <a href="/solutions/distributed-ai" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
+                    <div className="text-gray-400">Founder at Rayfish</div>
                   </div>
                 </figcaption>
               </figure>
