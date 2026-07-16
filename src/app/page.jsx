@@ -38,6 +38,27 @@ const languages = [
   { name: 'Go', logo: logoGo, href: 'https://docs.iroh.computer/languages/go' },
 ];
 
+const quotes = [
+  {
+    quote: 'Iroh is the magic behind our ability to facilitate millions of private backbones in minutes. Impossible with traditional networks.',
+    name: 'Drew Raines',
+    org: 'Head of Engineering at Datum',
+    logo: '/img/user-logos/datum.svg',
+  },
+  {
+    quote: 'Doubling the network speed halves our compute budget.',
+    name: 'Ari Lotter',
+    org: 'Principal Engineer at Nous',
+    logo: '/img/user-logos/nous.png',
+  },
+  {
+    quote: 'With iroh, every node is just a public key. We pool GPUs across clouds and closets into one mesh. No central server, no NAT config.',
+    name: 'Michael Neale',
+    org: 'Founder at Mesh LLM',
+    logo: '/img/user-logos/meshllm.svg',
+  },
+];
+
 const platforms = [
   { name: 'Raspberry Pi', file: 'RaspberryPi', color: '#A22846' },
   { name: 'Espressif', file: 'Espressif', color: '#E7352C' },
@@ -113,22 +134,23 @@ export default function Page() {
           <section className="relative isolate overflow-hidden bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
             <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 dark:bg-slate-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-            <div className="mx-auto max-w-2xl lg:max-w-4xl">
-              <figure className="mt">
-                <blockquote className="text-center text-xl/8 font-semibold text-white sm:text-2xl/9">
-                  <p>&ldquo;Doubling the network speed halves our compute budget.&rdquo;</p>
-                </blockquote>
-                <figcaption className="mt-10">
-                  <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-white">Ari Lotter</div>
-                    <svg viewBox="0 0 2 2" width="3" height="3" aria-hidden="true" className="fill-white">
-                      <circle r="1" cx="1" cy="1" />
-                    </svg>
-                    <div className="text-gray-400">Principal Engineer at Nous</div>
-                    <a href="/solutions/distributed-ai" className="text-irohPurple-500 hover:underline ml-2">Read the Case Study <ArrowRightIcon className='inline-block w-5 h-5 ml-1 -mt-1' /></a>
-                  </div>
-                </figcaption>
-              </figure>
+            <div className="mx-auto max-w-2xl lg:max-w-6xl">
+              <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+                {quotes.map((q) => (
+                  <figure key={q.name} className="flex flex-col">
+                    <blockquote className="text-lg/8 font-semibold text-white">
+                      <p>&ldquo;{q.quote}&rdquo;</p>
+                    </blockquote>
+                    <figcaption className="mt-6 flex items-center gap-3">
+                      <img src={q.logo} alt="" aria-hidden="true" className="h-8 w-auto max-w-[6rem] object-contain" />
+                      <div>
+                        <div className="font-semibold text-white">{q.name}</div>
+                        <div className="text-gray-400">{q.org}</div>
+                      </div>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
             </div>
           </section>
 
