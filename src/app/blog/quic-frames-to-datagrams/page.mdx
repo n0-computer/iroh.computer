@@ -4,7 +4,7 @@ import { MotionCanvas } from '@/components/MotionCanvas'
 export const post = {
   draft: false,
   author: 'b5',
-  date: '2026-07-01',
+  date: '2026-07-17',
   title: 'Stuffing QUIC frames into datagrams',
   description: 'About the surprising complexity of trying to stuff QUIC frames into datagrams.',
 }
@@ -28,6 +28,14 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
+When we originally set out to implement QUIC multipath in rust, we knew we had to modify the main internal transmission loop that produces UDP datagrams.
+With QUIC multipath need to check not only a single path for any frames that should be transmitted or retransmitted or loss probes to send, but instead need to do this for each currently open path.
+It turns out that the logic for how frames make it into datagrams turns out to be quite complicated.
+To this day, we keep improving the logic.
+This blog post is essentially an engineer's braindump of how this logic works and why it works the way it does.
+
+---
+
 One would think stuffing QUIC frames into datagrams would be an easy task.
 Let's assume something else has already prepared *which* frames we want to write into our datagrams, but not necessarily their size.
 In a simple case, constructing a datagram from a bunch of QUIC frames can look like this:
@@ -44,25 +52,37 @@ In a simple case, constructing a datagram from a bunch of QUIC frames can look l
 But that's just the tip of the iceberg.
 Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and packet padding.
 
+
 # First: Wait, what key do we actually use to encrypt?
 
-QUIC datagrams are encrypted, as the authentication tag above might already hint to.
-But if the client sends the first datagram in the connection, which key does it actually use to encrypt?
+QUIC packets are encrypted, as the authentication tag above might already hint to.
+But if the client sends the first packet in the connection, which key does it actually use to encrypt?
+
+<Note>
+    If you're confused about what the difference between a packet and a datagram is, read on.
+    The distinction should become clear later and will prove to be useful.
+</Note>
+
 
 ## QUIC's encryption levels: Initial, Handshake and Data
 
-It's kind of impossible to start a connection encrypted right away (assuming you don't have exchanged secrets some other way previously).
-This means the client needs to reach out with something that's essentially plain text.
-Well, in QUIC, even the initial packets are encrypted, but you derive the key from a hard-coded secret and some randomness you attach to the first datagram.
-In effect this means that your packet can be encrypted by anyone who reads it, if they know it might be a QUIC packet, but at least it makes it easer for me to talk about the encryption levels.
-I can just say: All datagrams are encrypted (even if the ones in the initial encryption level are trivially decryptable by anyone).
+These three encryption levels are in the order of increasing guarantees.
+A connection starts out using "Initial" keys, then during the handshake moves to "Handshake" keys and after the full key exchange moves on to the "data" encryption level.
+We only ever send application data using the "data" encryption level, also sometimes called the 1-RTT encryption level.
 
-So, when do we actually start to *really* encrypt datagrams? Like, in a way that makes it impossible for network observers to read them?
-Well, the client sends the initial datagram to the server.
-This datagram contains what we call a "`CRYPTO`" frame.
-Which in turn contains whatever the underlying cryptography library (be that TLS or some libnoise implementation) needs to start doing its key exchange.
-The server receives this datagram, and derives the first key using said key exchange algorithm!
-The server can now talk to the client in the so-called "handshake encryption level" or sometimes also called the "handshake space".
+<Note>There's some nuance with QUIC's 0-RTT features, but other than that the above holds.</Note>
+
+The first encryption level actually uses a key derived from public information: the connection's source connection ID which is attached to each QUIC packet in its QUIC header.
+This means anyone can read the contents of packets encrypted using the "Initial" encryption level.
+Why encrypt them then?
+Well, most importantly it helps to prevent certain amplification attacks, but it also prevents protocol ossification to a degree and it's also just neat to not have to special-case initial packets in terms of encryption *too much*.
+
+While the first encryption level is mostly used for the first TLS message ("CRYPTO" frame) from the client to the server, the second encryption level already begins once the server has processed the first message from the client.
+At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client in with this encryption level.
+
+Finally, the client can derive the same key for the handshake encryption level once it received the server's key share.
+At this point it can also derive the key in the data encryption level.
+Although both keys are derived using the ephemeral key shares from the client and server, the data encryption level provides some important required guarantees by including a hash of the whole handshake transcript.
 
 ```
 - sequence diagram with client and server
@@ -82,19 +102,22 @@ The server can now talk to the client in the so-called "handshake encryption lev
 
 (TODO: trim the above diagram down to what I actually want to show, and link https://quic.xargs.org/ somewhere)
 
-But for the client to be able to decrypt packets in the handshake space, it needs to receive the server's key share, which the client needs to be able to read.
-That means the server will send the key share in a CRYPTO frame encrypted using the initial encryption level, and then also send the first parts of actually-encrypted data in a CRYPTO frame encrypted using the handshake key.
+Now, it's not quite as simple as sending some data in initial, then responding with some in handshake, and finally switching to data.
+For example, in order for the client to be able to read the handshake data it needs to know the server's key share.
+But to be able to read that key share, it needs to be encrypted only with the initial encryption level.
+That said, once the client has read this key share it could immediately read the next server message in the handshake encryption level.
 
-Once the client receives those two packets, it does something similar: It sends a key share in the handshake space and can at the same time start sending in the data encryption level.
+This means ideally the server sends both its key share and first message in the handshake message in one go.
+It turns out that in many cases both of these packets would easily fit into a single datagram (less than 1200 bytes).
+
+So that's exactly what is done in practice: We send both packets in one datagram.
+
 
 # Wait. Send in two encryption levels simultaneously?
 
-Ah yes, right. Here comes the first optimization that complicates the simple picture from above:
-Almost every handshake in QUIC will want to send data in two encryption levels essentially "at once".
+Ah yes, right. Here comes the first optimization that complicates the simple picture from above.
 
-If we had to send these two *packets* in two different *UDP datagrams*, we'd be wasting datagrams!
-
-So the actual response to a datagram from the server to the client will look like this:
+The actual first handshake datagram from the server to the client looks like this:
 ```
 - One big box again
 - Outside has written: `src_ip: 192.168.0.101` and `dest: 200.200.200.200:443`
@@ -104,28 +127,37 @@ So the actual response to a datagram from the server to the client will look lik
     - One box saying "In Handshake Space:" containing one "CRYPTO" QUIC frame.
   - Both the above boxes have a QUIC header at the top and an authentication tag at the bottom
 ```
-(The "CRYPTO" frames essentially contain the TLS handshake data.)
 
 This optimization is called "coalescing packets into datagrams".
-(Coalescing is why the distinction between packet and datagram terminiology is useful.)
+Coalescing is exactly why the distinction between packet and datagram terminiology is useful.
+
+In terms of how it works, it's actually a fairly simple operation:
+Each packet in the initial or handshake encryption level is a so-called "long header" packet which means it also has a length field indicating where the packet ends.
+This allows us to put two packets prepended with their QUIC headers back-to-back into a datagram.
+
+This does not work with data encryption level, as that uses a "short QUIC header".
+That header type doesn't contain a length field, presumably to save some bytes, as packet coalescing really only is useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
+
 
 # Politely Pleading: Please Properly Prepare Packets Padded!
 
 There's another small caveat to the above diagram.
 The QUIC RFC requires checking that the minimal transmissible unit (MTU) that the network can handle is at least datagrams of 1200 bytes.
 How do you check this? Well, by sending such datagrams and seeing if they make it through!
-(If they don't, then we won't support those network conditions.)
+If they don't, the connection will time out.
 
 <Note>This also helps with navigating anti-amplification protection: The more bytes the client sends, the more bytes the server will allow itself to answer with.</Note>
 
 Our above datagrams are not that big, though.
-Let's pad them.
+A typical initial packet is roughly 300 bytes.
+Let's pad the datagram its in.
+
 
 ## Okay, but where do we put the bytes?
 
 Sure, just add some bytes.
 Seems like there's a QUIC frame for exactly this! The `PADDING` frame. Its identifier is `0x00`: Just a zero byte.
-This means that if you encode a QUIC packet and the last 20 bytes are just zeroes, they will be interpreted as twenty `PADDING` frames.
+This means that if you encode a QUIC packet and the last 900 bytes are just zeroes, they will be interpreted as 900 `PADDING` frames.
 Isn't that neat?
 
 So let's put in some bytes.
@@ -135,13 +167,16 @@ So let's put in some bytes.
 - In the handshake space packet, "PADDING" frames below the CRYPTO frame.
 ```
 
-For anyone who wants to work on QUIC implementations, I want to point out how deviously complicated this part of building packets actually is:
+We need to remember to leave enough space for our authentication tag (typically 16 bytes), which is added to the end of our packets.
+
+I want to point out that besides this caveat, there is actually a surprising amount of complexity in making padding decisions.
+The biggest problem is that it can be difficult to guess whether you will have space to coalesce *another* packet while you're trying to figure out whether to going to add padding or not to your *current* packet:
 - Before you begin the handshake packet, you need to finish the initial packet.
 - Before you finish the initial packet, you need to know if you need to put in padding into the initial packet or not.
 - To decide whether you need to put padding into the initial packet or not, you need to figure out whether you'll coalesce with another handshake packet.
-- To know whether you can fit the handshake packet, you need to know if frames will fit into it.
+- You only really how big the handshake packet is once you start building it.
 
-This kind of predicting-if-you-need-padding logic is can be really brittle and complicated!
+This kind of predicting-if-you-need-padding logic is can be surprisingly brittle and complicated!
 It's usually safer to go with just some "minimum required remaining space" bytes constant to ensure that you'll be able to fit another packet when coalescing, but deciding what constant to use here is not trivial.
 
 <Note>
@@ -152,22 +187,22 @@ It's usually safer to go with just some "minimum required remaining space" bytes
 
 </Note>
 
+
 ## DPLPMTUD and other causes of padding
 
-(Yes, DPLPMTUD, you read correctly, not a cat on my keyboard!)
+Yes, DPLPMTUD is one of those ridiculous acronyms used in the QUIC specification.
 
-There are other cases where we need to pad packets.
-Specifically, just like we make sure that the initial network path that the handshake uses can support a 1200 MTU, we also need to ensure any other paths we use can support a 1200 MTU.
-This is not only important if you intend to implement QUIC multipath, as plain QUIC also supports migrating the main path it uses to new network paths.
-Anytime you do so, you need to verify the new path can also support the 1200 MTU, otherwise you try to keep using the old path.
+We're now moving on from the handshake to an established connection, during which there are other cases in which we'd like to make sure datagrams have certain sizes.
+When we're migrating from one network path to using another (both using normal QUIC RFC 9000 connection migration as well as opening new QUIC multipath paths), we like to ensure the new path supports an MTU of 1200.
 
-Another case is when we probe to see if we can send packets *bigger* than the 1200 MTU.
+Another case for is DPLPMTUD, which probes bigger datagram sizes to see if we can send packets *bigger* than the 1200 MTU.
 Ethernet might support packets of up to around 1500 bytes, with the payload being as big as 1472 bytes maximum.
 This can help goodput by reducing the propotion of headers to actual payloads.
-But we can't know if the network will support these kinds of packets in advance of sending them, which is why we're occasionally sending bigger probing packets intentionally.
-This is what's behind the incredible DPLPMTUD acronym: "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
+Behind the incredible DPLPMTUD acronym is "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
 
 So unfortunately this means we can't have padding be a special-case for handshake packets only.
+
+It also means we can't (TODO)
 
 ---
 
