@@ -131,26 +131,17 @@ export default function Page() {
           </section>
 
 
-          <section className="relative isolate overflow-hidden bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
-            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 dark:bg-slate-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-            <div className="mx-auto max-w-2xl lg:max-w-6xl">
-              <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-                {quotes.map((q) => (
-                  <figure key={q.name} className="flex flex-col">
-                    <blockquote className="text-lg/8 font-semibold text-white">
-                      <p>&ldquo;{q.quote}&rdquo;</p>
-                    </blockquote>
-                    <figcaption className="mt-6 flex items-center gap-3">
-                      <img src={q.logo} alt="" aria-hidden="true" className="h-8 w-auto max-w-[6rem] object-contain" />
-                      <div>
-                        <div className="font-semibold text-white">{q.name}</div>
-                        <div className="text-gray-400">{q.org}</div>
-                      </div>
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
+
+          <section className="bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className='max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:gap-12'>
+              <p className='text-5xl font-bold tracking-tight text-white md:w-1/2 shrink-0'>
+                <span className='text-irohPurple-500'>Open source.</span>
+                <br />
+                Forever.
+              </p>
+              <p className='text-xl font-medium text-gray-300 mt-4 md:mt-2'>
+                iroh is an <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> peer-to-peer networking stack built on open standards, so you&apos;re never locked in. Connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>infrastructure</a>, self-host your own, let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>host services for you</a>, and switch between them anytime.
+              </p>
             </div>
           </section>
 
@@ -195,11 +186,36 @@ export default function Page() {
             </div>
           </section>
 
+
+          <section className="relative isolate overflow-hidden bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-500),transparent)] opacity-10"></div>
+            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-gray-900 dark:bg-slate-900 shadow-xl ring-1 shadow-indigo-500/5 ring-white/5 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+            <div className="mx-auto max-w-2xl lg:max-w-6xl">
+              <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+                {quotes.map((q) => (
+                  <figure key={q.name} className="flex flex-col">
+                    <blockquote className="text-lg/8 font-semibold text-white">
+                      <p>&ldquo;{q.quote}&rdquo;</p>
+                    </blockquote>
+                    <figcaption className="mt-6 flex items-center gap-3">
+                      <img src={q.logo} alt="" aria-hidden="true" className="h-8 w-auto max-w-[6rem] object-contain" />
+                      <div>
+                        <div className="font-semibold text-white">{q.name}</div>
+                        <div className="text-gray-400">{q.org}</div>
+                      </div>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+
           {/* Solutions */}
           <section id="solutions" className='max-w-7xl mx-auto py-16 px-4'>
             <div className='mb-10'>
               <h3 className='text-5xl font-bold mb-2'>How are people using iroh?</h3>
             </div>
+            
             <div className='grid gap-6 md:grid-cols-2'>
               <Link href="/solutions/vpn" className="block h-full">
                 <div className="h-full p-6 border border-irohGray-300 dark:border-irohGray-700 rounded-lg hover:border-irohPurple-500 transition-colors">
@@ -277,20 +293,6 @@ export default function Page() {
               <div>
                 <MetricsIllustration className="w-full" />
               </div>
-            </div>
-          </section>
-
-
-          <section className="bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
-            <div className='max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:gap-12'>
-              <p className='text-5xl font-bold tracking-tight text-white md:w-1/2 shrink-0'>
-                <span className='text-irohPurple-500'>Open source.</span>
-                <br />
-                Forever.
-              </p>
-              <p className='text-xl font-medium text-gray-300 mt-4 md:mt-2'>
-                The core peer-to-peer technology is <a href="https://github.com/n0-computer/iroh" className='text-irohPurple-500 hover:underline'>open source</a> and built on open standards, so you&apos;re never locked in: connect over our free community <a href="https://docs.iroh.computer/concepts/relays" className='text-irohPurple-500 hover:underline'>relays</a>, self-host your own, let us <a href="/services/hosting" className='text-irohPurple-500 hover:underline'>run them for you</a>, and switch between them whenever you want.
-              </p>
             </div>
           </section>
 
