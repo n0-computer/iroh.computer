@@ -72,7 +72,7 @@ We only ever send application data using the "data" encryption level, also somet
 
 <Note>There's some nuance with QUIC's 0-RTT features, but other than that the above holds.</Note>
 
-The first encryption level actually uses a key derived from public information: the connection's source connection ID which is attached to each QUIC packet in its QUIC header.
+The first encryption level actually uses a key derived from public information: the connection's destination connection ID which is attached to each QUIC packet in its header.
 This means anyone can read the contents of packets encrypted using the "Initial" encryption level.
 Why encrypt them then?
 Well, most importantly it helps to prevent certain amplification attacks, but it also prevents protocol ossification to a degree and it's also just neat to not have to special-case initial packets in terms of encryption *too much*.
@@ -81,8 +81,8 @@ While the first encryption level is mostly used for the first TLS message ("CRYP
 At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client in with this encryption level.
 
 Finally, the client can derive the same key for the handshake encryption level once it received the server's key share.
-At this point it can also derive the key in the data encryption level.
-Although both keys are derived using the ephemeral key shares from the client and server, the data encryption level provides some important required guarantees by including a hash of the whole handshake transcript.
+Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The data key.
+Although both keys are derived from the ephemeral key shares from the client and server, the data encryption level provides some important guarantees by including a hash of the whole handshake transcript.
 
 ```
 - sequence diagram with client and server
@@ -138,7 +138,7 @@ Each packet in the initial or handshake encryption level is a so-called "long he
 This allows us to put two packets prepended with their QUIC headers back-to-back into a datagram.
 
 This does not work with data encryption level, as that uses a "short QUIC header".
-That header type doesn't contain a length field, presumably to save some bytes, as packet coalescing really only is useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
+That header type doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only is useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
 
 
 # Politely Pleading: Please Properly Prepare Packets Padded!
@@ -302,22 +302,24 @@ Suffice it to say they try to estimate a "congestion window", the maximum number
 I said congestion controllers collect "evidence for lost datagrams".
 The QUIC RFC 9002 explains in detail how evidence for loss should be detected.
 Obviously you never know when a datagram you sent was *actually lost* or whether it's just stuck in traffic somewhere.
-So we depend on two heuristics.
-The first is just "if our peer hasn't acknowledged anything in flight for more than one RTTs".
-The second is based on the idea that even though UDP is unordered, *most of the time* datagrams arrive *roughly* in the order that they're sent.
-So if the acknowledgments we receive from our peer indicate that there's a "gap" in what it received (this could be due to reordering), we wait for a very short time to see if this gap sorts itself out.
-Otherwise we assume that packet was lost.
+So we depend on two heuristics, both of which only kick in once our peer has acknowledged a *later* packet (which is evidence that the earlier one didn't make it).
+The first counts packets: if three or more packets sent after an unacknowledged one have been acknowledged, we assume the earlier one was lost.
+This tolerates the reordering you'd expect from UDP, since *most of the time* datagrams arrive *roughly* in order.
+The second is timing-dependent: if that later packet was acknowledged and the earlier unacknowledged one was sent more than about 9/8 of an RTT ago, we declare it lost.
 
 <Note>
 
-  RTT stands for "round-trip-time" here, and it's an estimated value based on how long it takes for acknowledgements for things we sent to be received.
-  And *technically* it's a probe timeout ("PTO"), which are essentially the RTT plus a margin to account for variance as well as the maximum negotiated "acknowledgement delay".
+  RTT stands for "round-trip-time" here, and it's an estimated value based on how long it takes for acknowledgements for packets sent on a certain path to be received.
+  This can get quite complex in cases where paths are "asymmetric", e.g. one path uses path 0 to send application data, but the other side acknowledges this data on path 1.
+  Unfortunately this affects RTT measurements for noq currently.
+  Ideally both sides of the connections agree on which path to use for sending data and acknowledgements on.
 
 </Note>
 
 
 ## Uhm. Packets or datagrams?
 
+Am I using inconsistent terminology in the above section?
 Well... *sigh*.
 
 *Technically* what's lost are *datagrams*, because that's the atomic unit of what can be lost or transmitted at once.
