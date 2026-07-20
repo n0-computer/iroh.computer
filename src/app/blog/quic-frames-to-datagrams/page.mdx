@@ -112,6 +112,8 @@ It turns out that in many cases both of these packets would easily fit into a si
 
 So that's exactly what is done in practice: We send both packets in one datagram.
 
+Once the client receives those two packets, it does something similar: It sends its "Finished" message in the handshake space and can at the same time start sending in the data encryption level.
+
 
 # Wait. Send in two encryption levels simultaneously?
 
@@ -142,7 +144,7 @@ That header type doesn't contain a length field, presumably to save some bytes, 
 # Politely Pleading: Please Properly Prepare Packets Padded!
 
 There's another small caveat to the above diagram.
-The QUIC RFC requires checking that the minimal transmissible unit (MTU) that the network can handle is at least datagrams of 1200 bytes.
+The QUIC RFC requires checking that the Maximum Transmission Unit (MTU) that the network can handle is at least datagrams of 1200 bytes.
 How do you check this? Well, by sending such datagrams and seeing if they make it through!
 If they don't, the connection will time out.
 
@@ -183,6 +185,8 @@ It's usually safer to go with just some "minimum required remaining space" bytes
 
   Padding can also be added *outside* the QUIC packets by just appending random bytes to the end of your datagram.
   These are required to be ignored by receivers when they can't be parsed as a QUIC header (which they likely can't be).
+  However, this only works when the last packet in the datagram is a long-header packet (such as an Initial or Handshake packet), which includes a Length field.
+  If the last packet is a short-header (1-RTT) packet, which has no Length field, the appended bytes become part of that packet's payload and would cause an authentication failure.
   This is something we're [considering doing in noq](https://github.com/n0-computer/noq/issues/507) and we expect that to simplify datagram construction
 
 </Note>
@@ -214,12 +218,12 @@ But buckle up, there are even more constraints coming to our frame stuffing.
 
 There's a pretty cricital performance improvement for linux systems: generic segmentation offload (GSO).
 It's something you can enable on your UDP socket in linux to allow you to send multiple datagrams with a single syscall.
-This helps a ton in getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measily 1472 bytes of data at a time in a single syscall for the operation system to send.
+This helps a ton in getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measily 1472 bytes of data at a time in a single syscall for the operating system to send.
 (Typical values for what a single TCP syscall will copy into kernel memory for sending it are between 16KiB and 4MiB, depending on OS configuration and how big the congestion window is.)
 With GSO, you can send a full "batch" of UDP packets in one syscall.
-On my linux system I'm writing this blog post on right now, the GSO maximum batch size is 64.
-So with our 1472 bytes of data per UDP packet, I'll be able to queue up to ~`1472 * 64 = 94208` in the good case.
-Great! This reduces syscall overhead a *ton*.
+In noq, we use a maximum GSO batch size of 10 as a compromise between batching syscalls and pacing to avoid bursts.
+So with our 1472 bytes of data per UDP packet, we send up to 14720 bytes per batch in practice.
+Great! This reduces syscall overhead quite a bit.
 
 ```
 - A diagram that shows the contrast between non-GSO and GSO-ed transmit of a batch of datagrams.
@@ -243,6 +247,7 @@ This includes:
 
 Oh yes.
 Yet another size constraint :)
+
 
 ## Clipping to Segment Size
 
@@ -280,7 +285,7 @@ For good reason.
 
 The part of the system that does this is called "congestion control": Simplifying a bit, the congestion controller prevents sending more data than you have bandwidth.
 Of course, you cannot know how much bandwidth you'll have: This depends not only on your upload or download speed, but also on your peer's internet link as well as any traffic going through the system at the whole same time.
-When you send more than what the link between you and your peer can handle, the network will start to drop your datagrams: This is called "tail-loss", and it means you've wasted valuable bytes encrypting packets and needlessly overwhelmed some hardware somewhere, so we try to minimize how much this happens.
+When you send more than what the link between you and your peer can handle, the network will start to drop your datagrams, which means you've wasted valuable bytes encrypting packets and needlessly overwhelmed some hardware somewhere, so we try to minimize how much this happens.
 Congestion controllers are quite complicated to get right (and are a very much active area of research!).
 Our goal in this post is not to explain how they work.
 Suffice it to say they try to estimate a "congestion window", the maximum number of bytes we should aim to have in-flight at once, based on the bytes we send, when we send them, the bytes we receive and when we receive them, and any evidence for lost datagrams.
@@ -291,10 +296,11 @@ Suffice it to say they try to estimate a "congestion window", the maximum number
   This part of noq is very much also involved in "limiting" sending in noq and technically relevant to the example of reading a file in the section above, but not as interesting - thus we're not covering it here.
 </Note>
 
+
 ## Which congestion controller though?
 
 I said congestion controllers collect "evidence for lost datagrams".
-The QUIC RFC 9000 explains in detail how evidence for loss should be detected.
+The QUIC RFC 9002 explains in detail how evidence for loss should be detected.
 Obviously you never know when a datagram you sent was *actually lost* or whether it's just stuck in traffic somewhere.
 So we depend on two heuristics.
 The first is just "if our peer hasn't acknowledged anything in flight for more than one RTTs".
@@ -365,7 +371,8 @@ QUIC even without multipath actually allows you to switch from one 4-tuple to an
 Sometimes in those cases, you need to reset your congestion controller state.
 And additionally, you need to protect yourself from spoofed datagram remote IPs: An attacker can intercept a datagram in a QUIC connection and spoof its source address to make the peer think the connection migrated.
 In those cases, you need to keep "looking for datagrams" on both "old" and new 4-tuples, accepting packets from both.
-You simulatenously start probing both paths, and the first path that successfully proves it is authentic will be switched to.
+You validate the previously active path by probing it with a PATH_CHALLENGE, and if it proves to still be authentic, the connection migrates back to it.
+If the old path validation fails, you stay on the new path.
 In the mean time, you already start using the new path, but you remember the congestion controller state from the old path, in case you need to revert back to it.
 
 This means you now have two congestion controllers on the same path!
@@ -387,7 +394,7 @@ let socket = /* your socket implementation */;
 let mut conn: noq_proto::Connection = /* ... */;
 let mut buf = Vec::new();
 // this is ignoring other APIs like feeding the connection with received packets or handling timers
-while let Some(transmit) = conn.poll_transmit(Instant::now(), socket.max_gso_batch_size(), &mut buf); {
+while let Some(transmit) = conn.poll_transmit(Instant::now(), socket.max_gso_batch_size(), &mut buf) {
     socket.send_gso_batch(
         transmit.destination,
         transmit.src_ip,
