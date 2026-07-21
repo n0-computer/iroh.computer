@@ -198,20 +198,22 @@ Yet another size constraint :)
 
 Because we need to provide one "segment size"/"stride" for all datagrams in a GSO batch, the first datagram we produce determines the exact size of all further datagrams (except for the last one, but that's yet another edge case).
 
-Let's look at an example:
-There's a QUIC extension for sending "datagrams" in a QUIC connection.
-This allows an application to re-use a QUIC connection's congestion control and encryption for its own purposes, all while the connection can still use streams at the same time, without having to initiate a secondary connection (again, neat!).
-These "datagrams" (yo dawg, what if we put a datagram into your datagram) are guaranteed to be sent in one UDP datagram or otherwise are dropped, but not fragmented by the QUIC implementation itself.
-So let's say an application queues two 800-byte "datagrams" via the QUIC datagram extension.
-The first datagram will be put into the first *actual* UDP datagram in the GSO batch.
+So let's say an application queues two frames that have a fixed length of 800 bytes.
+(An example of something that would create such frames would be frames queued via the QUIC datagram extension, but I'm not going to explain that to avoid confusion.)
+The first datagram will be put into the first datagram in the GSO batch.
 At this point, we have less than 800 bytes of space left in our packet, so we end the packet.
 Because we still have more data to send, we continue our GSO batch and start another datagram.
 However, the first datagram in our GSO batch is now set to an exact size of ~850 bytes.
 This means the second datagram in our GSO batch can't be bigger than 850 bytes.
+Luckily, the second frame was also exactly 800 bytes, so it fits.
 
-![A GSO transmit buffer split into two same-sized datagrams carrying QUIC DATAGRAM frames](/blog/quic-frames-to-datagrams/gso-datagram-extension.svg)
+![A GSO transmit buffer split into two same-sized datagrams, each carrying a packet with an 800 byte frame](/blog/quic-frames-to-datagrams/gso-datagram-extension.svg)
 
-In turn this means we can't decide whether to send MTU probes on a per-datagram basis, but need to make that decision at the start of a new GSO batch, otherwise we'd be stuck with the MTUD probe size on following datagrams.
+But it could have also been bigger. 
+Or we could have queued some other frame first, thus not leaving enough space.
+It means we need to be careful about starting another datagram, otherwise we'd need to implement some kind of rollback technique when we realize we don't actually have enough space to fit any frames into a datagram of the current segment size.
+
+If we've clipped the segment size this also means we can't decide whether to send MTU probes on a per-datagram basis, but need to make that decision at the start of a new GSO batch, otherwise we'd be stuck with the MTUD probe size on following datagrams.
 Similarly, it also means whenever we want to send any other kind of path-validating probe, we need to decide to do so in the first datagram.
 
 In general, this means some logic needs to be per-batch, and some per-datagram: padding decisions need to be per-batch, MTUD probes need to be a whole-batch thing (not producing further datagrams in the batch), and the frames themselves are obviously a per-datagram thing.
