@@ -3,7 +3,7 @@ import { MotionCanvas } from '@/components/MotionCanvas'
 
 export const post = {
   draft: false,
-  author: 'b5',
+  author: 'matheus23',
   date: '2026-07-17',
   title: 'Stuffing QUIC frames into datagrams',
   description: 'About the surprising complexity of trying to stuff QUIC frames into datagrams.',
@@ -29,7 +29,7 @@ export const metadata = {
 export default (props) => <BlogPostLayout article={post} {...props} />
 
 When we originally set out to implement QUIC multipath in rust, we knew we had to modify the main internal transmission loop that produces UDP datagrams.
-With QUIC multipath need to check not only a single path for any frames that should be transmitted or retransmitted or loss probes to send, but instead need to do this for each currently open path.
+With QUIC multipath we need to check not only a single path for any frames that should be transmitted or retransmitted or loss probes to send, but instead need to do this for each currently open path.
 It turns out that the logic for how frames make it into datagrams turns out to be quite complicated.
 To this day, we keep improving the logic.
 This blog post is essentially an engineer's braindump of how this logic works and why it works the way it does.
@@ -58,10 +58,7 @@ Let us dive into the complex world of generic segmentation offload (GSO), QUIC e
 QUIC packets are encrypted, as the authentication tag above might already hint to.
 But if the client sends the first packet in the connection, which key does it actually use to encrypt?
 
-<Note>
-    If you're confused about what the difference between a packet and a datagram is, read on.
-    The distinction should become clear later and will prove to be useful.
-</Note>
+<Note>If you're confused about what the difference between a packet and a datagram is, read on. The distinction should become clear later and will prove to be useful.</Note>
 
 
 ## QUIC's encryption levels: Initial, Handshake and Data
@@ -78,7 +75,7 @@ Why encrypt them then?
 Well, most importantly it helps to prevent certain amplification attacks, but it also prevents protocol ossification to a degree and it's also just neat to not have to special-case initial packets in terms of encryption *too much*.
 
 While the first encryption level is mostly used for the first TLS message ("CRYPTO" frame) from the client to the server, the second encryption level already begins once the server has processed the first message from the client.
-At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client in with this encryption level.
+At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client with this encryption level.
 
 Finally, the client can derive the same key for the handshake encryption level once it received the server's key share.
 Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The data key.
@@ -107,7 +104,7 @@ For example, in order for the client to be able to read the handshake data it ne
 But to be able to read that key share, it needs to be encrypted only with the initial encryption level.
 That said, once the client has read this key share it could immediately read the next server message in the handshake encryption level.
 
-This means ideally the server sends both its key share and first message in the handshake message in one go.
+This means ideally the server sends both its key share and first handshake message in one go.
 It turns out that in many cases both of these packets would easily fit into a single datagram (less than 1200 bytes).
 
 So that's exactly what is done in practice: We send both packets in one datagram.
@@ -131,14 +128,14 @@ The actual first handshake datagram from the server to the client looks like thi
 ```
 
 This optimization is called "coalescing packets into datagrams".
-Coalescing is exactly why the distinction between packet and datagram terminiology is useful.
+Coalescing is exactly why the distinction between packet and datagram terminology is useful.
 
 In terms of how it works, it's actually a fairly simple operation:
 Each packet in the initial or handshake encryption level is a so-called "long header" packet which means it also has a length field indicating where the packet ends.
 This allows us to put two packets prepended with their QUIC headers back-to-back into a datagram.
 
 This does not work with data encryption level, as that uses a "short QUIC header".
-That header type doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only is useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
+That header type doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
 
 
 # Politely Pleading: Please Properly Prepare Packets Padded!
@@ -152,7 +149,7 @@ If they don't, the connection will time out.
 
 Our above datagrams are not that big, though.
 A typical initial packet is roughly 300 bytes.
-Let's pad the datagram its in.
+Let's pad the datagram it's in.
 
 
 ## Okay, but where do we put the bytes?
@@ -172,13 +169,14 @@ So let's put in some bytes.
 We need to remember to leave enough space for our authentication tag (typically 16 bytes), which is added to the end of our packets.
 
 I want to point out that besides this caveat, there is actually a surprising amount of complexity in making padding decisions.
-The biggest problem is that it can be difficult to guess whether you will have space to coalesce *another* packet while you're trying to figure out whether to going to add padding or not to your *current* packet:
+The biggest problem is that it can be difficult to guess whether you will have space to coalesce *another* packet while you're trying to figure out whether you're going to add padding or not to your *current* packet:
 - Before you begin the handshake packet, you need to finish the initial packet.
 - Before you finish the initial packet, you need to know if you need to put in padding into the initial packet or not.
 - To decide whether you need to put padding into the initial packet or not, you need to figure out whether you'll coalesce with another handshake packet.
-- You only really how big the handshake packet is once you start building it.
+- Whether to coalesce with another handshake packet depends on if it will fit into the remaining available space.
+- You only really know how big the handshake packet is once you start building it.
 
-This kind of predicting-if-you-need-padding logic is can be surprisingly brittle and complicated!
+This kind of predicting-if-you-need-padding logic can be surprisingly brittle and complicated!
 It's usually safer to go with just some "minimum required remaining space" bytes constant to ensure that you'll be able to fit another packet when coalescing, but deciding what constant to use here is not trivial.
 
 <Note>
@@ -194,15 +192,15 @@ It's usually safer to go with just some "minimum required remaining space" bytes
 
 ## DPLPMTUD and other causes of padding
 
-Yes, DPLPMTUD is one of those ridiculous acronyms used in the QUIC specification.
 
 We're now moving on from the handshake to an established connection, during which there are other cases in which we'd like to make sure datagrams have certain sizes.
 When we're migrating from one network path to using another (both using normal QUIC RFC 9000 connection migration as well as opening new QUIC multipath paths), we like to ensure the new path supports an MTU of 1200.
 
-Another case for is DPLPMTUD, which probes bigger datagram sizes to see if we can send packets *bigger* than the 1200 MTU.
+Another case is DPLPMTUD (what an acronym!), which probes bigger datagram sizes to see if we can send packets *bigger* than the 1200 MTU.
 Ethernet might support packets of up to around 1500 bytes, with the payload being as big as 1472 bytes maximum.
-This can help goodput by reducing the propotion of headers to actual payloads.
-Behind the incredible DPLPMTUD acronym is "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
+This can help goodput by reducing the proportion of headers to actual payloads.
+
+The incredible DPLPMTUD acronym stands for "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
 
 So unfortunately this means we can't have padding be a special-case for handshake packets only.
 
@@ -216,9 +214,9 @@ But buckle up, there are even more constraints coming to our frame stuffing.
 
 # GSO and more constraints for producing datagrams
 
-There's a pretty cricital performance improvement for linux systems: generic segmentation offload (GSO).
+There's a pretty critical performance improvement for linux systems: generic segmentation offload (GSO).
 It's something you can enable on your UDP socket in linux to allow you to send multiple datagrams with a single syscall.
-This helps a ton in getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measily 1472 bytes of data at a time in a single syscall for the operating system to send.
+This helps a ton in getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measly 1472 bytes of data at a time in a single syscall for the operating system to send.
 (Typical values for what a single TCP syscall will copy into kernel memory for sending it are between 16KiB and 4MiB, depending on OS configuration and how big the congestion window is.)
 With GSO, you can send a full "batch" of UDP packets in one syscall.
 In noq, we use a maximum GSO batch size of 10 as a compromise between batching syscalls and pacing to avoid bursts.
@@ -284,7 +282,7 @@ Even if we technically have the CPU resources to process the data (to encrypt an
 For good reason.
 
 The part of the system that does this is called "congestion control": Simplifying a bit, the congestion controller prevents sending more data than you have bandwidth.
-Of course, you cannot know how much bandwidth you'll have: This depends not only on your upload or download speed, but also on your peer's internet link as well as any traffic going through the system at the whole same time.
+Of course, you cannot know how much bandwidth you'll have: This depends not only on your upload or download speed, but also on your peer's internet link as well as any traffic going through the system at the same time.
 When you send more than what the link between you and your peer can handle, the network will start to drop your datagrams, which means you've wasted valuable bytes encrypting packets and needlessly overwhelmed some hardware somewhere, so we try to minimize how much this happens.
 Congestion controllers are quite complicated to get right (and are a very much active area of research!).
 Our goal in this post is not to explain how they work.
@@ -335,7 +333,7 @@ Some QUIC implementations just flat out ignore loss in the initial and handshake
 This simplifies the congestion controller: It can assume just one type of "packet number" and e.g. assume there will always be one "latest packet number" that's monotonically increasing.
 
 We don't do this in noq though, instead, we let the congestion controller look at only the highest space that we've sent in.
-This makes it ignore loss in the inital and handshake space, if we've already sent in the data space.
+This makes it ignore loss in the initial and handshake space, if we've already sent in the data space.
 In practice this works reasonably well, since the initial and handshake spaces are active only for a relatively short time.
 
 There's another approach to doing this where you could be using unique packet numbers across the initial, handshake and data spaces.
@@ -354,7 +352,7 @@ In the general case, you'll have separate paths on separate actual *network path
 This means there now exist both cases in which a single congestion controller is managing multiple packet number spaces that all run on the same 4-tuple (the initial, handshake, and data in path 0), while other times the congestion controller is *not* shared across packet number spaces, even though they're on the same 4-tuple.
 
 ```
-- Diagram with a table with three columns with rows of differnt rowspans.
+- Diagram with a table with three columns with rows of different rowspans.
   - Column 1: The different 4-tuples/network paths
     - one 4-tuple spans 4 rows, one 4-tuple spans 1 row
   - Column 2: The encryption levels
@@ -364,6 +362,10 @@ This means there now exist both cases in which a single congestion controller is
   - There are "circled regions" across some rows and all columns marking what congestion controllers cover:
     - first 3 rows are one CC, then two more CCs per row
 ```
+
+In practice, these cases come up rarely in the lifetime of a connection.
+But they *do* impact code complexity, unfortunately.
+It means there are invariants that might seem intuitive, but can't be assumed.
 
 
 ## Oh, did we tell you about migrations yet?
@@ -382,8 +384,8 @@ Yay to yet again a little more complexity.
 
 Unfortunately, multipath doesn't absolve us of this complexity.
 In fact, we need to handle both migrations of paths and multiple paths at the same time, so the complexity just multiplies.
-That is because although multipath would allow really seamless switching to another path, it doesn't solve cases where clients need to migrate involutarily due to NAT rebinding or default interface switching.
-(needs a footnote: We can protect against default interface switching by specifying the interface we want to send datagram on. However, we can only do that if we actually know which one that is supposed to be, which can be tricky to figure out. Using the default interface is often preferrable, but figuring that one out is OS- and application-specific)
+That is because although multipath would allow really seamless switching to another path, it doesn't solve cases where clients need to migrate involuntarily due to NAT rebinding or default interface switching.
+(needs a footnote: We can protect against default interface switching by specifying the interface we want to send datagram on. However, we can only do that if we actually know which one that is supposed to be, which can be tricky to figure out. Using the default interface is often preferable, but figuring that one out is OS- and application-specific)
 
 
 # Putting it all together
@@ -415,10 +417,20 @@ Then it's `noq_proto::Connection::poll_transmit`'s job to handle all of the comp
 - Choosing the path to send on
 and a bunch of other things.
 
-Since the start of implementing QUIC multipath on top of Quinn, `poll_transmit` is where we've spent most of our time.
-We've since split up its definition into many separate functions, added helpers to make it easier to create packets, handle padding, and deal with congestion control.
+Since the start of implementing QUIC multipath on top of Quinn, `poll_transmit` is probably where we've spent most of our time.
+We've since split up its definition into many separate functions, added helpers to make it easier to create packets, handle padding and deal with congestion control, and fixed countless bugs.
 
-We're now in a much better place than just half a year ago, but there's still lots of things to improve and bugs to squash, given this just ends up being something somewhat complex to handle.
+As a user of iroh, you won't be interacting with it.
+It ends up being hidden behind the classic `Connection` and `Endpoint` APIs.
+But it's there, and it's pulling quite some weight!
 
-Anyways, there's not really a conclusion to this piece, and I'm sorry if you were looking for one.
-In any case, I hope you enojyed this braindump of *some* of the things that are going on in a QUIC multipath implementation.
+
+## If everything is so complex, why QUIC then?
+
+All in all, we're extremely pleased to have built on top of QUIC.
+It helps to stand on the shoulders of previous implementers who put their hard-earned insights into many specifications.
+We can avoid making the same mistakes and don't have to *make choices*.
+
+And while getting the logic with multipath right can be tricky, the advantage is that iroh still gives you *just a QUIC API*.
+It means we support running HTTP/3 over iroh, or media-over-quic, or many other protocols not directly designed for iroh, with very little effort.
+There were points in time at which we discussed breaking with the "plain QUIC API" in iroh's lifetime, but in retrospect we're quite glad we never did that.
