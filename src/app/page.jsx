@@ -300,7 +300,7 @@ export default function Page() {
           <section>
             <div className='max-w-7xl mx-auto px-4 lg:flex lg:space-x-10 py-20'>
               <div className='lg:w-1/3 mb-10'>
-                <div className='flex space-x-6 mb-6'>
+                <div className='flex flex-wrap gap-6 mb-6'>
                   {[
                     { logo: logoSwift, name: 'Swift' },
                     { logo: logoRust, name: 'Rust' },
@@ -352,7 +352,7 @@ export default function Page() {
 
 
 // Minimal "dial a peer and echo a message" flow in each language.
-// APIs match the iroh-ffi endpoint tests and the Rust quickstart docs.
+// APIs mirror the iroh-ffi bindings, the iroh-go examples, and the iroh-c-ffi header.
 const codeSnippets = [
   {
     title: 'Swift',
@@ -468,5 +468,67 @@ async def main():
     print(echoed.decode())
 
 asyncio.run(main())`,
+  },
+  {
+    title: 'Go',
+    label: 'main.go',
+    language: 'go',
+    code: `package main
+
+import (
+	"fmt"
+
+	iroh "git.coopcloud.tech/decentral1se/iroh-go"
+)
+
+func main() {
+	// Dial a peer and echo a message over a bidirectional stream.
+	preset := iroh.PresetN0()
+	endpoint, _ := iroh.EndpointBind(iroh.EndpointOptions{Preset: &preset})
+
+	conn, _ := endpoint.Connect(serverAddr, ALPN)
+	stream, _ := conn.OpenBi()
+
+	stream.Send().WriteAll([]byte("hello iroh"))
+	stream.Send().Finish()
+
+	echoed, _ := stream.Recv().ReadToEnd(64)
+	fmt.Println(string(echoed))
+}`,
+  },
+  {
+    title: 'C',
+    label: 'main.c',
+    language: 'c',
+    code: `#include <stdio.h>
+#include <string.h>
+#include "irohnet.h"
+
+int main(void) {
+    // Dial a peer and echo a message over a bidirectional stream.
+    EndpointConfig_t config = endpoint_config_default();
+    endpoint_config_add_alpn(&config, ALPN);
+
+    Endpoint_t *ep = endpoint_default();
+    endpoint_bind(&config, NULL, NULL, &ep);
+
+    Connection_t *conn = connection_default();
+    endpoint_connect(&ep, ALPN, serverAddr, &conn);
+
+    SendStream_t *send = send_stream_default();
+    RecvStream_t *recv = recv_stream_default();
+    connection_open_bi(&conn, &send, &recv);
+
+    char *msg = "hello iroh";
+    slice_ref_uint8_t data = { .ptr = (uint8_t *)msg, .len = strlen(msg) };
+    send_stream_write(&send, data);
+    send_stream_finish(send);
+
+    uint8_t buf[64];
+    slice_mut_uint8_t out = { .ptr = buf, .len = 64 };
+    int n = recv_stream_read(&recv, out);
+    printf("%.*s\\n", n, buf);
+    return 0;
+}`,
   },
 ]
