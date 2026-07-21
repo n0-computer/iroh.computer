@@ -1,0 +1,55 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2026-07-21',
+  title: 'iroh 1.0.3 - Steadier Connections',
+  description: 'Release of iroh v1.0.3, alongside noq v1.1.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+After [last release's security fix](/blog/iroh-1-0-2), we're happy to be back to the good kind of boring. We've shipped iroh 1.0.3 together with [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) to give you a cleaner, smoother connection experience, without breaking any APIs.
+
+## Connections hold up better under real-world conditions
+
+This release closes up a handful of corner cases in noq: path validation is timed more correctly when a new path opens, stray packets from paths that have already been abandoned are no longer allowed to cause confusion, and a connection-accounting bug that could undercount active connections is fixed. Packet coalescing during the handshake is also more correct now, which matters most on networks that don't behave nicely.
+
+## Fewer confusing errors, less noise
+
+A couple of small changes make failures easier to reason about. Connecting with an empty ALPN now gives you a clear error instead of a panic. Logs are quieter in a couple of places. Small stuff, but it adds up to a better experience when looking through logs to debug.
+
+## Know when a connection is trustworthy
+
+noq adds a new `Connection::authenticated` method that succeeds as soon as an 0-RTT connection is proven to not be a replay attack (and always succeeds immediately in a 1-RTT connection). We still have `Connection::handshake_confirmed`, which waits longer for the client to confirm the client-side authentication. Read more [here](https://docs.rs/noq/latest/noq/struct.Connection.html#method.authenticated)
+
+## Better defaults out of the box
+
+The `n0` preset now includes a pkarr resolver. This means that we now, by default, have a fallback if our normal DNS resolver fails.
+
+## What's next?
+
+We expect the next few releases to keep this rhythm: happy maintenance releases every few weeks, with small fixes for corner cases and invisible improvements. As always, the full details are in the changelogs for [iroh](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) and [noq](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0).
+
+See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
