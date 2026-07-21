@@ -86,7 +86,7 @@ export function UseCaseScroller() {
           </Link>
         )}
         {selectedCategory === "AI/ML" && (
-          <Link href="/solutions/nous" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+          <Link href="/solutions/distributed-ai" className="text-irohPurple-500 hover:underline mt-2 text-sm">
             Read the Nous case study →
           </Link>
         )}
