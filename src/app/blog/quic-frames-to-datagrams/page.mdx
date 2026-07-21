@@ -1,5 +1,4 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
-import { MotionCanvas } from '@/components/MotionCanvas'
 
 export const post = {
   draft: false,
@@ -39,14 +38,7 @@ One would think stuffing QUIC frames into datagrams would be an easy task.
 Let's assume something else has already prepared *which* frames we want to write into our datagrams.
 In a simple case, constructing a datagram from a bunch of QUIC frames can look like this:
 
-```
-- One big box
-- Outside has written: `src_ip: 192.168.0.101` and `dest: 200.200.200.200:443`
-- Inside:
-  - A smaller box with the text "QUIC Header" inside
-  - The majority of the outer box filled with boxes that say "QUIC Frame 0", "QUIC Frame 1", and so on
-  - A small box at the bottom that says "Authentication tag"
-```
+![A UDP datagram containing one QUIC packet: header, frames, and authentication tag](/blog/quic-frames-to-datagrams/quic-datagram.svg)
 
 But that's just the tip of the iceberg.
 Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and packet padding.
@@ -80,22 +72,7 @@ Finally, the client can derive the same key for the handshake encryption level o
 Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The data key.
 Although both keys are derived from the ephemeral key shares from the client and server, the data encryption level provides some important guarantees by including a hash of the whole handshake transcript.
 
-```
-- sequence diagram with client and server
-- first from client to server:
-  - "Initial" containing "ClientHello" (incl. client key share)
-- second from server to client:
-  - "Initial" with ACK + "ServerHello" (incl. server key share)
-  - "Handshake" with "server authentication"
-    (EncryptedExtensions + CertificateRequest + Certificate + CertificateVerify + Finished)
-  - server can now derive data keys for sending
-- third from client to server:
-  - "Initial" with ACK (then Initial keys discarded)
-  - "Handshake" with ACK + "client authentication"
-    (client Certificate + CertificateVerify + Finished)
-  - client can now derive data keys for sending and receiving
-  - server can now derive data keys for receiving
-```
+![QUIC handshake sequence across Initial, Handshake, and Data encryption levels](/blog/quic-frames-to-datagrams/handshake-sequence.svg)
 
 <Note>If you're interested in what *exactly* goes on during a QUIC connection, I recommend taking a look at ["The Illustrated QUIC Connection"](https://quic.xargs.org/)</Note>
 
@@ -117,15 +94,7 @@ Once the client receives those two packets, it does something similar: It sends 
 Ah yes, right. Here comes the first optimization that complicates the simple picture from above.
 
 The actual first handshake datagram from the server to the client looks like this:
-```
-- One big box again
-- Outside has written: `src_ip: 192.168.0.101` and `dest: 200.200.200.200:443`
-- Inside:
-  - Two medium sized boxes with different titles:
-    - One box saying "In Initial Space:" containing two QUIC frames: An "ACK" and a "CRYPTO" frame.
-    - One box saying "In Handshake Space:" containing one "CRYPTO" QUIC frame.
-  - Both the above boxes have a QUIC header at the top and an authentication tag at the bottom
-```
+![A single UDP datagram coalescing an Initial packet and a Handshake packet](/blog/quic-frames-to-datagrams/coalesced-packets.svg)
 
 This optimization is called "coalescing packets into datagrams".
 Coalescing is exactly why the distinction between packet and datagram terminology is useful.
@@ -160,10 +129,7 @@ Isn't that neat?
 
 So let's put in some bytes.
 
-```
-- Same diagram as the last one
-- In the handshake space packet, "PADDING" frames below the CRYPTO frame.
-```
+![The coalesced datagram with PADDING frames added to the Handshake packet](/blog/quic-frames-to-datagrams/coalesced-packets-padded.svg)
 
 We need to remember to leave enough space for our authentication tag (typically 16 bytes), which is added to the end of our packets.
 
@@ -215,18 +181,7 @@ In noq, we use a maximum GSO batch size of 10 as a compromise between batching s
 So with our 1472 bytes of data per UDP packet, we send up to 14720 bytes per batch in practice.
 Great! This reduces syscall overhead quite a bit.
 
-```
-- A diagram that shows the contrast between non-GSO and GSO-ed transmit of a batch of datagrams.
-- Top row:
-  - multiple rounded-corner datagrams, there's a small header for each datagram (small part on the left of each datagram)
-  - a line indicating user-kernel boundary
-  - many arrows going across the boundary for each datagram
-- Bottom row:
-  - One large rounded-corner GSO batch roughly the width of all the datagrams above with only one small header on the left side
-    - the individual datagrams are hinted at with dashed line separators between them
-  - a line indicating user-kernel boundary
-  - an arrow going across said boundary only once and the GSO batch being split into datagrams only behind the boundary
-```
+![Without GSO each datagram needs its own syscall; with GSO one syscall sends a whole batch](/blog/quic-frames-to-datagrams/gso-contrast.svg)
 
 What's the catch?
 Well, in order to make the syscall as efficient as possible, you specify datagram metadata only once for all of the datagrams you want to send in the batch.
@@ -251,17 +206,10 @@ So let's say an application queues two 800-byte "datagrams" via the QUIC datagra
 The first datagram will be put into the first *actual* UDP datagram in the GSO batch.
 At this point, we have less than 800 bytes of space left in our packet, so we end the packet.
 Because we still have more data to send, we continue our GSO batch and start another datagram.
-However, the first datagram in our GSO batch is now set to an exact size (TODO: find out what that would be in practice) ~850 bytes.
+However, the first datagram in our GSO batch is now set to an exact size of ~850 bytes.
 This means the second datagram in our GSO batch can't be bigger than 850 bytes.
 
-```
-- Yet another diagram with a big box with a src_ip and destination
-- However this box is split into two:
-  - The upper part with a QUIC header and a DATAGRAM frame
-  - The lower part with a QUIC header and another DATAGRAM frame
-- a bracket going across the whole box that annotates the whole thing as "one transmit buffer"
-- a bracket going across each header & datagram box annotating these as "850 byte datagram" each
-```
+![A GSO transmit buffer split into two same-sized datagrams carrying QUIC DATAGRAM frames](/blog/quic-frames-to-datagrams/gso-datagram-extension.svg)
 
 In turn this means we can't decide whether to send MTU probes on a per-datagram basis, but need to make that decision at the start of a new GSO batch, otherwise we'd be stuck with the MTUD probe size on following datagrams.
 Similarly, it also means whenever we want to send any other kind of path-validating probe, we need to decide to do so in the first datagram.
@@ -346,17 +294,7 @@ And as we've established, these packet number spaces mean tracking congestion co
 In the general case, you'll have separate paths on separate actual *network paths*, so this makes sense, but in theory there's nothing preventing you from opening two paths on the same 4-tuple.
 This means there now exist both cases in which a single congestion controller is managing multiple packet number spaces that all run on the same 4-tuple (the initial, handshake, and data in path 0), while other times the congestion controller is *not* shared across packet number spaces, even though they're on the same 4-tuple.
 
-```
-- Diagram with a table with three columns with rows of different rowspans.
-  - Column 1: The different 4-tuples/network paths
-    - one 4-tuple spans 4 rows, one 4-tuple spans 1 row
-  - Column 2: The encryption levels
-    - init and hs span 1 row, dat spans 3 rows
-  - Column 3: The multipath path IDs
-    - path 0 spans 3 rows, path 1 and path 2 one row each
-  - There are "circled regions" across some rows and all columns marking what congestion controllers cover:
-    - first 3 rows are one CC, then two more CCs per row
-```
+![A table showing how congestion controllers can cover different combinations of 4-tuples, encryption levels, and multipath path IDs](/blog/quic-frames-to-datagrams/multipath-congestion-table.svg)
 
 In practice, these cases come up rarely in the lifetime of a connection.
 But they *do* impact code complexity, unfortunately.
