@@ -88,12 +88,13 @@ Although both keys are derived from the ephemeral key shares from the client and
   - "Initial" with ACK + "ServerHello" (incl. server key share)
   - "Handshake" with "server authentication"
     (EncryptedExtensions + CertificateRequest + Certificate + CertificateVerify + Finished)
-  - server can now derive data keys
+  - server can now derive data keys for sending
 - third from client to server:
   - "Initial" with ACK (then Initial keys discarded)
   - "Handshake" with ACK + "client authentication"
     (client Certificate + CertificateVerify + Finished)
-  - client can now derive data keys
+  - client can now derive data keys for sending and receiving
+  - server can now derive data keys for receiving
 ```
 
 <Note>If you're interested in what *exactly* goes on during a QUIC connection, I recommend taking a look at ["The Illustrated QUIC Connection"](https://quic.xargs.org/)</Note>
