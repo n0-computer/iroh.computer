@@ -30,19 +30,24 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
 
-After [last release's security fix](/blog/iroh-1-0-2), we're happy to be back to the good kind of boring. We've shipped iroh 1.0.3 together with [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) to give you a cleaner, smoother connection experience, without breaking any APIs.
+We've shipped iroh 1.0.3 together with [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) to give you a cleaner, smoother connection experience. Say "goodbye" to some pesky panics and "hello" to better error messaging.
 
 ## Connections hold up better under real-world conditions
 
 This release closes up a handful of corner cases in noq: path validation is timed more consistently when a new path opens, better handling of received data referring to abandoned paths, and a connection-accounting bug that could undercount active connections is fixed. Packet coalescing during the handshake is also more correct now, which matters most on networks that don't behave nicely.
 
+Specifically, if you were seeing the following panics, they have been fixed!
+
+- `panicked at noq-1.0.1/src/endpoint.rs:648:17: attempt to subtract with overflow`
+- `panicked at noq-proto-1.0.1/src/connection/packet_builder.rs:159:9: assertion failed: max_size >= min_size`
+
 ## Fewer confusing errors, less noise
 
 A couple of small changes make failures easier to reason about. Connecting with an empty ALPN now gives you a clear error instead of a panic. Logs are quieter in a couple of places. Small stuff, but it adds up to a better experience when looking through logs to debug.
 
-## Know when a connection is trustworthy
+## A win for us because of open source
 
-noq adds a new `Connection::authenticated` method that succeeds as soon as an 0-RTT connection is proven to not be a replay attack (and always succeeds immediately in a 1-RTT connection). We still have `Connection::handshake_confirmed`, which waits longer for the client to confirm the client-side authentication. Read more [here](https://docs.rs/noq/latest/noq/struct.Connection.html#method.authenticated)
+On top of the work we did to improve noq, we've also merged some extremely helpful upstream commits that were implemented by the folks working on [quinn](https://github.com/quinn-rs/quinn). Thank you!
 
 ## Better defaults out of the box
 
