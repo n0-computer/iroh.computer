@@ -1,0 +1,64 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'okdistribute',
+  date: '2026-07-22',
+  title: 'Release Recap — June–July 2026',
+  description: 'A steady maintenance cycle across iroh, iroh-ffi, and noq: relay rate-limit tuning, an empty-ALPN fix, fresh FFI bindings, and a big batch of noq QUIC improvements.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the latest release recap for iroh, a modular networking stack in Rust for building direct connections between devices. This one covers June 21 through July 22, 2026 — a solid post-1.0 stretch focused on stability: rounding off the sharp edges from the 1.0 launch, tuning the relay, and pushing a healthy pile of fixes and new APIs down into noq, the QUIC implementation underneath iroh.
+
+## iroh
+
+Three patch releases landed in the 1.0 line this period, all backwards compatible.
+
+**[v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1)** (June 29) is a cleanup pass. We restored a missing item for backwards compatibility ([#4346](https://github.com/n0-computer/iroh/issues/4346)), stopped emitting span levels above `info` so your logs stay readable ([#4375](https://github.com/n0-computer/iroh/issues/4375)), and taught iroh-dns to fall back to default nameservers when no JNI context is initialized — nice for Android setups ([#4371](https://github.com/n0-computer/iroh/issues/4371)). There's also a round of docs polish, including clearer explanations of QUIC streams ([#4368](https://github.com/n0-computer/iroh/issues/4368)) and portmapping config, plus a keep-alive docs fix ([#4352](https://github.com/n0-computer/iroh/issues/4352)).
+
+**[v1.0.2](https://github.com/n0-computer/iroh/releases/tag/v1.0.2)** (July 6) brings the one new feature of the bunch: `iroh-relay` can now update its per-client rate limit live, so operators can retune without a restart ([#4381](https://github.com/n0-computer/iroh/issues/4381)). On the fix side, we sorted out a fairness counter issue in the receive transport lanes ([#4384](https://github.com/n0-computer/iroh/issues/4384)) and hardened the relay protocol to properly reject invalid messages, backed by expanded proptests ([#4389](https://github.com/n0-computer/iroh/issues/4389)). We also added a regression test for those transient Windows `recv` errors ([#4348](https://github.com/n0-computer/iroh/issues/4348)).
+
+**[v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3)** (July 20) has the fix most likely to matter to you directly: connecting with an empty ALPN now returns a clear error instead of failing in a confusing way ([#4427](https://github.com/n0-computer/iroh/issues/4427)) — if you hit a new error here, that's why, and it's pointing at a real misconfiguration. We also added a pkarr resolver to the n0 preset so discovery works out of the box ([#4412](https://github.com/n0-computer/iroh/issues/4412)), trimmed some noisy warn logs ([#4378](https://github.com/n0-computer/iroh/issues/4378)), and dropped the `vergen` dependency from our `build.rs` files ([#4426](https://github.com/n0-computer/iroh/issues/4426)).
+
+## iroh-ffi
+
+**[v1.1.0](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.1.0)** (July 16) is a minor bump to the language bindings, keeping the FFI layer in step with the iroh 1.0.x series. There's no detailed changelog on this one, so if you consume iroh from another language, grab the latest and check that your generated bindings still line up.
+
+## noq
+
+noq — the QUIC implementation iroh is built on — saw the most activity this period, with two releases.
+
+**[noq-v1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1)** (June 29) is all bugfixes, and a lot of them are about getting multipath and path migration exactly right. Highlights: we stopped updating `local_ip` for probing packets during migration ([#715](https://github.com/n0-computer/noq/issues/715)), moved pending path responses into `PacketNumberSpace` ([#708](https://github.com/n0-computer/noq/issues/708)), started ignoring `PATH_CIDS_BLOCKED` when it refers to abandoned paths ([#710](https://github.com/n0-computer/noq/issues/710)), fixed retransmission of `*_BLOCKED` frames to use the correct info ([#716](https://github.com/n0-computer/noq/issues/716)), fixed `ObservedAddr` retransmission via a path-specific retransmittable data queue ([#705](https://github.com/n0-computer/noq/issues/705)), and closed off an `active_connections` underflow ([#717](https://github.com/n0-computer/noq/issues/717)). On Windows, noq-udp now sets the ioctls that suppress ICMP errors on `recv` ([#707](https://github.com/n0-computer/noq/issues/707)).
+
+**[noq-v1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0)** (July 20) adds new APIs alongside more fixes:
+
+- **New:** `noq::Connection::authenticated` gives you a direct handle on connection authentication.
+- **New:** kernel receive timestamps on Linux and Android, for more accurate timing data straight from the OS.
+- **New:** `ProtectedHeader::decode` now accepts a generic reference, and new paths use the path idle timeout for validation ([#721](https://github.com/n0-computer/noq/issues/721)).
+- **Heads up — API change:** `Connection::poll_timeout` is now immutable (`&self` instead of `&mut self`). If you call it directly, you may need to adjust how you hold the connection.
+- **Fixes:** two CUBIC congestion-control corrections — avoiding a double-reduction on fast convergence, and preserving the excess cwnd increment — plus setting the loss detection timer on path validation failure, and handling overdue timers without polling the async timer.
+
+## What's next
+
+This was a maintenance-heavy cycle, and that's a good place to be right after 1.0 — the interesting story is the steady stream of multipath and congestion-control fixes maturing down in noq. If you're upgrading, the two things to watch are iroh's new empty-ALPN error and noq's now-immutable `poll_timeout`.
+
+Found a bug or something that doesn't behave the way you'd expect? Please tell us: https://github.com/n0-computer/iroh/issues. See you at the next release.
