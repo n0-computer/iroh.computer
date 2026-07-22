@@ -1,0 +1,76 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'okdistribute',
+  date: '2026-07-01',
+  title: 'Release Roundup — June 2026 — iroh 1.0 is here',
+  description: 'iroh reaches 1.0 this month, and the whole stack — noq, iroh-ffi, blobs, gossip and more — moves onto stable 1.0 releases.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the June release roundup for iroh, a modular networking stack in Rust for building direct connections between devices. This is the big one: iroh hit **1.0**, and the rest of the stack moved onto stable 1.0 releases right alongside it.
+
+## iroh
+
+The headline of the month — [iroh v1.0.0](https://github.com/n0-computer/iroh/releases/tag/v1.0.0) is out. After a long road, the core crate is now on a stable 1.0 line, along with a batch of relay and networking features:
+
+- **Relay auth, without an external service.** You can now gate a relay with a [Bearer token](https://github.com/n0-computer/iroh/releases/tag/v1.0.0) directly, no separate access-control service required.
+- **Custom certificate verification.** You can set your own `ServerCertVerifier`. **Breaking:** as part of this, `CaRootsConfig` was renamed to `CaTlsConfig` — update your imports.
+- **Multiple hostnames with Let's Encrypt TLS** for relays serving more than one name.
+- **Configurable `NetReport`**, so you have more control over network probing.
+- Relay URLs were updated to the 1.0 stable endpoints.
+- A connectivity fix: iroh now correctly abandons paths when a new path opens with a worse RTT.
+
+The other **breaking** change to flag: iroh moved to its **1.0 dependencies** across the board. This is the change that ripples out to the rest of the stack below.
+
+Two weeks later, [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) landed as a quick follow-up patch. It restores a missing item for backwards compatibility, stops logging spans from using levels higher than `info`, and — for the Android folks — falls back to default nameservers in `iroh-dns` when no JNI context is initialized. It also cleans up the docs around keep-alive and QUIC streams.
+
+## noq
+
+Our QUIC layer reached its own 1.0 milestone with [noq-v1.0.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.0), which is where a lot of this month's multipath hardening lives:
+
+- Backoff for on-path path challenges.
+- A pile of abandoned-path correctness fixes: abandoned paths are stored in an `ArrayRangeSet`, `PATH_RESPONSE` is ignored once a path is abandoned, and `PathEvent::Established` is never emitted after a path has been abandoned.
+- `PATH_CHALLENGE`/`PATH_RESPONSE` are no longer sent in datagrams that can't be expanded.
+- A BBRv3 fix so `on_packet_sent` is called when ACK-eliciting data is sent, plus a qlog panic guard.
+
+[noq-v1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1) followed with more path and migration fixes: Windows ioctls to suppress ICMP errors on recv, not updating `local_ip` for probing packets during migration, correct info in retransmission of `*_BLOCKED` frames, ignoring `PATH_CIDS_BLOCKED` for abandoned paths, and a guard against an `active_connections` underflow.
+
+## iroh-ffi
+
+The language bindings tracked the release, cutting [v1.0.0-rc.1](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.0.0-rc.1) ahead of the launch and then shipping [v1.0.0](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.0.0) on the same day as core iroh — so if you're consuming iroh from another language, you're on 1.0 too.
+
+## iroh-blobs
+
+[iroh-blobs v0.103.0](https://github.com/n0-computer/iroh-blobs/releases/tag/v0.103.0) brings a correctness fix — the empty blob is now reported as `Complete` from `status` — and new docs covering the `temp_tag` pattern for protecting long-running downloads. **Breaking:** this release updates to iroh 1.0, so upgrade in step with the core crate.
+
+## The rest of the stack moves to 1.0
+
+A few more crates came along for the 1.0 dependency bump. These are mostly mechanical updates, but each is a **breaking** change because of the underlying version jump:
+
+- [iroh-gossip v0.101.0](https://github.com/n0-computer/iroh-gossip/releases/tag/v0.101.0) — updated to iroh 1.0.
+- [irpc v0.17.0](https://github.com/n0-computer/irpc/releases/tag/v0.17.0) — updated to iroh 1.0 **and** noq 1.0.
+- [iroh-services v1.0.0](https://github.com/n0-computer/iroh-services/releases/tag/v1.0.0) — cut its own 1.0.
+
+## What's next
+
+1.0 is a milestone, not a finish line — expect us to keep polishing the relay, multipath, and platform edges now that the API is stable. If you hit something rough while upgrading, tell us: https://github.com/n0-computer/iroh/issues. See you at the next release.
