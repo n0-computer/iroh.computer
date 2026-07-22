@@ -132,7 +132,7 @@ export default function Page() {
 
 
 
-          <section className="bg-gray-900 dark:bg-slate-900 px-6 py-24 sm:py-32 lg:px-8">
+          <section className="bg-gray-900 dark:bg-slate-900 px-6 py-16 sm:py-20 lg:px-8">
             <div className='max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:gap-12'>
               <p className='text-5xl font-bold tracking-tight text-white md:w-1/2 shrink-0'>
                 <span className='text-irohPurple-500'>Open source.</span>
