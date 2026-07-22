@@ -34,7 +34,7 @@ After [last release's security fix](/blog/iroh-1-0-2), we're happy to be back to
 
 ## Connections hold up better under real-world conditions
 
-This release closes up a handful of corner cases in noq: path validation is timed more correctly when a new path opens, stray packets from paths that have already been abandoned are no longer allowed to cause confusion, and a connection-accounting bug that could undercount active connections is fixed. Packet coalescing during the handshake is also more correct now, which matters most on networks that don't behave nicely.
+This release closes up a handful of corner cases in noq: path validation is timed more consistently when a new path opens, better handling of received data referring to abandoned paths, and a connection-accounting bug that could undercount active connections is fixed. Packet coalescing during the handshake is also more correct now, which matters most on networks that don't behave nicely.
 
 ## Fewer confusing errors, less noise
 
