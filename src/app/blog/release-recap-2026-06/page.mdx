@@ -1,0 +1,78 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'okdistribute',
+  date: '2026-07-01',
+  title: 'Release Recap — June 2026 — iroh 1.0 is here',
+  description: 'iroh reaches 1.0.0 (and a quick 1.0.1), iroh-ffi and iroh-services follow, noq goes 1.0, and the rest of the stack lands on 1.0.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the June release recap for iroh, a modular networking stack in Rust for building direct connections between devices. This is the big one: iroh hit **1.0**, and the whole stack moved with it.
+
+## iroh
+
+After a long road, iroh is stable. [**v1.0.0**](https://github.com/n0-computer/iroh/releases/tag/v1.0.0) landed on June 15, followed two weeks later by a small polish release, [**v1.0.1**](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) on June 29.
+
+What's new in v1.0.0:
+
+- **Relay auth without a sidecar.** You can now gate a relay with Bearer token access control directly, no external service required ([#4326](https://github.com/n0-computer/iroh/issues/4326)).
+- **Let's Encrypt across multiple hostnames.** A single relay can serve TLS for several hostnames ([#4337](https://github.com/n0-computer/iroh/issues/4337)).
+- **Configurable NetReport.** More knobs for how iroh probes the network ([#4020](https://github.com/n0-computer/iroh/issues/4020)).
+- **Stable relay URLs.** The default relay URLs now point at the 1.0 stable relays ([#4341](https://github.com/n0-computer/iroh/issues/4341)).
+- **Path selection fix.** iroh now correctly abandons paths when a new one opens with worse RTT ([#4296](https://github.com/n0-computer/iroh/issues/4296)).
+
+Breaking changes to note before you upgrade:
+
+- The relay now lets you set a custom `ServerCertVerifier`, and `CaRootsConfig` was renamed to `CaTlsConfig` ([#4300](https://github.com/n0-computer/iroh/issues/4300)).
+- Everything was bumped to 1.0 dependencies ([#4343](https://github.com/n0-computer/iroh/issues/4343)).
+
+v1.0.1 is a quick follow-up: it restores a missing item for backwards compatibility ([#4346](https://github.com/n0-computer/iroh/issues/4346)), stops logging from using span levels above `info` ([#4375](https://github.com/n0-computer/iroh/issues/4375)), falls back to default nameservers in iroh-dns when there's no JNI context (helpful on Android, [#4371](https://github.com/n0-computer/iroh/issues/4371)), and tidies up the keep-alive and QUIC-stream docs.
+
+## iroh-ffi
+
+The language bindings tracked the same milestone. We shipped a release candidate, [**v1.0.0-rc.1**](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.0.0-rc.1) on June 10, and then the stable [**v1.0.0**](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.0.0) on June 15, so if you're consuming iroh from Swift, Kotlin, Python, or another language, you're now on 1.0 too.
+
+## noq
+
+noq — our QUIC implementation under iroh — also reached [**noq-v1.0.0**](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.0) on June 15, with a bugfix release [**noq-v1.0.1**](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1) on June 29. Most of the work this month was hardening multipath:
+
+- Backoff for on-path path challenges ([#676](https://github.com/n0-computer/noq/issues/676)).
+- Abandoned paths are stored in an `ArrayRangeSet`, `PATH_RESPONSE` is ignored once a path is abandoned, and `PathEvent::Established` is never emitted for an abandoned path ([#691](https://github.com/n0-computer/noq/issues/691), [#700](https://github.com/n0-computer/noq/issues/700), [#695](https://github.com/n0-computer/noq/issues/695)).
+- A BBRv3 fix to call `on_packet_sent` when ACK-eliciting data is sent ([#689](https://github.com/n0-computer/noq/issues/689)), plus a qlog panic squashed ([#702](https://github.com/n0-computer/noq/issues/702)).
+
+noq-v1.0.1 continues in the same vein: Windows ioctls to suppress ICMP errors on recv ([#707](https://github.com/n0-computer/noq/issues/707)), correct handling of `PATH_CIDS_BLOCKED` and `*_BLOCKED` retransmission for abandoned paths ([#710](https://github.com/n0-computer/noq/issues/710), [#716](https://github.com/n0-computer/noq/issues/716)), and an `active_connections` underflow fix ([#717](https://github.com/n0-computer/noq/issues/717)).
+
+## The rest of the stack lands on 1.0
+
+The ecosystem crates caught up to iroh 1.0 this month. Each of these is a **breaking** dependency bump, so plan your upgrade accordingly:
+
+- **iroh-blobs** [**v0.103.0**](https://github.com/n0-computer/iroh-blobs/releases/tag/v0.103.0) updates to iroh 1.0 ([#239](https://github.com/n0-computer/iroh-blobs/issues/239)). It also now reports the empty blob as `Complete` from `status` ([#238](https://github.com/n0-computer/iroh-blobs/issues/238)), and the docs gained a `temp_tag` pattern for protecting long-running downloads ([#236](https://github.com/n0-computer/iroh-blobs/issues/236)).
+- **iroh-gossip** [**v0.101.0**](https://github.com/n0-computer/iroh-gossip/releases/tag/v0.101.0) updates to iroh 1.0 ([#148](https://github.com/n0-computer/iroh-gossip/issues/148)).
+- **irpc** [**v0.17.0**](https://github.com/n0-computer/irpc/releases/tag/v0.17.0) updates to iroh 1.0 and noq 1.0 ([#103](https://github.com/n0-computer/irpc/issues/103)).
+- **iroh-services** reached [**v1.0.0**](https://github.com/n0-computer/iroh-services/releases/tag/v1.0.0) alongside everything else.
+
+## What's next
+
+1.0 is a milestone, not a finish line — expect us to keep the patch releases coming as we shake out the edges of the stable API. Thanks to everyone who got us here.
+
+Found a bug or something that doesn't feel right on 1.0? Please tell us: https://github.com/n0-computer/iroh/issues. See you at the next release.
