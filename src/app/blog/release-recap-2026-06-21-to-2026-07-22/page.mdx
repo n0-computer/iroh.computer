@@ -1,0 +1,70 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'okdistribute',
+  date: '2026-07-23',
+  title: 'Release Recap — June 21 to July 22, 2026 — post-1.0 polish',
+  description: 'Three iroh patch releases, a multipath and congestion-control pass in noq, iroh-ffi 1.1.0, and in-progress work across the stack.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the latest release recap for iroh, a modular networking stack in Rust for building direct connections between devices. This one covers June 21 through July 22, 2026 — the first full stretch after 1.0, and it reads like it: three patch releases for iroh, a substantial multipath and congestion-control pass in noq, and an iroh-ffi release that fills in gaps for mobile and JS users.
+
+## iroh and noq
+
+iroh shipped three patch releases in this window, all backwards compatible with 1.0 unless noted.
+
+- **[v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1)** (June 29) restored an item that had gone missing for backwards compatibility, stopped logging spans above `info` level (so your logs get quieter without you doing anything), and taught `iroh-dns` to fall back to default nameservers when no JNI context has been initialized — which matters if you're embedding iroh on Android. Docs got some love too: clearer keep-alive docs, a better description of QUIC streams, more context around portmapping config, and a fixed link to the `iroh-dns-server` production config.
+- **[v1.0.2](https://github.com/n0-computer/iroh/releases/tag/v1.0.2)** (July 6) added the ability to update `iroh-relay`'s per-client rate limit live, so you can tune a running relay instead of restarting it. On the bugfix side: a fairness counter issue in the receive transport lanes, better handling of invalid relay protocol messages (with expanded proptests behind it), and a fix to the `iroh-dns-server` write benchmark measurement. There's also a regression test for the transient Windows recv errors we chased earlier.
+- **[v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3)** (July 20) added the pkarr resolver to the n0 preset, so discovery works the way you'd expect out of the box with the default configuration. We also cut down the number of `warn` logs iroh emits, and dropped `vergen` from our `build.rs` files, which trims your build graph.
+
+  **Heads up:** connecting with an empty ALPN is now an error. If you were passing an empty ALPN and getting away with it, this release will tell you about it.
+
+[noq](https://github.com/n0-computer/noq), our QUIC implementation, had a busy month, mostly in multipath and congestion control.
+
+- **[noq-v1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1)** (June 29) is a pile of correctness fixes for path handling: probing packets no longer update `local_ip` during migration, `PATH_CIDS_BLOCKED` is ignored when it refers to abandoned paths, `*_BLOCKED` frames retransmit with the correct info, pending path responses moved to the `PacketNumberSpace`, and `ObservedAddr` retransmission now goes through a path-specific retransmittable data queue. There's also an `active_connections` underflow fix, and on Windows we now set the ioctls that suppress ICMP errors on recv — a long-standing source of spurious failures.
+- **[noq-v1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0)** (July 20) brings new features: `noq::Connection::authenticated`, kernel receive timestamps on Linux and Android (better RTT measurements where the OS can give them to us), and path validation that uses the path idle timeout when opening a new path. Congestion control got two CUBIC fixes — no more double-reducing on fast convergence, and excess cwnd increment is now preserved — plus the loss detection timer is set correctly on path validation failure, and overdue timers are handled without polling the async timer.
+
+  **Two API changes to note if you drive the state machine directly:** `Connection::poll_timeout` is now an immutable method, and `ProtectedHeader::decode` can take a generic reference.
+
+## iroh-ffi
+
+**[v1.1.0](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.1.0)** (July 16) landed without a written changelog, so here's what's in it. `EndpointBuilder` gained a constructor and a `bind()` method, which makes endpoint setup from the bindings much less awkward. Error handling across the bindings got better, the Swift xcframework now includes a Mac Catalyst slice, and the README stopped making stale claims about x86_64 macOS support and now points Go users at iroh-go. Release artifacts are also built and verified more carefully than they were.
+
+A little more has landed since that tag and isn't released yet, including a fix to ALPN handling in the Python example to use bytes directly.
+
+## Elsewhere in the stack
+
+A few repos moved without cutting releases. This is all unreleased, in-progress work:
+
+- **iroh-docs** got a resilience fix: an invalid message no longer aborts the receive loop.
+- **iroh-services** added wasm support to `net_diagnostics`, and the README now covers usage and diagnostics setup.
+- **irpc** was quiet — a semver check in CI and a docs.rs config cleanup, nothing user-facing.
+- On our hosted service, we've been reshaping the dashboard around endpoints (endpoints are now the home view, with a proper endpoint detail page), showing relay pricing per hour rather than per month, and upgrading the stack to iroh 1.0.2.
+
+## What's next
+
+The 1.0.x line is doing what a 1.0.x line should: small, safe fixes you can take without thinking hard about it. Most of the interesting motion right now is in noq's multipath and congestion control, and that's where we expect the next round of user-visible improvements to come from.
+
+If you hit something — a bug, a regression, a doc that lies to you — please tell us: https://github.com/n0-computer/iroh/issues
+
+See you at the next release.
