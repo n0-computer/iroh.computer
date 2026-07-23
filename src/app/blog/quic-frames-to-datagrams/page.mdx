@@ -52,11 +52,11 @@ But if the client sends the first packet in the connection, which key does it ac
 <Note>If you're confused about what the difference between a packet and a datagram is, read on. The distinction should become clear later and will prove to be useful.</Note>
 
 
-## QUIC's encryption levels: Initial, Handshake and Data
+## QUIC's encryption levels: Initial, Handshake and 1-RTT
 
 These three encryption levels are in the order of increasing guarantees.
-A connection starts out using "Initial" keys, then during the handshake moves to "Handshake" keys and after the full key exchange moves on to the "data" encryption level.
-We only ever send application data using the "data" encryption level, also sometimes called the 1-RTT encryption level.
+A connection starts out using "Initial" keys, then during the handshake moves to "Handshake" keys and after the full key exchange moves on to the "1-RTT" encryption level.
+We only ever send application data using the "1-RTT" encryption level.
 
 <Note>There's some nuance with QUIC's 0-RTT features, but other than that the above holds.</Note>
 
@@ -69,14 +69,14 @@ While the first encryption level is mostly used for the first TLS message ("CRYP
 At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client with this encryption level.
 
 Finally, the client can derive the same key for the handshake encryption level once it received the server's key share.
-Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The data key.
-Although both keys are derived from the ephemeral key shares from the client and server, the data encryption level provides some important guarantees by including a hash of the whole handshake transcript.
+Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The 1-RTT key.
+Although both keys are derived from the ephemeral key shares from the client and server, the 1-RTT encryption level provides some important guarantees by including a hash of the whole handshake transcript.
 
-![QUIC handshake sequence across Initial, Handshake, and Data encryption levels](/blog/quic-frames-to-datagrams/handshake-sequence.svg)
+![QUIC handshake sequence across Initial, Handshake, and 1-RTT encryption levels](/blog/quic-frames-to-datagrams/handshake-sequence.svg)
 
 <Note>If you're interested in what *exactly* goes on during a QUIC connection, I recommend taking a look at ["The Illustrated QUIC Connection"](https://quic.xargs.org/)</Note>
 
-Now, it's not quite as simple as sending some data in the initial level, then responding with some in the handshake level, and finally switching to data.
+Now, it's not quite as simple as sending some data in the initial level, then responding with some in the handshake level, and finally switching to 1-RTT.
 For example, in order for the client to be able to read the handshake data it needs to know the server's key share.
 But that key share itself needs to be encrypted only with the initial encryption level.
 That said, once the client has read this key share it could immediately read the next server message in the handshake encryption level.
@@ -86,7 +86,7 @@ It turns out that in many cases both of these packets would easily fit into a si
 
 So that's exactly what is done in practice: We send both packets in one datagram.
 
-Once the client receives those two packets, it does something similar: It sends its "Finished" message in the handshake space and can at the same time start sending in the data encryption level.
+Once the client receives those two packets, it does something similar: It sends its "Finished" message in the handshake space and can at the same time start sending in the 1-RTT encryption level.
 
 
 # Wait. Send in two encryption levels simultaneously?
@@ -103,7 +103,7 @@ In terms of how it works, it's actually a fairly simple operation:
 Each packet in the initial or handshake encryption level is a so-called "long header" packet which means it also has a length field indicating where the packet ends.
 This allows us to put two packets prepended with their QUIC headers back-to-back into a datagram.
 
-This does not work with the data encryption level. In that level the header doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
+This does not work with 1-RTT packets, which are of the so-called "short header" packet type: the short header doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
 
 
 # Politely Pleading: Please Properly Prepare Packets Padded!
@@ -157,13 +157,13 @@ It's usually safer to go with just some "minimum required remaining space" bytes
 
 ## DPLPMTUD and other causes of padding
 
-
-We're now moving on from the handshake to an established connection, during which there are other cases in which we'd like to make sure datagrams have certain sizes.
-When we're migrating from one network path to using another (both using normal QUIC RFC 9000 connection migration as well as opening new QUIC multipath paths), we like to ensure the new path supports an MTU of 1200.
+Let's move on from the handshake to an established connection.
+During a connection there are other cases in which we'd like to make sure datagrams have certain sizes.
+For example when we're migrating from one network path to using another (both using normal QUIC RFC 9000 connection migration as well as opening new QUIC multipath paths), we like to ensure the new path supports an MTU of 1200.
 
 Another case is DPLPMTUD (what an acronym!), which probes bigger datagram sizes to see if we can send packets *bigger* than the 1200 MTU.
 Ethernet might support packets of up to around 1500 bytes, with the payload being as big as 1472 bytes maximum.
-This can help goodput by reducing the proportion of headers to actual payloads.
+This can help goodput by reducing the proportion of headers and other overheads to actual payloads.
 
 The incredible DPLPMTUD acronym stands for "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
 
@@ -181,6 +181,8 @@ In noq, we use a maximum GSO batch size of 10 as a compromise between batching s
 So with our 1472 bytes of data per UDP packet, we send up to 14720 bytes per batch in practice.
 Great! This reduces syscall overhead quite a bit.
 
+<Note>We've covered linux's GSO here, but windows supports a very similar API.</Note>
+
 ![Without GSO each datagram needs its own syscall; with GSO one syscall sends a whole batch](/blog/quic-frames-to-datagrams/gso-contrast.svg)
 
 What's the catch?
@@ -196,7 +198,7 @@ Yet another size constraint :)
 
 ## Clipping to Segment Size
 
-Because we need to provide one "segment size"/"stride" for all datagrams in a GSO batch, the first datagram we produce determines the exact size of all further datagrams (except for the last one, but that's yet another edge case).
+Because we need to provide one "segment size"/"stride" for all datagrams in a GSO batch, the first datagram we produce determines the exact size of all further datagrams (except for the last one, but that's besides the point).
 
 So let's say an application queues two frames that have a fixed length of 800 bytes.
 (An example of something that would create such frames would be frames queued via the QUIC datagram extension, but I'm not going to explain that to avoid confusion.)
@@ -288,7 +290,7 @@ We haven't done this work yet, but are definitely considering it.
 
 Now with multipath, this situation gets more complicated yet again.
 
-There are now many "packet number spaces" associated with the data encryption level.
+There are now many "packet number spaces" associated with the 1-RTT encryption level.
 And as we've established, these packet number spaces mean tracking congestion control separately.
 
 <Note>This doesn't *have* to be the case. You can "couple" congestion controllers together and make them aware of each other, e.g. as described in [RFC 6356](https://datatracker.ietf.org/doc/html/rfc6356).</Note>
