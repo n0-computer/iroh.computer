@@ -36,13 +36,15 @@ There's nothing to switch on. If you already connect through the [`iroh_services
 
 Iroh connects endpoints directly whenever it can, [hole-punching] through NATs so traffic flows device to device. When it can't, a [relay] carries the connection so it still works. The public relays we run at n0 handle this for free, on a best-effort basis, shared by everyone.
 
-If you need guaranteed capacity, you run your own relays. That has always been the honest answer, and it invites a fair question: why not spin up a couple of boxes and be done? Managed relays are our answer. For roughly the cost of running those boxes yourself, you get relays we operate, in the regions you pick, wired into your project.
+If you run your own relays, you can set up your own authentication scheme - iroh is unopinionated about that.
 
-But a relay you pay for is an allocation, and an unauthenticated relay is an open door. Anyone who learns the URL can point their endpoints at it and ride your capacity. Your usage can be misattributed by someone else connecting through your relay. On the public internet, "we didn't advertise the URL" is not access control. So managed relays check who is connecting.
+But we did not have an easy to use way to authwnticate endpoints to relays, to ensure you control who connects to your relays. 
+
+An unauthenticated relay is an open door. Anyone who learns the URL can point their endpoints at it and ride your capacity. Your usage can be misattributed by someone else connecting through your relay. On the public internet, "we didn't advertise the URL" is not access control.
 
 ## How it works
 
-Every relay connection starts with an HTTP handshake, the same one that upgrades to the websocket your traffic rides over. Authentication travels in a standard header:
+Every relay connection starts with an HTTP handshake, the same one that upgrades to the websocket. Authentication travels in a standard header:
 
 ```
 Authorization: Bearer <token>
@@ -61,7 +63,7 @@ Two properties fall out of this that we like.
 
 **A leaked URL is useless.** The relay URL is not a secret you have to guard. Without a token issued by your API key, dialing it gets you nothing.
 
-**A leaked token is nearly useless too.** The token is addressed to one specific endpoint's public key, so presenting it from a different endpoint fails: the handshake would still have to prove ownership of that endpoint's secret key, which the token alone does not give you. Stealing the token is not enough. You would have to steal the endpoint.
+**A leaked token enables connections, but not impersonations.** The token is addressed to one specific endpoint's public key, so presenting it from a different endpoint fails: the handshake would still have to prove ownership of that endpoint's secret key, which the token alone does not give you. Stealing the token is not enough. You would have to steal the endpoint.
 
 Revocation follows the same path. Your API key is the identity the relay recognizes, so rotating or deleting a key stops honoring tokens it issued, and connections riding those tokens are dropped.
 
