@@ -41,6 +41,11 @@ project's API key can use them.
 There's nothing to switch on. If you already connect through the
 [`iroh_services` preset], your endpoints authenticate themselves. 
 
+One caveat: this is the default for relays deployed from June 2026 onward. If
+you deployed a relay before then, it stays open, so nothing breaks for the
+endpoints already using it. To turn it on, head to your relay's
+[authentication settings] under Relays > Settings. 
+
 ## The problem: a relay URL is a credential you can't revoke
 
 Someone finds your relay URL in a public repo, a client bundle, or a screenshot,
@@ -141,6 +146,7 @@ talk about relays, and we want to make sure you get the most out of them.
 [Managed relays]: https://docs.iroh.computer/iroh-services/relays/managed
 [managed relays guide]: https://docs.iroh.computer/iroh-services/relays/managed
 [`iroh_services` preset]: https://docs.iroh.computer/iroh-services/relays/managed
+[authentication settings]: https://docs.iroh.computer/iroh-services/relays/managed#authentication
 [dashboard]: https://services.iroh.computer
 [relay]: https://docs.iroh.computer/concepts/relays
 [hole-punching]: https://docs.iroh.computer/concepts/nat-traversal
