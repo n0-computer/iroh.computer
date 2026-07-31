@@ -28,23 +28,33 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-[Managed relays] on [Iroh Services] are now **authenticated by default**. Only endpoints carrying a token minted from your project's API key can use them, so the relay capacity you pay for is yours and nobody else's.
+[Managed relays] on [Iroh Services] are now **authenticated by default**. Only
+endpoints carrying a token issued by your project's API key can use them. 
 
-There's nothing to switch on. If you already connect through the [`iroh_services` preset], your endpoints authenticate themselves. Read on for what changed, and why a relay you pay for needs a lock on the door.
+There's nothing to switch on. If you already connect through the
+[`iroh_services` preset], your endpoints authenticate themselves. 
 
 ## Why a relay needs a door
 
-Iroh connects endpoints directly whenever it can, [hole-punching] through NATs so traffic flows device to device. When it can't, a [relay] carries the connection so it still works. The public relays we run at n0 handle this for free, on a best-effort basis, shared by everyone.
+When two devices can't get a direct connection for whatever reason, a [relay] carries the
+connection so data still flows. The public relays we run at [number0](https://n0.computer) handle this for
+free, on a best-effort basis, shared by everyone.
 
-If you run your own relays, you can set up your own authentication scheme - iroh is unopinionated about that.
+An unauthenticated relay is an open door. Anyone who learns the URL can point
+their endpoints to it start sending traffic through it.
 
-But we did not have an easy to use way to authwnticate endpoints to relays, to ensure you control who connects to your relays. 
+If you run your own relays, you can set up your own authentication scheme - iroh
+is unopinionated about that.
 
-An unauthenticated relay is an open door. Anyone who learns the URL can point their endpoints at it and ride your capacity. Your usage can be misattributed by someone else connecting through your relay. On the public internet, "we didn't advertise the URL" is not access control.
+But until now, we did not have an easy to authenticate endpoints to
+relays on the iroh services managed dedicated relays, and ensure you control who
+connects to them. 
+
 
 ## How it works
 
-Every relay connection starts with an HTTP handshake, the same one that upgrades to the websocket. Authentication travels in a standard header:
+Every relay connection starts with an HTTP handshake, the same one that upgrades
+to the websocket. Authentication travels in a standard header:
 
 ```
 Authorization: Bearer <token>
@@ -55,15 +65,20 @@ The token is a signed [capability token]. It carries four things:
 - who **issued** it: your project's API key
 - who it's **for**: the public key of the endpoint presenting it
 - what it **grants**: permission to use the relay, and nothing else
-- when it **expires**
+- when it **expires**: can be set to a short time window, so if it is compromised it can't be used for long
 
-When an endpoint connects, iroh's relay handshake first proves the endpoint actually owns its key. It does this for every connection, authenticated or not. Then the relay checks the token: is the signature valid, is it unexpired, does it grant relay use, is it addressed to this exact endpoint, and was it issued by one of your project's API keys? If every answer is yes, the endpoint is admitted. Otherwise it is turned away before any traffic flows.
+When an endpoint connects, iroh's relay handshake first proves the endpoint
+actually owns its key. It does this for every connection, authenticated or not.
+Then the relay checks the token: is the signature valid, is it unexpired, does
+it grant relay use, is it addressed to this exact endpoint, and was it issued by
+one of your project's API keys? If every answer is yes, the endpoint is
+admitted. 
 
 Two properties fall out of this that we like.
 
-**A leaked URL is useless.** The relay URL is not a secret you have to guard. Without a token issued by your API key, dialing it gets you nothing.
+**A leaked URL is harmless.** Without a token issued by your API key, dialing it gets you nothing.
 
-**A leaked token enables connections, but not impersonations.** The token is addressed to one specific endpoint's public key, so presenting it from a different endpoint fails: the handshake would still have to prove ownership of that endpoint's secret key, which the token alone does not give you. Stealing the token is not enough. You would have to steal the endpoint.
+**A leaked token enables connections, but not impersonations.** The token is addressed to one specific endpoint's public key, so presenting it from a different endpoint fails: the handshake would still have to prove ownership of that endpoint's secret key, which the token alone does not give you. 
 
 Revocation follows the same path. Your API key is the identity the relay recognizes, so rotating or deleting a key stops honoring tokens it issued, and connections riding those tokens are dropped.
 
@@ -90,19 +105,22 @@ async fn main() -> anyhow::Result<()> {
 
 Your API secret never leaves your process. The preset uses it to derive a relay-scoped token, and that derived token is what travels to the relay. Point `.relays(...)` at the relay URLs from your project dashboard, set `IROH_SERVICES_API_SECRET`, and that's it.
 
-## When you want an open door
-
-Authentication is the default, not a requirement. Some deployments genuinely want any endpoint with the URL to connect: a public demo, a community network, a relay you are deliberately sharing. You can turn authentication off per project from the [dashboard], and the relay will admit every endpoint that reaches it.
-
-We don't recommend it for anything you are metering or paying for, for the open-door reasons above, but it's there when the open door is the point.
-
 ## What's next
 
-Today each managed relay is provisioned for a single project. We're working toward packing many projects behind one shared relay endpoint, routed by hostname, so a global multi-region relay network costs even less to run. The authentication model above is what makes that safe: every connection already proves which project it belongs to, so one shared port can serve many tenants without leaking traffic or capacity between them.
+Today, each endpoint gets the same capabilities. In the future, we'll add the
+ability to mint tokens with different scopes, so you can grant some endpoints
+more permissions than others. Additionally, we will be allowing you to revoke
+access to endpoints individually, and an API to do all of this outside of the
+dashboard. If any of this sounds interesting to you, please reach out on
+[Discord] and let us know.
 
-If you're running relays today, deploy at least two in different regions so one region going down doesn't strand your endpoints. The [managed relays guide] walks through the full setup.
+If you're running relays today, deploy at least two in different regions so one
+region going down doesn't strand your endpoints. The [managed relays guide]
+walks through the full setup.
 
-Questions, or want to talk through your relay setup? Join us on [Discord]. And to keep up with all things iroh, follow us on [Twitter], [Mastodon], and [Bluesky].
+Questions, or want to talk through your relay setup? Join us on [Discord] or
+[schedule a call](https://cal.com/team/number-0/iroh-services) with us. We love to
+talk about relays, and we want to make sure you get the most out of them.
 
 [Iroh Services]: https://services.iroh.computer
 [Managed relays]: https://docs.iroh.computer/iroh-services/relays/managed
@@ -113,6 +131,5 @@ Questions, or want to talk through your relay setup? Join us on [Discord]. And t
 [hole-punching]: https://docs.iroh.computer/concepts/nat-traversal
 [capability token]: https://docs.rs/rcan
 [Discord]: https://discord.com/invite/DpmJgtU7cW
-[Twitter]: https://x.com/iroh_n0
 [Mastodon]: https://mastodon.social/@n0iroh
 [Bluesky]: https://bsky.app/profile/iroh.computer
