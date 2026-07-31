@@ -1,0 +1,216 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: true,
+  author: 'Ruediger Klaehn',
+  date: '2026-08-04',
+  title: 'Iroh on Pimoroni Presto',
+  description: 'Running iroh on Pimoroni Presto',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Over the last months I tried to get iroh to work on all embedded devices I could get my hands on. What initially [required a giant stack of code changes][iroh-on-esp32] to iroh now in many cases works with the published iroh crate. But so far I have focused on the [esp32] family of embedded devices.
+
+After a lot of back and forth with customs I now got my hands on two Raspberry Pi embedded computers: a Pimoroni Presto and a bare Raspberry Pi Pico 2. So naturally I want to get iroh to work on these as well. For now this is a pure proof of concept hack. Just get it to work, then think about clean up later.
+
+# Std or nostd
+
+Iroh currently does not support nostd. Of course it is possible with a large set of patches to get it to work on nostd systems. But this is a major change that might work for a demo but will be almost impossible to keep up to date. Besides, I am so happy that we were able to get rid of the giant patch set for esp32 support and don't want to go back again. Another reason for std is that while it might be possible with a lot of work to get iroh itself to work on a nostd environment, all our protocol and other support crates assume std. So essentially you would have to fork not just iroh but our entire protocol ecosystem to do something actually useful.
+
+So... can we maybe just get std to work?
+
+# Std on Pico
+
+The esp32 std environment, [esp-idf-sys], [esp-idf-hal], and [esp-idf-svc], is community provided, but very active and up to date. In contrast, all that I could find for the Pico is an old crate that provides a *very limited* (no WiFi) std environment for the Raspberry Pi Pico. [pico-std-rust] supports a std environment on Pi Pico RP2040. But still, better than nothing. We will have to add WiFi support and update it to RP2350, but it is a useful baseline.
+
+# Update to RP2350
+
+Updating to RP2350 was pretty straightforward in the age of LLM coding assistants: just tell your favourite robot to change the build setup based on published info for the Pico 2, then run the built-in examples. The Pico 2 is an interesting chip - it has two RISC-V cores and two ARM cores, and you can choose which one to support. I decided to use the ARM cores for simplicity. We need a new target triple `thumbv8m_main-none-espidf-eabi`.
+
+Wait a minute, this looks weird! espidf? Yes, we are reusing some esp32 code. `os = "espidf"` tricks rustc into building its existing unix std implementation (Newlib + ESP-IDF's pthread glue), running on [FreeRTOS] underneath.
+
+```
+cargo run --example hello
+cat /dev/cu.usbmodem214101
+Hello from std Rust on RP2350!
+Hello from std Rust on RP2350!
+Hello from std Rust on RP2350!
+...
+```
+
+# WiFi support
+
+The two boards I have available are a Raspberry Pi Pico 2 without WiFi and a Pimoroni Presto with WiFi and touch screen display. Obviously the Presto is the more interesting target. The next step is to make WiFi work so the device can be used with iroh without having to use usb networking.
+
+We are using FreeRTOS just like on esp32, so we can use the same architecture: the WiFi driver and the lwIP TCP/IP stack run as FreeRTOS tasks. The driver is the C CYW43 driver from the Pico SDK — the Presto-specific part is just telling it which pins the radio is on — plus a bunch of tedious glue to integrate it with rust std. The payoff: lwIP exposes the standard C socket API, which is exactly what rust's std expects to find, so once the stack is up, `std::net` just works.
+
+<Note>
+This is done via a horrible hack: we don't have a file system, so we just assume that every file descriptor other than stdin, stdout and stderr is a WiFi socket.
+</Note>
+
+```
+cargo run --example wifi --features wifi
+cat /dev/cu.usbmodem214101
+Wi-Fi connected; IPv4 address: 192.168.0.136
+Wi-Fi is up
+Wi-Fi is up
+...
+```
+
+# PSRAM
+
+So now we got WiFi to work, but to get iroh to work we also need to enable PSRAM. We borrow the PSRAM setup code from MicroPython's rp2 port, but just running it caused a lot of misbehaviour. It turns out the setup code must run purely from internal RAM, since it reconfigures the very bus that flash execution goes through. The MicroPython version computes QMI timing values with 64-bit divisions, which the C compiler turns into calls to a division helper — located in flash. To avoid this we hardcode the timing constants for the Presto's 200 MHz system clock.
+
+The original MicroPython code computes the timing values from the system clock — *after* it has already taken over the bus that flash execution runs through:
+
+```c
+/* take direct control of the QMI controller — the same controller
+   that serves flash execution (XIP) */
+qmi_hw->direct_csr = ... | QMI_DIRECT_CSR_EN_BITS;
+...
+const int clock_hz = clock_get_hz(clk_sys);
+int divisor = (clock_hz + max_psram_freq - 1) / max_psram_freq;
+int rxdelay = divisor;
+/* 64-bit division: not an instruction on Cortex-M33, but a call into
+   a libgcc helper function — which the linker put in flash. Boom. */
+const int clock_period_fs = 1000000000000000ll / clock_hz;
+const int max_select = (125 * 1000000) / clock_period_fs;
+const int min_deselect = (18 * 1000000) / clock_period_fs - (divisor + 1) / 2;
+```
+
+What we have to do instead is to hardcode all these constants, evaluated once at 200 MHz, so that we don't have a 64 bit division:
+
+```c
+const int divisor = 2;
+const int rxdelay = 2;
+const int max_select = 25;
+const int min_deselect = 3;
+```
+
+With the timing constants in place, the actual setup is straightforward: probe the chip in QMI direct mode (read the ID, decode the size — 8 MiB on the Presto), program the QMI M1 window's timing and QPI read/write command registers, and mark the XIP window writable. After that the PSRAM simply appears in the address space, memory mapped at `0x11000000`.
+
+But having the memory in the address space doesn't mean anything allocates from it yet. On this target, Newlib's malloc is rust std's system allocator, and Newlib grows its heap by calling `_sbrk`. The Pico SDK provides a `_sbrk` that hands out internal SRAM; we override it with one that hands out PSRAM instead:
+
+```c
+#define PSRAM_BASE ((uintptr_t)0x11000000u)
+
+static uintptr_t psram_heap_end;
+
+void *_sbrk(int increment) {
+    uintptr_t heap_start = PSRAM_BASE;
+    uintptr_t heap_limit = PSRAM_BASE + detected_size;
+    uintptr_t current = psram_heap_end != 0 ? psram_heap_end : heap_start;
+    /* bounds checks omitted */
+    psram_heap_end = current + increment;
+    return (void *)current;
+}
+```
+
+So every rust allocation — every `Box`, `Vec` and TLS buffer — transparently lands in the external 8 MiB. FreeRTOS has its own separate heap, from which task stacks and kernel objects are allocated, and that one remains in fast internal SRAM.
+
+An additional worry was that atomic read-modify-write operations, which compile to exclusive load/store instructions on this platform, would hang or behave weirdly when in PSRAM. We use just a single core, and did a little test to make sure atomics work on PSRAM. How atomics behave when PSRAM is concurrently accessed from two cores is something we haven't yet determined.
+
+# Display
+
+Now we have all things in place to run iroh - sufficient rust heap and WiFi. But using the Presto without using the display would be a bit pointless. So we also needed to get the display to work. The display does not have its own frame buffer. Instead it needs to constantly read from RAM, and to have a full resolution display the only place where the frame buffer can live is PSRAM.
+
+You can set up the display to read directly from PSRAM - it is mapped into our address space after all. But then you will have constant issues when there is anything else going on on the bus.
+
+The fix is buffering: the frame buffer lives in PSRAM, but the display is never fed from it directly. Core 1, which is otherwise unused, drives the scanout. A DMA channel prefetches upcoming lines from the PSRAM frame buffer into a small ring of eight line buffers in internal SRAM, and a second DMA channel feeds the panel from there. Bus contention now shows up as prefetch latency that gets absorbed by the buffer, instead of missing pixels on the wire.
+
+Even so, the bandwidth budget is tight. A full 480x480 RGB565 scanout reads two bytes per pixel from PSRAM, continuously, while the rust heap lives on the same chip. We ended up running the panel at about 31 Hz. Going slower to gain more margin does not work: below a certain dot clock the ST7701 loses vertical synchronization and starts repeating rows. So the refresh rate is a compromise — fast enough to keep the panel in sync, slow enough to leave QMI bandwidth for everything else.
+
+# Iroh
+
+Now all that remains is a pretty standard embedded iroh setup - bare bones DNS resolver and pure rust crypto provider. Since we have the display, we use it to display the current IP and relay addresses, as well as the remote endpoint id if there is an ongoing echo connection.
+
+We are of course using a single threaded tokio runtime. One additional funny quirk of the embedded setup is that we need to perform a SNTP time sync before starting iroh. Otherwise our system time is 1970-01-01, and all certificates will be rejected for being far in the future.
+
+Another small embedded related change: we store the endpoint secret key in the last 4096 byte sector of the flash memory, so it does not change after reboots or reflashes.
+
+To remove the endpoint id you have to delete the complete flash memory using `picotool erase -f`.
+
+# LEDs
+
+The Presto has a number of RGB LEDs on the back. We can use them to show the current connection state. Initially red, yellow when we have a direct address, then green once we have a home relay, and white when there is an ongoing connection.
+
+# Bare pico RP2350
+
+We did run hello on the Pico 2, and it works without issues. So while we don't have a Pico 2 W available for testing, I have little doubt that it could be made to work quickly.
+
+# The code
+
+All the code is in the [iroh-pico-examples] repo — a fork of [pico-std-rust][pico-std-rust] with the RP2350 port, WiFi, PSRAM and display support, and the iroh echo examples.
+
+<Note>
+Disclaimer: this repo is a hack to get iroh to work on the Presto. It works reliably for me, but YMMV.
+</Note>
+
+# Trying it out
+
+Cargo run will look for an attached presto and try to flash it. To do so the presto has to be in bootsel mode. To get it into bootsel mode, press boot, then press reset while boot is still pressed.
+
+```
+❯ cargo run --release -p iroh-echo-full
+Family ID 'rp2350-arm-s' can be downloaded in absolute space:
+  00000000->02000000
+Loading into Flash:   [==============================]  100%
+Verifying Flash:      [==============================]  100%
+  OK
+
+The device was rebooted to start the application.
+```
+
+After flashing, cargo run will detach, so if you want to see the output you will have to hunt for the device and `cat` it:
+```
+❯ ls /dev/cu*
+/dev/cu.Bluetooth-Incoming-Port	/dev/cu.BoseQuietComfort35	/dev/cu.debug-console		/dev/cu.usbmodem214101
+> cat /dev/cu.usbmodem214101
+Wi-Fi connected; IPv4 address: 192.168.0.136
+Synchronizing wall clock with SNTP...
+Wall clock synchronized: Unix 1785504933
+Starting full relay-enabled iroh echo endpoint
+...
+Short ticket: endpointabf2qz7z55jx7xd4ge4mitsd3ynmpqmi5monug2xtx7l5ed6vo4cwaa
+...
+```
+
+Then we can use an echo client to connect. There is no client in the repo, so we use the one from the esp32 examples.
+
+```
+Connecting to presto...
+Connected!
+Sent: Hello from iroh (crates.io)!
+Received: Hello from iroh (crates.io)!
+Echo OK — crates.io iroh <-> presto!
+```
+
+
+
+
+[esp-idf-sys]: https://docs.rs/esp-idf-sys
+[esp-idf-hal]: https://docs.rs/esp-idf-hal
+[esp-idf-svc]: https://docs.rs/esp-idf-svc
+[pico-std-rust]: https://github.com/tana/pico-std-rust
+[freertos]: https://www.freertos.org/
+[iroh-pico-examples]: https://github.com/n0-computer/iroh-pico-examples
+[iroh-on-esp32]: /blog/iroh-on-esp32
+[esp32]: https://www.espressif.com/en/products/socs/esp32
