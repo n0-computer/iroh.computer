@@ -1,7 +1,6 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
-  draft: true,
   author: 'Ruediger Klaehn',
   date: '2026-08-04',
   title: 'Iroh on Pimoroni Presto',
@@ -29,7 +28,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Over the last months I tried to get iroh to work on all embedded devices I could get my hands on. What initially [required a giant stack of code changes][iroh-on-esp32] to iroh now in many cases works with the published iroh crate. But so far I have focused on the [esp32] family of embedded devices.
 
-After a lot of back and forth with customs I now got my hands on two Raspberry Pi embedded computers: a Pimoroni Presto and a bare Raspberry Pi Pico 2. So naturally I want to get iroh to work on these as well. For now this is a pure proof of concept hack. Just get it to work, then think about clean up later.
+After a lot of back and forth with customs I now got my hands on two Raspberry Pi embedded computers: a [Pimoroni Presto] and a bare [Raspberry Pi Pico 2]. So naturally I want to get iroh to work on these as well. For now this is a pure proof of concept hack. Just get it to work, then think about clean up later.
 
 # Std or nostd
 
@@ -39,7 +38,7 @@ So... can we maybe just get std to work?
 
 # Std on Pico
 
-The esp32 std environment, [esp-idf-sys], [esp-idf-hal], and [esp-idf-svc], is community provided, but very active and up to date. In contrast, all that I could find for the Pico is an old crate that provides a *very limited* (no WiFi) std environment for the Raspberry Pi Pico. [pico-std-rust] supports a std environment on Pi Pico RP2040. But still, better than nothing. We will have to add WiFi support and update it to RP2350, but it is a useful baseline.
+The esp32 std environment, [esp-idf-sys], [esp-idf-hal], and [esp-idf-svc], is community provided, but very active and up to date. In contrast, all that I could find for the Pico is an old crate [pico-std-rust] that provides a very limited std environment for the Raspberry Pi Pico RP2040. But still, better than nothing. We will have to add WiFi support and update it to RP2350, but it is a useful baseline.
 
 # Update to RP2350
 
@@ -77,7 +76,7 @@ Wi-Fi is up
 
 # PSRAM
 
-So now we got WiFi to work, but to get iroh to work we also need to enable PSRAM. We borrow the PSRAM setup code from MicroPython's rp2 port, but just running it caused a lot of misbehaviour. It turns out the setup code must run purely from internal RAM, since it reconfigures the very bus that flash execution goes through. The MicroPython version computes QMI timing values with 64-bit divisions, which the C compiler turns into calls to a division helper — located in flash. To avoid this we hardcode the timing constants for the Presto's 200 MHz system clock.
+So now we got WiFi to work, but to get iroh to work we also need to enable PSRAM. We borrow the PSRAM setup code from MicroPython's rp2 port, but just running it caused a lot of misbehaviour. It turns out the setup code **must** run purely from internal RAM, since it reconfigures the very bus that flash execution goes through. The MicroPython version computes QMI timing values with 64-bit divisions, which the C compiler turns into calls to a division helper — located in flash. To avoid this we hardcode the timing constants for the Presto's 200 MHz system clock.
 
 The original MicroPython code computes the timing values from the system clock — *after* it has already taken over the bus that flash execution runs through:
 
@@ -214,3 +213,5 @@ Echo OK — crates.io iroh <-> presto!
 [iroh-pico-examples]: https://github.com/n0-computer/iroh-pico-examples
 [iroh-on-esp32]: /blog/iroh-on-esp32
 [esp32]: https://www.espressif.com/en/products/socs/esp32
+[Pimoroni Presto]: https://shop.pimoroni.com/products/presto
+[Raspberry Pi Pico 2]: https://www.raspberrypi.com/products/raspberry-pi-pico-2/
