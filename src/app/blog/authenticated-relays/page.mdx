@@ -1,10 +1,10 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
-  draft: true,
+  draft: false,
   author: 'Rae McKelvey',
-  date: '2026-07-23',
-  title: 'Authenticated relays for Iroh Services',
+  date: '2026-07-30',
+  title: 'Protect your relays',
   description:
     'Managed relays are now authenticated by default, so the relay capacity you pay for is only ever used by your endpoints.',
 }
@@ -49,6 +49,8 @@ is unopinionated about that.
 But until now, we did not have an easy to authenticate endpoints to
 relays on the iroh services managed dedicated relays, and ensure you control who
 connects to them. 
+
+[Deploy a dedicated relay, free for 30 days](https://services.iroh.computer).
 
 
 ## How it works
