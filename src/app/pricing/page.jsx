@@ -69,7 +69,6 @@ const featureSections = [
     name: 'Platform',
     features: [
       { name: 'Collaborators', free: 'One user', pro: 'Unlimited users', enterprise: 'Unlimited users' },
-      { name: 'Network Diagnostics', free: '3 reports', pro: '10 reports', proNote: 'then pay as you go', enterprise: 'Custom', enterpriseNote: 'Volume discounts' },
     ],
   },
   {
