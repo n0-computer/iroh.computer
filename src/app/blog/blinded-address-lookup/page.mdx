@@ -1,0 +1,173 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  author: 'Rüdiger Klaehn',
+  date: '2026-08-18',
+  title: 'Blinded address lookup',
+  description: 'Iroh public keys are not (yet?) secrets.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [{
+      url: `/api/og?title=Blog&subtitle=${post.title}`,
+      width: 1200,
+      height: 630,
+      alt: post.title,
+      type: 'image/png',
+    }],
+    type: 'article',
+  },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+# Iroh public keys are not (yet?) secrets
+
+This blog post is prompted by an [X]/[bluesky] thread by Zooko about desirable properties of public keys and the [granovetter property].
+
+In many cases it would be convenient to use the iroh public key as a secret. You share a service or resource via an iroh endpoint, and only entities that you explicitly tell the public key via a side channel can access the resource.
+
+An [Ed25519 public key][ed25519-key-generation] contains roughly 251 bits of entropy, so guessing one is basically impossible. So all good, right?
+
+No.
+
+There are various ways to learn of the existence of an iroh public key, so while keeping an iroh public key secret provides a modest amount of security that is sufficient for [some applications], it definitely **isn't** a secret in the cryptographic sense.
+
+So if you create an iroh public key, who can learn its value?
+
+## Relays
+
+The iroh relay protocol works using iroh public keys as identifier for endpoints connected to the relays.
+
+So the *relay operator* can know the endpoint id/public key of all endpoints that were ever connected to it.
+
+## Address lookup
+
+Iroh comes with several standard address lookup providers. The [DNS based one][dns-address-lookup] that is enabled by default, and the mDNS and pkarr/[mainline] address lookup providers that come in a [separate n0 crate][iroh-address-lookups].
+
+**As currently implemented**, all of these address providers share the unencrypted public keys. MDNS broadcasts them on the local network, the DNS based provider stores pkarr records using the public key as database key, and mainline address discovery stores the key in plaintext in a [bep_0044] record.
+
+## Handshake
+
+So if you disable relays and address discovery you are OK? *Almost*. But if you want to use the public key as a true cryptographic secret almost is not good enough.
+
+We use [raw public keys in TLS] for our QUIC handshake. As part of the handshake the client encodes the expected public key of the server, in a synthetic SNI name `<base32-endpoint-id>.iroh.invalid`.
+
+So an on-path observer can learn the public key that the client *thinks* the server has just by observing the ClientHello.
+
+The ServerHello does not contain the server public key, and the rest of the server handshake response is encrypted. So a passive observer can't learn the server public key. It can assume that the key observed in the SNI is the correct key, but that currently need not be the case.
+
+An active attacker however can connect using a random server public key. The server handshake response reveals the actual public key to the client. This requires knowing a socket address under which the server can be contacted.
+
+# Can we hide the public key?
+
+For every single place where the public key is exposed, there is a solution.
+
+For address lookup I actually implemented a proof of concept solution, for the other issues I will just provide a rough sketch of a possible solution that **could be totally wrong** (I am not a cryptographer!).
+
+## Blinded address lookup
+
+For address lookup, we could make use of [blinded keys] as the lookup key.
+
+Blinding means we have two functions `f` and `g` such that
+
+```
+p' = f(p, salt)
+s' = g(s, salt)
+```
+
+<Note>
+Both `f` and `g` are one-way functions: knowing the derived key and the salt does not let you recover the original key.
+</Note>
+
+`(p', s')` is a perfectly valid keypair, so it can be used in all systems such as mainline and our DNS lookup without any change on the address lookup server.
+
+For publishing, we use the blinded key**pair**. For lookup, we produce the blinded public key for the public key we want to look up and use that as the lookup key.
+
+There are a few technical complications. For example, `g` produces an expanded Ed25519 secret key, not the 32-byte seed expected by iroh's [`SecretKey`]. Signing with it requires ed25519-dalek's [`raw_sign`] hazmat API.
+
+With this change we deny all address lookup services knowledge of our public key.
+
+But we still leak some information about us - our current relay URL and - if published - our current socket addresses. The socket addresses are the most revealing bit of information, so we filter them out by default just like the non-blinded mainline address lookup does.
+
+What remains *in the record* is a pretty meaningless bit of information - e.g. some endpoint in `eu-west-1` is currently alive.
+
+But the **process of publishing** reveals the sender socket address, so there *is* a way for the lookup services, whether it is mainline or our DNS server, to associate blinded public key with the socket addr.
+
+We could just accept this, but we don't have to. Let's go all in on paranoia.
+
+The blinded key is computed using a salt that has to be known by both the publisher and the resolver. But we can make that salt time dependent so that there is no stable blinded key to track.
+
+With this trick, it is no longer possible for address lookup services to track the blinded key. Or is it?
+
+For mainline, each blinded key goes to a completely different DHT neighbourhood, so an attacker would have to control a large fraction of all DHT nodes to track over a rotation.
+
+For a centralized address lookup service tracking would be trivial. We get two updates for different keys from the same ip address - probably a key rotation.
+
+There is one remaining issue. If you use n0 relays or coarse grained self hosted relays, the relay url in the address lookup record doesn't reveal much.
+
+But in an adversarial scenario you might use a relay that you want to keep secret so the relay operator doesn't get in trouble.
+
+To solve this we can encrypt the address lookup records so that only somebody who knows the public key can decrypt them.
+
+We derive the encryption key from the public key. So everybody who knows the public key can decrypt the record, while the address lookup service only sees random bytes.
+
+A proof of concept for [blinded mainline address lookup] can be found on GitHub.
+
+## Relays
+
+Our relay protocol and relay implementation identify endpoints by endpoint id. But a blinded keypair is a perfectly valid identity as well, as long as both sides agree about the blinding scheme. So we could use blinding without *any* change to the relay code.
+
+We would however need some delicate changes on the client side. Whenever we connect to a relay we would need to use the blinded key. We would also need to use the blinded key of the remote endpoint when sending packets through the relay.
+
+If we want to make the blinding time dependent, we would have to be very careful, since we don't want all connections to reconnect under a different blinded key *exactly at the same time*.
+
+## Handshake
+
+For hiding the key in the handshake, we would remove the plaintext public key from the SNI. We would then include something in the ClientHello that requires *knowledge* of the public key. We would have the server check that knowledge and otherwise refuse to answer.
+
+This additional information must be safe against replay attacks.
+
+I haven't worked out the details yet and don't want to share more half-baked ideas, but I am pretty sure this is doable.
+
+# But what about the granovetter property?
+
+As we have seen, iroh public keys don't fulfill the granovetter property. There are various subtle and not so subtle ways in which infrastructure interacting with an iroh endpoint can learn its public key.
+
+![The Granovetter diagram](/blog/blinded-address-lookup/granovetter.webp)
+
+So in this image, `Alice` forwards the public key of `Carol` to `Bob`. So Bob has it, but possibly also the relay operator, some mainline nodes, iroh DNS discovery, and ~~the NSA~~ a passive observer.
+
+So public keys at this time don't fulfill the granovetter property. Iroh public keys might gain this property in the future.
+
+But let's look at what is actually happening here. Alice has access to Carol, and she wants to delegate this access to Bob, and **only** Bob.
+
+If participants in this diagram represent iroh endpoints, they already have identities. What we need is an authorization scheme which allows for delegation.
+
+We are working on exactly just a scheme, a simplified version of [UCAN] called [rcan].
+
+In this scheme you can have chains of delegations that always end at an `audience` public key. In this case Alice would have access to Carol because she has a delegation signed by Carol, and she would then sign a delegation to Bob.
+
+Only Bob would be able to make use of this chain to access a resource at Carol.
+
+[X]: https://x.com/zooko/status/2087190257611747684
+[bluesky]: https://bsky.app/profile/zooko2.bsky.social/post/3mstbtq2aa22m
+[ed25519-key-generation]: https://www.rfc-editor.org/rfc/rfc8032.html#section-5.1.5
+[iroh-address-lookups]: https://github.com/n0-computer/iroh-address-lookups
+[dns-address-lookup]: https://docs.rs/iroh/latest/iroh/address_lookup/dns/struct.DnsAddressLookup.html
+[mainline]: https://en.wikipedia.org/wiki/Mainline_DHT
+[bep_0044]: https://www.bittorrent.org/beps/bep_0044.html
+[raw public keys in TLS]: https://www.rfc-editor.org/rfc/rfc7250.html
+[blinded keys]: https://spec.torproject.org/rend-spec/keyblinding-scheme.html
+[`SecretKey`]: https://docs.rs/iroh/latest/iroh/struct.SecretKey.html
+[`raw_sign`]: https://docs.rs/ed25519-dalek/latest/ed25519_dalek/hazmat/fn.raw_sign.html
+[some applications]: https://iroh.computer/sendme
+[granovetter property]: https://erights.org/elib/capability/ode/index.html
+[blinded mainline address lookup]: https://github.com/n0-computer/iroh-mainline-address-lookup-blinded
+[UCAN]: https://ucan.xyz/specification/
+[rcan]: https://github.com/n0-computer/rcan
