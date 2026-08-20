@@ -1,0 +1,82 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'okdistribute',
+  date: '2026-07-23',
+  title: 'Release Recap — June 21 to July 22, 2026 — settling into 1.0',
+  description: 'Three iroh patch releases, two noq releases and iroh-ffi 1.1.0: Windows and Android fixes, faster recovery from loss, and quieter logs.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to the latest release recap for iroh, a modular networking stack in Rust for building direct connections between devices. This one covers June 21 through July 22, 2026 — the first full stretch of work after 1.0, which means the theme is exactly what you'd hope for from a stable line: connection reliability on the platforms that were giving people trouble, throughput fixes down in the transport, and a lot less noise in your logs.
+
+## The top changes
+
+- **Connecting with an empty ALPN is now an error.** iroh used to let an empty ALPN through, which meant a misconfigured client failed later and less obviously. As of [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) you get an error at connect time instead. If you build ALPNs dynamically, check that path before upgrading.
+
+- **Windows nodes stop losing packets to spurious ICMP errors.** noq-udp now sets the Windows ioctls that suppress ICMP errors surfacing on `recv`, so a stray unreachable message from an earlier probe no longer knocks over an otherwise healthy receive path. It shipped in [noq 1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1) and reached iroh users through the dependency bump in [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1); we added a regression test for those transient Windows receive errors in [iroh v1.0.2](https://github.com/n0-computer/iroh/releases/tag/v1.0.2) so it stays fixed.
+
+- **More reliable address discovery, which means more reliable holepunching.** [noq 1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1) reworked how `OBSERVED_ADDR` frames are queued, sent and retransmitted — including a path-specific retransmittable data queue so an observation for one path doesn't get lost behind another — and bumped address add/remove frames up in priority. Those frames are how a node learns the address its peer actually sees it on, so losing them costs you direct connections. It's in iroh from [v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) onward.
+
+- **DNS discovery works on Android when there's no JNI context.** iroh's DNS resolver reads the system nameservers through JNI on Android, and embedders that call in from a thread without an initialized JNI context were left with no resolver at all. [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) falls back to default nameservers in that case, so discovery keeps working instead of failing at startup.
+
+- **The n0 preset now resolves pkarr records directly.** [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) adds the pkarr resolver to the n0 discovery preset, so the out-of-the-box configuration can resolve node records it previously couldn't. If you assembled your own discovery stack on top of the preset, have a look for a resolver you can now drop.
+
+- **Faster recovery after packet loss.** [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) fixes two CUBIC bugs: fast convergence was reducing the window twice, and excess congestion window increments were being thrown away instead of carried forward. Together they mean a connection climbs back to full rate after loss the way the algorithm intends. iroh picks this up in [v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3).
+
+- **Kernel receive timestamps on Linux and Android.** [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) reads the timestamp the kernel attaches on receive rather than taking one in userspace after the fact, which removes scheduling delay from the stack's timing measurements. That's the input to RTT estimation, so it's the kind of change that quietly improves everything downstream of it.
+
+- **Relay operators can change per-client rate limits without a restart.** [iroh v1.0.2](https://github.com/n0-computer/iroh/releases/tag/v1.0.2) makes the iroh-relay per-client rate limit updatable live. If you run your own relay, you can now tune it under load instead of scheduling a bounce. The same release also hardened the relay's handling of invalid protocol messages, backed by expanded proptests.
+
+- **iroh-ffi gets a real endpoint builder, better errors, and Mac Catalyst.** [iroh-ffi v1.1.0](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.1.0) adds an `EndpointBuilder` constructor with a `bind()` method so bindings users can configure an endpoint before binding it, reworks error handling to be more useful on the far side of the FFI boundary, and adds a Mac Catalyst slice to the Swift xcframework.
+
+- **Long-lived servers stop drifting.** A cluster of fixes in [noq 1.0.1](https://github.com/n0-computer/noq/releases/tag/noq-v1.0.1) and [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) cleans up connection accounting and teardown: two separate causes of `active_connections` underflow (including a double-emitted `Draining` event), a loss detection timer that wasn't set when path validation failed, incorrect coalescing in the Initial packet space, and stats that weren't updated by the time a `Discarded` event was reported. If you run a node that accepts a lot of connections, this is the release pair you want.
+
+- **Much quieter logs.** [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) stopped emitting spans above `info`, [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) cut a batch of `warn` logs down to size, and [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) demoted an `error!` to `debug!` and moved `sendmsg` errors to debug. Normal operation should no longer look alarming.
+
+## Breaking changes and upgrade notes
+
+- **Empty ALPNs are rejected.** Connecting with an empty ALPN returns an error as of [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3). Anything that previously "worked" with an empty value now fails at connect time — audit any code that builds ALPNs from config or user input.
+- **DATAGRAMs larger than the send buffer are rejected.** [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) turns oversized datagram sends into an error instead of accepting them. Check your datagram sizes against the connection's maximum before sending, and handle the error path.
+- **`UdpStats::ios` is deprecated.** The count can't honestly be measured from that crate, so [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) deprecates it. If it feeds a dashboard or a metric, start migrating off it now.
+- **`Connection::poll_timeout` no longer takes a mutable receiver.** Also [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0). Callers are fine; anything wrapping or forwarding the method with its own signature needs updating.
+- **Log levels moved.** Between the span-level cap in [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1), the `warn` reduction in [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) and the demotions in [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0), messages you may be alerting on — or asserting on in tests — have moved down a level or disappeared. Relatedly, saturated Initial packets are now dropped silently rather than logged.
+- **A missing 1.0 API item is back.** [iroh v1.0.1](https://github.com/n0-computer/iroh/releases/tag/v1.0.1) restores an item that was dropped in the 1.0 API by mistake. If you hit a compile error moving to 1.0 and worked around it, 1.0.1 is the fix.
+- **The n0 preset resolves more than it used to.** With pkarr in the preset as of [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3), discovery behavior changes for anyone using the default configuration — in the good direction, but it is a change in what resolution attempts your node makes.
+
+## Also in this window
+
+- [noq 1.1.0](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0) adds `noq::Connection::authenticated`, uses the path idle timeout when validating a newly opened path, handles overdue timers without waking the async timer, switches `ArrayRangeSet` to binary search, and picks up patches for Redox targets. Its 0-RTT docs also got a lot better — `RecvStream::is_0rtt` is expanded, and `SendStream::stopped` is now documented as the way to detect 0-RTT rejection.
+- [iroh v1.0.2](https://github.com/n0-computer/iroh/releases/tag/v1.0.2) fixes a fairness counter issue in the receive transport lanes, so one lane can't starve the others.
+- [iroh v1.0.3](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) removes `vergen` from the `build.rs` files, which trims build-time dependencies, and bumps `crossbeam-epoch` past an invalid pointer dereference. iroh's docs also picked up a better explanation of QUIC streams, corrected keep-alive docs, and real context around portmapping configuration — plus system deps and a build command for iroh-relay.
+- Unreleased in iroh-docs: an invalid message no longer aborts the receive loop, so one bad message from a peer can't take down a docs sync session.
+- Unreleased in iroh-services: net diagnostics now builds for wasm, which opens the door to running diagnostics from the browser.
+- Unreleased in iroh-ffi since [v1.1.0](https://github.com/n0-computer/iroh-ffi/releases/tag/v1.1.0): release artifacts are now verified as part of publishing, with a dry-run workflow to catch problems before they ship, and the Python example handles ALPNs as bytes directly. The Python and napi READMEs also dropped stale x86_64 macOS claims.
+- Docs on iroh.computer got a good month: the net diagnostics tutorial now includes the integration code plus ClientHost setup and troubleshooting, the NAT traversal article has a real animation wired up, the "what is iroh" diagrams are transparent so dark mode works, the languages page lists iroh-go and C bindings via iroh-c-ffi, and the security and privacy material moved into "how it works" where people actually look for it.
+- On the hosted service side, the console reorganized around Endpoints as the project home with a proper endpoint detail page, relay pricing is now shown per hour rather than per month, and the service moved onto iroh 1.0.2.
+- On the testing side, iroh now exercises holepunching across 16 network interfaces, which is the sort of multi-homed machine that used to be a good source of surprises.
+
+## What's next
+
+More of the same, honestly: the 1.0 line is where we want changes to be small, boring and safe to take. Keep the upgrades coming and tell us when something behaves differently than you expected.
+
+Found a bug or something that doesn't match the docs? Please open an issue: https://github.com/n0-computer/iroh/issues
