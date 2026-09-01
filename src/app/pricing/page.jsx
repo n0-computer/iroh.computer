@@ -22,12 +22,12 @@ const plans = [
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-community`,
     buttonLabel: 'Get started',
     features: [
-      'Global network of public relays',
+      'Public relays in US, EU, Singapore',
       '7 day metrics retention',
       'Community support',
     ],
     limitations: [
-      'No authentication, public only',
+      'No auth, public only',
       'Rate-limited traffic',
       'No uptime guarantees',
     ],
@@ -41,9 +41,8 @@ const plans = [
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-pro`,
     buttonLabel: 'Free trial',
     features: [
-      'Low-latency in US, EU, Asia',
-      '30 day metrics retention',
       '10,000 connections',
+      '30 day metrics retention',
       'Authenticated',
       '5 MB/s rate limit',
       '100 GB egress',
@@ -53,12 +52,12 @@ const plans = [
     name: 'Dedicated',
     description: 'Your own infrastructure for production.',
     price: '$199',
-    period: '/month',
-    href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-dedicated`,
+    period: '/month/region',
+    href: `${SERVICES_URL}/?utm_source=website&utm_content=pricing-dedicated`,
     buttonLabel: 'Deploy a relay',
     inherits: 'Everything in Pro, plus',
     features: [
-      'Lowest latency',
+      'Custom regions for lowest latency',
       '60,000 connections',
       'Version locking',
       'No rate limits',
@@ -81,18 +80,19 @@ const featureSections = [
       { name: 'Connections', free: 'Rate limited', shared: '10,000', sharedNote: 'then $0.003/endpoint', dedicated: '60,000', enterprise: 'Custom' },
       { name: 'Relays', free: 'Public', shared: 'Shared', dedicated: 'Dedicated', enterprise: 'Custom' },
       { name: 'Rate limit', free: 'Variable', shared: '5 MB/s', dedicated: 'Unlimited', enterprise: 'Custom' },
-      { name: 'Egress', free: 'Variable', shared: '100 GB', sharedNote: 'then $0.10/GB', dedicated: '250 GB', dedicatedNote: 'then $0.10/GB', enterprise: 'Custom' },
+      { name: 'Egress', free: 'Variable', shared: '100 GB', sharedNote: 'then $0.09/GB', dedicated: '250 GB', dedicatedNote: 'then $0.09/GB', enterprise: 'Custom' },
       { name: 'Authenticated', free: null, shared: true, dedicated: true, enterprise: true },
       { name: 'Custom DNS', free: null, shared: null, dedicated: true, enterprise: true },
       { name: 'Custom regions', free: null, shared: null, dedicated: true, enterprise: true },
-      { name: 'Multi-cloud', free: null, shared: null, dedicated: true, enterprise: true },
       { name: 'Version locking', free: null, shared: null, dedicated: true, enterprise: true },
+      { name: 'Multi-cloud', free: null, shared: null, dedicated: null, enterprise: true },
+      { name: 'BYOC', free: null, shared: null, dedicated: null, enterprise: true },
     ],
   },
   {
     name: 'Metrics',
     features: [
-      { name: 'Data points/minute', free: null, shared: '10K DPM', sharedNote: 'then $1.49/1k DPM', dedicated: '10K DPM', dedicatedNote: 'then $1.49/1k DPM', enterprise: 'Custom' },
+      { name: 'Data points/minute', free: '1K DPM', shared: '10K DPM', sharedNote: 'then $1.49/1k DPM', dedicated: '10K DPM', dedicatedNote: 'then $1.49/1k DPM', enterprise: 'Custom' },
       { name: 'Metrics retention', free: '7 days', shared: '30 days', dedicated: '30 days', enterprise: 'Custom' },
     ]
   },
@@ -137,20 +137,16 @@ export default function PricingPage() {
 
       <div className="min-h-screen transition-colors font-space bg-irohGray-50 dark:bg-black text-irohGray-700 dark:text-irohGray-100">
         {/* Hero */}
-        <section className="py-24 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
+        <section className="py-24 px-6">
           <div className="container mx-auto max-w-4xl pt-12 text-center">
-            <p className="text-base font-semibold leading-7 text-irohPurple-500">Plans and Pricing</p>
             <h1 className="mt-2 text-4xl sm:text-5xl font-bold leading-tight">
-              Go to production with confidence.
+              Go to production with iroh.
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-              Customized hosting and monitoring for iroh apps, with people that support you.
-            </p>
           </div>
         </section>
 
         {/* Plan Cards */}
-        <section className="py-20 px-6 border-b border-irohGray-300 dark:border-irohGray-800">
+        <section className="pb-10 px-6 ">
           <div className="container mx-auto max-w-5xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {plans.map((plan) => (
