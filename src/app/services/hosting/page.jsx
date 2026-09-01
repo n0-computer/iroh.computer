@@ -57,7 +57,7 @@ export default function HostingPage() {
                 <h3 className="text-xl font-bold mb-2">Public</h3>
                 <p className="text-2xl font-bold text-irohPurple-500 mb-3">Free</p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
-                  By default, iroh endpoints use infrastructure provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>. 
+                  Shared infrastructure provided by <a href="https://n0.computer" className="text-irohPurple-500" target="_blank">n0 computer</a>.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
                   <li className="flex items-center gap-2">
@@ -85,14 +85,13 @@ export default function HostingPage() {
               <div className="p-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800">
                 <Server className="h-10 w-10 text-irohPurple-500 mb-4" />
                 <h3 className="text-xl font-bold mb-2">Cloud</h3>
-                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$0.27<span className="text-base font-normal text-irohGray-500">/hour and up</span></p>
+                <p className="text-2xl font-bold text-irohPurple-500 mb-3">$19<span className="text-base font-normal text-irohGray-500">/month and up</span></p>
                 <p className="text-irohGray-600 dark:text-irohGray-300 mb-4">
                   For production applications ready to scale with low latency.
                 </p>
                 <ul className="text-irohGray-600 dark:text-irohGray-300 space-y-2 mb-6">
-
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span>Authenticated by default, so only your endpoints connect
+                    <span className="text-irohPurple-500">✓</span>Authenticated
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span>Multi-region or multi-cloud deployment
@@ -101,10 +100,10 @@ export default function HostingPage() {
                     <span className="text-irohPurple-500">✓</span>Fully managed infrastructure
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span>Negotiated bandwidth
+                    <span className="text-irohPurple-500">✓</span>No rate limits
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-irohPurple-500">✓</span>Client version locking &amp; diagnostics
+                    <span className="text-irohPurple-500">✓</span>Version locking
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-irohPurple-500">✓</span> Uptime SLAs available

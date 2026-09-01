@@ -2,18 +2,21 @@
 
 import { useState } from 'react'
 
-const PRO_BASE = 19
-const INCLUDED_ENDPOINTS = 100
+const SHARED_BASE = 19
+const SHARED_INCLUDED_ENDPOINTS = 10000
+const DEDICATED_INCLUDED_ENDPOINTS = 60000
 const INCLUDED_DPM = 10000
-const ENDPOINT_RATE = 0.50
+const INCLUDED_EGRESS_GB = 100
+const METRICS_PER_ENDPOINT = 15
+const ENDPOINT_MONTHLY_RATE = 0.003
 const METRICS_RATE = 1.49
-const RELAY_HOURLY_RATE = 0.27
-const HOURS_PER_MONTH = 730
+const EGRESS_RATE = 0.09
+const DEDICATED_RELAY_RATE = 199
 
 const relayOptions = [0, 1, 2, 3, 4, 5]
-const peakConnectionOptions = [100, 200, 300, 500, 1000, 2000, 5000, 10000]
-const avgConnectionOptions = [1, 10, 50, 100, 250, 500, 1000, 2000, 5000]
-const metricsPerNodeOptions = [87, 90, 100, 110]
+const peakConnectionOptions = [1000, 5000, 10000, 25000, 50000, 100000, 250000]
+const metricsEndpointOptions = [10, 100, 1000, 5000]
+const egressOptions = [50, 100, 250, 500, 1000, 2500, 5000]
 
 const frequencyOptions = [
   { label: 'Every minute', value: '1', factor: 1 },
@@ -51,132 +54,175 @@ function SelectInput({ label, description, value, onChange, options, formatOptio
 }
 
 export function PricingCalculator() {
-  const [relays, setRelays] = useState(1)
-  const [peakConnections, setPeakConnections] = useState(500)
-  const [avgConnections, setAvgConnections] = useState(100)
-  const [metricsPerNode, setMetricsPerNode] = useState(87)
+  const [relays, setRelays] = useState(0)
+  const [peakConnections, setPeakConnections] = useState(5000)
+  const [egressGb, setEgressGb] = useState(100)
+  const [metricsEndpoints, setMetricsEndpoints] = useState(5000)
   const [frequency, setFrequency] = useState('1')
 
+  const includedEndpoints = relays > 0 ? DEDICATED_INCLUDED_ENDPOINTS : SHARED_INCLUDED_ENDPOINTS
   const freq = frequencyOptions.find((f) => f.value === frequency)?.factor ?? 1
-  const dpm = avgConnections * metricsPerNode * freq
-
-  const extraConnections = Math.max(0, peakConnections - INCLUDED_ENDPOINTS)
-  const connectionsCost = (extraConnections / 100) * ENDPOINT_RATE
+  const dpm = metricsEndpoints * METRICS_PER_ENDPOINT * freq
+  const extraConnections = Math.max(0, peakConnections - includedEndpoints)
+  const connectionsCost = extraConnections * ENDPOINT_MONTHLY_RATE
   const extraDpm = Math.max(0, dpm - INCLUDED_DPM)
   const metricsCost = (extraDpm / 1000) * METRICS_RATE
-  const relayCost = relays * RELAY_HOURLY_RATE * HOURS_PER_MONTH
-  const total = PRO_BASE + connectionsCost + metricsCost + relayCost
+  const extraEgress = Math.max(0, egressGb - INCLUDED_EGRESS_GB)
+  const egressCost = extraEgress * EGRESS_RATE
+  const relayCost = relays * DEDICATED_RELAY_RATE
+  const relayTotal = SHARED_BASE + connectionsCost + egressCost + relayCost
 
   return (
     <div className="mt-16 mb-8 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-2">Estimate your monthly cost</h2>
+      <h2 className="text-2xl font-bold text-center mb-2">Estimate your hosting cost</h2>
       <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
-        Adjust the values to see what Pro would cost for your workload.
+        Configure shared and dedicated relay capacity for your workload.
       </p>
       <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Inputs */}
           <div className="space-y-6">
             <SelectInput
-              label="Number of relays"
-              description="Dedicated relay servers for your application"
+              label="Dedicated relays"
+              description="Add single-tenant capacity; selecting at least one includes 60,000 concurrent endpoints"
               value={relays}
               onChange={setRelays}
               options={relayOptions}
             />
             <SelectInput
               label="Peak concurrent endpoints"
-              description="Maximum endpoints sending metrics at the same time"
+              description={`${formatNumber(includedEndpoints)} included with your selected relay setup`}
               value={peakConnections}
               onChange={setPeakConnections}
               options={peakConnectionOptions}
             />
             <SelectInput
-              label="Average endpoints"
-              description="Average number of connected endpoints"
-              value={avgConnections}
-              onChange={setAvgConnections}
-              options={avgConnectionOptions}
+              label="Egress per month"
+              description="Relayed traffic leaving our network, in GB"
+              value={egressGb}
+              onChange={setEgressGb}
+              options={egressOptions}
+              formatOption={(opt) => `${formatNumber(opt)} GB`}
             />
-            <SelectInput
-              label="Metrics per endpoint"
-              description="Number of metric series each endpoint reports"
-              value={metricsPerNode}
-              onChange={setMetricsPerNode}
-              options={metricsPerNodeOptions}
-            />
-            <div className="space-y-2">
-              <label className="text-base font-medium text-irohGray-800 dark:text-irohGray-100">Push frequency</label>
-              <p className="text-sm text-irohGray-500 dark:text-irohGray-400">
-                How often each endpoint pushes metrics
-              </p>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value)}
-                className="w-40 rounded-md border border-irohGray-300 dark:border-irohGray-600 bg-white dark:bg-irohGray-800 text-irohGray-800 dark:text-irohGray-100 px-3 py-2 text-sm"
-              >
-                {frequencyOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <p className="text-base text-irohGray-500 dark:text-irohGray-400">
-              Calculated DPM:{' '}
-              <span className="font-medium text-irohGray-800 dark:text-irohGray-100">
-                {formatNumber(Math.round(dpm))}
-              </span>
-            </p>
           </div>
 
-          {/* Cost breakdown */}
           <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800 p-6">
             <h3 className="text-xl font-bold mb-6">Cost breakdown</h3>
             <div className="space-y-4 text-base">
               <div className="flex justify-between">
                 <span>Pro plan base</span>
-                <span className="font-medium">{formatPrice(PRO_BASE)}/mo</span>
+                <span className="font-medium">{formatPrice(SHARED_BASE)}/mo</span>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <span>Relays</span>
+                  <span>Dedicated relays</span>
                   <span className="font-medium">{formatPrice(relayCost)}/mo</span>
                 </div>
-                <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5">
-                  {relays} &times; ${RELAY_HOURLY_RATE}/hour &times; {HOURS_PER_MONTH} hrs
+                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${relays === 0 ? 'italic' : ''}`}>
+                  {relays === 0
+                    ? '4 multi-tenant relays included'
+                    : `${relays} \u00d7 $${DEDICATED_RELAY_RATE}/mo`}
                 </p>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <span>Connections</span>
+                  <span>Concurrent endpoints</span>
                   <span className="font-medium">{formatPrice(connectionsCost)}/mo</span>
                 </div>
                 <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraConnections === 0 ? 'italic' : ''}`}>
                   {extraConnections === 0
-                    ? 'Included in base plan'
-                    : `${formatNumber(extraConnections)} extra \u00d7 $${ENDPOINT_RATE}/100`}
+                    ? `${formatNumber(includedEndpoints)} included with selected relays`
+                    : `${formatNumber(extraConnections)} extra \u00d7 $${ENDPOINT_MONTHLY_RATE}/endpoint/month`}
                 </p>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <span>Metrics DPM</span>
-                  <span className="font-medium">{formatPrice(metricsCost)}/mo</span>
+                  <span>Egress</span>
+                  <span className="font-medium">{formatPrice(egressCost)}/mo</span>
                 </div>
-                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraDpm === 0 ? 'italic' : ''}`}>
-                  {extraDpm === 0
-                    ? 'Included in base plan'
-                    : `${formatNumber(Math.round(extraDpm))} extra DPM \u00d7 $${METRICS_RATE}/1K`}
+                <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraEgress === 0 ? 'italic' : ''}`}>
+                  {extraEgress === 0
+                    ? `${formatNumber(INCLUDED_EGRESS_GB)}GB included in base plan`
+                    : `${formatNumber(extraEgress)}GB extra \u00d7 $${EGRESS_RATE}/GB`}
                 </p>
               </div>
 
               <div className="border-t border-irohGray-300 dark:border-irohGray-600 pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Estimated total</span>
-                  <span>{formatPrice(total)}/mo</span>
+                  <span>{formatPrice(relayTotal)}/mo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold text-center mb-2">Estimate your metrics cost</h2>
+        <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
+          Estimate DPM independently using 15 metrics per endpoint.
+        </p>
+        <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <SelectInput
+                label="Endpoints reporting metrics"
+                description="Number of endpoints pushing metrics"
+                value={metricsEndpoints}
+                onChange={setMetricsEndpoints}
+                options={metricsEndpointOptions}
+              />
+              <div className="space-y-2">
+                <label className="text-base font-medium text-irohGray-800 dark:text-irohGray-100">Push frequency</label>
+                <p className="text-sm text-irohGray-500 dark:text-irohGray-400">
+                  How often each endpoint pushes its 15 metrics
+                </p>
+                <select
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="w-40 rounded-md border border-irohGray-300 dark:border-irohGray-600 bg-white dark:bg-irohGray-800 text-irohGray-800 dark:text-irohGray-100 px-3 py-2 text-sm"
+                >
+                  {frequencyOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <p className="text-base text-irohGray-500 dark:text-irohGray-400">
+                Calculated DPM:{' '}
+                <span className="font-medium text-irohGray-800 dark:text-irohGray-100">
+                  {formatNumber(Math.round(dpm))}
+                </span>
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800 p-6">
+              <h3 className="text-xl font-bold mb-6">Metrics cost breakdown</h3>
+              <div className="space-y-4 text-base">
+                <div className="flex justify-between">
+                  <span>Included DPM</span>
+                  <span className="font-medium">{formatNumber(INCLUDED_DPM)}</span>
+                </div>
+                <div>
+                  <div className="flex justify-between">
+                    <span>DPM overage</span>
+                    <span className="font-medium">{formatPrice(metricsCost)}/mo</span>
+                  </div>
+                  <p className={`text-sm text-irohGray-500 dark:text-irohGray-400 mt-0.5 ${extraDpm === 0 ? 'italic' : ''}`}>
+                    {extraDpm === 0
+                      ? 'Included in the plan'
+                      : `${formatNumber(Math.round(extraDpm))} extra DPM \u00d7 $${METRICS_RATE}/1K`}
+                  </p>
+                </div>
+                <div className="border-t border-irohGray-300 dark:border-irohGray-600 pt-4">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Estimated metrics cost</span>
+                    <span>{formatPrice(metricsCost)}/mo</span>
+                  </div>
                 </div>
               </div>
             </div>

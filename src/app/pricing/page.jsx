@@ -3,42 +3,48 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { PricingCalculator } from '@/components/PricingCalculator'
 import { ContactTrigger } from '@/components/ContactButton'
+import { GithubIcon } from '@/components/icons/GithubIcon'
 import Link from 'next/link'
-import { Check, Minus, Activity, BarChart3, Server, Headphones } from 'lucide-react'
+import { Check, Minus, BarChart3, Server, Headphones } from 'lucide-react'
 
 export const metadata = {
   title: 'Pricing | Iroh',
-  description: 'Plans and pricing for iroh services. Free for development, Pro for production, Enterprise for large-scale deployments.',
+  description: 'Plans and pricing for iroh services. Start free, then choose shared or dedicated relays as you grow.',
 }
 
 const SERVICES_URL = 'https://services.iroh.computer'
 
 const plans = [
   {
-    name: 'Free',
-    description: 'For local development and testing.',
-    price: '$0',
-    period: '/month',
-    href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-free`,
-    buttonLabel: 'Get Started',
-    features: [
-      'All features in Pro, limited',
-      '7 day retention',
-      'Community support',
-    ],
-  },
-  {
     name: 'Pro',
-    description: 'For shipping your app to prod.',
+    description: 'Shared network for growing projects.',
     price: '$19',
     period: '/month',
-    popular: true,
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-pro`,
     buttonLabel: 'Free trial',
     features: [
-      'Pay as you go pricing',
-      '30 day retention',
-      '8x5 support tickets',
+      '10,000 connections',
+      'Authenticated',
+      'Low-latency in US, EU, Asia',
+      '5 MB/s rate limit',
+      '100 GB egress',
+    ],
+  },
+  {
+    name: 'Dedicated',
+    description: 'Your own infrastructure for production.',
+    price: '$199',
+    period: '/month',
+    popular: true,
+    href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-dedicated`,
+    buttonLabel: 'Deploy a relay',
+    inherits: 'Everything in Pro, plus',
+    features: [
+      '60,000 connections',
+      'Version locking',
+      'No rate limits',
+      '250 GB egress',
+      'Custom DNS'
     ],
   },
   {
@@ -49,16 +55,15 @@ const plans = [
     contact: true,
     buttonLabel: "Let's Chat",
     features: [
-      'On-prem and multi-cloud',
-      'Custom retention',
-      'SLAs',
+      'Volume discounts',
+      'Multi-cloud',
+      'SLAs available',
       'Support Engineer',
     ],
   },
 ]
 
 const sectionIcons = {
-  Platform: Activity,
   Metrics: BarChart3,
   Hosting: Server,
   Support: Headphones,
@@ -66,35 +71,33 @@ const sectionIcons = {
 
 const featureSections = [
   {
-    name: 'Platform',
+    name: 'Hosting',
     features: [
-      { name: 'Collaborators', free: 'One user', pro: 'Unlimited users', enterprise: 'Unlimited users' },
+      { name: 'Connections', free: 'Rate limited', shared: '10,000', sharedNote: 'then $0.003/endpoint', dedicated: '60,000', enterprise: 'Custom' },
+      { name: 'Relays', free: 'Public', shared: 'Shared', dedicated: 'Dedicated', enterprise: 'Custom' },
+      { name: 'Rate limit', free: 'Variable', shared: '5 MB/s', dedicated: 'Unlimited', enterprise: 'Custom' },
+      { name: 'Egress', free: 'Variable', shared: '100 GB', sharedNote: 'then $0.10/GB', dedicated: '250 GB', dedicatedNote: 'then $0.10/GB', enterprise: 'Custom' },
+      { name: 'Authenticated', free: null, shared: true, dedicated: true, enterprise: true },
+      { name: 'Custom DNS', free: null, shared: null, dedicated: true, enterprise: true },
+      { name: 'Custom regions', free: null, shared: null, dedicated: true, enterprise: true },
+      { name: 'Multi-cloud', free: null, shared: null, dedicated: true, enterprise: true },
+      { name: 'Version locking', free: null, shared: null, dedicated: true, enterprise: true },
     ],
   },
   {
     name: 'Metrics',
     features: [
-      { name: 'Data Points per Minute', free: '1K DPM', freeNote: '100 metrics \u00d7 10 endpoints', pro: '10K DPM', proNote: 'then $1.49/1K DPM', enterprise: 'Custom', enterpriseNote: 'Volume discounts' },
-      { name: 'Retention', free: '7 days', pro: '30 days', enterprise: 'Custom' },
-      { name: 'Concurrent Endpoints', free: '10', pro: '100', proNote: 'then $0.50/100 endpoints', enterprise: 'Custom' },
-    ],
-  },
-  {
-    name: 'Hosting',
-    features: [
-      { name: 'Relays', free: 'Public', freeNote: 'Multi-tenant', pro: 'Cloud', proNote: '$0.27/relay/hour', enterprise: 'Custom' },
-      { name: 'Connections per Relay', free: 'Variable', freeNote: 'Rate-limited', pro: '60k', enterprise: 'Custom' },
-      { name: 'Multi-region', free: null, pro: true, enterprise: 'Custom' },
-      { name: 'Multi-cloud', free: null, pro: null, enterprise: true },
-      { name: 'Dedicated DNS', free: null, pro: null, enterprise: true },
-    ],
+      { name: 'Data points/minute', free: null, shared: '10K DPM', sharedNote: 'then $1.49/1k DPM', dedicated: '10K DPM', dedicatedNote: 'then $1.49/1k DPM', enterprise: 'Custom' },
+      { name: 'Metrics retention', free: '7 days', shared: '30 days', dedicated: '30 days', enterprise: 'Custom' },
+    ]
   },
   {
     name: 'Support',
     features: [
-      { name: 'Community (Github & Discord)', free: true, pro: true, enterprise: true },
-      { name: 'SLAs', free: null, pro: null, enterprise: 'Custom' },
-      { name: 'Dedicated Support Engineer', free: null, pro: null, enterprise: true },
+      { name: 'Community support', free: true, shared: true, dedicated: true, enterprise: true },
+      { name: 'Support tickets', free: null, shared: true, dedicated: true, enterprise: true },
+      { name: 'SLAs', free: null, shared: null, dedicated: null, enterprise: 'Available' },
+      { name: 'Support Engineer', free: null, shared: null, dedicated: null, enterprise: true },
     ],
   },
 ]
@@ -173,6 +176,9 @@ export default function PricingPage() {
                   </p>
                   <div className="flex-1">
                     <div className="border-t border-irohGray-200 dark:border-irohGray-600 mt-6 pt-4" />
+                    {plan.inherits && (
+                      <p className="mb-3 text-sm font-semibold">{plan.inherits}</p>
+                    )}
                     <ul className="mt-2 space-y-3 text-sm">
                       {plan.features.map((feature) => (
                         <li key={feature} className="flex gap-x-3">
@@ -208,6 +214,22 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
+
+            <div className="mt-6 p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+              <div>
+                <GithubIcon className="h-10 w-10 text-irohPurple-500 mb-4" />
+                <h2 className="text-xl font-bold mb-2">Start with public relays, for free</h2>
+                <p className="text-irohGray-600 dark:text-irohGray-300">
+                  Use the shared community relays or self-host your relays for free. Forever.
+                </p>
+              </div>
+              <Link
+                href="https://docs.iroh.computer/concepts/relays"
+                className="text-irohPurple-500 hover:underline font-medium whitespace-nowrap"
+              >
+                Learn about relays →
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -216,12 +238,13 @@ export default function PricingPage() {
           <div className="container mx-auto max-w-5xl">
             <h2 className="text-3xl font-bold mb-8 text-center">Compare plans</h2>
             <div className="overflow-x-auto">
-              <table className="w-full text-base min-w-[600px]">
+              <table className="w-full text-base min-w-[760px]">
                 <thead>
                   <tr className="border-b border-irohGray-300 dark:border-irohGray-700">
                     <th className="pb-4 text-left" />
-                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Free</th>
+                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Community</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Pro</th>
+                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Dedicated</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Enterprise</th>
                   </tr>
                 </thead>
@@ -231,7 +254,7 @@ export default function PricingPage() {
                     return (
                       <Fragment key={section.name}>
                         <tr>
-                          <td className="pt-8 pb-4 pl-2 font-bold text-xl border-b-2 border-irohPurple-500/30" colSpan={4}>
+                          <td className="pt-8 pb-4 pl-2 font-bold text-xl border-b-2 border-irohPurple-500/30" colSpan={5}>
                             <span className="inline-flex items-center gap-3 text-irohPurple-500">
                               {Icon && <Icon className="h-5 w-5" />}
                               {section.name}
@@ -244,7 +267,8 @@ export default function PricingPage() {
                               {feature.name}
                             </td>
                             <FeatureCell value={feature.free} note={feature.freeNote} />
-                            <FeatureCell value={feature.pro} note={feature.proNote} />
+                            <FeatureCell value={feature.shared} note={feature.sharedNote} />
+                            <FeatureCell value={feature.dedicated} note={feature.dedicatedNote} />
                             <FeatureCell value={feature.enterprise} note={feature.enterpriseNote} />
                           </tr>
                         ))}
@@ -281,4 +305,3 @@ export default function PricingPage() {
     </div>
   )
 }
-
