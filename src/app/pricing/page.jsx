@@ -3,7 +3,6 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from '@/components/FooterMarketing'
 import { PricingCalculator } from '@/components/PricingCalculator'
 import { ContactTrigger } from '@/components/ContactButton'
-import { GithubIcon } from '@/components/icons/GithubIcon'
 import Link from 'next/link'
 import { Check, Minus, BarChart3, Server, Headphones } from 'lucide-react'
 
@@ -15,6 +14,23 @@ export const metadata = {
 const SERVICES_URL = 'https://services.iroh.computer'
 
 const plans = [
+  {
+    name: 'Free',
+    description: 'Shared community infrastructure provided by n0 computer.',
+    price: '$0',
+    period: '/month',
+    href: 'https://docs.iroh.computer/concepts/relays',
+    buttonLabel: 'Learn about relays',
+    features: [
+      'No setup required',
+      'Great for development & testing',
+      'Community support',
+    ],
+    limitations: [
+      'Rate-limited traffic',
+      'No uptime guarantees',
+    ],
+  },
   {
     name: 'Pro',
     description: 'Shared network for growing projects.',
@@ -44,21 +60,7 @@ const plans = [
       'Version locking',
       'No rate limits',
       '250 GB egress',
-      'Custom DNS'
-    ],
-  },
-  {
-    name: 'Enterprise',
-    description: 'For large-scale deployments.',
-    price: 'Contact Us',
-    period: '',
-    contact: true,
-    buttonLabel: "Let's Chat",
-    features: [
-      'Volume discounts',
-      'Multi-cloud',
-      'SLAs available',
-      'Support Engineer',
+      'Custom DNS',
     ],
   },
 ]
@@ -186,6 +188,12 @@ export default function PricingPage() {
                           {feature}
                         </li>
                       ))}
+                      {plan.limitations?.map((feature) => (
+                        <li key={feature} className="flex gap-x-3 text-irohGray-500 dark:text-irohGray-400">
+                          <Minus className="h-5 w-5 flex-none text-irohGray-400" />
+                          {feature}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                   {plan.contact ? (
@@ -215,20 +223,28 @@ export default function PricingPage() {
               ))}
             </div>
 
-            <div className="mt-6 p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="mt-6 p-8 rounded-lg border border-irohGray-300 dark:border-irohGray-700 bg-irohGray-100 dark:bg-irohGray-800 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_auto] lg:items-center gap-8">
               <div>
-                <GithubIcon className="h-10 w-10 text-irohPurple-500 mb-4" />
-                <h2 className="text-xl font-bold mb-2">Start with public relays, for free</h2>
+                <Headphones className="h-10 w-10 text-irohPurple-500 mb-4" />
+                <h2 className="text-2xl font-bold text-irohPurple-500 mb-2">Enterprise</h2>
                 <p className="text-irohGray-600 dark:text-irohGray-300">
-                  Use the shared community relays or self-host your relays for free. Forever.
+                  For large-scale deployments with unique requirements.
                 </p>
               </div>
-              <Link
-                href="https://docs.iroh.computer/concepts/relays"
-                className="text-irohPurple-500 hover:underline font-medium whitespace-nowrap"
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
+                {['Volume discounts', 'Multi-cloud', 'SLAs available', 'Support Engineer'].map((feature) => (
+                  <li key={feature} className="flex gap-x-3">
+                    <Check className="h-5 w-5 flex-none text-irohPurple-500" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <ContactTrigger
+                source="pricing-enterprise"
+                className="rounded-md border border-irohPurple-500 py-2.5 px-5 text-center text-sm font-semibold text-irohPurple-500 hover:bg-irohPurple-500/10 transition-colors cursor-pointer whitespace-nowrap"
               >
-                Learn about relays →
-              </Link>
+                Let&apos;s Chat
+              </ContactTrigger>
             </div>
           </div>
         </section>
@@ -242,7 +258,7 @@ export default function PricingPage() {
                 <thead>
                   <tr className="border-b border-irohGray-300 dark:border-irohGray-700">
                     <th className="pb-4 text-left" />
-                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Community</th>
+                    <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Free</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Pro</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Dedicated</th>
                     <th className="pb-4 px-6 text-center text-lg font-bold text-irohPurple-500">Enterprise</th>
