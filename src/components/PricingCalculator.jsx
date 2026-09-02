@@ -178,7 +178,15 @@ export function PricingCalculator() {
               <div className="space-y-2">
                 <label className="text-base font-medium text-irohGray-800 dark:text-irohGray-100">Push frequency</label>
                 <p className="text-sm text-irohGray-500 dark:text-irohGray-400">
-                  How often each endpoint pushes to the metrics API. This affects the total DPM and cost.
+                  How often each endpoint pushes to the metrics API. This affects the total DPM and cost.{' '}
+                  <a
+                    href="https://docs.rs/iroh-services/latest/iroh_services/struct.ClientBuilder.html#method.metrics_interval"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-irohPurple-500 hover:underline"
+                  >
+                    Configure the metrics interval in Rust.
+                  </a>
                 </p>
                 <select
                   value={frequency}
