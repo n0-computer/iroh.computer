@@ -95,7 +95,7 @@ export function PricingCalculator() {
                 label="Peak concurrent endpoints"
                 description={
                   relays > 0
-                    ? `${relays} × ${formatNumber(DEDICATED_INCLUDED_ENDPOINTS)} = ${formatNumber(includedEndpoints)} included`
+                    ? `${relays} × ${formatNumber(DEDICATED_INCLUDED_ENDPOINTS)} = ${formatNumber(includedEndpoints)} included, assuming even global distribution`
                     : `${formatNumber(includedEndpoints)} included`
                 }
                 value={peakConnections}
