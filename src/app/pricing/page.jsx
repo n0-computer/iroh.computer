@@ -53,6 +53,7 @@ const plans = [
     description: 'Your own infrastructure for production.',
     price: '$199',
     period: '/month/region',
+    priceNote: 'Add-on to Pro',
     href: `${SERVICES_URL}/?utm_source=website&utm_content=pricing-dedicated`,
     buttonLabel: 'Deploy a relay',
     inherits: 'Everything in Pro, plus',
@@ -176,6 +177,11 @@ export default function PricingPage() {
                       </span>
                     )}
                   </p>
+                  {plan.priceNote && (
+                    <p className="mt-1 text-sm font-semibold text-irohGray-500 dark:text-irohGray-400">
+                      {plan.priceNote}
+                    </p>
+                  )}
                   <div className="flex-1">
                     <div className="border-t border-irohGray-200 dark:border-irohGray-600 mt-6 pt-4" />
                     {plan.inherits && (
