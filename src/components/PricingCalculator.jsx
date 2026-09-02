@@ -15,7 +15,7 @@ const DEDICATED_RELAY_RATE = 199
 
 const relayOptions = [0, 1, 2, 3, 4, 5]
 const peakConnectionOptions = [1000, 5000, 10000, 25000, 50000, 100000, 250000]
-const metricsEndpointOptions = [10, 100, 1000, 5000]
+const metricsEndpointOptions = [10, 100, 250, 500, 750, 1000, 5000]
 const egressOptions = [50, 100, 250, 500, 1000, 2500, 5000]
 
 const frequencyOptions = [
