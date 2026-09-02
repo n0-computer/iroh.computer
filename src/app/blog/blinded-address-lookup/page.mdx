@@ -66,9 +66,7 @@ An active attacker however can connect using a random server public key. The ser
 
 # Can we hide the public key?
 
-For every single place where the public key is exposed, there is a solution.
-
-For address lookup I actually implemented a proof of concept solution, for the other issues I will just provide a rough sketch of a possible solution that **could be totally wrong** (I am not a cryptographer!).
+For every single place where the public key is exposed, we see a path forward for eliminating exposure. These rough sketches will still need vetting by a cryptography team once implemented to ensure that they are cryptographically sound. Please note, though, that while we have a proof-of-concept solution for one of the attack vectors (address lookup), ensuring that an `iroh` endpoint id can be used securely as a public key is not currently work we are planning to do in the near future.
 
 ## Blinded address lookup
 
