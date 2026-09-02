@@ -7,7 +7,7 @@ const SHARED_INCLUDED_ENDPOINTS = 10000
 const DEDICATED_INCLUDED_ENDPOINTS = 60000
 const INCLUDED_DPM = 10000
 const INCLUDED_EGRESS_GB = 100
-const METRICS_PER_ENDPOINT = 15
+const METRICS_PER_ENDPOINT = 35
 const ENDPOINT_MONTHLY_RATE = 0.003
 const METRICS_RATE = 1.49
 const EGRESS_RATE = 0.09
@@ -163,7 +163,7 @@ export function PricingCalculator() {
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-center mb-2">Estimate your metrics cost</h2>
         <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
-          Estimate DPM independently using 15 metrics per endpoint.
+          Estimate DPM independently using 35 metrics per endpoint.
         </p>
         <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -178,7 +178,7 @@ export function PricingCalculator() {
               <div className="space-y-2">
                 <label className="text-base font-medium text-irohGray-800 dark:text-irohGray-100">Push frequency</label>
                 <p className="text-sm text-irohGray-500 dark:text-irohGray-400">
-                  How often each endpoint pushes its 15 metrics
+                  How often each endpoint pushes its 35 metrics
                 </p>
                 <select
                   value={frequency}
