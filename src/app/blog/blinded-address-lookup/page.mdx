@@ -30,7 +30,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 This blog post is prompted by an [X]/[bluesky] thread by Zooko about desirable properties of public keys and the [granovetter property].
 
-In many cases it would be convenient to use the iroh public key as a secret. You share a service or resource via an iroh endpoint, and only entities that you explicitly tell the public key via a side channel can access the resource.
+In many cases it would be convenient to use the `iroh` public key as a secret. You share a service or resource via an `iroh` endpoint, and only entities that you explicitly tell the public key via a side channel can access the resource.
 
 An [Ed25519 public key][ed25519-key-generation] contains roughly 251 bits of entropy, so guessing one is basically impossible. So all good, right?
 
