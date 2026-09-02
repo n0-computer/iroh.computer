@@ -24,12 +24,11 @@ const plans = [
     features: [
       'Public relays in US, EU, Singapore',
       '7 day metrics retention',
-      'Community support',
     ],
     limitations: [
       'No auth, public only',
       'Rate-limited traffic',
-      'No uptime guarantees',
+      'No uptime guarantees'
     ],
   },
   {
@@ -41,11 +40,12 @@ const plans = [
     href: `${SERVICES_URL}?utm_source=website&utm_content=pricing-pro`,
     buttonLabel: 'Free trial',
     features: [
-      '10,000 connections',
+      '10,000 concurrent connections',
       '30 day metrics retention',
       'Authenticated',
       '5 MB/s rate limit',
       '100 GB egress',
+      'Support tickets'
     ],
   },
   {
@@ -58,7 +58,7 @@ const plans = [
     inherits: 'Everything in Pro, plus',
     features: [
       'Custom regions for lowest latency',
-      '60,000 connections',
+      '60,000 concurrent connections',
       'Version locking',
       'No rate limits',
       '250 GB egress',
@@ -92,6 +92,7 @@ const featureSections = [
   {
     name: 'Metrics',
     features: [
+      { name: 'Diagnostic Reports', free: '3', shared: '10', dedicated: '10', enterprise: 'Unlimited' },
       { name: 'Data points/minute', free: '1K DPM', shared: '10K DPM', sharedNote: 'then $1.49/1k DPM', dedicated: '10K DPM', dedicatedNote: 'then $1.49/1k DPM', enterprise: 'Custom' },
       { name: 'Metrics retention', free: '7 days', shared: '30 days', dedicated: '30 days', enterprise: 'Custom' },
     ]
@@ -231,7 +232,7 @@ export default function PricingPage() {
                 </p>
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm">
-                {['Volume discounts', 'Multi-cloud', 'SLAs available', 'Support Engineer'].map((feature) => (
+                {['Volume discounts', 'BYOC, On-Prem & Multi-cloud', 'SLAs available', 'Support Engineer'].map((feature) => (
                   <li key={feature} className="flex gap-x-3">
                     <Check className="h-5 w-5 flex-none text-irohPurple-500" />
                     {feature}
