@@ -71,14 +71,19 @@ export function PricingCalculator() {
   const egressCost = extraEgress * EGRESS_RATE
   const relayCost = relays * DEDICATED_RELAY_RATE
   const relayTotal = SHARED_BASE + connectionsCost + egressCost + relayCost
+  const monthlyTotal = relayTotal + metricsCost
 
   return (
     <div className="mt-16 mb-8 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-2">Estimate your hosting cost</h2>
+      <h2 className="text-2xl font-bold text-center mb-2">Estimate your monthly cost</h2>
       <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
-        Configure shared and dedicated relay capacity for your workload.
+        Configure hosting and metrics for your workload.
       </p>
       <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 p-8">
+        <h3 className="text-xl font-bold mb-2">Hosting</h3>
+        <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mb-6">
+          Configure shared and dedicated relay capacity.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <SelectInput
@@ -151,7 +156,7 @@ export function PricingCalculator() {
 
               <div className="border-t border-irohGray-300 dark:border-irohGray-600 pt-4">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Estimated total</span>
+                  <span>Hosting subtotal</span>
                   <span>{formatPrice(relayTotal)}/mo</span>
                 </div>
               </div>
@@ -160,12 +165,12 @@ export function PricingCalculator() {
         </div>
       </div>
 
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold text-center mb-2">Estimate your metrics cost</h2>
-        <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
-          Estimate DPM independently using 87 metrics per endpoint.
-        </p>
+      <div className="mt-8">
         <div className="rounded-lg border border-irohGray-300 dark:border-irohGray-700 p-8">
+          <h3 className="text-xl font-bold mb-2">Metrics</h3>
+          <p className="text-sm text-irohGray-500 dark:text-irohGray-400 mb-6">
+            Estimate DPM using 87 metrics per endpoint.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <SelectInput
@@ -228,11 +233,31 @@ export function PricingCalculator() {
                 </div>
                 <div className="border-t border-irohGray-300 dark:border-irohGray-600 pt-4">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Estimated metrics cost</span>
+                    <span>Metrics subtotal</span>
                     <span>{formatPrice(metricsCost)}/mo</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-irohPurple-500 bg-irohGray-100 dark:bg-irohGray-800 p-8">
+        <h3 className="text-xl font-bold mb-6">Monthly estimate</h3>
+        <div className="space-y-3 text-base">
+          <div className="flex justify-between">
+            <span>Hosting</span>
+            <span className="font-medium">{formatPrice(relayTotal)}/mo</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Metrics</span>
+            <span className="font-medium">{formatPrice(metricsCost)}/mo</span>
+          </div>
+          <div className="border-t border-irohGray-300 dark:border-irohGray-600 pt-4 mt-4">
+            <div className="flex justify-between text-xl font-bold">
+              <span>Estimated monthly cost</span>
+              <span>{formatPrice(monthlyTotal)}/mo</span>
             </div>
           </div>
         </div>
