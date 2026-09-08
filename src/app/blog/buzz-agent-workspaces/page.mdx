@@ -1,4 +1,5 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
 
 export const post = {
   draft: false,
@@ -28,6 +29,16 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
+<figure className="not-prose my-8">
+  <img
+    src="/blog/buzz-agent-workspaces/buzz-mesh-header.svg"
+    width="1200"
+    height="630"
+    alt="Two community computers sending inference directly over iroh while a Buzz relay handles membership and discovery"
+    className="w-full rounded-2xl"
+  />
+</figure>
+
 How can we use the devices we already have to build bigger things with AI?
 As hardware gets more expensive, that question is becoming an important new
 frontier for software engineers. Block is building
@@ -39,6 +50,19 @@ reviewing code, running workflows, joining conversations, and carrying context
 across a team. Once that happens, a workspace is no longer just a place where
 humans talk. It is a network of computers whose resources can become part of
 the development infrastructure.
+
+<figure className="not-prose my-8">
+  <Image
+    src="/blog/buzz-agent-workspaces/channel-agents.png"
+    width={2000}
+    height={1299}
+    alt="Buzz desktop showing people and agents collaborating in an engineering channel"
+    className="w-full rounded-xl"
+  />
+  <figcaption className="mt-2 text-center text-sm text-irohGray-500 dark:text-irohGray-400">
+    People and agents working together in Buzz. Image from the <a href="https://github.com/block/buzz/blob/main/docs/assets/screenshots/channel-agents.png">Buzz repository</a>.
+  </figcaption>
+</figure>
 
 That is what Block is building with Buzz. People can bring their own agents or
 use the Buzz agent, but either way those agents need an inference provider. A
@@ -78,6 +102,16 @@ The result is a clean split:
 | Buzz relay | Membership, signed status, discovery, and workspace history |
 | MeshLLM | Inference transport, owner allowlists, and model routing |
 | iroh | Authenticated QUIC connections and direct network paths |
+
+<figure className="not-prose my-8">
+  <img
+    src="/blog/buzz-agent-workspaces/buzz-architecture.svg"
+    width="1200"
+    height="620"
+    alt="The Buzz relay provides membership and discovery while an agent reaches community compute through MeshLLM and iroh"
+    className="w-full rounded-2xl"
+  />
+</figure>
 
 ## Why iroh
 
