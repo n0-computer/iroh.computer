@@ -170,7 +170,7 @@ trying to model every coffee-shop Wi-Fi network on Earth.
 </figure>
 
 Suppose 200 devices are online on average and each sends 100 GB/month. That is
-20,000 GB, or 20 TB, of application traffic. If 98% can travel directly between
+20 TB, of application traffic. If 98% can travel directly between
 endpoints, only the remaining 2% (400 GB) passes through the provider. Pro
 includes the first 100 GB, so the monthly bill would be about **$46**: $19 for
 Pro plus $27 for 300 GB of additional egress.
@@ -180,8 +180,8 @@ Here is the same workload compared to AWS and Supabase Pro:
 | Approach | Traffic crossing provider infrastructure | Estimated monthly cost |
 | --- | ---: | ---: |
 | Iroh Pro, with 2% relayed | 400 GB | **$46** |
-| WebSocket server on [AWS EC2][AWS EC2 data transfer pricing] | 20,000 GB egress | **about $1,742**, plus compute |
-| [Supabase Pro + Realtime][Supabase pricing] | 20,000 GB egress | **at least $1,803**, before Realtime message overages |
+| WebSocket server on [AWS EC2][AWS EC2 data transfer pricing] | 20TB egress | **about $1,742**, plus compute |
+| [Supabase Pro + Realtime][Supabase pricing] | 20TB egress | **at least $1,803**, before Realtime message overages |
 
 <aside className="not-prose mx-auto my-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-irohPurple-200 px-4 py-3 text-sm dark:border-irohPurple-800">
   <span className="text-irohGray-600 dark:text-irohGray-300">
