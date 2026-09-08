@@ -36,9 +36,24 @@ Suppose 200 devices are online sending 100GB/month. That is
 20 TB, of application traffic.
 
 What if 98% of the traffic could travel directly between devices instead
-of through the server? Then only the remaining 2% (400 GB) passes through the
-provider. What would normally be about $1,742 in AWS egress costs becomes $27 in
-Iroh relay overages—or $46 total, including the $19 Pro plan.
+of through the server? Then only the remaining 2% (400 GB) would pass through the
+provider. What would normally be about $1,742/mo in AWS egress costs becomes
+$46/mo with [Iroh services shared relays](https://services.iroh.computer)-and you don't need to manage security updates, config changes,
+or uptime yourself. 
+
+<aside className="not-prose mx-auto my-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-irohPurple-200 px-4 py-3 text-sm dark:border-irohPurple-800">
+  <span className="text-irohGray-600 dark:text-irohGray-300">
+If you self-host your own iroh relays, it's even cheaper (but swap money for time carefully!).
+</span>
+</aside>
+
+The savings can be substantial when you push compute to the edge, using peer-to-peer
+architecture that runs on hardware your users already have. This is even more critical now as the demand for
+data centers continues to grow.
+
+## Wait a tick, what's a relay?
+
+If you already are an iroh expert, skip to the next section!
 
 Using iroh, your devices will attempt to take a direct path instead of relaying
 everything through a server. This can significantly reduce the amount of traffic
@@ -47,10 +62,6 @@ that actually needs to pass through a provider, lowering both latency and server
 When trying to predict how much your software will cost to run, iroh's question
 is not “How much traffic does my app send?” but “How much traffic needs to go
 through a server?”
-
-## Wait a tick, what's a relay?
-
-If you already are an iroh expert, skip to the next section!
 
 A relay is the server that helps broker a connection in the first place and is
 the fallback path for some endpoints that may never connect directly. No data is
@@ -94,9 +105,6 @@ many projects.
 
 ## Enter: shared relays
 
-Now, you can use a shared relay to reduce costs and headache: several projects can now share the same underlying
-infrastructure, while authentication keeps each project's access and metrics separate.
-
 <figure className="not-prose mx-auto my-8 max-w-3xl">
   <img
     src="/animations/shared-relays.svg"
@@ -111,6 +119,9 @@ infrastructure, while authentication keeps each project's access and metrics sep
 You built a thing. A sync tool, a tiny multiplayer game, a weekend experiment
 that somehow acquired users. It now needs a relay you can depend on, without breaking the bank. You maybe
 also want to help support the ongoing maintenance and development of iroh!
+
+Now, you can use a shared relay to reduce costs and complexity: several projects can now share the same underlying
+infrastructure, while authentication keeps each project's access and metrics separate.
 
 Sharing the machinery lets us offer a useful amount of relay capacity at a
 hobby-project price. You get a predictable bill and we take care of deploying,
