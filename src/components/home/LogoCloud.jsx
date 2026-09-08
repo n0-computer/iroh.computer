@@ -5,6 +5,7 @@ import {ThemeImage} from '@/components/ThemeImage'
 import { useEffect, useRef } from "react"
 
 const companies = [
+  { name: "buzz", ext: "svg", label: "Buzz", imgClassName: "max-h-10", href: "/blog/buzz-agent-workspaces" },
   { name: "spacedrive", ext: "png", href: "https://www.spacedrive.com" },
   { name: "nous", ext: "png", href: "https://nousresearch.com" },
   { name: "meshllm", ext: "svg", imgClassName: "max-h-12 grayscale", href: "https://meshllm.cloud" },
@@ -73,12 +74,14 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map(({ name, ext, imgClassName, label, labelClassName, href }, index) => (
+            {companies.map(({ name, ext, imgClassName, label, labelClassName, href }, index) => {
+              const external = href.startsWith('http')
+              return (
               <a
                 key={`${name}-${index}`}
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
                 style={{ height, width: label ? undefined : height * 1.4 }}
                 className={`flex items-center justify-center ${label && ext ? 'gap-1' : 'gap-2.5'} px-4 transition-opacity hover:opacity-70`}
               >
@@ -96,7 +99,8 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
                   <span className={`text-2xl text-irohGray-500 dark:text-irohGray-400 ${labelClassName || 'font-bold'}`}>{label}</span>
                 )}
               </a>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>

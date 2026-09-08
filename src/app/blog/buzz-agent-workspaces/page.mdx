@@ -1,0 +1,147 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rae McKelvey',
+  date: '2026-09-08',
+  title: 'Buzz: agent workspaces need a network that leaves the server out of it',
+  description:
+    'How Block is using Buzz, MeshLLM, and iroh to turn the computers in a community into shared infrastructure for AI agents.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [{
+      url: `/api/og?title=Blog&subtitle=${post.title}`,
+      width: 1200,
+      height: 630,
+      alt: post.title,
+      type: 'image/png',
+    }],
+    type: 'article',
+  },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+How can we use the devices we already have to build bigger things with AI?
+As hardware gets more expensive, that question is becoming an important new
+frontier for software engineers. Block is building
+[Buzz](https://github.com/block/buzz) to chip away at the problem, powered by
+iroh's peer-to-peer networking.
+
+Agents are starting to do real work: opening repositories, writing patches,
+reviewing code, running workflows, joining conversations, and carrying context
+across a team. Once that happens, a workspace is no longer just a place where
+humans talk. It is a network of computers whose resources can become part of
+the development infrastructure.
+
+That is what Block is building with Buzz. People can bring their own agents or
+use the Buzz agent, but either way those agents need an inference provider. A
+Buzz community creates a natural perimeter for members who want to share spare
+compute and run open models together.
+
+[MeshLLM](https://github.com/Mesh-LLM/mesh-llm) is built into Buzz. It uses iroh to
+connect community members across all sorts of networks and make their compute
+available to local agents without putting a central server in the inference
+path. Sharing is entirely opt-in. When enabled, it can reduce inference costs
+and put hardware that would otherwise sit idle to useful work.
+
+A member can opt in to share compute, and their machine advertises the models
+it can serve. Other members' agents use that capacity through an
+OpenAI-compatible local endpoint. The Buzz relay helps the community discover
+who is allowed to participate, but the inference path does not run through the
+Buzz relay.
+
+## Buzz Mesh: your community is your compute
+
+In Buzz, a community is already a trust group: the people and agents admitted
+to a network. Buzz Mesh reuses that decision. The same membership that lets
+someone read channels and participate in work also gates shared inference.
+
+Current Buzz membership controls which node identities are admitted. A serving
+target becomes selectable only when its endpoint binding is valid, its invite
+token decodes to a bounded iroh endpoint, and every advertised relay URL
+matches the machine's locally configured iroh relay policy. The relay is not
+blindly handing clients arbitrary network targets. Discovery is member-signed,
+endpoint-bound, size-bounded, and policy-checked before a node becomes
+selectable.
+
+The result is a clean split:
+
+| Piece | Responsibility |
+| --- | --- |
+| Buzz relay | Membership, signed status, discovery, and workspace history |
+| MeshLLM | Inference transport, owner allowlists, and model routing |
+| iroh | Authenticated QUIC connections and direct network paths |
+
+## Why iroh
+
+Buzz does not want to require a VPN, a new global network account, or every
+team to become network operators before two machines can talk.
+
+Libp2p is powerful when you want a broad peer-to-peer framework. Buzz needs a
+smaller primitive that handles the network and gets out of the way: dial an
+identity, open authenticated streams, and let the application own the protocol
+above them.
+
+Every iroh endpoint is already identified by a public key. The address is not
+"this IP and port"; it is "this endpoint." That is exactly the shape an agent
+workspace wants. Buzz decides who may enter the community. MeshLLM decides who
+may serve or consume inference. iroh makes the connection work across laptops,
+workstations, home and office networks, and cloud machines.
+
+The network becomes something MeshLLM and Buzz can build in directly, without
+asking the user to configure it.
+
+## How Buzz uses iroh
+
+The desktop runtime publishes a signed, replaceable discovery note containing
+the member's MeshLLM owner identity and current iroh endpoint. Other members
+resolve available serving targets from the relay, validate the endpoint and
+relay policy locally, and then connect through MeshLLM.
+
+To an agent, it still looks like an OpenAI-compatible endpoint at
+`127.0.0.1:9337/v1`. The model can be a specific name or `auto`, which Buzz maps
+to MeshLLM's virtual `mesh` model so the mesh can choose the best available
+route.
+
+Buzz also has an inter-relay mesh crate built around one iroh endpoint per
+relay runtime. Each runtime gets a unique iroh keypair. Peers exchange attested
+readiness records, gossip membership, and move fenced tunnel traffic over QUIC
+streams and datagrams.
+
+The wire contract is explicit:
+
+| Piece | Purpose |
+| --- | --- |
+| `buzz/mesh/1` | ALPN for Buzz relay mesh connections |
+| QUIC bidirectional streams | Reliable tunnel traffic and control |
+| QUIC datagrams | Real-time media, including huddle audio |
+| `FencedHeader` | `{session_id, generation, owner_runtime_id}` on session-bearing frames |
+| Redis CAS lease | Arbiter for ownership; mesh membership is only a routing hint |
+
+That distinction matters. The mesh can say, "this peer is dialable." It cannot
+say, "this peer owns the session." Ownership is fenced by the relay's session
+directory, and stale generations are rejected at every hop.
+
+That is the kind of boring engineering detail that makes distributed systems
+usable.
+
+## What's next
+
+[Goose](https://github.com/block/goose) now has an optional feature called
+`roam`, which allows agents to exchange cards and talk directly. The next step
+is more agent-to-agent communication over iroh with little or no user
+configuration.
+
+Buzz provides a natural grouping of people, their agents, and their compute.
+Much of that compute may be idle. MeshLLM lets the group share it over iroh.
+
+The larger question is profound: how can we use the devices we already have to
+build bigger things with AI? As hardware costs rise, Buzz and MeshLLM are
+working on one answer—wholeheartedly, and powered by peer-to-peer networks.
