@@ -75,7 +75,12 @@ export function PricingCalculator() {
 
   return (
     <div className="mt-16 mb-8 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-2">Estimate your monthly cost</h2>
+      <h2
+        id="estimate-your-monthly-cost"
+        className="scroll-mt-24 text-2xl font-bold text-center mb-2"
+      >
+        Estimate your monthly cost
+      </h2>
       <p className="text-center text-irohGray-500 dark:text-irohGray-400 mb-8">
         Adjust usage to estimate hosting and metrics.
       </p>

@@ -5,7 +5,7 @@ export const post = {
   draft: false,
   author: 'Rae McKelvey',
   date: '2026-09-08',
-  title: 'Share relay servers to save money on egress',
+  title: 'Share relay servers to save money and heartache',
   description:
     'The new Iroh Services Pro plan gives hobby projects an authenticated relay without the work or price of dedicated infrastructure.',
   headerImage: '/animations/shared-relays.svg',
@@ -182,6 +182,21 @@ Here is the same workload compared to AWS and Supabase Pro:
 | Iroh Pro, with 2% relayed | 400 GB | **$46** |
 | WebSocket server on [AWS EC2][AWS EC2 data transfer pricing] | 20,000 GB egress | **about $1,742**, plus compute |
 | [Supabase Pro + Realtime][Supabase pricing] | 20,000 GB egress | **at least $1,803**, before Realtime message overages |
+
+<aside className="not-prose my-8 rounded-lg border border-irohPurple-200 bg-irohPurple-50 p-6 dark:border-irohPurple-800 dark:bg-irohPurple-950/30">
+  <h3 className="text-lg font-bold text-irohGray-900 dark:text-irohGray-100">
+    What would your project cost?
+  </h3>
+  <p className="mt-2 text-irohGray-600 dark:text-irohGray-300">
+    Plug in your expected relay egress, peak connections, dedicated relays, and metrics usage.
+  </p>
+  <a
+    href="/pricing#estimate-your-monthly-cost"
+    className="mt-4 inline-flex font-semibold text-irohPurple-600 hover:underline dark:text-irohPurple-400"
+  >
+    Estimate your monthly cost →
+  </a>
+</aside>
 
 That makes Iroh roughly **38–39× less expensive** in this example.  This is intentionally back-of-the-napkin math, not a universal benchmark. A workload with fewer direct connections would make Iroh more
 expensive. Your real ratio depends on NATs, firewalls, geography, and what your
