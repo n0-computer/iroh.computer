@@ -34,6 +34,13 @@ export function BlogPostLayout({ article, references = [], children }) {
                   </time>
                   <span>{' '}by {article.author}</span>
                 </span>
+                {article.headerImage && (
+                  <img
+                    src={article.headerImage}
+                    alt={article.headerImageAlt || ''}
+                    className="mt-8 w-full"
+                  />
+                )}
               </header>
               <Prose className="mt-8" data-mdx-content>
                 {children}
