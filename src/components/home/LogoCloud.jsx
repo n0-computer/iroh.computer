@@ -17,6 +17,8 @@ const companies = [
     name: "cmux",
     lightSrc: "/img/user-logos/cmux-light.png",
     darkSrc: "/img/user-logos/cmux-dark.png",
+    label: "cmux",
+    labelClassName: "font-semibold",
     imgClassName: "max-h-12",
     href: "https://cmux.com/",
   },
