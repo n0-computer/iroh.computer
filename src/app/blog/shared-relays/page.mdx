@@ -51,28 +51,17 @@ The savings can be substantial when you push compute to the edge, using peer-to-
 architecture that runs on hardware your users already have. This is even more critical now as the demand for
 data centers continues to grow.
 
-## Wait a tick, what's a relay?
+## Wait a sec, what's iroh?
 
 If you already are an iroh expert, skip to the next section!
-
-Using iroh, your devices will attempt to take a direct path instead of relaying
-everything through a server. This can significantly reduce the amount of traffic
-that actually needs to pass through a provider, lowering both latency and server costs.
 
 When trying to predict how much your software will cost to run, iroh's question
 is not “How much traffic does my app send?” but “How much traffic needs to go
 through a server?”
 
-A relay is the server that helps broker a connection in the first place and is
-the fallback path for some endpoints that may never connect directly. No data is
-stored on the relay servers. This is how a small box can provide so many
-connections for cheap.
-
-Most of the time iroh will still try to establish a direct connection, so the
-relay is not automatically carrying every byte your application sends. But when
-the network changes, or you step out of the house, your Wi-Fi briefly drops, or
-something even stranger (networks are extremely good at getting weird!) the
-relay is what keeps the connection alive during those intermittent outages.
+Using iroh, your devices will attempt to take a direct path instead of relaying
+everything through a server. This can significantly reduce the amount of traffic
+that actually needs to pass through a provider, lowering both latency and server costs.
 
 <figure className="not-prose mx-auto my-8 max-w-3xl">
   <img
@@ -84,6 +73,15 @@ relay is what keeps the connection alive during those intermittent outages.
     The relay gets two endpoints connected. Once a direct path is validated, application data takes the shorter route.
   </figcaption>
 </figure>
+A relay is the server that helps broker a connection in the first place and is
+the fallback path for some endpoints that may never connect directly. No data is
+stored on the relay servers. This is how a small box can provide so many
+connections for cheap.
+
+Most of the time iroh will establish a direct connection. But when
+the network changes, or you step out of the house, your Wi-Fi briefly drops, or
+something even stranger (networks are extremely good at getting weird!) the
+relay is what keeps the connection alive during those intermittent outages.
 
 The [maintainers of
 iroh](https://n0.computer) provide rate-limited public relays for free as a
@@ -92,18 +90,8 @@ everything is MIT licensed. However, the jump from the public relays to
 self-hosting or paying for a managed dedicated relay was too large of a lift for
 many projects.
 
-<figure className="not-prose mx-auto my-8 max-w-3xl">
-  <img
-    src="/animations/endpoint-startup.svg"
-    alt="An iroh endpoint measures several relays and selects the closest one as its home relay"
-    style={{ width: '100%' }}
-  />
-  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
-    At startup, an endpoint measures the available relays and keeps a connection to the fastest one.
-  </figcaption>
-</figure>
 
-## Enter: shared relays
+## Shared relays for your growing project
 
 <figure className="not-prose mx-auto my-8 max-w-3xl">
   <img
@@ -116,9 +104,10 @@ many projects.
   </figcaption>
 </figure>
 
-You built a thing. A sync tool, a tiny multiplayer game, a weekend experiment
-that somehow acquired users. It now needs a relay you can depend on, without breaking the bank. You maybe
-also want to help support the ongoing maintenance and development of iroh!
+So, you built a thing with iroh. A sync tool, a tiny multiplayer game, a weekend experiment
+that somehow acquired users. It now needs a relay you can depend on, without
+breaking the bank. You maybe also want to help support the ongoing maintenance
+and development of iroh!
 
 Now, you can use a shared relay to reduce costs and complexity: several projects can now share the same underlying
 infrastructure, while authentication keeps each project's access and metrics separate.
