@@ -32,39 +32,6 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Suppose 200 devices are online sending 100GB/month over the Internet. That is
-20 TB of application traffic, or $1,742/mo in AWS egress costs.
-
-But what if 98% of the traffic could travel directly between devices instead
-of through the server? Then only the remaining 2% (400 GB) would pass through
-AWS. 
-
-When trying to predict how much your software will cost to run, iroh's question
-is not “How much traffic does my app send?” but “How much traffic needs to go
-through a server?”
-
-Using iroh, your devices will attempt to take a direct path instead of relaying
-everything through a server. This can significantly reduce the amount of traffic
-that actually needs to pass through a provider, lowering both latency and server costs. Most of the time iroh will establish a direct connection. But when
-the network changes, or you step out of the house, your Wi-Fi briefly drops, or
-something even stranger (networks are extremely good at getting weird!) the
-relay is what keeps the connection alive during those intermittent outages.
-
-<figure className="not-prose mx-auto my-8 max-w-3xl">
-  <img
-    src="/animations/hole-punching.svg"
-    alt="Two iroh endpoints first connect through a relay, exchange addresses, punch through their NATs, and move their traffic to a direct path"
-    style={{ width: '100%' }}
-  />
-  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
- A relay is the server that helps broker a connection in the first place and is
-the fallback path for some endpoints that may never connect directly. No data is
-stored on the relay servers.  Once a direct path is validated, application data takes the shorter route.
- </figcaption>
-</figure>
-
-
-
 Anyone can self-host relays for free without permission: iroh is openly licensed.
 But if you set up your own relay servers, you need to consider
 factors like server availability, network latency, security, and maintenance
@@ -74,7 +41,43 @@ Because this initial effort can be a barrier to entry, the [maintainers of
 iroh](https://n0.computer) provide rate-limited public relays for free as a
 public service. However, setting up and maintaining your own relay infrastructure can still be a significant effort.
 
-But what if teams could share the cost of operating relays?
+But what if teams could share the cost of operating relays? Today we're offering
+[shared relay servers through Iroh Services](https://docs.iroh.computer/iroh-services/relays/shared), allowing multiple projects to
+leverage the same relay, metrics, and network diagnostics infrastructure efficiently.
+
+## Wait, what's iroh? What's a relay? 
+
+If your app starts getting popular at 2,000 users with each user sending
+10GB/data per month, you'll be responsible for 20 TB of application traffic over
+the internet. That's a $1,742/mo AWS bill just in egress alone.
+
+But what if 98% of the traffic could travel directly between devices instead
+of through the server? Then only the remaining 2% (400 GB) would pass through
+AWS, reducing the bill to about $36. 
+
+Using iroh, your devices will attempt to take a direct path instead of relaying
+everything through a server. This can significantly reduce the amount of traffic
+that actually needs to pass through a provider, lowering both latency and server
+costs. 
+
+<figure className="not-prose mx-auto my-8 max-w-3xl">
+  <img
+    src="/animations/hole-punching.svg"
+    alt="Two iroh endpoints first connect through a relay, exchange addresses, punch through their NATs, and move their traffic to a direct path"
+    style={{ width: '100%' }}
+  />
+  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+   No data is
+stored on the relay servers.  Once a direct path is validated, application data takes the shorter route.
+ </figcaption>
+</figure>
+Most of the time iroh will establish a direct connection. But when the
+network changes, or you step out of the house, your Wi-Fi briefly drops, or
+something even stranger (networks are extremely good at getting weird!) the
+relay is what keeps the connection alive during those intermittent outages.
+ A relay is the server that helps broker a connection in the first place and is
+the fallback path for some endpoints that may never connect directly.
+
 
 ## Shared relays for your growing project
 
@@ -155,13 +158,10 @@ trying to model every coffee-shop Wi-Fi network on Earth.
   </figcaption>
 </figure>
 
-Suppose 200 devices are online on average and each sends 100 GB/month. That is
-20 TB, of application traffic. If 98% can travel directly between
-endpoints, only the remaining 2% (400 GB) passes through the provider. Pro
-includes the first 100 GB, so the monthly bill would be about **$46**: $19 for
+Iroh Pro includes the first 100 GB, so the monthly bill would be about **$46**: $19 for
 Pro plus $27 for 300 GB of additional egress.
 
-Here is the same workload compared to AWS and Supabase Pro:
+Here is the 20TB workload over iroh compared to AWS and Supabase Pro:
 
 | Approach | Traffic crossing provider infrastructure | Estimated monthly cost |
 | --- | ---: | ---: |
@@ -194,8 +194,6 @@ expensive. Your real ratio depends on NATs, firewalls, geography, and what your
 [Supabase Realtime message pricing]: https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages
 
 
-## Authentication is available
-
 ## Getting started
 
 1. Create or open a project in [Iroh Services].
@@ -222,6 +220,12 @@ Relay Authentication.]
 ### Are the public relays going away?
 
 No. The Community plan remains the free place to get started with public relays.
+However, the [public relays are
+rate-limited](https://docs.iroh.computer/relays/rate-limiting) based on the
+total current unauthenticated traffic. Now, with iroh 1.1.0 and above you will
+get messages when your endpoint is getting rate limited. As iroh has gotten more
+popular, we have had to enforce these rate limits more strictly to ensure fair
+usage for all users. If you are experiencing issues with rate limiting, please [upgrade to a Pro plan](https://services.iroh.computer) or [self-host your own relays.](https://docs.iroh.computer/relays/self-hosting)
 
 ### Is my traffic readable by Iroh Services or another tenant?
 
