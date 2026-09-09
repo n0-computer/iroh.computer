@@ -5,13 +5,30 @@ import {ThemeImage} from '@/components/ThemeImage'
 import { useEffect, useRef } from "react"
 
 const companies = [
-  { name: "spacedrive", ext: "png", href: "https://www.spacedrive.com" },
+  {
+    name: "cmux",
+    lightSrc: "/img/user-logos/cmux-light.png",
+    darkSrc: "/img/user-logos/cmux-dark.png",
+    label: "cmux",
+    labelClassName: "font-semibold",
+    imgClassName: "max-h-12",
+    href: "https://cmux.com/",
+  },
+  { name: "spacedrive", ext: "png", widthScale: 2.2, imgClassName: "max-h-20", href: "https://www.spacedrive.com" },
   { name: "nous", ext: "png", href: "https://nousresearch.com" },
   { name: "meshllm", ext: "svg", imgClassName: "max-h-12 grayscale", href: "https://meshllm.cloud" },
   { name: "strada", ext: "png", label: "strada", labelClassName: "font-black", imgClassName: "max-h-6", href: "https://strada.tech" },
   { name: "paycode", ext: "svg", href: "https://www.paycode.com.mx" },
   { name: "rave", ext: "png", href: "https://rave.io" },
-  { name: "delta_chat", ext: "png", href: "https://delta.chat" },
+  {
+    name: "block",
+    lightSrc: "/img/user-logos/block-light.png",
+    darkSrc: "/img/user-logos/block-dark.png",
+    widthScale: 1.6,
+    imgClassName: "max-h-6 opacity-50",
+    href: "/blog/buzz-agent-workspaces",
+  },
+  { name: "delta_chat", ext: "png", widthScale: 2.2, imgClassName: "max-h-20", href: "https://delta.chat" },
   { name: "ottomatic", ext: "png", label: "Ottomatic", imgClassName: "max-h-6", href: "https://ottomatic.io" },
   { name: "rayfish", ext: "png", label: "Rayfish", imgClassName: "max-h-6", href: "https://rayfish.xyz" },
   { name: "outl", label: "Outl", href: "https://outl.app" },
@@ -24,18 +41,28 @@ const companies = [
 //   speed?: number
 //   height?: number
 // }
-export function LogoCloud({ speed = 0.85, height = 100 }) {
+export function LogoCloud({ speed = 0.4, height = 100 }) {
   const scrollerRef = useRef(null)
   const innerScrollerRef = useRef(null)
 
   useEffect(() => {
     if (!scrollerRef.current || !innerScrollerRef.current) return
+    const innerScroller = innerScrollerRef.current
+
+    // React runs effects twice in development. Clear any previous marquee
+    // copies before creating the one duplicate set needed for a seamless loop.
+    innerScroller
+      .querySelectorAll('[data-logo-cloud-clone]')
+      .forEach((item) => item.remove())
 
     // Clone the content for seamless scrolling
-    const scrollerContent = Array.from(innerScrollerRef.current.children)
+    const scrollerContent = Array.from(innerScroller.children)
     scrollerContent.forEach((item) => {
       const duplicatedItem = item.cloneNode(true)
-      innerScrollerRef.current.appendChild(duplicatedItem)
+      duplicatedItem.setAttribute('data-logo-cloud-clone', '')
+      duplicatedItem.setAttribute('aria-hidden', 'true')
+      duplicatedItem.tabIndex = -1
+      innerScroller.appendChild(duplicatedItem)
     })
 
     // Animation function
@@ -53,9 +80,7 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
       progress = newProgress
 
       // Move the scroller
-      if (innerScrollerRef.current) {
-        innerScrollerRef.current.style.transform = `translateX(-${progress % 50}%)`
-      }
+      innerScroller.style.transform = `translateX(-${progress % 50}%)`
 
       animationId = requestAnimationFrame(animate)
     }
@@ -64,6 +89,9 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
 
     return () => {
       cancelAnimationFrame(animationId)
+      innerScroller
+        .querySelectorAll('[data-logo-cloud-clone]')
+        .forEach((item) => item.remove())
     }
   }, [speed])
 
@@ -73,21 +101,23 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
         {/* Scroller container */}
         <div ref={scrollerRef} className="flex w-full h-full overflow-hidden">
           <div ref={innerScrollerRef} className="flex animate-scroll whitespace-nowrap">
-            {companies.map(({ name, ext, imgClassName, label, labelClassName, href }, index) => (
+            {companies.map(({ name, ext, lightSrc, darkSrc, widthScale = 1.4, imgClassName, label, labelClassName, href }, index) => {
+              const external = href.startsWith('http')
+              return (
               <a
                 key={`${name}-${index}`}
                 href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ height, width: label ? undefined : height * 1.4 }}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
+                style={{ height, width: label ? undefined : height * widthScale }}
                 className={`flex items-center justify-center ${label && ext ? 'gap-1' : 'gap-2.5'} px-4 transition-opacity hover:opacity-70`}
               >
-                {ext && (
+                {(ext || lightSrc) && (
                   <ThemeImage
                     alt={`${name} logo`}
-                    darkSrc={`/img/user-logos/${name}.${ext}`}
-                    lightSrc={`/img/user-logos/${name}.${ext}`}
-                    width={label ? height : height * 1.4}
+                    darkSrc={darkSrc || `/img/user-logos/${name}.${ext}`}
+                    lightSrc={lightSrc || `/img/user-logos/${name}.${ext}`}
+                    width={label ? height : height * widthScale}
                     height={height}
                     className={`object-contain ${label ? 'w-auto flex-shrink-0' : 'w-auto'} ${imgClassName || 'max-h-12'}`}
                   />
@@ -96,7 +126,8 @@ export function LogoCloud({ speed = 0.85, height = 100 }) {
                   <span className={`text-2xl text-irohGray-500 dark:text-irohGray-400 ${labelClassName || 'font-bold'}`}>{label}</span>
                 )}
               </a>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
