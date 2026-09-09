@@ -48,7 +48,7 @@ const quotes = [
     logo: '/img/user-logos/datum.svg',
   },
   {
-    quote: 'Doubling the network speed halves our compute budget.',
+    quote: 'Using iroh halved our compute budget.',
     name: 'Ari Lotter',
     org: 'Principal Engineer at Nous',
     logo: '/img/user-logos/nous.png',
@@ -56,8 +56,8 @@ const quotes = [
   {
     quote: 'With iroh, every node is just a public key. We pool GPUs across clouds and closets into one mesh. No central server, no NAT config.',
     name: 'Michael Neale',
-    org: 'Founder at Mesh LLM',
-    logo: '/img/user-logos/meshllm.svg',
+    org: 'Principal Engineer at Block',
+    logo: '/img/user-logos/block-dark.png',
   },
 ];
 
