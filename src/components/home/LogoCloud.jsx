@@ -41,7 +41,7 @@ const companies = [
 //   speed?: number
 //   height?: number
 // }
-export function LogoCloud({ speed = 0.85, height = 100 }) {
+export function LogoCloud({ speed = 0.4, height = 100 }) {
   const scrollerRef = useRef(null)
   const innerScrollerRef = useRef(null)
 
