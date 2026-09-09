@@ -47,12 +47,22 @@ export function LogoCloud({ speed = 0.4, height = 100 }) {
 
   useEffect(() => {
     if (!scrollerRef.current || !innerScrollerRef.current) return
+    const innerScroller = innerScrollerRef.current
+
+    // React runs effects twice in development. Clear any previous marquee
+    // copies before creating the one duplicate set needed for a seamless loop.
+    innerScroller
+      .querySelectorAll('[data-logo-cloud-clone]')
+      .forEach((item) => item.remove())
 
     // Clone the content for seamless scrolling
-    const scrollerContent = Array.from(innerScrollerRef.current.children)
+    const scrollerContent = Array.from(innerScroller.children)
     scrollerContent.forEach((item) => {
       const duplicatedItem = item.cloneNode(true)
-      innerScrollerRef.current.appendChild(duplicatedItem)
+      duplicatedItem.setAttribute('data-logo-cloud-clone', '')
+      duplicatedItem.setAttribute('aria-hidden', 'true')
+      duplicatedItem.tabIndex = -1
+      innerScroller.appendChild(duplicatedItem)
     })
 
     // Animation function
@@ -70,9 +80,7 @@ export function LogoCloud({ speed = 0.4, height = 100 }) {
       progress = newProgress
 
       // Move the scroller
-      if (innerScrollerRef.current) {
-        innerScrollerRef.current.style.transform = `translateX(-${progress % 50}%)`
-      }
+      innerScroller.style.transform = `translateX(-${progress % 50}%)`
 
       animationId = requestAnimationFrame(animate)
     }
@@ -81,6 +89,9 @@ export function LogoCloud({ speed = 0.4, height = 100 }) {
 
     return () => {
       cancelAnimationFrame(animationId)
+      innerScroller
+        .querySelectorAll('[data-logo-cloud-clone]')
+        .forEach((item) => item.remove())
     }
   }, [speed])
 
