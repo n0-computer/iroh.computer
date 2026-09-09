@@ -6,14 +6,6 @@ import { useEffect, useRef } from "react"
 
 const companies = [
   {
-    name: "block",
-    lightSrc: "/img/user-logos/block-light.png",
-    darkSrc: "/img/user-logos/block-dark.png",
-    widthScale: 1.6,
-    imgClassName: "max-h-6 opacity-50",
-    href: "/blog/buzz-agent-workspaces",
-  },
-  {
     name: "cmux",
     lightSrc: "/img/user-logos/cmux-light.png",
     darkSrc: "/img/user-logos/cmux-dark.png",
@@ -28,6 +20,14 @@ const companies = [
   { name: "strada", ext: "png", label: "strada", labelClassName: "font-black", imgClassName: "max-h-6", href: "https://strada.tech" },
   { name: "paycode", ext: "svg", href: "https://www.paycode.com.mx" },
   { name: "rave", ext: "png", href: "https://rave.io" },
+  {
+    name: "block",
+    lightSrc: "/img/user-logos/block-light.png",
+    darkSrc: "/img/user-logos/block-dark.png",
+    widthScale: 1.6,
+    imgClassName: "max-h-6 opacity-50",
+    href: "/blog/buzz-agent-workspaces",
+  },
   { name: "delta_chat", ext: "png", widthScale: 2.2, imgClassName: "max-h-20", href: "https://delta.chat" },
   { name: "ottomatic", ext: "png", label: "Ottomatic", imgClassName: "max-h-6", href: "https://ottomatic.io" },
   { name: "rayfish", ext: "png", label: "Rayfish", imgClassName: "max-h-6", href: "https://rayfish.xyz" },
