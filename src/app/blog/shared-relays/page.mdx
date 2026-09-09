@@ -8,7 +8,7 @@ export const post = {
   title: 'Share relay servers to save money and heartache',
   description:
     'The new Iroh Services Pro plan gives hobby projects an authenticated relay without the work or price of dedicated infrastructure.',
-  headerImage: '/animations/shared-relays.svg',
+  headerImage: '',
   headerImageAlt:
     'Endpoints from two projects using the same shared relay with separate authentication and usage accounting',
 }
@@ -32,28 +32,12 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Suppose 200 devices are online sending 100GB/month. That is
-20 TB, of application traffic.
+Suppose 200 devices are online sending 100GB/month over the Internet. That is
+20 TB of application traffic, or $1,742/mo in AWS egress costs.
 
-What if 98% of the traffic could travel directly between devices instead
-of through the server? Then only the remaining 2% (400 GB) would pass through the
-provider. What would normally be about $1,742/mo in AWS egress costs becomes
-$46/mo with [Iroh services shared relays](https://services.iroh.computer)-and you don't need to manage security updates, config changes,
-or uptime yourself. 
-
-<aside className="not-prose mx-auto my-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-irohPurple-200 px-4 py-3 text-sm dark:border-irohPurple-800">
-  <span className="text-irohGray-600 dark:text-irohGray-300">
-If you self-host your own iroh relays, it's even cheaper (but swap money for time carefully!).
-</span>
-</aside>
-
-The savings can be substantial when you push compute to the edge, using peer-to-peer
-architecture that runs on hardware your users already have. This is even more critical now as the demand for
-data centers continues to grow.
-
-## Wait a sec, what's iroh?
-
-If you already are an iroh expert, skip to the next section!
+But what if 98% of the traffic could travel directly between devices instead
+of through the server? Then only the remaining 2% (400 GB) would pass through
+AWS. 
 
 When trying to predict how much your software will cost to run, iroh's question
 is not “How much traffic does my app send?” but “How much traffic needs to go
@@ -61,7 +45,10 @@ through a server?”
 
 Using iroh, your devices will attempt to take a direct path instead of relaying
 everything through a server. This can significantly reduce the amount of traffic
-that actually needs to pass through a provider, lowering both latency and server costs.
+that actually needs to pass through a provider, lowering both latency and server costs. Most of the time iroh will establish a direct connection. But when
+the network changes, or you step out of the house, your Wi-Fi briefly drops, or
+something even stranger (networks are extremely good at getting weird!) the
+relay is what keeps the connection alive during those intermittent outages.
 
 <figure className="not-prose mx-auto my-8 max-w-3xl">
   <img
@@ -70,26 +57,24 @@ that actually needs to pass through a provider, lowering both latency and server
     style={{ width: '100%' }}
   />
   <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
-    The relay gets two endpoints connected. Once a direct path is validated, application data takes the shorter route.
-  </figcaption>
-</figure>
-A relay is the server that helps broker a connection in the first place and is
+ A relay is the server that helps broker a connection in the first place and is
 the fallback path for some endpoints that may never connect directly. No data is
-stored on the relay servers. This is how a small box can provide so many
-connections for cheap.
+stored on the relay servers.  Once a direct path is validated, application data takes the shorter route.
+ </figcaption>
+</figure>
 
-Most of the time iroh will establish a direct connection. But when
-the network changes, or you step out of the house, your Wi-Fi briefly drops, or
-something even stranger (networks are extremely good at getting weird!) the
-relay is what keeps the connection alive during those intermittent outages.
 
-The [maintainers of
+
+Anyone can self-host relays for free without permission: iroh is openly licensed.
+But if you set up your own relay servers, you need to consider
+factors like server availability, network latency, security, and maintenance
+overhead.
+
+Because this initial effort can be a barrier to entry, the [maintainers of
 iroh](https://n0.computer) provide rate-limited public relays for free as a
-public service. You can also self-host your relays for free without permission:
-everything is MIT licensed. However, the jump from the public relays to
-self-hosting or paying for a managed dedicated relay was too large of a lift for
-many projects.
+public service. However, setting up and maintaining your own relay infrastructure can still be a significant effort.
 
+But what if teams could share the cost of operating relays?
 
 ## Shared relays for your growing project
 
@@ -104,13 +89,13 @@ many projects.
   </figcaption>
 </figure>
 
-So, you built a thing with iroh. A sync tool, a tiny multiplayer game, a weekend experiment
-that somehow acquired users. It now needs a relay you can depend on, without
-breaking the bank. You maybe also want to help support the ongoing maintenance
-and development of iroh!
 
-Now, you can use a shared relay to reduce costs and complexity: several projects can now share the same underlying
-infrastructure, while authentication keeps each project's access and metrics separate.
+Now, iroh services offers a shared relay to reduce costs and complexity: several
+projects can now share the same underlying infrastructure, while
+[authentication](https://www.iroh.computer/blog/authenticated-relays) keeps each
+project's access and metrics separate. This is the main benefit of using shared
+relays - your project can leverage robust relay and metrics infrastructure without bearing
+the full operational cost.
 
 Sharing the machinery lets us offer a useful amount of relay capacity at a
 hobby-project price. You get a predictable bill and we take care of deploying,
@@ -120,14 +105,15 @@ can pay for a lunch every month to the team maintaining iroh!
 
 | | Community | Pro | Dedicated |
 | --- | --- | --- | --- |
-| Best for | Getting started| Hobby projects | Production with infrastructure requirements |
+| Monthly price | $0 | $19 | $199/region, plus Pro |
 | Relay | Public | Shared | Dedicated |
+| Rate-limit | Variable | 5MB/s | Unlimited |
 | Authentication | No | Yes | Yes |
 | Custom DNS | No | No | Yes |
-| Monthly price | $0 | $19 | $199/region, plus Pro |
 | Included egress | Variable | 100 GB | 250 GB |
 | Additional egress | N/A | $0.09/GB | Region-based pricing |
 | Concurrent connections | Rate limited | 10,000 | 60,000 |
+| Best for | Getting started| Hobby projects | Production with infrastructure requirements |
 
 If you already have a Pro plan, you can start using the shared relays immediately without any additional setup.
 
@@ -139,7 +125,7 @@ If you already have a Pro plan, you can start using the shared relays immediatel
     alt="Iroh Services relay dashboard showing relay regions, online endpoints, egress, transfer rate, and connection metrics over 30 days"
   />
   <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
-    See online endpoints, egress, transfer rate, and connection history for every relay in your project.
+    You can also mix-and-match shared & dedicated relays for global availability, and burst capacity in regions with more activity. See online endpoints, egress, transfer rate, and connection history for every relay in your project.
   </figcaption>
 </figure>
 
