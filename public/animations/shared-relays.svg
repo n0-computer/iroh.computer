@@ -1,0 +1,91 @@
+<svg viewBox="0 0 940 430" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    :root { background-color: transparent; color-scheme: light dark; }
+    text { font-family: monospace; }
+  </style>
+  <text x="150" y="34" text-anchor="middle" font-size="14" font-weight="bold" fill="#6366f1">project violet</text>
+  <text x="790" y="34" text-anchor="middle" font-size="14" font-weight="bold" fill="#d97706">project amber</text>
+
+  <!-- Project boundaries -->
+  <rect x="30" y="50" width="240" height="315" rx="16" fill="#eef2ff" fill-opacity="0.55" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <rect x="670" y="50" width="240" height="315" rx="16" fill="#fff7ed" fill-opacity="0.6" stroke="#d97706" stroke-width="1.5" stroke-dasharray="6 5"/>
+
+  <!-- Violet endpoints -->
+  <g>
+    <rect x="72" y="95" width="64" height="108" rx="11" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <path d="M 84 98 H 94 Q 98 98 98 102 V 104 Q 98 108 102 108 H 106 Q 110 108 110 104 V 102 Q 110 98 114 98 H 124 Q 133 98 133 107 V 191 Q 133 200 124 200 H 84 Q 75 200 75 191 V 107 Q 75 98 84 98 Z" fill="none" stroke="#6366f1"/>
+    <rect x="86" y="130" width="36" height="22" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.3"/>
+    <text x="104" y="145" text-anchor="middle" font-size="9" fill="#d97706">iroh</text>
+    <text x="104" y="222" text-anchor="middle" font-size="11" fill="#6366f1">endpoint A1</text>
+  </g>
+  <g>
+    <rect x="164" y="244" width="64" height="108" rx="11" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="168" y="248" width="56" height="100" rx="8" fill="none" stroke="#6366f1"/>
+    <circle cx="196" cy="255" r="2" fill="#888"/>
+    <rect x="178" y="278" width="36" height="22" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.3"/>
+    <text x="196" y="293" text-anchor="middle" font-size="9" fill="#d97706">iroh</text>
+  </g>
+
+  <!-- Amber endpoints -->
+  <g>
+    <rect x="804" y="95" width="64" height="108" rx="11" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <path d="M 816 98 H 826 Q 830 98 830 102 V 104 Q 830 108 834 108 H 838 Q 842 108 842 104 V 102 Q 842 98 846 98 H 856 Q 865 98 865 107 V 191 Q 865 200 856 200 H 816 Q 807 200 807 191 V 107 Q 807 98 816 98 Z" fill="none" stroke="#d97706"/>
+    <rect x="818" y="130" width="36" height="22" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.3"/>
+    <text x="836" y="145" text-anchor="middle" font-size="9" fill="#d97706">iroh</text>
+    <text x="836" y="222" text-anchor="middle" font-size="11" fill="#d97706">endpoint B1</text>
+  </g>
+  <g>
+    <rect x="712" y="244" width="64" height="108" rx="11" fill="#eee" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="716" y="248" width="56" height="100" rx="8" fill="none" stroke="#d97706"/>
+    <circle cx="744" cy="255" r="2" fill="#888"/>
+    <rect x="726" y="278" width="36" height="22" rx="3" fill="#eee" stroke="#d97706" stroke-width="1.3"/>
+    <text x="744" y="293" text-anchor="middle" font-size="9" fill="#d97706">iroh</text>
+  </g>
+
+  <!-- Shared relay machine -->
+  <g>
+    <rect x="335" y="62" width="270" height="300" rx="12" fill="#f3f4f6" stroke="#888" stroke-width="1.5"/>
+    <rect x="355" y="82" width="230" height="46" rx="5" fill="#eee" stroke="#888" stroke-width="1.5"/>
+    <circle cx="372" cy="97" r="3" fill="#d97706"/>
+    <circle cx="372" cy="112" r="3" fill="#15803d"/>
+    <line x1="389" y1="92" x2="389" y2="118" stroke="#888"/>
+    <line x1="403" y1="92" x2="403" y2="118" stroke="#888"/>
+    <line x1="417" y1="92" x2="417" y2="118" stroke="#888"/>
+    <line x1="431" y1="92" x2="431" y2="118" stroke="#888"/>
+    <line x1="445" y1="92" x2="445" y2="118" stroke="#888"/>
+    <line x1="459" y1="92" x2="459" y2="118" stroke="#888"/>
+    <text x="470" y="151" text-anchor="middle" font-size="15" font-weight="bold" fill="#111">shared relay</text>
+
+    <!-- Auth gate -->
+    <rect x="365" y="172" width="210" height="42" rx="6" fill="#fff" stroke="#9ca3af"/>
+    <path d="M 389 184 v-4 a6 6 0 0 1 12 0 v4 M 386 184 h18 v18 h-18 z" fill="none" stroke="#15803d" stroke-width="1.5"/>
+    <text x="418" y="198" font-size="11" fill="#111">verify project token</text>
+
+    <!-- Project-scoped counters -->
+    <rect x="365" y="230" width="94" height="92" rx="6" fill="#eef2ff" stroke="#6366f1"/>
+    <text x="412" y="250" text-anchor="middle" font-size="11" font-weight="bold" fill="#6366f1">violet</text>
+    <text x="378" y="274" font-size="10" fill="#111">endpoints  2</text>
+    <text x="378" y="294" font-size="10" fill="#111">egress  400 GB</text>
+
+    <rect x="481" y="230" width="94" height="92" rx="6" fill="#fff7ed" stroke="#d97706"/>
+    <text x="528" y="250" text-anchor="middle" font-size="11" font-weight="bold" fill="#d97706">amber</text>
+    <text x="494" y="274" font-size="10" fill="#111">endpoints  2</text>
+    <text x="494" y="294" font-size="10" fill="#111">egress   18 GB</text>
+
+    <text x="470" y="386" text-anchor="middle" font-size="11" fill="#888">one machine · isolated access and accounting</text>
+  </g>
+
+  <!-- Authenticated relay routes -->
+  <path id="violet-relay" d="M 136 144 C 230 144 270 185 365 192" fill="none" stroke="#6366f1" stroke-width="2"/>
+  <path id="amber-relay" d="M 804 144 C 710 144 670 185 575 192" fill="none" stroke="#d97706" stroke-width="2"/>
+  <circle r="4" fill="#6366f1">
+    <animateMotion dur="3.2s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear">
+      <mpath href="#violet-relay"/>
+    </animateMotion>
+  </circle>
+  <circle r="4" fill="#d97706">
+    <animateMotion dur="3.2s" begin="-1.1s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear">
+      <mpath href="#amber-relay"/>
+    </animateMotion>
+  </circle>
+</svg>
