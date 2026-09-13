@@ -1,0 +1,69 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { MotionCanvas } from '@/components/MotionCanvas'
+
+export const post = {
+  draft: false,
+  author: 'Floris Bruynooghe',
+  date: '2026-09-01',
+  title: 'iroh 1.1.0 - Security fixes',
+  description: 'Release of iroh v1.1.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+Our first minor release contains small additions to the relay API and some bug fixes, a few of which fix security issues. These are especially important for folks who are running their own relays.
+
+# Security issues
+
+This release includes a few fixes for security issues reported to us by users!
+
+## A specially-crafted malicious relay packet could pin a cpu core to 100
+
+The relay server sends user datagrams between two connected endpoints. As an optimisation, the relay has a message type that allows a batch of datagrams to be delivered at once. Previously, it was possible to craft such a batch of messages that would trigger a bug in the receiver, which would then get stuck in a tight loop, consume 100% cpu and no longer read any datagrams from that relay.
+
+xxx link to report once published
+
+## Deserialising a `CustomAddr`'s `EndpointAddr` could trigger a panic
+
+The `EndpointAddr` struct supports deserialising with `serde`. It also supports an experimental `CustomAddr` variant. It turns out it was possible to craft an `EndpointAddr` that contained a `CustomAddr` that would trigger an out-of-bounds index operation.
+
+xxx link to report once published
+
+## UDP datagrams could be directed to unrelated peers
+
+As part of NAT traversal a malicious endpoint can ask the peer to send NAT probes, small UDP datagrams, to an IP address that does not belong to itself. This is entirely normal: the NAT probes are small, are entirely encrypted QUIC packets that only the designated endpoint can
+decrypt, and are sent at a really low interval to avoid
+abuse. Receivers of such misdirected datagrams see this as general "internet noise" and ignore them.
+
+While entirely harmless, it is also relatively easy for iroh to avoid these useless "noise" packets from flowing over the relay transport.
+
+xxx link to report once published
+
+## Relay Rate-Limiting warning
+
+The relay protocol has a new message: `Status::RateLimited`. It will send this message to an endpoint if it is being rate-limited. `Iroh` surfaces this message as a warning.
+
+## What's next?
+
+We expect the next few releases to keep this rhythm: happy maintenance releases every few weeks, with small fixes for corner cases and invisible improvements. As always, the full details are in the changelogs for [iroh](https://github.com/n0-computer/iroh/releases/tag/v1.0.3) and [noq](https://github.com/n0-computer/noq/releases/tag/noq-v1.1.0).
+
+See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!

@@ -1,0 +1,299 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import Image from 'next/image'
+
+export const post = {
+  draft: false,
+  author: 'Rae McKelvey',
+  date: '2026-09-08',
+  title: 'Share relay servers to save money and heartache',
+  description:
+    'The new Iroh Services Pro plan gives hobby projects an authenticated relay without the work or price of dedicated infrastructure.',
+  headerImage: '',
+  headerImageAlt:
+    'Endpoints from two projects using the same shared relay with separate authentication and usage accounting',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [{
+      url: `/api/og?title=Blog&subtitle=${post.title}`,
+      width: 1200,
+      height: 630,
+      alt: post.title,
+      type: 'image/png',
+    }],
+    type: 'article',
+  },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Anyone can self-host relays for free without permission: iroh is openly licensed.
+But if you set up your own relay servers, you need to consider
+factors like server availability, network latency, security, and maintenance
+overhead.
+
+Because this initial effort can be a barrier to entry, the [maintainers of
+iroh](https://n0.computer) provide rate-limited public relays for free as a
+public service. However, setting up and maintaining your own relay infrastructure can still be a significant effort.
+
+But what if teams could share the cost of operating relays? Today we're offering
+[shared relay servers through Iroh Services](https://docs.iroh.computer/iroh-services/relays/shared), allowing multiple projects to
+leverage the same relay, metrics, and network diagnostics infrastructure efficiently.
+
+## Wait, what's iroh? What's a relay? 
+
+If your app starts getting popular at 2,000 users with each user sending
+10GB/data per month, you'll be responsible for 20 TB of application traffic over
+the internet. That's a $1,742/mo AWS bill just in egress alone.
+
+But what if 98% of the traffic could travel directly between devices instead
+of through the server? Then only the remaining 2% (400 GB) would pass through
+AWS, reducing the bill to about $36. 
+
+Using iroh, your devices will attempt to take a direct path instead of relaying
+everything through a server. This can significantly reduce the amount of traffic
+that actually needs to pass through a provider, lowering both latency and server
+costs. 
+
+<figure className="not-prose mx-auto my-8 max-w-3xl">
+  <img
+    src="/animations/hole-punching.svg"
+    alt="Two iroh endpoints first connect through a relay, exchange addresses, punch through their NATs, and move their traffic to a direct path"
+    style={{ width: '100%' }}
+  />
+  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+   No data is
+stored on the relay servers.  Once a direct path is validated, application data takes the shorter route.
+ </figcaption>
+</figure>
+Most of the time iroh will establish a direct connection. But when the
+network changes, or you step out of the house, your Wi-Fi briefly drops, or
+something even stranger (networks are extremely good at getting weird!) the
+relay is what keeps the connection alive during those intermittent outages.
+ A relay is the server that helps broker a connection in the first place and is
+the fallback path for some endpoints that may never connect directly.
+
+
+## Shared relays for your growing project
+
+<figure className="not-prose mx-auto my-8 max-w-3xl">
+  <img
+    src="/animations/shared-relays.svg"
+    alt="An iroh endpoint connects to a shared relay that is used by multiple projects"
+    style={{ width: '100%' }}
+  />
+  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+    An endpoint connects to a shared relay that is used by multiple projects.
+  </figcaption>
+</figure>
+
+
+Now, iroh services offers a shared relay to reduce costs and complexity: several
+projects can now share the same underlying infrastructure, while
+[authentication](https://www.iroh.computer/blog/authenticated-relays) keeps each
+project's access and metrics separate. This is the main benefit of using shared
+relays - your project can leverage robust relay and metrics infrastructure without bearing
+the full operational cost.
+
+Sharing the machinery lets us offer a useful amount of relay capacity at a
+hobby-project price. You get a predictable bill and we take care of deploying,
+updating, and watching the relay fleet. You also get to feel good knowing you
+can pay for a lunch every month to the team maintaining iroh!
+
+
+| | Community | Pro | Dedicated |
+| --- | --- | --- | --- |
+| Monthly price | $0 | $19 | $199/region, plus Pro |
+| Relay | Public | Shared | Dedicated |
+| Rate-limit | Variable | 5MB/s | Unlimited |
+| Authentication | No | Yes | Yes |
+| Custom DNS | No | No | Yes |
+| Included egress | Variable | 100 GB | 250 GB |
+| Additional egress | N/A | $0.09/GB | Region-based pricing |
+| Concurrent connections | Rate limited | 10,000 | 60,000 |
+| Best for | Getting started| Hobby projects | Production with infrastructure requirements |
+
+If you already have a Pro plan, you can start using the shared relays immediately without any additional setup.
+
+<figure className="not-prose mx-auto my-8 max-w-3xl">
+  <Image
+    src="/blog/shared-relays/metrics-online-endpoints.png"
+    width={1658}
+    height={1590}
+    alt="Iroh Services relay dashboard showing relay regions, online endpoints, egress, transfer rate, and connection metrics over 30 days"
+  />
+  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+    You can also mix-and-match shared & dedicated relays for global availability, and burst capacity in regions with more activity. See online endpoints, egress, transfer rate, and connection history for every relay in your project.
+  </figcaption>
+</figure>
+
+
+## How much will it cost as my project grows?
+
+The cost of using iroh depends on how much of your application's traffic needs
+to be relayed through our servers.  This really depends on where you are
+deploying your app, because network conditions, firewalls, routers, and
+client-side configurations can impact direct connectivity rate.
+
+The iroh services platform helps you [diagnose these issues](https://docs.iroh.computer/iroh-services/net-diagnostics/quickstart), and shows relay egress and
+connection metrics, so you can monitor and improve your direct data rate to get
+a better gauge for how much your actual project will cost at scale and drive
+those costs down over time. This is much better than the traditional approach of
+trying to model every coffee-shop Wi-Fi network on Earth.
+
+<figure className="not-prose mx-auto my-8 max-w-3xl">
+  <Image
+    src="/blog/shared-relays/direct-data-rate.png"
+    width={838}
+    height={366}
+    alt="Iroh Services chart showing a 93.10 percent direct data rate over time"
+  />
+  <figcaption className="mt-3 text-center text-sm text-zinc-500 dark:text-zinc-400">
+    Direct data rate shows how much traffic avoided the relay over time. This is the number that drives your potential egress savings.
+  </figcaption>
+</figure>
+
+Iroh Pro includes the first 100 GB, so the monthly bill would be about **$46**: $19 for
+Pro plus $27 for 300 GB of additional egress.
+
+Here is the 20TB workload over iroh compared to AWS and Supabase Pro:
+
+| Approach | Traffic crossing provider infrastructure | Estimated monthly cost |
+| --- | ---: | ---: |
+| Iroh Pro, with 2% relayed | 400 GB | **$46** |
+| WebSocket server on [AWS EC2][AWS EC2 data transfer pricing] | 20TB egress | **about $1,742**, plus compute |
+| [Supabase Pro + Realtime][Supabase pricing] | 20TB egress | **at least $1,803**, before Realtime message overages |
+
+<aside className="not-prose mx-auto my-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-irohPurple-200 px-4 py-3 text-sm dark:border-irohPurple-800">
+  <span className="text-irohGray-600 dark:text-irohGray-300">
+    Curious what your project would cost?
+  </span>
+  <a
+    href="/pricing#estimate-your-monthly-cost"
+    className="font-semibold text-irohPurple-600 hover:underline dark:text-irohPurple-400"
+  >
+    Estimate it →
+  </a>
+</aside>
+
+That makes Iroh roughly **38–39× less expensive** in this example.  This is intentionally back-of-the-napkin math, not a universal benchmark. A workload with fewer direct connections would make Iroh more
+expensive. Your real ratio depends on NATs, firewalls, geography, and what your
+ application actually sends. This is why the dashboard reports relay usage, and
+ why we've prioritized building methods for you to debug your iroh endpoints and
+ improve connectivity rate. If you are still having trouble improving your direct connectivity in your
+ app, [contact us](mailto:support@iroh.computer).
+
+
+[AWS EC2 data transfer pricing]: https://aws.amazon.com/ec2/pricing/on-demand-backup/
+[Supabase pricing]: https://supabase.com/pricing
+[Supabase Realtime message pricing]: https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages
+
+
+## Getting started
+
+1. Create or open a project in [Iroh Services].
+2. Start the Pro trial.
+3. Navigate to Relays and hit **Connect** to get your connection snippet.
+4. Confirm relay connections and egress in the dashboard.
+
+<div className="not-prose mx-auto my-8 max-w-3xl">
+  <Image
+    src="/blog/shared-relays/relay-connect.png"
+    width={1347}
+    height={979}
+    alt="Iroh Services dialog with a Rust configuration snippet for connecting to a shared relay"
+  />
+</div>
+
+If you are currently using the public relays, no changes to your client
+configuration are required. If you do not want to use the API key authentication
+on your relays, you can always turn it off by going to your Project dashboard and selecting [Authentication -> Disable
+Relay Authentication.]
+
+## FAQ
+
+### Are the public relays going away?
+
+No. The Community plan remains the free place to get started with public relays.
+However, the [public relays are
+rate-limited](https://docs.iroh.computer/relays/rate-limiting) based on the
+total current unauthenticated traffic. Now, with iroh 1.1.0 and above you will
+get messages when your endpoint is getting rate limited. As iroh has gotten more
+popular, we have had to enforce these rate limits more strictly to ensure fair
+usage for all users. If you are experiencing issues with rate limiting, please [upgrade to a Pro plan](https://services.iroh.computer) or [self-host your own relays.](https://docs.iroh.computer/relays/self-hosting)
+
+### Is my traffic readable by Iroh Services or another tenant?
+
+No, traffic is end-to-end encrypted and cannot be read by Iroh Services or any
+other tenant. No data is stored in relays, they are stateless and exist only to
+holepunch direct connections and forward messages to clients when a direct
+connection is not available.  This keeps relays cheap to maintain at scale.
+Keeping around 100k hole-punched connections that just ping the relay path every
+~5s or so is really cheap.
+
+### What happens when I reach 5 MB/s?
+
+When you reach 5 MB/s, the relay will start throttling your
+traffic.  Rate limits are enforced to ensure fair usage and prevent any single
+client from overwhelming the relay. If you do not want rate limits, upgrade to a
+[dedicated relay] or [self-host your own relay].
+
+### Do direct connections count against relay egress?
+
+No, direct connections do not count against relay egress. Only the traffic that
+actually traverses the relay is considered for egress calculations.
+
+### Can I move from shared to a dedicated relay later?
+
+Yes, you can move from a shared to a dedicated relay at any time. The transition
+typically involves updating your client configuration to point to the new
+dedicated relay, but your existing project and data remain intact. You can also
+mix and match relays between self-hosted, shared, and dedicated in multiple
+regions or providers to maximize your uptime, even if one relay goes down your
+endpoints will connect to other relays seamlessly.
+
+### Can I run my own relay instead?
+
+Yes. Iroh is open source, and self-hosting remains an option. Pro is for people
+who would prefer to outsource that particular pager.
+
+### How does authentication work?
+
+Shared does not mean public. Pro relays can optionally only accept endpoints
+carrying a token issued by your project's API key. Someone who finds the relay
+URL in a public client or repository cannot spend your allowance just by knowing
+the address. They'll also need the API Key. You can always rotate the API Key to
+invalidate old tokens, but you need to do that yourself today using your own
+HTTP server, MDM, or other type of configuration push system. In the future, we will provide automated
+token rotation and application-level scopes so you don't have to manage it manually. [Learn more](https://docs.iroh.computer/concepts/relays#authentication).
+
+
+## Build the weird little thing
+
+The public relays are there when you are exploring. Iroh services is there so you can focus back
+on the interesting parts of your app and not fiddle with cloud infrastructure.
+
+[Try Pro](https://services.iroh.computer/?utm_source=website&utm_content=blog-shared-relays) or come tell us what you are building on [Discord].
+
+### Cost Comparison notes
+
+*For comparison, [AWS EC2 data transfer pricing] currently includes 100 GB of
+internet egress, then charges $0.09/GB for the first 10 TB and $0.085/GB for the
+next 40 TB. [Supabase pricing] starts at $25/month for Pro, includes 250 GB of
+egress, and charges $0.09/GB after that. Supabase also [meters Realtime messages
+separately][Supabase Realtime message pricing]: 5 million are included, then
+each additional million costs $2.50. We leave that charge out of the estimate
+because it depends on message size and fan-out.*
+
+[Iroh Services]: https://services.iroh.computer
+[`iroh_services` preset]: https://docs.iroh.computer/iroh-services/relays/managed
+[Protect your relays]: /blog/authenticated-relays
+[Discord]: https://discord.com/invite/DpmJgtU7cW
+[Authentication -> Disable Relay Authentication.]: https://docs.iroh.computer/iroh-services/relays/managed#turn-authentication-off
+[dedicated relay]: https://docs.iroh.computer/iroh-services/relays/managed
+[self-host your own relay]: https://docs.iroh.computer/iroh-services/relays/self-hosted
