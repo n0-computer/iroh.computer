@@ -37,7 +37,7 @@ const solutions = [
     company: "Delta Chat",
     headline: "Real-time Sync for Mobile Applications",
     description: "Power apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
-    href: "/solutions/delta-chat",
+    href: "/solutions/data-sync",
     logo: "delta_chat",
   },
   {

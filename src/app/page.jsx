@@ -327,7 +327,7 @@ export default function Page() {
                   <p className="text-irohGray-600 dark:text-irohGray-300">Stream video between devices, using peer to peer technology. Create encrypted connections built on open standards, across the globe or across the room.</p>
                 </div>
               </Link>
-              <Link href="/solutions/delta-chat" className="group block h-full cursor-pointer focus:outline-none">
+              <Link href="/solutions/data-sync" className="group block h-full cursor-pointer focus:outline-none">
                 <div className="flex h-full flex-col border border-irohGray-300 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-irohPurple-500 hover:bg-irohPurple-500/5 hover:shadow-md group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-irohPurple-500 dark:border-irohGray-700 dark:bg-irohGray-900 dark:hover:border-irohPurple-500 sm:p-8">
                   <div className='mb-2 flex items-start justify-between gap-4'><p className="text-xl font-medium text-irohGray-800 transition-colors group-hover:text-irohPurple-600 dark:text-irohGray-100 dark:group-hover:text-irohPurple-400">Real-time Sync for Mobile Applications</p><ArrowRightIcon className='h-5 w-5 shrink-0 text-irohPurple-500 transition-transform group-hover:translate-x-1' /></div>
                   <p className="text-irohGray-600 dark:text-irohGray-300">Powers apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>

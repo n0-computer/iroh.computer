@@ -91,7 +91,7 @@ export function UseCaseScroller() {
           </Link>
         )}
         {selectedCategory === "Resilient Apps" && (
-          <Link href="/solutions/delta-chat" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+          <Link href="/solutions/data-sync" className="text-irohPurple-500 hover:underline mt-2 text-sm">
             Read the Delta Chat case study →
           </Link>
         )}
