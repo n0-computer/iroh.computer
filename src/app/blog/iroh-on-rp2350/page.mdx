@@ -26,6 +26,8 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
+![The Pimoroni Presto running the iroh echo example, showing its endpoint addresses and ticket on the display](/blog/iroh-on-rp2350/presto.jpg)
+
 Over the last months I tried to get iroh to work on all embedded devices I could
 get my hands on. For ESP32, what initially [required a giant stack of code
 changes][iroh-on-esp32] now in many cases works with the published iroh
@@ -242,8 +244,6 @@ Sent: Hello from iroh (crates.io)!
 Received: Hello from iroh (crates.io)!
 Echo OK — crates.io iroh <-> presto!
 ```
-
-![The Pimoroni Presto running the iroh echo example, showing its endpoint addresses and ticket on the display](/blog/iroh-on-rp2350/presto.jpg)
 
 [esp-idf-sys]: https://docs.rs/esp-idf-sys
 [esp-idf-hal]: https://docs.rs/esp-idf-hal
