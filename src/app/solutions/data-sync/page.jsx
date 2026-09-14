@@ -54,6 +54,17 @@ export default function RealTimeSyncSolutionPage() {
                   large files directly between devices with iroh, Strada reduced monthly AWS
                   internet egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
                 </p>
+                <blockquote className="mb-8 border-l-4 border-irohPurple-500 pl-6">
+                  <p className="text-lg italic leading-relaxed text-irohGray-700 dark:text-irohGray-200">
+                    &ldquo;It felt like I was working off a drive connected directly to my local system.
+                    It just played like local footage and I couldn&apos;t really tell the difference.&rdquo;
+                  </p>
+                  <footer className="mt-3 text-sm text-irohGray-500 dark:text-irohGray-400">
+                    <Link href="https://strada.tech/pricing" target="_blank" rel="noopener noreferrer" className="hover:text-irohPurple-500 hover:underline">
+                      Ryan Connolly, Film Riot
+                    </Link>
+                  </footer>
+                </blockquote>
                 <Link href="/blog/strada-direct-file-transfer" className="inline-flex items-center font-medium text-lg text-irohPurple-500 hover:underline">
                   Read the Strada story →
                 </Link>
@@ -127,15 +138,18 @@ export default function RealTimeSyncSolutionPage() {
                 <h2 className="text-3xl font-bold mb-6">Multi-Device & P2P Apps</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">
                   Delta Chat integrated iroh for multi-device setup support, enabling seamless
-                  sync across phones, tablets, and desktops. They&apos;re also building experimental
-                  support for <a href="https://webxdc.org" className="text-irohPurple-500 hover:underline">webxdc</a> apps
-                  to use realtime P2P communication.
+                  sync across phones, tablets, and desktops. 
                 </p>
-                <div className="bg-irohGray-100 dark:bg-irohGray-800 p-6 rounded-lg">
-                  <p className="text-xl text-irohGray-600 dark:text-irohGray-300 italic">
+                <blockquote className="border-l-4 border-irohPurple-500 pl-6">
+                  <p className="text-lg italic leading-relaxed text-irohGray-700 dark:text-irohGray-200">
                     &ldquo;We regard iroh to be one of the most interesting efforts to arise out of the ashes of Web3.&rdquo;
                   </p>
-                </div>
+                  <footer className="mt-3 text-sm text-irohGray-500 dark:text-irohGray-400">
+                    <Link href="https://delta.chat/en/2024-02-15-webxdc-m3" target="_blank" rel="noopener noreferrer" className="hover:text-irohPurple-500 hover:underline">
+                      Holger Krekel, Delta Chat
+                    </Link>
+                  </footer>
+                </blockquote>
               </div>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
@@ -166,6 +180,10 @@ export default function RealTimeSyncSolutionPage() {
                   </div>
                 </div>
               </div>
+
+                <Link href="https://delta.chat/en/2024-11-20-webxdc-realtime" className="inline-flex items-center font-medium text-lg text-irohPurple-500 hover:underline">
+                  Read more about iroh in delta chat →
+                </Link>
             </div>
           </div>
         </section>

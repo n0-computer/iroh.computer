@@ -7,9 +7,9 @@ export const post = {
   title: 'How Strada cut AWS egress by 90.7% with iroh',
   description:
     'Strada moved large media transfers out of the cloud data path, reducing monthly AWS internet egress from 150 TB to 13.9 TB.',
-  headerImage: '/blog/strada-direct-file-transfer/hero.png',
+  headerImage: '/blog/strada-direct-file-transfer/strada-finder.webp',
   headerImageAlt:
-    'Two creative professionals transferring media directly between editing workstations while cloud infrastructure remains available above them',
+    'The Strada Finder interface browsing video files across remote computers and storage drives',
 }
 
 export const metadata = {
@@ -20,8 +20,8 @@ export const metadata = {
     description: post.description,
     images: [{
       url: post.headerImage,
-      width: 1774,
-      height: 887,
+      width: 1800,
+      height: 1115,
       alt: post.headerImageAlt,
       type: 'image/png',
     }],
@@ -44,6 +44,11 @@ Strada changed that path with iroh. Large files can now move directly between
 devices whenever the network allows it, while relays remain available when a
 direct connection cannot be established. In the workload Strada shared with us,
 monthly AWS internet egress fell from **150 TB to 13.9 TB**—a **90.7% reduction**.
+
+> “It felt like I was working off a drive connected directly to my local system.
+> It just played like local footage and I couldn’t really tell the difference.”
+>
+> — [Ryan Connolly, Film Riot](https://strada.tech/pricing)
 
 ## Why media workflows make egress add up quickly
 
