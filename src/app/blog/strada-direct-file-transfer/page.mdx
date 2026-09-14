@@ -31,42 +31,35 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Strada helps creative teams access and edit media stored on remote drives. That
-sounds simple until the files are production footage, project archives, and
-other assets large enough to make every unnecessary network hop expensive.
 
-In a centralized transfer architecture, the path is familiar: a file leaves the
-machine that holds it, travels up to cloud infrastructure, and then comes back
-down to the person who needs it. The cloud becomes a middleman for every byte,
-even when the job is simply to move data from one device to another.
-
-Strada changed that path with iroh. Large files can now move directly between
-devices whenever the network allows it, while relays remain available when a
-direct connection cannot be established. In the workload Strada shared with us,
-monthly AWS internet egress fell from **150 TB to 13.9 TB**—a **90.7% reduction**.
 
 > “It felt like I was working off a drive connected directly to my local system.
 > It just played like local footage and I couldn’t really tell the difference.”
 >
 > — [Ryan Connolly, Film Riot](https://strada.tech/pricing)
 
-## Why media workflows make egress add up quickly
+In a client-server architecture, the path is familiar: computer uplaods file to
+a data center, and then gets sent around the world again to the other computer
+that needs it. This happens sometimes even if the devices are in the same room.
+It's a ridiculously inefficient use of data centers, and it's also costly for
+organizations that have to pay for that unnecessary egress.
 
-Creative work is particularly unforgiving of centralized data transfer. A
-single video project can contain many large source files, proxies, exports, and
-revisions. Teams need to move that material repeatedly as editors, producers,
-and collaborators work from different locations.
-
-When every transfer passes through a cloud provider, more users and larger
-projects translate directly into more provider egress. The architecture may be
-straightforward, but the bill scales with the total volume of data crossing the
-provider boundary. It also means the application operates cloud transfer
-infrastructure for traffic whose real source and destination are two end-user
-devices.
+Strada is changing this by using iroh. Strada helps creative teams access and edit media stored on remote drives.
+Strada's app allows files to move directly between devices instead of uploading
+files to the cloud unnecessarily.  In the production workload Strada ran through the entire month
+of July 2026, their monthly AWS internet egress fell from **150 TB to 13.9
+TB**—a **90.7% reduction**.
 
 Strada still needs centralized services for the parts of its product that
 benefit from them. The important change is that the cloud no longer has to sit
 in the data path for most large file transfers.
+
+## Why media workflows are a great use case for peer to peer
+
+Media professionals need to access information on multiple drives, which could
+be local or remotely. It's an incredibly quicker workflow to just be able to mount
+remote storage as a virtual drive, so you can browse, preview, and work with
+files without uploading or downloading.
 
 ## Put the shortest reliable path in the data plane
 
@@ -76,7 +69,7 @@ NATs and firewalls. When network conditions prevent that path, a relay forwards
 the end-to-end encrypted traffic so the transfer can continue.
 
 That fallback matters. “Peer to peer” should not mean that an application works
-only on friendly office networks. Strada gets the cost and performance benefits
+only on friendly networks. Strada gets the cost and performance benefits
 of direct transfer without making reachability the user’s problem. The
 application can keep one connection model while iroh chooses the viable path.
 
