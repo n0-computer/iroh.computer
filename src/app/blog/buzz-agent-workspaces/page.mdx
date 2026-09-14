@@ -59,7 +59,7 @@ use the Buzz agent, but either way those agents need an inference provider. A
 Buzz community creates a natural perimeter for members who want to share spare
 compute and run open models together.
 
-[MeshLLM](https://github.com/Mesh-LLM/mesh-llm) is built into Buzz. It uses iroh to
+[MeshLLM](/blog/mesh-llm) is built into Buzz. It uses iroh to
 connect community members across all sorts of networks and make their compute
 available to local agents without putting a central server in the inference
 path. Sharing is entirely opt-in. When enabled, it can reduce inference costs
@@ -98,16 +98,17 @@ The result is a clean split:
 Buzz does not want to require a VPN, a new global network account, or every
 team to become network operators before two machines can talk.
 
-Libp2p is powerful when you want a broad peer-to-peer framework. Buzz needs a
-smaller primitive that handles the network and gets out of the way: dial an
-identity, open authenticated streams, and let the application own the protocol
-above them.
+[Libp2p is powerful when you want a broad peer-to-peer framework](/blog/comparing-iroh-and-libp2p).
+Buzz needs a smaller primitive that handles the network and gets out of the way:
+dial an identity, open authenticated streams, and let the application own the
+protocol above them.
 
 Every iroh endpoint is already identified by a public key. The address is not
 "this IP and port"; it is "this endpoint." That is exactly the shape an agent
 workspace wants. Buzz decides who may enter the community. MeshLLM decides who
 may serve or consume inference. iroh makes the connection work across laptops,
-workstations, home and office networks, and cloud machines.
+workstations, home and office networks, and cloud machines through
+[global node discovery](/blog/iroh-global-node-discovery).
 
 The network becomes something MeshLLM and Buzz can build in directly, without
 asking the user to configure it.
