@@ -25,7 +25,7 @@ export default function RealTimeSyncSolutionPage() {
               </h1>
               <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                 Connect devices directly for fast, encrypted sync. Keep centralized infrastructure
-                for coordination—not as an expensive middleman for every byte.
+                for coordination, not as an expensive middleman for every byte.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link href="https://services.iroh.computer/signup?utm_source=website&utm_content=real-time-sync-hero">
@@ -33,130 +33,84 @@ export default function RealTimeSyncSolutionPage() {
                     Get Started
                   </Button>
                 </Link>
-                <Link href="#strada">
-                  <Button arrow="none" variant="outline" className="border-irohGray-300 dark:border-irohGray-600 px-6 py-2 text-sm font-medium cursor-pointer bg-transparent">
-                    See Strada&apos;s Results
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Strada customer deep dive */}
+        {/* Strada customer story */}
         <section id="strada" className="py-20 px-6 scroll-mt-20">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] gap-12 lg:gap-20 items-start">
+            <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] gap-12 lg:gap-20 items-center">
               <div>
-                <div className="flex items-center gap-5 mb-8">
-                  <div className="bg-white rounded-lg border border-irohGray-200 px-5 py-3">
-                    <img src="/img/user-logos/strada.png" alt="Strada" className="h-9 w-auto object-contain" />
-                  </div>
-                  <p className="text-irohPurple-500 font-medium uppercase tracking-wide text-sm">Customer deep dive</p>
+                <div className="inline-flex bg-white rounded-lg border border-irohGray-200 px-5 py-3 mb-8">
+                  <img src="/img/user-logos/strada.png" alt="Strada" className="h-9 w-auto object-contain" />
                 </div>
-
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
                   Strada cut AWS egress by 90.7%
                 </h2>
-                <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-10 leading-relaxed">
-                  Strada helps creative teams access and edit media on remote drives. By using iroh
-                  to move large files directly between devices, Strada reduced monthly AWS internet
-                  egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
+                <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
+                  Strada helps creative teams access and edit media on remote drives. By moving
+                  large files directly between devices with iroh, Strada reduced monthly AWS
+                  internet egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
                 </p>
-
-                <div className="space-y-10">
-                  <div>
-                    <p className="text-sm text-irohGray-500 dark:text-irohGray-400 uppercase tracking-wide mb-2">The challenge</p>
-                    <h3 className="text-2xl font-medium mb-3">Large media made the cloud an expensive middleman</h3>
-                    <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                      In a centralized transfer architecture, every file travels up to cloud
-                      infrastructure and back down to its destination. For video and other large
-                      creative assets, that detour compounds quickly: more users and larger projects
-                      mean proportionally more cloud egress.
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-irohGray-500 dark:text-irohGray-400 uppercase tracking-wide mb-2">The approach</p>
-                    <h3 className="text-2xl font-medium mb-3">Put the shortest reliable path in the data plane</h3>
-                    <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
-                      Iroh establishes an encrypted connection between the machine holding the media
-                      and the person who needs it. Transfers go direct whenever possible, with relay
-                      fallback when network conditions prevent a direct path. Strada keeps the cloud
-                      services it needs while removing AWS from the path of most file data.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4">
-                    <Link href="https://strada.tech" target="_blank" rel="noopener noreferrer" className="text-irohPurple-500 font-medium hover:underline">
-                      Visit Strada →
-                    </Link>
-                    <Link href="https://docs.iroh.computer/concepts/relays" className="text-irohPurple-500 font-medium hover:underline">
-                      How direct connections work →
-                    </Link>
-                  </div>
-                </div>
+                <Link href="/blog/strada-direct-file-transfer" className="inline-flex items-center font-medium text-lg text-irohPurple-500 hover:underline">
+                  Read the Strada story →
+                </Link>
               </div>
 
-              <aside className="lg:sticky lg:top-28 space-y-6">
-                <div className="bg-irohGray-800 dark:bg-irohGray-900 text-white rounded-xl p-8 border border-irohGray-700">
-                  <p className="text-sm text-irohPurple-400 uppercase tracking-wide mb-3">Monthly impact</p>
-                  <p className="text-5xl md:text-6xl font-bold text-irohPurple-400 mb-2">$10,310</p>
-                  <p className="text-irohGray-300 mb-8">estimated AWS egress savings</p>
+              <aside className="space-y-6">
+                <div className="rounded-xl border border-irohGray-700 bg-irohGray-800 p-8 text-white dark:bg-irohGray-900">
+                  <p className="mb-3 text-sm uppercase tracking-wide text-irohPurple-400">Monthly impact</p>
+                  <p className="mb-2 text-5xl font-bold text-irohPurple-400 md:text-6xl">$10,310</p>
+                  <p className="mb-8 text-irohGray-300">estimated AWS egress savings</p>
 
-                  <div className="grid grid-cols-2 gap-6 pt-6 border-t border-irohGray-700">
+                  <div className="grid grid-cols-2 gap-6 border-t border-irohGray-700 pt-6">
                     <div>
-                      <p className="text-3xl font-bold mb-1">90.7%</p>
+                      <p className="mb-1 text-3xl font-bold">90.7%</p>
                       <p className="text-sm text-irohGray-400">less egress</p>
                     </div>
                     <div>
-                      <p className="text-3xl font-bold mb-1">$123.7k</p>
+                      <p className="mb-1 text-3xl font-bold">$123.7k</p>
                       <p className="text-sm text-irohGray-400">annualized</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border border-irohGray-300 dark:border-irohGray-700 rounded-xl p-6">
-                  <h3 className="font-medium mb-6">AWS internet egress</h3>
+                <div className="rounded-xl border border-irohGray-300 p-6 dark:border-irohGray-700">
+                  <h3 className="mb-6 font-medium">AWS internet egress</h3>
 
                   <div className="mb-6">
-                    <div className="flex justify-between items-baseline mb-2">
+                    <div className="mb-2 flex items-baseline justify-between">
                       <span className="text-sm text-irohGray-600 dark:text-irohGray-300">Before iroh</span>
                       <span className="font-bold">150 TB</span>
                     </div>
-                    <div className="h-3 bg-irohGray-200 dark:bg-irohGray-800 rounded-full overflow-hidden">
-                      <div className="h-full w-full bg-irohGray-500 rounded-full" />
+                    <div className="h-3 overflow-hidden rounded-full bg-irohGray-200 dark:bg-irohGray-800">
+                      <div className="h-full w-full rounded-full bg-irohGray-500" />
                     </div>
                   </div>
 
                   <div className="mb-7">
-                    <div className="flex justify-between items-baseline mb-2">
+                    <div className="mb-2 flex items-baseline justify-between">
                       <span className="text-sm text-irohGray-600 dark:text-irohGray-300">With iroh</span>
                       <span className="font-bold text-irohPurple-500">13.9 TB</span>
                     </div>
-                    <div className="h-3 bg-irohGray-200 dark:bg-irohGray-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-irohPurple-500 rounded-full" style={{ width: '9.27%' }} />
+                    <div className="h-3 overflow-hidden rounded-full bg-irohGray-200 dark:bg-irohGray-800">
+                      <div className="h-full rounded-full bg-irohPurple-500" style={{ width: '9.27%' }} />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-5 border-t border-irohGray-300 dark:border-irohGray-700 text-sm">
+                  <div className="grid grid-cols-2 gap-4 border-t border-irohGray-300 pt-5 text-sm dark:border-irohGray-700">
                     <div>
-                      <p className="text-irohGray-500 dark:text-irohGray-400 mb-1">Before</p>
+                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">Before</p>
                       <p className="font-medium">$11,571.20/mo</p>
                     </div>
                     <div>
-                      <p className="text-irohGray-500 dark:text-irohGray-400 mb-1">After</p>
+                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">After</p>
                       <p className="font-medium">$1,261.06/mo</p>
                     </div>
                   </div>
                 </div>
-
-                <p className="text-xs leading-relaxed text-irohGray-500 dark:text-irohGray-400">
-                  Estimate assumes 1 TB = 1,024 GB and standard US-region AWS internet egress
-                  <a href="https://aws.amazon.com/ec2/pricing/on-demand/" target="_blank" rel="noopener noreferrer" className="text-irohPurple-500 hover:underline"> rates</a> of $0.09/GB for the first 10 TB, $0.085 for the next 40 TB, and $0.07
-                  for the next 100 TB. It excludes taxes, negotiated discounts, credits, and the
-                  100 GB monthly free allowance. Actual bills may vary.
-                </p>
               </aside>
             </div>
           </div>
@@ -167,9 +121,8 @@ export default function RealTimeSyncSolutionPage() {
           <div className="container mx-auto max-w-6xl">
             <div className="grid lg:grid-cols-2 gap-16 items-start">
               <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <img src="/img/user-logos/delta_chat.png" alt="Delta Chat" className="h-12 w-12 object-contain" />
-                  <p className="text-irohPurple-500 font-medium uppercase tracking-wide text-sm">Customer example</p>
+                <div className="mb-6">
+                  <img src="/img/user-logos/delta_chat.svg" alt="Delta Chat" className="h-24 w-24 object-contain" />
                 </div>
                 <h2 className="text-3xl font-bold mb-6">Multi-Device & P2P Apps</h2>
                 <p className="text-lg text-irohGray-600 dark:text-irohGray-300 mb-6 leading-relaxed">

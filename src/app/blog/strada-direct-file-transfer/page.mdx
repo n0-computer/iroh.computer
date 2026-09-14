@@ -1,0 +1,128 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rae McKelvey',
+  date: '2026-09-14',
+  title: 'How Strada cut AWS egress by 90.7% with iroh',
+  description:
+    'Strada moved large media transfers out of the cloud data path, reducing monthly AWS internet egress from 150 TB to 13.9 TB.',
+  headerImage: '/blog/strada-direct-file-transfer/hero.png',
+  headerImageAlt:
+    'Two creative professionals transferring media directly between editing workstations while cloud infrastructure remains available above them',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [{
+      url: post.headerImage,
+      width: 1774,
+      height: 887,
+      alt: post.headerImageAlt,
+      type: 'image/png',
+    }],
+    type: 'article',
+  },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Strada helps creative teams access and edit media stored on remote drives. That
+sounds simple until the files are production footage, project archives, and
+other assets large enough to make every unnecessary network hop expensive.
+
+In a centralized transfer architecture, the path is familiar: a file leaves the
+machine that holds it, travels up to cloud infrastructure, and then comes back
+down to the person who needs it. The cloud becomes a middleman for every byte,
+even when the job is simply to move data from one device to another.
+
+Strada changed that path with iroh. Large files can now move directly between
+devices whenever the network allows it, while relays remain available when a
+direct connection cannot be established. In the workload Strada shared with us,
+monthly AWS internet egress fell from **150 TB to 13.9 TB**—a **90.7% reduction**.
+
+## Why media workflows make egress add up quickly
+
+Creative work is particularly unforgiving of centralized data transfer. A
+single video project can contain many large source files, proxies, exports, and
+revisions. Teams need to move that material repeatedly as editors, producers,
+and collaborators work from different locations.
+
+When every transfer passes through a cloud provider, more users and larger
+projects translate directly into more provider egress. The architecture may be
+straightforward, but the bill scales with the total volume of data crossing the
+provider boundary. It also means the application operates cloud transfer
+infrastructure for traffic whose real source and destination are two end-user
+devices.
+
+Strada still needs centralized services for the parts of its product that
+benefit from them. The important change is that the cloud no longer has to sit
+in the data path for most large file transfers.
+
+## Put the shortest reliable path in the data plane
+
+Iroh establishes an encrypted connection between the machine holding the media
+and the person who needs it. It tries the direct path first, including across
+NATs and firewalls. When network conditions prevent that path, a relay forwards
+the end-to-end encrypted traffic so the transfer can continue.
+
+That fallback matters. “Peer to peer” should not mean that an application works
+only on friendly office networks. Strada gets the cost and performance benefits
+of direct transfer without making reachability the user’s problem. The
+application can keep one connection model while iroh chooses the viable path.
+
+This separation also lets each layer do a clearer job:
+
+- Strada coordinates the creative workflow and decides which content should move.
+- The endpoints hold and exchange the large media files.
+- Iroh finds and maintains an encrypted path between those endpoints.
+- Relays preserve connectivity when a direct path is unavailable, without storing the data.
+
+The result is not “no cloud.” It is a more deliberate use of the cloud: keep it
+for coordination and services that need centralization, rather than paying it
+to carry every byte between devices.
+
+## From 150 TB to 13.9 TB per month
+
+The change in Strada’s AWS internet egress is substantial:
+
+| Metric | Before iroh | With iroh | Change |
+| --- | ---: | ---: | ---: |
+| AWS internet egress | 150 TB | 13.9 TB | −136.1 TB (−90.7%) |
+| Estimated monthly cost | $11,571.20 | $1,261.06 | −$10,310.14 |
+| Estimated annual cost | $138,854.40 | $15,132.72 | −$123,721.68 |
+
+That is **136.1 TB less AWS egress each month**. Using standard US-region AWS
+internet data-transfer rates, it represents an estimated **$10,310 in monthly
+savings**, or about **$123,700 annualized**.
+
+The estimate assumes 1 TB equals 1,024 GB and applies rates of $0.09/GB for the
+first 10 TB, $0.085/GB for the next 40 TB, and $0.07/GB for the next 100 TB. It
+excludes taxes, negotiated discounts, credits, and the 100 GB monthly free
+allowance, so an actual bill will vary. The more durable result is the traffic
+reduction itself: only 9.3% of the original volume still crosses AWS internet
+infrastructure.
+
+## A better scaling model for large-file products
+
+Strada’s result shows why connection architecture matters to a product’s unit
+economics. Under a centralized model, successful adoption creates a nearly
+linear increase in egress: every additional file transferred adds another full
+file to the cloud bill. With a direct-first model, much of that traffic stays
+between the devices already sending and receiving it.
+
+The same pattern applies beyond professional media. Backup, synchronization,
+remote access, dataset distribution, and other data-heavy products all benefit
+when central infrastructure coordinates movement without automatically carrying
+the payload.
+
+For Strada, putting iroh in the data plane meant preserving reliable access to
+remote media while removing AWS from the path of most file data. Creative teams
+keep moving the files they need; Strada carries dramatically less cloud egress.
+
+[Visit Strada](https://strada.tech) or read more about [how iroh connects
+devices directly](https://docs.iroh.computer/what-is-iroh).

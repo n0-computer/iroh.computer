@@ -33,12 +33,14 @@ const solutions = [
     logo: "rave",
   },
   {
-    category: "Real-time Sync for Mobile",
+    category: "Data Sync & Device Backup",
     company: "Delta Chat",
-    headline: "Real-time Sync for Mobile Applications",
+    headline: "Data Sync & Device Backup",
     description: "Power apps for hundreds of thousands of devices around the world, even when internet access is precarious.",
     href: "/solutions/data-sync",
     logo: "delta_chat",
+    logoExt: "svg",
+    logoClassName: "h-32 w-32 object-contain",
   },
   {
     category: "Payments / Point of Sale",
@@ -101,7 +103,7 @@ export default function SolutionsPage() {
                         lightSrc={`/img/user-logos/${solution.logo}.${solution.logoExt || 'png'}`}
                         width={300}
                         height={150}
-                        className="object-contain max-h-32"
+                        className={solution.logoClassName || "object-contain max-h-32"}
                       />
                     ) : (
                       <p className="text-4xl font-bold text-irohGray-300 dark:text-irohGray-600">{solution.company}</p>

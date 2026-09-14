@@ -268,21 +268,21 @@ export default function Page() {
                   </div>
                   <div className='grid gap-3 bg-irohPurple-500/10 px-6 py-6 sm:grid-cols-[1fr_auto] sm:items-end sm:px-8'>
                     <div>
-                      <p className='font-semibold text-irohPurple-700 dark:text-irohPurple-300'>Iroh Pro at 98% direct</p>
-                      <p className='mt-1 text-irohGray-600 dark:text-irohGray-300'>Only 400 GB traverses the relay</p>
+                      <p className='font-semibold text-irohPurple-700 dark:text-irohPurple-300'>Iroh Pro at 95% direct</p>
+                      <p className='mt-1 text-irohGray-600 dark:text-irohGray-300'>Only 1 TB traverses the relay</p>
                     </div>
                     <div className='sm:text-right'>
-                      <p className='text-2xl font-bold text-irohPurple-700 dark:text-irohPurple-300'>~$46/mo</p>
+                      <p className='text-2xl font-bold text-irohPurple-700 dark:text-irohPurple-300'>~$100/mo</p>
                       <p className='text-sm text-irohGray-500 dark:text-irohGray-400'>Pro plus egress</p>
                     </div>
                   </div>
                 </div>
                 <div className='flex flex-wrap items-baseline justify-between gap-3 bg-irohPurple-600 px-6 py-5 text-white sm:px-8'>
                   <p className='font-semibold'>Estimated monthly savings</p>
-                  <p className='text-3xl font-bold'>$1,696</p>
+                  <p className='text-3xl font-bold'>$1,642</p>
                 </div>
                 <p className='px-6 py-4 text-xs leading-5 text-irohGray-500 dark:text-irohGray-400 sm:px-8'>
-                  Illustrative estimate based on 98% direct traffic. Actual direct rates and costs vary by network conditions, usage, and region.
+                  Illustrative estimate based on 95% direct traffic. Actual direct rates and costs vary by network conditions, usage, and region.
                 </p>
               </div>
             </div>
@@ -329,7 +329,7 @@ export default function Page() {
               </Link>
               <Link href="/solutions/data-sync" className="group block h-full cursor-pointer focus:outline-none">
                 <div className="flex h-full flex-col border border-irohGray-300 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-irohPurple-500 hover:bg-irohPurple-500/5 hover:shadow-md group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-irohPurple-500 dark:border-irohGray-700 dark:bg-irohGray-900 dark:hover:border-irohPurple-500 sm:p-8">
-                  <div className='mb-2 flex items-start justify-between gap-4'><p className="text-xl font-medium text-irohGray-800 transition-colors group-hover:text-irohPurple-600 dark:text-irohGray-100 dark:group-hover:text-irohPurple-400">Real-time Sync for Mobile Applications</p><ArrowRightIcon className='h-5 w-5 shrink-0 text-irohPurple-500 transition-transform group-hover:translate-x-1' /></div>
+                  <div className='mb-2 flex items-start justify-between gap-4'><p className="text-xl font-medium text-irohGray-800 transition-colors group-hover:text-irohPurple-600 dark:text-irohGray-100 dark:group-hover:text-irohPurple-400">Data Sync &amp; Device Backup</p><ArrowRightIcon className='h-5 w-5 shrink-0 text-irohPurple-500 transition-transform group-hover:translate-x-1' /></div>
                   <p className="text-irohGray-600 dark:text-irohGray-300">Powers apps for hundreds of thousands of devices around the world, even when internet access is precarious.</p>
                 </div>
               </Link>
