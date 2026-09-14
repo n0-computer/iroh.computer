@@ -2,9 +2,9 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
   author: 'Ruediger Klaehn',
-  date: '2026-08-04',
-  title: 'Iroh on Pimoroni Presto',
-  description: 'Running iroh on Pimoroni Presto',
+  date: '2026-09-14',
+  title: 'Running rust std and iroh on rpi Pico 2/Pimoroni Presto',
+  description: 'Iroh currently does not support nostd. ',
 }
 
 export const metadata = {
@@ -26,13 +26,27 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Over the last months I tried to get iroh to work on all embedded devices I could get my hands on. What initially [required a giant stack of code changes][iroh-on-esp32] to iroh now in many cases works with the published iroh crate. But so far I have focused on the [esp32] family of embedded devices.
+Over the last months I tried to get iroh to work on all embedded devices I could
+get my hands on. For ESP32, what initially [required a giant stack of code
+changes][iroh-on-esp32] now in many cases works with the published iroh
+crate. 
 
-After a lot of back and forth with customs I now got my hands on two Raspberry Pi embedded computers: a [Pimoroni Presto] and a bare [Raspberry Pi Pico 2]. So naturally I want to get iroh to work on these as well. For now this is a pure proof of concept hack. Just get it to work, then think about clean up later.
+After a lot of back and forth with customs I now got my hands on two Raspberry
+Pi embedded computers: a [Pimoroni Presto] and a bare [Raspberry Pi Pico 2]. So
+naturally I want to get iroh to work on these as well. For now this is a pure
+proof of concept hack, but we offer  production-level support for the RP2040: just [contact us](mailto:support@iroh.computer). 
 
 # Std or nostd
 
-Iroh currently does not support nostd. Of course it is possible with a large set of patches to get it to work on nostd systems. But this is a major change that might work for a demo but will be almost impossible to keep up to date. Besides, I am so happy that we were able to get rid of the giant patch set for esp32 support and don't want to go back again. Another reason for std is that while it might be possible with a lot of work to get iroh itself to work on a nostd environment, all our protocol and other support crates assume std. So essentially you would have to fork not just iroh but our entire protocol ecosystem to do something actually useful.
+Iroh currently does not support nostd. Of course it is possible with a large set
+of patches to get it to work on nostd systems. But this is a major change that
+might work for a demo but will be almost impossible to keep up to date. Besides,
+I am so happy that we were able to get rid of the giant patch set for esp32
+support and don't want to go back again. Another reason for std is that while it
+might be possible with a lot of work to get iroh itself to work on a nostd
+environment, all our protocol and other support crates assume std. So
+essentially you would have to fork not just iroh but our entire protocol
+ecosystem to do something actually useful.
 
 So... can we maybe just get std to work?
 
@@ -42,9 +56,16 @@ The esp32 std environment, [esp-idf-sys], [esp-idf-hal], and [esp-idf-svc], is c
 
 # Update to RP2350
 
-Updating to RP2350 was pretty straightforward in the age of LLM coding assistants: just tell your favourite robot to change the build setup based on published info for the Pico 2, then run the built-in examples. The Pico 2 is an interesting chip - it has two RISC-V cores and two ARM cores, and you can choose which one to support. I decided to use the ARM cores for simplicity. We need a new target triple `thumbv8m_main-none-espidf-eabi`.
+Updating to RP2350 was pretty straightforward in the age of LLM coding
+assistants: just tell your favourite robot to change the build setup based on
+published info for the Pico 2, then run the built-in examples. The Pico 2 is an
+interesting chip - it has two RISC-V cores and two ARM cores, and you can choose
+which one to support. I decided to use the ARM cores for simplicity. We need a
+new target triple `thumbv8m_main-none-espidf-eabi`.
 
-Wait a minute, this looks weird! espidf? Yes, we are reusing some esp32 code. `os = "espidf"` tricks rustc into building its existing unix std implementation (Newlib + ESP-IDF's pthread glue), running on [FreeRTOS] underneath.
+Wait a minute, this looks weird! espidf? Yes, we are reusing some esp32 code.
+`os = "espidf"` tricks rustc into building its existing unix std implementation
+(Newlib + ESP-IDF's pthread glue), running on [FreeRTOS] underneath.
 
 ```
 cargo run --example hello
@@ -57,9 +78,17 @@ Hello from std Rust on RP2350!
 
 # WiFi support
 
-The two boards I have available are a Raspberry Pi Pico 2 without WiFi and a Pimoroni Presto with WiFi and touch screen display. Obviously the Presto is the more interesting target. The next step is to make WiFi work so the device can be used with iroh without having to use usb networking.
+The two boards I have available are a Raspberry Pi Pico 2 without WiFi and a
+Pimoroni Presto with WiFi and touch screen display. The next step is to make WiFi work so the device can be
+used with iroh without having to use usb networking.
 
-We are using FreeRTOS just like on esp32, so we can use the same architecture: the WiFi driver and the lwIP TCP/IP stack run as FreeRTOS tasks. The driver is the C CYW43 driver from the Pico SDK — the Presto-specific part is just telling it which pins the radio is on — plus a bunch of tedious glue to integrate it with rust std. The payoff: lwIP exposes the standard C socket API, which is exactly what rust's std expects to find, so once the stack is up, `std::net` just works.
+We are using FreeRTOS just like on esp32, so we can use the same architecture:
+the WiFi driver and the lwIP TCP/IP stack run as FreeRTOS tasks. The driver is
+the C CYW43 driver from the Pico SDK — the Presto-specific part is just telling
+it which pins the radio is on — plus a bunch of tedious glue to integrate it
+with rust std. The payoff: lwIP exposes the standard C socket API, which is
+exactly what rust's std expects to find, so once the stack is up, `std::net`
+just works.
 
 <Note>
 This is done via a horrible hack: we don't have a file system, so we just assume that every file descriptor other than stdin, stdout and stderr is a WiFi socket.
@@ -76,9 +105,17 @@ Wi-Fi is up
 
 # PSRAM
 
-So now we got WiFi to work, but to get iroh to work we also need to enable PSRAM. We borrow the PSRAM setup code from MicroPython's rp2 port, but just running it caused a lot of misbehaviour. It turns out the setup code **must** run purely from internal RAM, since it reconfigures the very bus that flash execution goes through. The MicroPython version computes QMI timing values with 64-bit divisions, which the C compiler turns into calls to a division helper — located in flash. To avoid this we hardcode the timing constants for the Presto's 200 MHz system clock.
+So now we got WiFi to work, but to get iroh to work we also need to enable
+PSRAM. We borrow the PSRAM setup code from MicroPython's rp2 port, but just
+running it caused a lot of misbehaviour. It turns out the setup code **must**
+run purely from internal RAM, since it reconfigures the very bus that flash
+execution goes through. The MicroPython version computes QMI timing values with
+64-bit divisions, which the C compiler turns into calls to a division helper —
+located in flash. To avoid this we hardcode the timing constants for the
+Presto's 200 MHz system clock.
 
-The original MicroPython code computes the timing values from the system clock — *after* it has already taken over the bus that flash execution runs through:
+The original MicroPython code computes the timing values from the system clock —
+*after* it has already taken over the bus that flash execution runs through:
 
 ```c
 /* take direct control of the QMI controller — the same controller
@@ -153,7 +190,9 @@ The Presto has a number of RGB LEDs on the back. We can use them to show the cur
 
 # Bare pico RP2350
 
-We did run hello on the Pico 2, and it works without issues. So while we don't have a Pico 2 W available for testing, I have little doubt that it could be made to work quickly.
+We did run hello on the Pico 2, and it works without issues. So while we don't
+have a Pico 2 W available for testing, I have little doubt that it could be made
+to work quickly.
 
 # The code
 
@@ -165,7 +204,9 @@ Disclaimer: this repo is a hack to get iroh to work on the Presto. It works reli
 
 # Trying it out
 
-Cargo run will look for an attached presto and try to flash it. To do so the presto has to be in bootsel mode. To get it into bootsel mode, press boot, then press reset while boot is still pressed.
+Cargo run will look for an attached presto and try to flash it. To do so the
+presto has to be in bootsel mode. To get it into bootsel mode, press boot, then
+press reset while boot is still pressed.
 
 ```
 ❯ cargo run --release -p iroh-echo-full
