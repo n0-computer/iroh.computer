@@ -47,12 +47,11 @@ export default function RealTimeSyncSolutionPage() {
                   <img src="/img/user-logos/strada.png" alt="Strada" className="h-9 w-auto object-contain" />
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                  Strada cut AWS egress by 90.7%
+                  Strada cut cloud egress costs by 90.7%
                 </h2>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                   Strada helps creative teams access and edit media on remote drives. By moving
-                  large files directly between devices with iroh, Strada reduced monthly AWS
-                  internet egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
+                  large files directly between devices with iroh, Strada reduced monthly cloud egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
                 </p>
                 <blockquote className="mb-8 border-l-4 border-irohPurple-500 pl-6">
                   <p className="text-lg italic leading-relaxed text-irohGray-700 dark:text-irohGray-200">
@@ -74,7 +73,7 @@ export default function RealTimeSyncSolutionPage() {
                 <div className="rounded-xl border border-irohGray-700 bg-irohGray-800 p-8 text-white dark:bg-irohGray-900">
                   <p className="mb-3 text-sm uppercase tracking-wide text-irohPurple-400">Monthly impact</p>
                   <p className="mb-2 text-5xl font-bold text-irohPurple-400 md:text-6xl">$10,310</p>
-                  <p className="mb-8 text-irohGray-300">estimated AWS egress savings</p>
+                  <p className="mb-8 text-irohGray-300">estimated cloud egress savings</p>
 
                   <div className="grid grid-cols-2 gap-6 border-t border-irohGray-700 pt-6">
                     <div>
@@ -89,7 +88,7 @@ export default function RealTimeSyncSolutionPage() {
                 </div>
 
                 <div className="rounded-xl border border-irohGray-300 p-6 dark:border-irohGray-700">
-                  <h3 className="mb-6 font-medium">AWS internet egress</h3>
+                  <h3 className="mb-6 font-medium">Cloud egress</h3>
 
                   <div className="mb-6">
                     <div className="mb-2 flex items-baseline justify-between">
