@@ -2,7 +2,6 @@ import glob from 'fast-glob';
 import Script from 'next/script';
 
 import {Providers} from '@/app/providers';
-import {V1Banner} from '@/components/V1Banner';
 import '@/styles/tailwind.css';
 
 export const metadata = {
@@ -47,7 +46,6 @@ export default async function RootLayout({children}) {
       <body className="flex min-h-full bg-white antialiased dark:bg-black font-space">
         <Providers>
           <div className="w-full overflow-x-clip pt-[var(--v1-banner-height,0px)]">
-            <V1Banner />
             {children}
           </div>
         </Providers>
