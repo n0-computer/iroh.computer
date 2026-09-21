@@ -81,6 +81,13 @@ the fallback path for some endpoints that may never connect directly.
 
 ## Shared relays for your growing project
 
+Now, iroh services offers a shared relay to reduce costs and complexity: several
+projects can now share the same underlying infrastructure, while
+[authentication](https://www.iroh.computer/blog/authenticated-relays) keeps each
+project's access and metrics separate. This is the main benefit of using shared
+relays - your project can leverage robust relay and metrics infrastructure without bearing
+the full operational cost.
+
 <figure className="not-prose mx-auto my-8 max-w-3xl">
   <img
     src="/animations/shared-relays.svg"
@@ -92,13 +99,6 @@ the fallback path for some endpoints that may never connect directly.
   </figcaption>
 </figure>
 
-
-Now, iroh services offers a shared relay to reduce costs and complexity: several
-projects can now share the same underlying infrastructure, while
-[authentication](https://www.iroh.computer/blog/authenticated-relays) keeps each
-project's access and metrics separate. This is the main benefit of using shared
-relays - your project can leverage robust relay and metrics infrastructure without bearing
-the full operational cost.
 
 Sharing the machinery lets us offer a useful amount of relay capacity at a
 hobby-project price. You get a predictable bill and we take care of deploying,
@@ -116,7 +116,7 @@ can pay for a lunch every month to the team maintaining iroh!
 | Included egress | Variable | 100 GB | 250 GB |
 | Additional egress | N/A | $0.09/GB | Region-based pricing |
 | Concurrent connections | Rate limited | 10,000 | 60,000 |
-| Best for | Getting started| Hobby projects | Production with infrastructure requirements |
+| Best for | Development | Small, growing projects | Critical uptime requirements |
 
 If you already have a Pro plan, you can start using the shared relays immediately without any additional setup.
 
@@ -158,7 +158,7 @@ trying to model every coffee-shop Wi-Fi network on Earth.
   </figcaption>
 </figure>
 
-Iroh Pro includes the first 100 GB, so the monthly bill would be about **$46**: $19 for
+Iroh Pro includes the first 100 GB, so the monthly bill for 2,000 endpoints at 400GB total relayed egress would be about **$46**: $19 for
 Pro plus $27 for 300 GB of additional egress.
 
 Here is the 20TB workload over iroh compared to AWS and Supabase Pro:
