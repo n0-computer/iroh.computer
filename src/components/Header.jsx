@@ -20,7 +20,6 @@ export const navItems = [
     {label: 'Hosting', href: '/services/hosting'},
     {label: 'Observability', href: '/services/observability'},
     {label: 'Enterprise', href: '/services/enterprise'},
-    {label: 'Partners', href: '/partners'},
   ]},
   {content: 'Use Cases', href: '/#solutions', dropdown: [
     {label: 'Remote access', href: '/solutions/vpn'},
