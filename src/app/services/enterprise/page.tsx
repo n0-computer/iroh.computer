@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 
 export const metadata = {
-  title: 'Enterprise | Iroh',
+  title: 'Enterprise',
   description: 'Defeat connection anxiety in production. Custom health metrics, network diagnostics, and direct access to the core iroh team.',
 }
 

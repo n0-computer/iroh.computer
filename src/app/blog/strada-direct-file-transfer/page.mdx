@@ -1,0 +1,127 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { notFound } from 'next/navigation'
+
+export const post = {
+  draft: true,
+  author: 'Rae McKelvey',
+  date: '2026-09-14',
+  title: 'How Strada reduced traffic through central servers by 90.7% with iroh',
+  description:
+    'Strada moved large media transfers out of the centralized data path, reducing monthly transfer volume from 150 TB to 13.9 TB.',
+  headerImage: '/blog/strada-direct-file-transfer/strada-finder.webp',
+  headerImageAlt:
+    'The Strada Finder interface browsing video files across remote computers and storage drives',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [{
+      url: post.headerImage,
+      width: 1800,
+      height: 1115,
+      alt: post.headerImageAlt,
+      type: 'image/webp',
+    }],
+    type: 'article',
+  },
+}
+
+export default (props) => {
+  if (post.draft && process.env.NODE_ENV === 'production') notFound()
+  return <BlogPostLayout article={post} {...props} />
+}
+
+
+
+In a client-server architecture, the path is familiar: a computer uploads a file to
+a data center, and then gets sent around the world again to the other computer
+that needs it. This happens sometimes even if the devices are in the same room.
+It's a ridiculously inefficient use of data centers, and it's also costly for
+organizations that have to pay for that unnecessary egress.
+
+Strada is changing this by using iroh. Strada helps creative teams access and edit media stored on remote drives.
+Strada's app allows files to move directly between devices instead of uploading
+files to the cloud unnecessarily. In Strada's July 2026 production workload,
+**150 TB** would have crossed centralized infrastructure if every byte had gone
+through central servers. **13.9 TB** actually did—a **90.7% reduction**.
+
+Centralized services still make sense for the parts of a product that benefit
+from them. The important change is that central infrastructure no longer has to
+sit in the data path for most large file transfers.
+
+## Why media workflows are a great use case for peer to peer
+
+Media professionals need to access information on multiple drives, which could
+be local or remote. It's a much quicker workflow to mount
+remote storage as a virtual drive, so you can browse, preview, and work with
+files without uploading or downloading.
+
+## Put the shortest reliable path in the data plane
+
+Iroh establishes an end-to-end encrypted connection between the two devices. It tries the
+direct path first, including across NATs and firewalls. When network conditions
+prevent that path, a relay forwards the end-to-end encrypted traffic so the
+transfer can continue. Relays cannot read or store the file data, and Strada
+runs discovery under its own domain.
+
+This separation also lets each layer do a clearer job:
+
+- The endpoints hold and exchange the large media files.
+- Iroh finds and maintains an encrypted path between those endpoints.
+- Relays preserve connectivity when a direct path is unavailable, without reading or storing file data.
+
+It is a more deliberate use of the cloud: keep it for coordination and services
+that need centralization, rather than paying it to carry every byte between
+devices.
+
+## 150 TB through central servers, compared with 13.9 TB in practice
+
+The change in traffic crossing Strada’s centralized infrastructure is substantial.
+To put its potential cost impact in context, the estimates use standard
+US-region internet data-transfer rates of about $0.09/GB as a benchmark:
+
+| Metric | If every byte crossed central servers | What actually crossed central servers | Difference |
+| --- | ---: | ---: | ---: |
+| Monthly traffic | 150 TB | 13.9 TB | −136.1 TB (−90.7%) |
+| Estimated monthly egress cost | $11,571.20 | $1,261.06 | −$10,310.14 |
+| Annualized estimated cost | $138,854.40 | $15,132.72 | −$123,721.68 |
+
+That is **136.1 TB less traffic through centralized infrastructure each month**.
+At the AWS benchmark rates, that reduction would be worth about **$10,310 per
+month**, or **$123,700 annualized**. These figures illustrate the economics of
+the traffic reduction; they are not a statement about Strada’s cloud provider
+or its actual bill.
+
+
+## A better scaling model for large-file products
+
+Strada shows why architecture matters to a product’s unit economics. Under a
+centralized model, successful adoption creates a nearly linear increase in
+egress: every additional file transferred adds another full file to the cloud
+bill. With a direct-first model, much of that traffic stays between the devices
+already sending and receiving it.
+
+The same pattern applies beyond professional media. Backup, synchronization,
+remote access, dataset distribution, and other data-heavy products all benefit
+when central infrastructure coordinates movement without automatically carrying
+the payload.
+
+For Strada, putting iroh in the data plane meant preserving reliable access to
+remote media while removing centralized infrastructure from the path of most
+file data. Creative teams keep moving the files they need; Strada carries
+dramatically less traffic through centralized infrastructure.
+
+[Visit Strada](https://strada.tech) or read more about [how iroh connects
+devices directly](https://docs.iroh.computer/what-is-iroh).
+
+
+**The AWS pricing benchmark assumes 1 TB equals 1,024 GB and applies rates of
+$0.09/GB for the first 10 TB, $0.085/GB for the next 40 TB, and $0.07/GB for the
+next 100 TB. It excludes taxes, negotiated discounts, credits, and the 100 GB
+monthly free allowance. It is not Strada’s actual bill and does not imply that
+Strada uses AWS. The more durable result is the traffic reduction itself: only
+9.3% of the volume in the central-server scenario actually crossed centralized infrastructure.**

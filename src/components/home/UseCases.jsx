@@ -16,7 +16,7 @@ const useCases = {
   "Data Transfer": [
     "Recall uses iroh to replicate massive amounts content-addressed data for validating AI Agents."
   ],
-  "Real-time Sync for Apps": [
+  "Data Sync & Device Backup": [
     "Delta Chat uses iroh to power apps for hundreds of thousands of devices around the world, even when internet access is precarious."
   ]
 }
@@ -91,7 +91,7 @@ export function UseCaseScroller() {
           </Link>
         )}
         {selectedCategory === "Resilient Apps" && (
-          <Link href="/solutions/delta-chat" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+          <Link href="/solutions/data-sync" className="text-irohPurple-500 hover:underline mt-2 text-sm">
             Read the Delta Chat case study →
           </Link>
         )}

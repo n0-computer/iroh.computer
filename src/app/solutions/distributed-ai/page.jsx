@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Server, Zap, Globe, Shield, Cpu, Network } from "lucide-react"
 
 export const metadata = {
-  title: 'Distributed AI - Use Case | Iroh',
+  title: 'Distributed AI - Use Case',
   description: 'How Nous and Mesh LLM use iroh to train foundation LLMs and pool GPUs across machines, with compute distributed around the world instead of centralized in one data center.',
 }
 

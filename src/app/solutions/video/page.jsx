@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Globe, Zap, Radio, Shield } from "lucide-react"
 
 export const metadata = {
-  title: 'Video Streaming with MoQ - Solutions | Iroh',
+  title: 'Video Streaming with MoQ - Solutions',
   description: 'How iroh and Media over QUIC (MoQ) are changing the game for video streaming—and how Rave uses it to reach millions of devices worldwide.',
 }
 
