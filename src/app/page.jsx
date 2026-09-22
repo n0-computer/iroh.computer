@@ -159,7 +159,7 @@ export default function Page() {
 
           {/* supported platforms */}
           <section className='max-w-7xl mx-auto px-4 py-16'>
-            
+
             <div className='flex flex-wrap items-center justify-center gap-x-8 gap-y-5'>
               {languages.map((logo) => (
                 <PlatformLogo key={logo.name} {...logo} />
