@@ -2,7 +2,7 @@ import { HeaderSparse } from '@/components/HeaderSparse'
 import { FooterMarketing } from "@/components/FooterMarketing"
 
 export const metadata = {
-  title: 'Legal | Iroh',
+  title: 'Legal',
   description: 'Privacy policy and terms of service for Iroh and Iroh Services.',
 }
 

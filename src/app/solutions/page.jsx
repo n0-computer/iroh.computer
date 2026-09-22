@@ -5,7 +5,7 @@ import { ThemeImage } from "@/components/ThemeImage"
 import Link from "next/link"
 
 export const metadata = {
-  title: 'Solutions | Iroh',
+  title: 'Solutions',
   description: 'See how companies use iroh to build fast, reliable, distributed applications.',
 }
 

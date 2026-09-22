@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Check, Minus, BarChart3, Server, Headphones } from 'lucide-react'
 
 export const metadata = {
-  title: 'Pricing | Iroh',
+  title: 'Pricing',
   description: 'Plans and pricing for iroh services. Start free, then choose shared or dedicated relays as you grow.',
 }
 

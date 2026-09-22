@@ -6,7 +6,7 @@ import Link from "next/link"
 import { BarChart3, Activity, Shield } from "lucide-react"
 
 export const metadata = {
-  title: 'Metrics | Iroh',
+  title: 'Metrics',
   description: 'Monitor your network with comprehensive metrics collection. Track connections, latency, throughput, and custom application metrics.',
 }
 

@@ -8,7 +8,7 @@ import { GithubIcon } from '@/components/icons/GithubIcon';
 
 
 export const metadata = {
-  title: 'Hosting | Iroh',
+  title: 'Hosting',
   description: 'Keep your endpoints connected. Free public relays for development, dedicated relays for production.',
 }
 

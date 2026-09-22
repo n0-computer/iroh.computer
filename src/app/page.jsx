@@ -25,7 +25,7 @@ import logoC from '@/images/language-logos/c.svg';
 import { CodeBlockTabs } from '@/components/CodeBlockTabs';
 
 export const metadata = {
-  title: 'Iroh',
+  title: { absolute: 'Iroh' },
   description:
     'less net work for networks',
 };

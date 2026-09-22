@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Shield, Smartphone, Globe } from "lucide-react"
 
 export const metadata = {
-  title: 'Real-time Sync - Use Case | Iroh',
+  title: 'Real-time Sync - Use Case',
   description: 'How Strada and Delta Chat use iroh to move data directly between devices, reduce infrastructure costs, and keep applications in sync.',
 }
 
