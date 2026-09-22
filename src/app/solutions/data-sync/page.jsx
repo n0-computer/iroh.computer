@@ -47,38 +47,27 @@ export default function RealTimeSyncSolutionPage() {
                   <img src="/img/user-logos/strada.png" alt="Strada" className="h-9 w-auto object-contain" />
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                  Strada cut cloud egress costs by 90.7%
+                  Strada reduced central-server traffic by 90.7%
                 </h2>
                 <p className="text-xl text-irohGray-600 dark:text-irohGray-300 mb-8 leading-relaxed">
                   Strada helps creative teams access and edit media on remote drives. By moving
-                  large files directly between devices with iroh, Strada reduced monthly cloud egress from 150 TB to 13.9 TB—an estimated $10,310 in monthly savings.
+                  large files directly between devices with iroh, Strada sent 13.9 TB through central servers in July 2026, compared with 150 TB if every byte had taken that path.
                 </p>
-                <blockquote className="mb-8 border-l-4 border-irohPurple-500 pl-6">
-                  <p className="text-lg italic leading-relaxed text-irohGray-700 dark:text-irohGray-200">
-                    &ldquo;It felt like I was working off a drive connected directly to my local system.
-                    It just played like local footage and I couldn&apos;t really tell the difference.&rdquo;
-                  </p>
-                  <footer className="mt-3 text-sm text-irohGray-500 dark:text-irohGray-400">
-                    <Link href="https://strada.tech/pricing" target="_blank" rel="noopener noreferrer" className="hover:text-irohPurple-500 hover:underline">
-                      Ryan Connolly, Film Riot
-                    </Link>
-                  </footer>
-                </blockquote>
-                <Link href="/blog/strada-direct-file-transfer" className="inline-flex items-center font-medium text-lg text-irohPurple-500 hover:underline">
-                  Read the Strada story →
-                </Link>
+                <p className="text-lg text-irohGray-600 dark:text-irohGray-300 leading-relaxed">
+                  Connections are end-to-end encrypted. Relays cannot read or store file data, and Strada runs discovery under its own domain.
+                </p>
               </div>
 
               <aside className="space-y-6">
                 <div className="rounded-xl border border-irohGray-700 bg-irohGray-800 p-8 text-white dark:bg-irohGray-900">
-                  <p className="mb-3 text-sm uppercase tracking-wide text-irohPurple-400">Monthly impact</p>
+                  <p className="mb-3 text-sm uppercase tracking-wide text-irohPurple-400">Estimated monthly impact</p>
                   <p className="mb-2 text-5xl font-bold text-irohPurple-400 md:text-6xl">$10,310</p>
-                  <p className="mb-8 text-irohGray-300">estimated cloud egress savings</p>
+                  <p className="mb-8 text-irohGray-300">at benchmark egress rates, not Strada&apos;s actual bill</p>
 
                   <div className="grid grid-cols-2 gap-6 border-t border-irohGray-700 pt-6">
                     <div>
                       <p className="mb-1 text-3xl font-bold">90.7%</p>
-                      <p className="text-sm text-irohGray-400">less egress</p>
+                      <p className="text-sm text-irohGray-400">less central-server traffic</p>
                     </div>
                     <div>
                       <p className="mb-1 text-3xl font-bold">$123.7k</p>
@@ -88,11 +77,11 @@ export default function RealTimeSyncSolutionPage() {
                 </div>
 
                 <div className="rounded-xl border border-irohGray-300 p-6 dark:border-irohGray-700">
-                  <h3 className="mb-6 font-medium">Cloud egress</h3>
+                  <h3 className="mb-6 font-medium">July 2026 central-server traffic</h3>
 
                   <div className="mb-6">
                     <div className="mb-2 flex items-baseline justify-between">
-                      <span className="text-sm text-irohGray-600 dark:text-irohGray-300">Before iroh</span>
+                      <span className="text-sm text-irohGray-600 dark:text-irohGray-300">If every byte crossed central servers</span>
                       <span className="font-bold">150 TB</span>
                     </div>
                     <div className="h-3 overflow-hidden rounded-full bg-irohGray-200 dark:bg-irohGray-800">
@@ -102,7 +91,7 @@ export default function RealTimeSyncSolutionPage() {
 
                   <div className="mb-7">
                     <div className="mb-2 flex items-baseline justify-between">
-                      <span className="text-sm text-irohGray-600 dark:text-irohGray-300">With iroh</span>
+                      <span className="text-sm text-irohGray-600 dark:text-irohGray-300">What actually did</span>
                       <span className="font-bold text-irohPurple-500">13.9 TB</span>
                     </div>
                     <div className="h-3 overflow-hidden rounded-full bg-irohGray-200 dark:bg-irohGray-800">
@@ -112,11 +101,11 @@ export default function RealTimeSyncSolutionPage() {
 
                   <div className="grid grid-cols-2 gap-4 border-t border-irohGray-300 pt-5 text-sm dark:border-irohGray-700">
                     <div>
-                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">Before</p>
+                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">All central estimate</p>
                       <p className="font-medium">$11,571.20/mo</p>
                     </div>
                     <div>
-                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">After</p>
+                      <p className="mb-1 text-irohGray-500 dark:text-irohGray-400">Observed traffic estimate</p>
                       <p className="font-medium">$1,261.06/mo</p>
                     </div>
                   </div>
