@@ -11,7 +11,7 @@ const useCases = {
     "Nous uses iroh to train foundation LLMs with compute distributed around the world.",
   ],
   "Gaming": [
-    "Shaga uses iroh to deliver ultra low latency gaming on any device, anywhere.\n\nSpicy Lobster uses iroh to ship unkillable games that don't need a server."
+    "Build multiplayer sessions and game streaming experiences with direct, encrypted connections between devices."
   ],
   "Data Transfer": [
     "Recall uses iroh to replicate massive amounts content-addressed data for validating AI Agents."
@@ -88,6 +88,11 @@ export function UseCaseScroller() {
         {selectedCategory === "AI/ML" && (
           <Link href="/solutions/distributed-ai" className="text-irohPurple-500 hover:underline mt-2 text-sm">
             Read the Nous case study →
+          </Link>
+        )}
+        {selectedCategory === "Gaming" && (
+          <Link href="/solutions/games" className="text-irohPurple-500 hover:underline mt-2 text-sm">
+            Explore the games use case →
           </Link>
         )}
         {selectedCategory === "Resilient Apps" && (

@@ -26,6 +26,7 @@ export const navItems = [
     {label: 'Remote access', href: '/solutions/vpn'},
     {label: 'Distributed AI', href: '/solutions/distributed-ai'},
     {label: 'Video Streaming', href: '/solutions/rave'},
+    {label: 'Games', href: '/solutions/games'},
     {label: 'Data Sync & Device Backup', href: '/solutions/data-sync'},
     {label: 'Payments & POS', href: '/solutions/pos'},
     {label: 'IoT & Embedded', href: '/solutions/iot'},

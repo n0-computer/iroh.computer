@@ -33,6 +33,14 @@ const solutions = [
     logo: "rave",
   },
   {
+    category: "Games",
+    company: "Games",
+    headline: "Connect Players and Stream Games Directly",
+    description: "Build multiplayer sessions and game streaming experiences with direct, encrypted connections between devices.",
+    href: "/solutions/games",
+    linkLabel: "Explore use case →",
+  },
+  {
     category: "Data Sync & Device Backup",
     company: "Delta Chat",
     headline: "Data Sync & Device Backup",
@@ -92,7 +100,7 @@ export default function SolutionsPage() {
                       {solution.description}
                     </p>
                     <p className="text-irohPurple-500 font-medium text-lg">
-                      Read case study →
+                      {solution.linkLabel || "Read case study →"}
                     </p>
                   </div>
                   <div className="flex items-center justify-center p-8">
