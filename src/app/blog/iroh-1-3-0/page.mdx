@@ -1,0 +1,109 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'ramfox',
+  date: '2026-09-28',
+  title: 'iroh 1.2.0 & 1.3.0 - Small features for more user control',
+  description: 'Release of iroh v1.2.0 and v1.3.0',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+This blog post covers our last two releases: 1.2 and 1.3, which introduce a few small features that make iroh simpler to work with and able to run in more places.
+
+## iroh v1.2.0
+### n0-dns-resolver
+We've reduced our binary size by more than 10% by switching our DNS resolver from `hickory-resolver` to `n0-dns-resolver`. This lets `iroh` run on even smaller devices. An optimized build has a binary size of around 4.8MB.
+
+We've also added features to make DNS resolution more configurable.
+
+Previously, `iroh` always fell back to Google's nameservers when it couldn't read the system DNS configuration. Now, you can add custom fallback DNS nameservers using `iroh::dns::Builder::fallback_nameserver_configs`, and set the `FallbackMode` using `iroh::dns::Builder::with_fallback_mode`.
+
+`iroh::dns::Builder::with_nameserver` and `iroh::dns::Builder::with_nameservers` have been deprecated in favor of `iroh::dns::Builder::add_nameserver_config` and `iroh::dns::Builder::add_nameserver_configs`.
+
+The fallback modes include:
+- `Deferred` (the default): the fallback nameservers will be queried only after every configured primary nameserver has failed or timed out.
+- `Eager`: the fallback and primary nameservers are queried at the same time.
+- `IfSystemEmpty`: queries the fallback nameservers only if the system config returns no nameservers.
+- `Never`: never queries any fallbacks. This can also be set with `iroh::dns::Builder::disable_fallback`.
+
+Now, you have more control over the exact behaviour the DNS resolver should take when the configured DNS nameservers or the system config nameservers aren't cutting it.
+
+See [PR #4419] and [PR #4506] for more details.
+
+### Relay Auth Denied
+In most cases, when a connection to a relay server dies, `iroh` attempts to redial the connection, assuming that the connection died because of a network change. These failures are not fatal; `iroh` will just reconnect.
+
+However, if dialing a relay fails because you are not authorized to connect to that relay – that's a fatal error. `RelayStatus::auth_denied_reason` only returns `Some` if your connection was denied because of authentication, and it allows you to inspect why it failed.
+
+```rust
+use iroh::{Endpoint, Watcher, endpoint::presets};
+use n0_future::StreamExt;
+
+let endpoint = Endpoint::builder(presets::Minimal).bind().await?;
+let mut status = endpoint.home_relay_status().stream();
+while let Some(relays) = status.next().await {
+    for relay in relays {
+        if let Some(reason) = relay.auth_denied_reason() {
+            println!("{}: authentication denied ({reason})", relay.url());
+        }
+    }
+}
+```
+
+See [PR #4501] for more details.
+
+## iroh v1.3.0
+### APIs for batching datagrams
+`noq`, the underlying QUIC implementation that `iroh` uses, added a way to batch sending and receiving datagrams.
+
+Using `iroh::endpoint::Connection::send_many_datagrams` and `iroh::endpoint::Connection::read_many_datagrams` gives you a performance boost when sending bursts of datagrams, since the entire batch is handled with one lock and one driver wake-up.
+
+Thank you contributor [ifdario][if], see [PR #4547] for more details.
+
+### Order your ALPNs
+Previously, we held the configured protocols in the `Router` in a `BTreeMap`, so ALPNs were sent in alphabetical order. This means that if you had `myproto/1` and `myproto/2`, the first would always win out in protocol negotiation.
+
+Now, the protocols are ordered in the order they are added to the `iroh::protocol::Router`, so register your preferred protocol first.
+
+See [PR #4533] for more details.
+
+### Fix blocked actor
+Thanks to contributor [William-Herly][wh] for fixing a bug where a full relay send queue could stall a connection while sending its Initial packet.
+
+See [PR #4512] for more details.
+
+## What's next?
+
+We expect the next few releases to keep this rhythm: happy maintenance releases every few weeks, with small fixes for corner cases and invisible improvements. However, we are gearing up to add some new, bigger features to `iroh` before the end of the year. As always, the full details are in the changelogs for [iroh 1.2.0](https://github.com/n0-computer/iroh/releases/tag/v1.2.0) and [iroh 1.3.0](https://github.com/n0-computer/iroh/releases/tag/v1.3.0).
+
+See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
+
+[PR #4419]: https://github.com/n0-computer/iroh/pull/4419
+[PR #4506]: https://github.com/n0-computer/iroh/pull/4506
+[PR #4501]: https://github.com/n0-computer/iroh/pull/4501
+[PR #4547]: https://github.com/n0-computer/iroh/pull/4547
+[PR #4533]: https://github.com/n0-computer/iroh/pull/4533
+[PR #4512]: https://github.com/n0-computer/iroh/pull/4512
+[wh]: https://github.com/William-Herly
+[if]: https://github.com/ifdario
