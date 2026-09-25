@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 210" role="img" aria-labelledby="title desc">
+  <title id="title">Anatomy of a content-addressed link</title>
+  <desc id="desc">https://9z39w8pj1tqkfkmmnr46nx9zjn9ro4iq46sykj3eywk6h8u7yk4o.blake3.net contains a 52-character z-base-32 encoded BLAKE3 hash and the blake3.net namespace.</desc>
+  <rect x="10" y="10" width="880" height="190" rx="12" fill="#f3f4f6"/>
+  <g font-family="Space Mono, monospace" font-size="15">
+    <text x="95" y="73" fill="#555" textLength="72" lengthAdjust="spacingAndGlyphs">https://</text>
+    <text x="167" y="73" fill="#15803d" textLength="468" lengthAdjust="spacingAndGlyphs">9z39w8pj1tqkfkmmnr46nx9zjn9ro4iq46sykj3eywk6h8u7yk4o</text>
+    <text x="635" y="73" fill="#6366f1" textLength="99" lengthAdjust="spacingAndGlyphs">.blake3.net</text>
+  </g>
+  <g fill="none" stroke-width="1.5">
+    <path d="M 169 87 V 95 H 633 V 87 M 401 95 V 124" stroke="#15803d"/>
+    <path d="M 637 87 V 95 H 734 V 87 M 685 95 V 124" stroke="#6366f1"/>
+  </g>
+  <g font-family="Space Mono, monospace" text-anchor="middle" font-size="15">
+    <text x="401" y="147" fill="#15803d">BLAKE3 hash</text>
+    <text x="401" y="170" fill="#555" font-size="12">z-base-32 · 52 characters</text>
+    <text x="685" y="147" fill="#6366f1">Namespace</text>
+  </g>
+</svg>
