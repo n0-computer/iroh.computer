@@ -1,0 +1,402 @@
+import { ThemeImage } from '@/components/ThemeImage'
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+import { ExpandableAnimation } from '@/components/ExpandableAnimation'
+
+export const post = {
+  author: 'Rüdiger Klaehn',
+  date: '2026-09-25',
+  title: 'Iroh global content discovery',
+  description: 'How to discover content globally with iroh.',
+}
+
+export const metadata = {
+  title: post.title,
+  description: post.description,
+  openGraph: {
+    title: post.title,
+    description: post.description,
+    images: [
+      {
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      },
+    ],
+    type: 'article',
+  },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+You have probably heard the news. [IPFS] [shipyard is shutting down](https://ipshipyard.com/blog/2026-the-end-of-ipfs-at-shipyard/). This does not mean that IPFS will stop working entirely, but it does not bode well for the future of the project.
+
+The use case that got me excited about IPFS many years ago briefly after it was announced was the following use case: publish a personal website, blog post, or political pamphlet, and as long as enough people are interested in the content, it will remain available globally.
+
+Iroh started as an IPFS implementation, so initially we also tried to solve this problem. But when we [parted ways with IPFS compatibility](/blog/a-new-direction-for-iroh) and later [narrowed down the scope](/blog/smaller-is-better) of what iroh is to direct connections dialed by key, we focused on other things.
+
+But that doesn't mean that I am no longer interested in the problem. In fact now that iroh has reached 1.0 we should take another look.
+
+# The state of the art
+
+When we solved hole punching, we started looking at existing systems and chose the best open source system as an initial starting point for our own implementation. So let's do the same for global content discovery.
+
+There are a number of projects trying to solve this problem. But one project stands above all others: BitTorrent. It *just works* and has done so for over two decades.
+
+So let's take a look at what makes BitTorrent the current leader in distributed global content transfer. BitTorrent has a relatively simple protocol for blob transfer and a [DHT] called [*Mainline*](https://www.bittorrent.org/beps/bep_0005.html) for global content discovery.
+
+The transfer protocol and content discovery are *separate systems*. In fact, the DHT was developed later than the transfer protocol. BitTorrent was released in 2001 using centralized trackers for content discovery; the Mainline DHT was added in 2005.
+
+## Transfer protocol
+
+BitTorrent works by creating a `.torrent` file that contains information about the data to be downloaded. The file is encoded using [bencode], which is conceptually similar to JSON.
+
+```json
+{
+  "announce": "http://tracker.example.com/announce",
+  "comment": "Ubuntu 24.04 desktop image",
+  "created by": "mktorrent 1.1",
+  "creation date": 1714521600,
+  "info": {
+    "name": "ubuntu-24.04-desktop-amd64.iso",
+    "piece length": 262144,
+    "length": 5820411904,
+    "pieces": 9358b5d71f8007ac926000961ad79d865d9652bc
+              4cce840457bcfac1dd67d864e9386422eee70904
+              … many more 20-byte hashes …
+  }
+}
+```
+
+`pieces` contains the concatenated SHA-1 hashes of all `piece length`-sized pieces. The transfer protocol downloads blocks of these pieces from different peers.[^endgame]
+
+The transfer protocol allows requests for ranges within pieces, but you can only validate a piece **after** you have downloaded it completely and computed its SHA-1 hash.
+
+I don't want to dwell on this too long, but I think that [BLAKE3 verified streaming] is a superior replacement for the transfer protocol.
+
+For a visual explanation of how it works, see my [BLAKE3 and Bao deep dive], which covers verified streaming, outboard encoding, and range requests.
+
+We have some work to do to make multiprovider downloads of single blobs efficient, but the streaming protocol itself with its fine grained validation is superior to the bittorrent protocol.
+
+## DHT
+
+Initially BitTorrent used trackers to get providers for a torrent. What the DHT adds is a way to get providers *without* having to rely on trackers.
+
+This works by computing the SHA-1 hash of the `info` section, which includes the hashes of all pieces. Then you announce on the DHT that you have content for this hash. The mainline functions for this are [`announce_peer`](https://www.bittorrent.org/beps/bep_0005.html#announce-peer) and [`get_peers`](https://www.bittorrent.org/beps/bep_0005.html#get-peers). Each DHT node will store a large set of providers.
+
+<ExpandableAnimation
+  src="/animations/announce-peer-dht.svg?v=12"
+  darkSrc="/animations/announce-peer-dht-dark.svg?v=12"
+  width={900}
+  height={530}
+  alt="Bob and Carol announce the same infohash to DHT nodes. Each node keeps both provider addresses in a list. Alice uses get_peers to retrieve the providers."
+/>
+
+Many more modern protocols also use DHTs for content discovery. But Mainline works extremely well compared to many modern alternatives. So let's take a look at why.
+
+### Extreme minimalism
+
+The mainline protocol takes into account that a DHT operates across an *extremely large* number of nodes. You **can't** afford large per-node connection state. Therefore both queries and responses are constrained to fit into single non-fragmented UDP packets.
+
+There are a number of other limitations compared to modern DHT implementations that all serve an important purpose:
+
+- the data stored for a provider is just the public `host:port` pair of the provider as seen from the DHT node. So there is no user defined information in a provider record.[^provider-port]
+
+- For newer extensions like [BEP 44] the data is fully self-contained and verifiable, either a tiny piece of data or a signed record, both limited to fit into a typical MTU.
+
+- you can only store data after first querying the DHT node and returning the short-lived token from its response, *proving* that *at publishing time* you can receive packets at your claimed IP address.[^address-validation]
+
+The result of this minimalism is that mainline lookups typically complete in less than a second.
+
+Here is a real BEP 44 lookup of a pkarr record using the `get_mutable` example from [n0-mainline](https://github.com/n0-computer/n0-mainline).
+
+```sh
+RUST_LOG=debug cargo run --example get_mutable -- \
+  996a1a05681f92877d5a6ecf9343fba40b8573e5a35ba5773a891ddfb47f9ca6
+
+2026-09-24T06:19:15.626284Z  INFO n0_mainline::actor: Mainline DHT started address=0.0.0.0:52517
+Looking up mutable item: 996a1a05681f92877d5a6ecf9343fba40b8573e5a35ba5773a891ddfb47f9ca6 ...
+
+Got first result in 37 milliseconds:
+  mutable item: [.. DNS packet bytes omitted ...], seq: 1790095662296563
+```
+
+If you are traumatized by DHT lookups taking forever or timing out: **it doesn't have to be this way**. The mainline DHT shows that millisecond lookups are possible at a global scale.
+
+# Mainline for finding blobs providers
+
+Now that we have established why bittorrent works so well, let's see if there is a way to use mainline for iroh blobs content discovery.
+
+Mainline provider records are just an IPv4 `host:port` pair. But iroh connections are dialed by cryptographic identity, currently the Ed25519 public key aka `EndpointId`. So to use mainline provider records for iroh blobs endpoint discovery, we would need a way to know which `EndpointId` is currently listening on this `host:port`.
+
+In most cases this `host:port` will be behind a NAT, so it is *not reachable*.
+
+I tried a number of ways to use current mainline mechanisms such as BEP 44 to store this mapping, but currently this is not possible. So we need a tiny extra UDP address index service ([`udp-addr-index`]) to provide this mapping.
+
+This can be an incredibly simple service. It just stores some tiny arbitrary metadata for each verified UDP `host:port` pair and is reachable exclusively via a simple single-packet UDP protocol. Since mainline requires UDP, and this is an extension for mainline, we don't need to handle the case where sending UDP packets is not possible.
+
+Writes need a mechanism similar to the mainline or QUIC token mechanism to verify that the remote is actually reachable on the `host:port` pair. Reads don't need this, we just require a padded query packet to prevent amplification.
+
+The service stores up to 1 KiB of arbitrary metadata. It's a *last writer wins* map from a live UDP `host:port` pair to a tiny blob. Mappings expire after some time, so a content provider has to update the mapping at regular intervals as well as when its public UDP `host:port` pair changes.
+
+The current implementation keeps the map purely in memory. Records have to be updated at regular intervals anyway, and not requiring persistence makes the service much simpler and cheaper to operate. You can run an address index service for millions of iroh endpoints on a single small box with a publicly reachable UDP socket.
+
+The address index service does not depend in any way on iroh. It is infrastructure that could also be useful for non iroh applications using mainline, or iroh applications for other purposes such as gossip peer discovery.
+
+<Note>
+In the long term I would love the address index service function to be handled by a bittorrent mainline extension. It is generically useful and not specific to iroh.
+</Note>
+
+# What's in the record?
+
+For our endpoint discovery purposes we store a record containing the endpoint id, current UDP socket addr, and a timestamp, signed with the endpoint private key. So *only the owner of the endpoint key* can write a valid signed record, so you can't impersonate other endpoints.
+
+The address index service however does **not** check whether the endpoint id is actually serving the right content via blobs. What `get_peers` in conjunction with this service gives us is just a list of *candidate* iroh endpoints which *might* serve the content.
+
+<Note>
+Endpoint discovery doesn't have to be for content discovery. We also have an example that shows how to [discover peers for a gossip topic].
+</Note>
+
+# Workflow
+
+So now let's take a look at the overall workflow when announcing and discovering content. For both announce and discovery we will need a mainline DHT node. We use the [`n0_mainline`](https://docs.rs/n0-mainline) crate just like in the existing [`iroh-mainline-address-lookup`](https://docs.rs/iroh-mainline-address-lookup) crate.
+
+## Announce
+
+We want to associate the UDP socket of `n0_mainline` with our `EndpointId`, so we publish a signed record containing our `EndpointId` via this UDP socket. `n0_mainline` has a mechanism to publish arbitrary UDP packets on its socket and to intercept incoming UDP packets. This needs to happen at regular intervals as well as immediately when the public `host:port` pair changes.
+
+For the announce itself: the mainline keyspace is just 20 bytes, usually used to announce SHA-1 hashes of the info section of a .torrent file. We want to announce BLAKE3 hashes, so we first compute the SHA-1 hash of the BLAKE3 hash. Then we use `announce_peer` to announce that we are providing data for that hash. These announces also need 
+
+<Note>
+You might wonder if SHA-1 is still safe for this purpose. Its collision resistance is broken, but there is no known practical preimage attack. More importantly, the DHT is just a best-effort mechanism for finding candidate providers. Anyone can announce themselves as a provider without having the content at all. We verify downloaded data against the original BLAKE3 hash, so a misleading DHT result can waste time, but cannot make us accept the wrong content.
+</Note>
+
+## Discovery
+
+For discovery we first need to find at least one working service that can translate `host:port` pairs into `EndpointId`s. We have two mechanisms built in for this: a rendezvous hash that allows address index services to announce themselves, and a BEP 44 record that is a *curated list* of good address index services. Announce and discovery need to agree on the rendezvous hash or BEP 44 record name to find address index services.
+
+Once we have at least one working address index service, we compute the SHA-1 hash of the BLAKE3 hash we are looking for and call `get_peers`. The output of `get_peers` is a list of `host:port` pairs which we translate to `EndpointId`s using the address index service.
+
+At this point we get a stream of *unverified* `EndpointId`s. We currently do a quick size query for the content we are looking for to make sure they are live and serve the right content, then hand them over to the iroh-blobs downloader to download the actual content.
+
+Note that the actual connection now uses the `EndpointId` and iroh's built in address lookup and hole punching to establish a connection. The QUIC connection does *not* work via the announced UDP `host:port` pair. That is just a key for the address index service.
+
+<ExpandableAnimation
+  src="/animations/content-discovery-workflow.svg?v=9"
+  darkSrc="/animations/content-discovery-workflow-dark.svg?v=9"
+  width={900}
+  height={570}
+  alt="Bob and Carol publish address-to-endpoint mappings to the address index service and announce content to Mainline. Alice gets provider addresses from Mainline, then resolves them to candidate endpoint IDs through the address index service."
+/>
+
+# Demo
+
+All of the above is implemented in the experimental [iroh-content-discovery] repository. Its workspace contains the address index service, its protocol and client as well as a few extra crates that make use of it.
+
+To see the entire workflow in action, we can run the `blobs` example. It runs both publish and resolve in one process, but discovery nevertheless goes via mainline and the address index service.
+
+```
+> cargo run -p iroh-mainline-endpoint-discovery --example blobs
+Blob hash: 3b16faa5c1cb3e9acfb22954949fc67768734d15d2e6538e1ac23cd9363a6d07
+Provider endpoint: fbf0dad7c55cdc98fad984da16b5f20ddb2bfa2789829d9c5807e3869654c744
+Bootstrapping public Mainline...
+Discovering address index servers through Mainline...
+Publishing the endpoint record and announcing the blob...
+Published. Starting content discovery and download...
+Looking up Mainline infohash: 1221617bb90534bb2fafc4b35ea1bb08470cc81a
+Mainline returned provider address: 82.76.245.139:53799
+Address index: 82.76.245.139:53799 -> fbf0dad7c55cdc98fad984da16b5f20ddb2bfa2789829d9c5807e3869654c744
+Trying this endpoint with the iroh-blobs downloader...
+Downloaded and verified 44 bytes:
+hello from iroh-mainline-endpoint-discovery
+```
+
+# Websites
+
+So now we have a mechanism to do content discovery for blobs. This will be useful for tools like [sendme] and in general for sending around large amounts of data.
+
+But what about permissionless publishing of websites such as a blog? To make this work we need some extra components.
+
+## Link syntax
+
+We need a syntax for content-addressed links. We don't go into a giant rabbit hole about how to encode these links. Our content addressed links are always BLAKE3. We need to reserve some global namespace for them, so we reserved a domain `blake3.net`. A content-addressed link is just `https://<hash>.blake3.net`, with the hash encoded using [zbase32].
+
+<div className="not-prose mx-auto my-8 max-w-2xl">
+  <ThemeImage
+    lightSrc="/blog/iroh-global-content-discovery/link-syntax.svg?v=2"
+    darkSrc="/blog/iroh-global-content-discovery/link-syntax-dark.svg?v=2"
+    width={900}
+    height={210}
+    alt="A content-addressed URL with its 52-character z-base-32 BLAKE3 hash and blake3.net namespace labeled."
+    className="w-full h-auto"
+  />
+</div>
+
+## Browser plugin
+
+We don't want to run an actual gateway at `blake3.net`. That would be a very bad idea for various reasons,
+
+Instead we want the browser to interpret these links as something that can be resolved in a different way. So we wrote a simple browser plugin that just rewrites these links to `http://<hash>.blake3.localhost:<port>` where the port is configurable in the plugin.
+
+The plugin leaves other domains alone and does not attempt to do anything with the actual content.
+
+It currently works for brave, chrome and firefox.
+
+## Local gateway
+
+The last component is a local gateway that serves content-addressed data on localhost. It interacts with mainline to find content and orchestrates the actual blobs downloads. It supports iroh-blobs collections and shows a directory index for them. It also does file type detection. This is an extension of the iroh blobs gateway from [iroh-examples].
+
+<Note>
+We could build a service worker to verify the data inside the browser process.
+
+Instead we verify the data inside the gateway.
+
+It is software that you have to trust, whether it lives in the browser process or elsewhere doesn't matter much.
+</Note>
+
+With these two components in place we can browse content-addressed data.
+
+![The local iroh gateway displaying a content-addressed movie directory with file sizes, hashes, and download links.](/blog/iroh-global-content-discovery/content-addressed-browsing.png)
+
+## Names
+
+Now we have a mechanism to publish and consume content-addressed data. But we don't have a way to refer to *mutable* data. You could use `blake3.net` links from an existing website, but for that you need a registrar and a hoster, so it is not the permissionless publishing we are after.
+
+Fortunately a permissionless DNS system already exists, [pkarr]. We [have been using it] for years for endpoint address lookup. So we reserved another domain `pkarr.net` and added a rewrite rule to the plugin and pkarr support to the gateway.
+
+A pkarr link has the format `<name>.pkarr.net`, where `name` is the [zbase32] encoding of an Ed25519 public key. The plugin rewrites it to `<name>.pkarr.localhost:<port>`. The gateway will then resolve the pkarr record and either perform a redirect or directly serve content-addressed data if the pkarr record links to `hash.blake3.net`.
+
+<div className="not-prose mx-auto my-8 max-w-2xl">
+  <ThemeImage
+    lightSrc="/animations/pkarr-link-rewrite.svg?v=2"
+    darkSrc="/animations/pkarr-link-rewrite-dark.svg?v=2"
+    width={900}
+    height={260}
+    alt="The browser plugin keeps the public key unchanged while rewriting https://uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio.pkarr.net to http://uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio.pkarr.localhost:1234."
+    className="w-full h-auto"
+  />
+</div>
+
+<Note>If you are familiar with IPFS, this is very similar to [IPNS]. I even did a little experiment called [Iroh Pkarr Naming System]</Note>
+
+The `pkarr-publish-resolve` example in [iroh-content-discovery] demonstrates the whole workflow: generate a keypair, publish a blob and its name, then resolve the name, discover a provider, and download the verified content from a separate client.
+
+```sh
+cargo run --quiet -p iroh-mainline-endpoint-discovery --example pkarr-publish-resolve -- --once
+```
+
+```text
+[1/5] Prepare content and identity
+  Generated a keypair. Use --key-file to keep this name.
+  Name: https://uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio.pkarr.net/
+  Blob: https://577jw6j7bjue44tzj8cpucwchh96dnhbhjfkpdd7eymqbaoxf3uo.blake3.net/
+  Serving b60a5a944d97eeb82fb1bcbed93ff4bef73cb09ccd348993e04db509f805b74d
+
+[2/5] Publish the endpoint mapping and announce the blob
+  Endpoint mapping and provider announcement published.
+
+[3/5] Publish the signed Pkarr name
+  Name now points to the blob hash.
+
+[4/5] Resolve the name from an independent DHT client
+  Verified signed record. Target:
+  577jw6j7bjue44tzj8cpucwchh96dnhbhjfkpdd7eymqbaoxf3uo.blake3.net
+
+[5/5] Discover a provider and download the content
+  Mainline infohash: f7d03c142bd009d4dbe98c0de7aed925e22eb9eb
+  Provider: 217e9396a7780609a4562e5d022004657d424fb8e605edaad57f5b8bb92be4e3
+  Provider: b60a5a944d97eeb82fb1bcbed93ff4bef73cb09ccd348993e04db509f805b74d
+
+Downloaded and BLAKE3-verified 35 bytes in 8.24s.
+Content:
+  hello from a Pkarr-named iroh blob
+```
+
+## Publishing
+
+Traditional website publishing just means copying your files to a directory on a server. But for content-addressed data and permissionless pkarr DNS records, *you* are the publisher.
+
+So we wrote a small tool that simplifies publishing. 
+
+---
+
+# Bittorrent limitations
+
+Bittorrent works great in many cases *because* of the limitations. But for iroh one limitat
+
+- The DHT protocol is unencrypted, so it can be easily recognized, tracked, and blocked by network infrastructure.
+
+- A provider needs a publicly reachable IP address to be dialable at all, either from an actual public IP, port mapping, or a permissive full cone NAT.
+
+  Bittorrent works around this by using a [hole punching extension], which works very well except for very restrictive NATs.
+
+- Neither DHT nodes nor providers have a stable cryptographic identity that can be used for long-term reputation.
+
+- Both DHT nodes and providers are addressed by public IP, which can change frequently in case of providers behind NATs.
+
+- The transfer protocol itself itself has some minor inefficiencies, such as the inability to validate downloads before completing a chunk.
+
+- The keyspace is 20 bytes, so larger keys such as Ed25519 public keys or modern cryptographic hashes must first be mapped into the keyspace using an additional SHA1 hash. The original key is only available if it is included in the stored record, as in BEP 44.
+
+Even with all these limitations, it would probably not be worth it to implement an entirely new DHT. 
+
+---
+
+What iroh does give us is a solid foundation to solve the problem: Fast direct connections for bulk transfers and 0-rtt for very lightweight short interactions for queries.
+
+On top of iroh, iroh-blobs provides us very efficient content-addressed streaming of blobs of arbitrary size.
+
+But blobs is a point to point protocol that does not attempt to solve content discovery. Content discovery is left as an exercise for the reader.
+
+# Food and shelter
+
+What blobs needs to work is the following information: which iroh endpoints that support the blobs ALPN host a certain BLAKE3 hash? Depending on the content this can either be a single digit number of nodes, or millions.
+
+Once you have this info, you somehow choose a number of blobs to download from, hand them to blobs, and it will do the rest.
+
+For endpoint address lookup, we use the mainline DHT. Sadly we can't use the mainline DHT for content discovery.
+
+The keyspace of mainline is just 20 bytes - not enough for a BLAKE3 hash - but that is not the main limitation. In BEP 44 we store data for a 32 byte Ed25519 public key, and the infohash is just the SHA1 hash of that key. We could do the same for BLAKE3 hashes. The main limitation is the following: mainline stores just the public ip address of providers for each 20 byte infohash, and we would need to store an endpoint id.
+
+So what we would need is a system similar to mainline, but with an extension that allows storing endpoint ids instead of / in addition to provider ip addresses. Such an extension is technically possible, but unlikely to be adopted any time soon.
+
+# Why was the amino DHT so slow
+
+If you have ever interacted with the IPFS DHT, you are probably traumatized by things either not working at all or being extremely slow. I know I was. But given the excellent speed of mainline for iroh endpoint address lookup, this doesn't seem to be a fundamental limit of DHTs.
+
+[bencode]: https://www.bittorrent.org/beps/bep_0003.html#bencoding
+[^provider-port]: Technically, you can choose the port in an `announce_peer` request. But that gives you only 16 bits, which is not enough to store, for example, a 32-byte iroh `EndpointId`.
+
+[metadata exchange protocol]: https://www.bittorrent.org/beps/bep_0009.html
+[address validation token]: /blog/address-validation-tokens
+[hole punching extension]: https://www.bittorrent.org/beps/bep_0055.html
+
+[zbase32]: https://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
+[pkarr]: https://pkarr.org
+[have been using it]: /blog/iroh-global-node-discovery
+[iroh-content-discovery]: https://github.com/n0-computer/iroh-content-discovery
+[Iroh Pkarr Naming System]: https://github.com/n0-computer/iroh-experiments/tree/main/iroh-pkarr-naming-system
+[IPNS]: https://docs.ipfs.tech/concepts/ipns/
+
+[DHT]: https://en.wikipedia.org/wiki/Distributed_hash_table
+
+[iroh-examples]: https://github.com/n0-computer/iroh-examples
+
+[^endgame]: In *endgame mode*, it may request the same remaining blocks from multiple peers and use whichever responses arrive first.
+
+[BEP 44]: https://www.bittorrent.org/beps/bep_0044.html
+
+[^address-validation]: This mechanism is similar to the [address validation token] in QUIC.
+
+[IPFS]: https://ipfs.tech
+
+[BLAKE3 verified streaming]: https://github.com/oconnor663/bao#readme
+
+[BLAKE3 and Bao deep dive]: https://www.youtube.com/watch?v=nk4nefmguZk
+
+[discover peers for a gossip topic]: https://github.com/n0-computer/iroh-content-discovery/blob/main/iroh-mainline-endpoint-discovery/examples/gossip.rs
+
+[`udp-addr-index`]: https://github.com/n0-computer/iroh-content-discovery/tree/main/udp-addr-index
+
+[sendme]: https://www.iroh.computer/sendme

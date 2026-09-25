@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 570" role="img" aria-labelledby="title desc">
+<title id="title">Content discovery with Mainline and an address index</title>
+<desc id="desc">Bob and Carol publish signed address-to-endpoint mappings to the address index service and announce the same content hash to Mainline. Alice queries Mainline for provider addresses, then asks the address index service for their candidate endpoint IDs.</desc>
+<circle cx="95" cy="115" r="66" fill="#d1d5db"/>
+<circle cx="165" cy="91" r="76" fill="#d1d5db"/>
+<circle cx="245" cy="94" r="87" fill="#d1d5db"/>
+<circle cx="320" cy="120" r="67" fill="#d1d5db"/>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.03571428571428571;0.04107142857142857;0.08928571428571429;0.09464285714285714;1.0"/><path d="M 120 400 Q 239.0 58 468 88" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.10714285714285714;0.1125;0.16071428571428573;0.1660714285714286;1.0"/><path d="M 450 400 Q 404.0 58 468 88" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.21428571428571427;0.21964285714285717;0.26785714285714285;0.27321428571428574;1.0"/><path d="M 120 400 Q 112.5 80 215 110" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.2857142857142857;0.2910714285714286;0.3392857142857143;0.34464285714285714;1.0"/><path d="M 450 400 Q 277.5 80 215 110" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.39285714285714285;0.39821428571428574;0.5321428571428571;0.5375;1.0"/><path d="M 780 400 Q 442.5 80 215 110" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.6071428571428571;0.6124999999999999;0.7464285714285713;0.7517857142857142;1.0"/><path d="M 780 400 Q 569.0 58 468 88" fill="none" stroke="#9ca3af" stroke-width="1.3"/></g>
+<g id="bob-register"><animateMotion path="M 120 400 Q 239.0 58 468 88" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.03571428571428571;0.08928571428571429;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.03571428571428571;0.04107142857142857;0.08392857142857144;0.08928571428571429;1.0"/><circle r="5" fill="#15803d"/></g></g>
+<g id="carol-register"><animateMotion path="M 450 400 Q 404.0 58 468 88" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.10714285714285714;0.16071428571428573;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.10714285714285714;0.1125;0.15535714285714283;0.16071428571428573;1.0"/><circle r="5" fill="#d97706"/></g></g>
+<g id="bob-announce"><animateMotion path="M 120 400 Q 112.5 80 215 110" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.21428571428571427;0.26785714285714285;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.21428571428571427;0.21964285714285717;0.2625;0.26785714285714285;1.0"/><circle r="5" fill="#15803d"/></g></g>
+<g id="carol-announce"><animateMotion path="M 450 400 Q 277.5 80 215 110" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2857142857142857;0.3392857142857143;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.2857142857142857;0.2910714285714286;0.3339285714285714;0.3392857142857143;1.0"/><circle r="5" fill="#d97706"/></g></g>
+<g id="alice-get-peers"><animateMotion path="M 780 400 Q 442.5 80 215 110" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.39285714285714285;0.44642857142857145;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.39285714285714285;0.39821428571428574;0.44107142857142856;0.44642857142857145;1.0"/><circle r="5" fill="#2563eb"/></g></g>
+<g id="bob-address"><animateMotion path="M 215 110 Q 442.5 80 780 400" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4642857142857143;0.5178571428571429;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.4642857142857143;0.46964285714285714;0.5125;0.5178571428571429;1.0"/><circle r="5" fill="#15803d"/></g></g>
+<g id="carol-address"><animateMotion path="M 215 110 Q 442.5 80 780 400" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.4785714285714286;0.5321428571428571;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.4785714285714286;0.48392857142857143;0.5267857142857143;0.5321428571428571;1.0"/><circle r="5" fill="#d97706"/></g></g>
+<g id="alice-index-query"><animateMotion path="M 780 400 Q 569.0 58 468 88" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6071428571428571;0.6607142857142857;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.6071428571428571;0.6124999999999999;0.6553571428571429;0.6607142857142857;1.0"/><circle r="5" fill="#2563eb"/></g></g>
+<g id="bob-endpoint"><animateMotion path="M 468 88 Q 569.0 58 780 400" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6785714285714286;0.7321428571428571;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.6785714285714286;0.6839285714285713;0.7267857142857144;0.7321428571428571;1.0"/><circle r="5" fill="#15803d"/></g></g>
+<g id="carol-endpoint"><animateMotion path="M 468 88 Q 569.0 58 780 400" dur="28s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.6928571428571428;0.7464285714285713;1"/><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.6928571428571428;0.6982142857142856;0.7410714285714286;0.7464285714285713;1.0"/><circle r="5" fill="#d97706"/></g></g>
+<circle cx="215" cy="110" r="4" fill="#6366f1"/>
+<text x="215" y="61" fill="#333" font-family="Space Mono, monospace" font-size="17" text-anchor="middle">Mainline DHT</text>
+<rect x="95" y="135" width="240" height="100" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<text x="110" y="156" fill="#333" font-family="Space Mono, monospace" font-size="12" text-anchor="start">infohash: 7c9e…</text>
+<text x="110" y="178" fill="#333" font-family="Space Mono, monospace" font-size="11" text-anchor="start">providers:</text>
+<rect x="468" y="65" width="64" height="66" rx="3" fill="#eee" stroke="#888" stroke-width="1.5"/>
+<circle cx="476" cy="77" r="1.6" fill="#888"/>
+<circle cx="482" cy="77" r="1.6" fill="#888"/>
+<line x1="492" y1="72" x2="492" y2="82" stroke="#888"/>
+<line x1="497" y1="72" x2="497" y2="82" stroke="#888"/>
+<line x1="502" y1="72" x2="502" y2="82" stroke="#888"/>
+<line x1="507" y1="72" x2="507" y2="82" stroke="#888"/>
+<line x1="512" y1="72" x2="512" y2="82" stroke="#888"/>
+<line x1="517" y1="72" x2="517" y2="82" stroke="#888"/>
+<line x1="470" y1="88" x2="530" y2="88" stroke="#888"/>
+<circle cx="476" cy="98" r="1.6" fill="#888"/>
+<circle cx="482" cy="98" r="1.6" fill="#888"/>
+<line x1="492" y1="93" x2="492" y2="103" stroke="#888"/>
+<line x1="497" y1="93" x2="497" y2="103" stroke="#888"/>
+<line x1="502" y1="93" x2="502" y2="103" stroke="#888"/>
+<line x1="507" y1="93" x2="507" y2="103" stroke="#888"/>
+<line x1="512" y1="93" x2="512" y2="103" stroke="#888"/>
+<line x1="517" y1="93" x2="517" y2="103" stroke="#888"/>
+<line x1="470" y1="109" x2="530" y2="109" stroke="#888"/>
+<circle cx="476" cy="119" r="1.6" fill="#888"/>
+<circle cx="482" cy="119" r="1.6" fill="#888"/>
+<line x1="492" y1="114" x2="492" y2="124" stroke="#888"/>
+<line x1="497" y1="114" x2="497" y2="124" stroke="#888"/>
+<line x1="502" y1="114" x2="502" y2="124" stroke="#888"/>
+<line x1="507" y1="114" x2="507" y2="124" stroke="#888"/>
+<line x1="512" y1="114" x2="512" y2="124" stroke="#888"/>
+<line x1="517" y1="114" x2="517" y2="124" stroke="#888"/>
+<text x="650" y="32" fill="#333" font-family="Space Mono, monospace" font-size="17" text-anchor="middle">Address index service</text>
+<path d="M 556 88 L 540 98 L 556 108" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="556" y="57" width="334" height="91" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<text x="568" y="80" fill="#333" font-family="Space Mono, monospace" font-size="12" text-anchor="start">UDP host:port → EndpointId</text>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.26785714285714285;0.27321428571428574;0.9285714285714286;0.9339285714285713;1.0"/><text x="121" y="201" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="start">83.149.27.64:6881</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.08928571428571429;0.09464285714285714;0.9285714285714286;0.9339285714285713;1.0"/><text x="568" y="107" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="start">83.149.27.64:6881 → b7a1…</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.3392857142857143;0.34464285714285714;0.9285714285714286;0.9339285714285713;1.0"/><text x="121" y="224" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="start">176.58.93.21:6881</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.16071428571428573;0.1660714285714286;0.9285714285714286;0.9339285714285713;1.0"/><text x="568" y="130" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="start">176.58.93.21:6881 → c84d…</text></g>
+<rect x="98" y="400" width="44" height="66" rx="7" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+<rect x="104" y="407" width="32" height="45" rx="3" fill="none" stroke="#6366f1"/>
+<circle cx="120" cy="459" r="2" fill="#888"/>
+<text x="120" y="484" fill="#15803d" font-family="Space Mono, monospace" font-size="14" text-anchor="middle">Bob</text>
+<text x="120" y="503" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">83.149.27.64:6881</text>
+<text x="120" y="523" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">EndpointId: b7a1…</text>
+<rect x="758" y="400" width="44" height="66" rx="7" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+<rect x="764" y="407" width="32" height="45" rx="3" fill="none" stroke="#6366f1"/>
+<circle cx="780" cy="459" r="2" fill="#888"/>
+<text x="780" y="484" fill="#2563eb" font-family="Space Mono, monospace" font-size="14" text-anchor="middle">Alice</text>
+<text x="780" y="503" fill="#2563eb" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">91.203.42.17:51432</text>
+<text x="780" y="523" fill="#2563eb" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">EndpointId: a19f…</text>
+<rect x="428" y="400" width="44" height="66" rx="7" fill="#eee" stroke="#6366f1" stroke-width="1.5"/>
+<rect x="434" y="407" width="32" height="45" rx="3" fill="none" stroke="#6366f1"/>
+<circle cx="450" cy="459" r="2" fill="#888"/>
+<text x="450" y="484" fill="#d97706" font-family="Space Mono, monospace" font-size="14" text-anchor="middle">Carol</text>
+<text x="450" y="503" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">176.58.93.21:6881</text>
+<text x="450" y="523" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="middle">EndpointId: c84d…</text>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.02142857142857143;0.026785714285714284;0.17142857142857143;0.1767857142857143;1.0"/><rect x="160" y="255" width="280" height="36" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="300" y="278" fill="#15803d" font-family="Space Mono, monospace" font-size="12" text-anchor="middle">Publish signed mapping</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.19999999999999998;0.20535714285714285;0.35000000000000003;0.35535714285714287;1.0"/><rect x="160" y="255" width="280" height="36" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="300" y="278" fill="#15803d" font-family="Space Mono, monospace" font-size="12" text-anchor="middle">announce_peer(7c9e…)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.37857142857142856;0.38392857142857145;0.5321428571428571;0.5375;1.0"/><rect x="550" y="255" width="280" height="36" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="690" y="278" fill="#2563eb" font-family="Space Mono, monospace" font-size="12" text-anchor="middle">get_peers(7c9e…)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.5928571428571429;0.5982142857142857;0.7464285714285713;0.7517857142857142;1.0"/><rect x="550" y="255" width="280" height="36" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="690" y="278" fill="#2563eb" font-family="Space Mono, monospace" font-size="12" text-anchor="middle">Look up provider addresses</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.5321428571428571;0.5375;0.9285714285714286;0.9339285714285713;1.0"/><rect x="670" y="308" width="220" height="78" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="682" y="330" fill="#333" font-family="Space Mono, monospace" font-size="11" text-anchor="start">providers:</text><text x="693" y="351" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="start">83.149.27.64:6881</text><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.75;0.7553571428571428;0.9285714285714286;0.9339285714285713;1.0"/><text x="815" y="351" fill="#15803d" font-family="Space Mono, monospace" font-size="11" text-anchor="start">→ b7a1…</text></g><text x="693" y="374" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="start">176.58.93.21:6881</text><g opacity="0"><animate attributeName="opacity" dur="28s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0.0;0.75;0.7553571428571428;0.9285714285714286;0.9339285714285713;1.0"/><text x="815" y="374" fill="#d97706" font-family="Space Mono, monospace" font-size="11" text-anchor="start">→ c84d…</text></g></g>
+<rect x="0" y="567" width="0" height="3" fill="#9ca3af"><animate attributeName="width" from="0" to="900" dur="28s" repeatCount="indefinite"/></rect>
+</svg>
