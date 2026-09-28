@@ -33,7 +33,7 @@ This blog post covers our last two releases: 1.2 and 1.3, which introduce a few 
 
 ## iroh v1.2.0
 ### n0-dns-resolver
-We've reduced our binary size by more than 10% by switching our DNS resolver from `hickory-resolver` to `n0-dns-resolver`. This lets `iroh` run on even smaller devices. An optimized build has a binary size of around 4.8MB.
+We've reduced our binary size by more than 10% by switching our DNS resolver from `hickory-resolver` to `n0-dns-resolver`. This lets `iroh` run on even smaller devices. For example, `iroh` now works on ESP32 with 4 MiB of flash, out of the box.
 
 We've also added features to make DNS resolution more configurable.
 
@@ -74,26 +74,26 @@ while let Some(relays) = status.next().await {
 See [PR #4501] for more details.
 
 ## iroh v1.3.0
-### APIs for batching datagrams
+### APIs For Batching Datagrams
 `noq`, the underlying QUIC implementation that `iroh` uses, added a way to batch sending and receiving datagrams.
 
 Using `iroh::endpoint::Connection::send_many_datagrams` and `iroh::endpoint::Connection::read_many_datagrams` gives you a performance boost when sending bursts of datagrams, since the entire batch is handled with one lock and one driver wake-up.
 
 Thank you contributor [ifdario][if], see [PR #4547] for more details.
 
-### Order your ALPNs
+### Order Your ALPNs
 Previously, we held the configured protocols in the `Router` in a `BTreeMap`, so ALPNs were sent in alphabetical order. This means that if you had `myproto/1` and `myproto/2`, the first would always win out in protocol negotiation.
 
 Now, the protocols are ordered in the order they are added to the `iroh::protocol::Router`, so register your preferred protocol first.
 
 See [PR #4533] for more details.
 
-### Fix blocked actor
+### Fix Blocked Actor
 Thanks to contributor [William-Herly][wh] for fixing a bug where a full relay send queue could stall a connection while sending its Initial packet.
 
 See [PR #4512] for more details.
 
-## What's next?
+## What's Next?
 
 We expect the next few releases to keep this rhythm: happy maintenance releases every few weeks, with small fixes for corner cases and invisible improvements. However, we are gearing up to add some new, bigger features to `iroh` before the end of the year. As always, the full details are in the changelogs for [iroh 1.2.0](https://github.com/n0-computer/iroh/releases/tag/v1.2.0) and [iroh 1.3.0](https://github.com/n0-computer/iroh/releases/tag/v1.3.0).
 
