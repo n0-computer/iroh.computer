@@ -73,7 +73,7 @@ BitTorrent works by creating a `.torrent` file that contains information about t
 
 The transfer protocol allows requests for ranges within pieces, but you can only validate a piece **after** you have downloaded it completely and computed its SHA-1 hash.
 
-I don't want to dwell on this too long, but I think that [BLAKE3 verified streaming] is a superior replacement for the transfer protocol.
+I don't want to dwell on this too long, but I think that [BLAKE3 verified streaming] is a superior replacement for the transfer protocol. With BLAKE3, we only need a single root hash, and neither a `piece length` parameter nor hashes of the individual pieces. This is what allows iroh-blobs to validate any piece of a large blob without needing intermediate hashes.
 
 For a visual explanation of how it works, see my [BLAKE3 and Bao deep dive], which covers verified streaming, outboard encoding, and range requests.
 
