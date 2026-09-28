@@ -263,7 +263,9 @@ With these two components in place we can browse content-addressed data.
 
 Now we have a mechanism to publish and consume content-addressed data. But we don't have a way to refer to *mutable* data. You could use `blake3.net` links from an existing website, but for that you need a registrar and a hoster, so it is not the permissionless publishing we are after.
 
-Fortunately a permissionless DNS system already exists, [pkarr]. We [have been using it] for years for endpoint address lookup. So we reserved another domain `pkarr.net` and added a rewrite rule to the plugin and pkarr support to the gateway.
+Fortunately a permissionless DNS system already exists, [pkarr]. We [have been using it] for years for endpoint address lookup. Pkarr is a standard to publish a DNS record for a keypair, so only the owner of the secret key can publish new versions. The records are published on mainline DHT, which fits our setup neatly.
+
+To make this compatible with our browser plus local gateway usage scenario, we reserved another domain `pkarr.net` and added a rewrite rule to the plugin and pkarr support to the gateway.
 
 A pkarr link has the format `<name>.pkarr.net`, where `name` is the [zbase32] encoding of an Ed25519 public key. The plugin rewrites it to `<name>.pkarr.localhost:<port>`. The gateway will then resolve the pkarr record and either perform a redirect or directly serve content-addressed data if the pkarr record links to `hash.blake3.net`.
 
