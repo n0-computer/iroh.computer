@@ -164,7 +164,7 @@ So now let's take a look at the overall workflow when announcing and discovering
 
 ## Announce
 
-We want to associate the UDP socket of `n0_mainline` with our `EndpointId`, so we publish a signed record containing our `EndpointId` via this UDP socket. `n0_mainline` has a mechanism to publish arbitrary UDP packets on its socket and to intercept incoming UDP packets. This needs to happen at regular intervals as well as immediately when the public `host:port` pair changes.
+We want to associate the UDP socket of `n0_mainline` with our `EndpointId`. As outlined above, we use an UDP addr index server for this: we publish a signed record containing our `EndpointId` via the same UDP socket to the addr index server. `n0_mainline` has a mechanism to publish arbitrary UDP packets on its socket and to intercept incoming UDP packets. This needs to happen at regular intervals as well as immediately when the public `host:port` pair changes.
 
 For the announce itself: the mainline keyspace is 20 bytes, usually used to announce SHA-1 hashes of the info section of a .torrent file. We want to announce BLAKE3 hashes, so we first compute the SHA-1 hash of the BLAKE3 hash. Then we use `announce_peer` to announce that we are providing data for that hash. These announces also need 
 
