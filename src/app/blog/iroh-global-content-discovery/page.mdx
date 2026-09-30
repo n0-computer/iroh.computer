@@ -6,7 +6,8 @@ export const post = {
   author: 'Rüdiger Klaehn',
   date: '2026-09-25',
   title: 'Iroh global content discovery',
-  description: 'How to discover content globally with iroh.',
+  description: 'How to discover content globally with iroh using BitTorrent mainline DHT.'
+
 }
 
 export const metadata = {
@@ -17,7 +18,7 @@ export const metadata = {
     description: post.description,
     images: [
       {
-        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        url: `/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/iroh-global-content-discovery/content-discovery-workflow.png')}`,
         width: 1200,
         height: 630,
         alt: post.title,
@@ -26,17 +27,25 @@ export const metadata = {
     ],
     type: 'article',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [`/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/iroh-global-content-discovery/content-discovery-workflow.png')}`],
+  },
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-What got me excited about [IPFS] many years ago briefly after it was announced was the following use case: publish a personal website, blog post, or political pamphlet, and as long as enough people are interested in the content, it will remain available globally.
+What got me excited about [IPFS] many years ago, briefly after it was announced,
+was being able to publish a personal website, blog post, or political
+pamphlet and have it remain available globally as long as enough people are interested in the content. As governments have been more sophisticated in their firewalling
+methods, this use case for circumvention tools and permissionless global content discovery is still incredibly relevant. 
 
-Iroh started as an IPFS implementation, so initially we also tried to solve this problem. But when we [parted ways with IPFS compatibility](/blog/a-new-direction-for-iroh) and later [narrowed down the scope](/blog/smaller-is-better) of what iroh is to direct connections dialed by key, we focused on other things.
-
-But that doesn't mean that I am no longer interested in the problem. I did some [experiments in the past], and now that iroh has reached 1.0 we should take another look.
-
-Recent events have added some urgency to this. IPFS [shipyard is shutting down](https://ipshipyard.com/blog/2026-the-end-of-ipfs-at-shipyard/). This does not mean that IPFS will stop working, but it does not bode well for the future of the project.
+Recent events have added some urgency to this. IPFS [shipyard is shutting
+down](https://ipshipyard.com/blog/2026-the-end-of-ipfs-at-shipyard/). This does
+not mean that IPFS will stop working, but it does not bode well for the future
+of the project.
 
 # The state of the art
 
@@ -73,7 +82,13 @@ BitTorrent works by creating a `.torrent` file that contains information about t
 
 The transfer protocol allows requests for ranges within pieces, but you can only validate a piece **after** you have downloaded it completely and computed its SHA-1 hash.
 
-I don't want to dwell on this too long, but I think that [BLAKE3 verified streaming] is a superior replacement for the transfer protocol. With BLAKE3, we only need a single root hash, and neither a `piece length` parameter nor hashes of the individual pieces. This is what allows iroh-blobs to validate any piece of a large blob without needing intermediate hashes.
+I don't want to dwell on this too long, but I think that [BLAKE3 verified
+streaming] is a superior replacement for the transfer protocol. We implemented a
+protocol called [iroh-blobs] that uses BLAKE3 verified streaming for sharing
+blobs of data over iroh connections. With BLAKE3, we only need a single root
+hash, and neither a `piece length` parameter nor hashes of the individual
+pieces. This is what allows iroh-blobs to validate any piece of a large blob
+without needing intermediate hashes.
 
 For a visual explanation of how it works, see my [BLAKE3 and Bao deep dive], which covers verified streaming, outboard encoding, and range requests.
 
@@ -93,7 +108,7 @@ This works by computing the SHA-1 hash of the `info` section, which includes the
   alt="Bob and Carol announce the same infohash to DHT nodes. Each node keeps both provider addresses in a list. Alice uses get_peers to retrieve the providers."
 />
 
-Many more modern protocols also use DHTs for content discovery. But Mainline works extremely well compared to many modern alternatives. So let's take a look at why.
+Many more modern protocols also use DHTs for content discovery. But Mainline works extremely well compared to many modern alternatives. It is also an extremely large and stable public DHT deployment, so it is unlikely to go away any time soon. So let's take a look at why.
 
 ### Extreme minimalism
 
@@ -166,7 +181,7 @@ So now let's take a look at the overall workflow when announcing and discovering
 
 We want to associate the UDP socket of `n0_mainline` with our `EndpointId`. As outlined above, we use an UDP addr index server for this: we publish a signed record containing our `EndpointId` via the same UDP socket to the addr index server. `n0_mainline` has a mechanism to publish arbitrary UDP packets on its socket and to intercept incoming UDP packets. This needs to happen at regular intervals as well as immediately when the public `host:port` pair changes.
 
-For the announce itself: the mainline keyspace is 20 bytes, usually used to announce SHA-1 hashes of the info section of a .torrent file. We want to announce BLAKE3 hashes, so we first compute the SHA-1 hash of the BLAKE3 hash. Then we use `announce_peer` to announce that we are providing data for that hash. These announces also need 
+For the announce itself: the mainline keyspace is 20 bytes, usually used to announce SHA-1 hashes of the info section of a .torrent file. We want to announce BLAKE3 hashes, so we first compute the SHA-1 hash of the BLAKE3 hash. Then we use `announce_peer` to announce that we are providing data for that hash. These announces also need to happen at regular intervals.
 
 <Note>
 You might wonder if SHA-1 is still safe for this purpose. Its collision resistance is broken, but there is no known practical preimage attack. More importantly, the DHT is just a best-effort mechanism for finding candidate providers. We verify downloaded data against the original BLAKE3 hash, so a misleading DHT result can waste time, but cannot make us accept the wrong content.
@@ -239,7 +254,7 @@ We don't want to run an actual gateway at `blake3.net`. That would be a *very ba
 
 Instead we want the browser to interpret these links as something that can be resolved in a different way. So we wrote a simple browser plugin that just rewrites these links to `http://<hash>.blake3.localhost:<port>` where the port is configurable in the plugin.
 
-The plugin does not attempt to do anything with the actual content.
+That's all the plugin does.
 
 It currently works for brave, chrome and firefox.
 
@@ -394,6 +409,8 @@ But the current system is certainly *better than nothing*, and we can do all the
 [IPFS]: https://ipfs.tech
 
 [BLAKE3 verified streaming]: https://github.com/oconnor663/bao#readme
+
+[iroh-blobs]: https://docs.iroh.computer/protocols/blobs
 
 [BLAKE3 and Bao deep dive]: https://www.youtube.com/watch?v=nk4nefmguZk
 
