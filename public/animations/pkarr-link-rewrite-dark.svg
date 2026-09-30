@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" role="img" aria-labelledby="title desc">
+<title id="title">The browser plugin rewrites a pkarr link</title>
+<desc id="desc">The public key remains unchanged as https://uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio.pkarr.net becomes http://uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio.pkarr.localhost:1234. Port 1234 is an example of the configured local gateway port.</desc>
+<rect x="10" y="10" width="880" height="240" rx="12" fill="#18181b" stroke="#52525b"/>
+<text x="35" y="43" font-family="Space Mono, monospace" font-size="13" fill="#a1a1aa">Browser</text>
+<rect x="35" y="68" width="830" height="61" rx="8" fill="#27272a" stroke="#52525b"/>
+<g><animate attributeName="opacity" values="1;1;0;0;1;1" keyTimes="0.0;0.31666666666666665;0.35000000000000003;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="55" y="105" font-family="Space Mono, monospace" font-size="15" fill="#a1a1aa">https://</text></g>
+<g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0;0.35000000000000003;0.3833333333333333;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="64" y="105" font-family="Space Mono, monospace" font-size="15" fill="#a1a1aa">http://</text></g>
+<text x="127" y="105" font-family="Space Mono, monospace" font-size="15" fill="#4ade80">uinsazmmp47ejo8gs5dbc6rfxya14cgqhxmdqin8ae55w5aqnsio</text>
+<text x="595" y="105" font-family="Space Mono, monospace" font-size="15" fill="#a5b4fc">.pkarr</text>
+<g><animate attributeName="opacity" values="1;1;0;0;1;1" keyTimes="0.0;0.31666666666666665;0.35000000000000003;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="649" y="105" font-family="Space Mono, monospace" font-size="15" fill="#a5b4fc">.net</text></g>
+<g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0;0.35000000000000003;0.3833333333333333;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="649" y="105" font-family="Space Mono, monospace" font-size="15" fill="#a5b4fc">.localhost</text><text x="739" y="105" font-family="Space Mono, monospace" font-size="15" fill="#60a5fa">:1234</text></g>
+<path d="M 127 138 V 146 H 595 V 138" fill="none" stroke="#4ade80"/>
+<text x="127" y="168" font-family="Space Mono, monospace" font-size="12" fill="#4ade80">Ed25519 public key</text>
+<g><animate attributeName="opacity" values="1;1;0;0;1;1" keyTimes="0.0;0.31666666666666665;0.35000000000000003;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="55" y="218" font-family="Space Mono, monospace" font-size="13" fill="#a1a1aa">Shareable link</text></g>
+<g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0;0.35000000000000003;0.3833333333333333;0.875;0.9166666666666666;1.0" dur="12s" repeatCount="indefinite"/><text x="55" y="218" font-family="Space Mono, monospace" font-size="13" fill="#60a5fa">Local gateway</text><text x="240" y="218" font-family="Space Mono, monospace" font-size="12" fill="#a1a1aa">1234 = configured gateway port</text></g>
+</svg>
