@@ -51,7 +51,7 @@ of the project.
 
 When we had to solve hole punching, we started looking at existing systems and chose the best open source system as an initial starting point for our own implementation. So let's do the same for global content discovery.
 
-There are a number of projects trying to solve this problem. But one project stands above all others: BitTorrent. It *just works* and has done so for over two decades.
+There are a number of projects trying to solve this problem. But one project stands above all others: [BitTorrent](https://www.bittorrent.org/). It *just works* and has done so for over two decades.
 
 So let's take a look at what makes BitTorrent the current leader in permissionless global content discovery. BitTorrent has a relatively simple protocol for blob transfer and a [DHT] called [*Mainline*](https://www.bittorrent.org/beps/bep_0005.html) for global content discovery.
 
@@ -92,7 +92,7 @@ without needing intermediate hashes.
 
 For a visual explanation of how it works, see my [BLAKE3 and Bao deep dive], which covers verified streaming, outboard encoding, and range requests.
 
-We still have some work to do to make multiprovider downloads of single blobs efficient, but the streaming protocol itself with its fine grained validation is superior to the bittorrent transfer protocol.
+We still have some work to do to make multiprovider downloads of single blobs efficient, but the streaming protocol itself with its fine grained validation is superior to the BitTorrent transfer protocol.
 
 ## DHT
 
@@ -116,7 +116,7 @@ The mainline protocol takes into account that a DHT operates across an *extremel
 
 There are a number of other limitations compared to modern DHT implementations that all serve an important purpose:
 
-- the data stored for a provider is just the public `host:port` pair of the provider *as seen from the DHT node*. So there is no user defined information in a provider record.[^provider-port]
+- the data stored for a provider is just the public `host:port` pair of the provider *as seen from the DHT node*. There is no user defined information in a provider record.[^provider-port]
 
 - For newer extensions like [BEP 44] the data is fully self-contained and verifiable, either a tiny piece of data or a signed record, both limited to fit into a typical MTU.
 
@@ -160,7 +160,7 @@ The current implementation keeps the map purely in memory. Records have to be up
 The address index service does not depend in any way on iroh. It is infrastructure that could also be useful for non iroh applications using mainline.
 
 <Note>
-In the long term I would love the address index service function to be handled by a bittorrent mainline extension. It is simple, generically useful, and not specific to iroh.
+In the long term I would love the address index service function to be handled by a BitTorrent Mainline extension. It is simple, generically useful, and not specific to iroh.
 </Note>
 
 # What's in the record?
@@ -360,7 +360,7 @@ Traditional website publishing just means copying your files to a directory on a
 
 So we wrote a tool iroh-share that simplifies publishing. You can think of it as [sendme], but running as a daemon with a separate user interface.
 
-Both content-addressed data and pkarr records need continuous announcements, so you want to run this daemon on a small box in your attic that is on 24/7, or a vm in the cloud.
+Both content-addressed data and pkarr records need continuous announcements, so you want to run this daemon on a small box in your attic that is on 24/7, or a vm in the cloud. 
 
 # Recap
 
