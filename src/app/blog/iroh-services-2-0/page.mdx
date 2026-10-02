@@ -4,7 +4,7 @@ export const post = {
   draft: false,
   author: 'Rae McKelvey',
   date: '2026-10-02',
-  title: 'iroh-services 2.0: Groups and attributes',
+  title: 'Group your endpoints and deep dive into attributes',
   description:
     'Organize your endpoints with named groups and custom attributes in iroh-services 2.0.',
 }
@@ -17,14 +17,25 @@ export const metadata = {
     description: post.description,
     images: [
       {
-        url: `/api/og?title=Blog&subtitle=${post.title}`,
-        width: 1200,
-        height: 630,
-        alt: post.title,
+        url: '/blog/iroh-services-2-0/endpoints-groups-attributes.png',
+        width: 1586,
+        height: 713,
+        alt: 'Iroh Services endpoint list with groups and attributes',
         type: 'image/png',
       },
     ],
     type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: post.title,
+    description: post.description,
+    images: [
+      {
+        url: '/blog/iroh-services-2-0/endpoints-groups-attributes.png',
+        alt: 'Iroh Services endpoint list with groups and attributes',
+      },
+    ],
   },
 }
 
