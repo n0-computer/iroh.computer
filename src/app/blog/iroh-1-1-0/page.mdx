@@ -40,13 +40,13 @@ This release includes a few fixes for security issues reported to us by users!
 
 The relay server sends user datagrams between two connected endpoints. As an optimisation, the relay has a message type that allows a batch of datagrams to be delivered at once. Previously, it was possible to craft such a batch of messages that would trigger a bug in the receiver, which would then get stuck in a tight loop, consume 100% cpu and no longer read any datagrams from that relay.
 
-xxx link to report once published
+https://github.com/n0-computer/iroh/security/advisories/GHSA-7cq4-mhxw-xw78
 
 ## Deserialising a `CustomAddr`'s `EndpointAddr` could trigger a panic
 
 The `EndpointAddr` struct supports deserialising with `serde`. It also supports an experimental `CustomAddr` variant. It turns out it was possible to craft an `EndpointAddr` that contained a `CustomAddr` that would trigger an out-of-bounds index operation.
 
-xxx link to report once published
+https://github.com/n0-computer/iroh/security/advisories/GHSA-jx4g-cg2x-jc35
 
 ## UDP datagrams could be directed to unrelated peers
 
@@ -56,7 +56,7 @@ abuse. Receivers of such misdirected datagrams see this as general "internet noi
 
 While entirely harmless, it is also relatively easy for iroh to avoid these useless "noise" packets from flowing over the relay transport.
 
-xxx link to report once published
+https://github.com/n0-computer/iroh/security/advisories/GHSA-vwh7-9883-83xj
 
 ## Relay Rate-Limiting warning
 
