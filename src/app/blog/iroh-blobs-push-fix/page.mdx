@@ -4,7 +4,7 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2026-10-06',
-  title: 'iroh-blobs 0.103.1: push requests were not disabled by default',
+  title: 'iroh-blobs security fix',
   description:
     "A bug in the iroh-blobs event mask allowed any peer to push blobs into a provider's store. Please update.",
 }
@@ -55,17 +55,6 @@ There is no API change, but the behaviour now matches the documentation, so you 
 
 - Push requests are rejected unless you enable them in the event mask.
 - `get_many` and `observe` requests follow their own mode instead of the mode for `get`. If you used `get` to gate access, e.g. to only serve an allowlist of hashes, you need to set the modes for `get_many` and `observe` as well. Otherwise those requests will bypass your checks.
-
-If you actually want to accept push requests, you now have to say so explicitly and decide in your event handler:
-
-```rust
-let mask = EventMask {
-    push: RequestMode::InterceptLog,
-    ..EventMask::ALL_READONLY
-};
-let (events, rx) = EventSender::channel(100, mask);
-// handle ProviderMessage::PushRequestReceived in rx and accept or reject
-```
 
 # Affected versions
 
