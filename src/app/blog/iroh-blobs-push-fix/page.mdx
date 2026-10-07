@@ -1,0 +1,94 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-10-06',
+  title: 'iroh-blobs 0.103.1: push requests were not disabled by default',
+  description:
+    "A bug in the iroh-blobs event mask allowed any peer to push blobs into a provider's store. Please update.",
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+We just released [iroh-blobs 0.103.1][release], together with patch releases for older versions. It fixes a bug that allowed any peer that can connect to a blobs provider to write data into the provider's store. If you run an iroh-blobs provider or use [sendme], please update.
+
+# What went wrong
+
+The iroh-blobs protocol has four request types: *get*, *get many*, *observe* and *push*. The first three only read from the store. Push is different: it allows a remote peer to send you data, which then gets written to your local store.
+
+Since push requests write to the store, they are supposed to be disabled unless you explicitly enable them. The [`EventMask`][eventmask] has a separate mode for each request type, and both `EventMask::DEFAULT` and `EventMask::ALL_READONLY` have `push: RequestMode::Disabled`. The docs say so too.
+
+Unfortunately the code did not do what the docs said. The function that handles incoming requests is shared by all request types, and it always looked at `mask.get`, never at `mask.push`, `mask.get_many` or `mask.observe`. So:
+
+- With `EventMask::DEFAULT`, push requests were silently **accepted**, without even sending an event to the event handler.
+- With `EventMask::ALL_READONLY`, push requests were forwarded to the event handler as `PushRequestReceived`. A handler that approves everything would accept them.
+
+In other words, a provider with the default configuration would accept arbitrary blobs from any peer that can connect to it. The data is content-addressed and verified, so a peer can not *modify* existing blobs. But it can fill up your disk.
+
+<Note>
+Whether you are at risk depends on who can connect to your provider. A push request needs your endpoint id, so a long-running provider with a published endpoint id is the most exposed. If you only share the endpoint id or tickets with trusted parties, the risk is much lower.
+</Note>
+
+# The fix
+
+Each request type now uses its own mode from the event mask ([#270][pr]). Thanks to [@Frando][frando], who wrote the original fix.
+
+There is no API change, but the behaviour now matches the documentation, so you might notice two things:
+
+- Push requests are rejected unless you enable them in the event mask.
+- `get_many` and `observe` requests follow their own mode instead of the mode for `get`. If you used `get` to gate access, e.g. to only serve an allowlist of hashes, you need to set the modes for `get_many` and `observe` as well. Otherwise those requests will bypass your checks.
+
+If you actually want to accept push requests, you now have to say so explicitly and decide in your event handler:
+
+```rust
+let mask = EventMask {
+    push: RequestMode::InterceptLog,
+    ..EventMask::ALL_READONLY
+};
+let (events, rx) = EventSender::channel(100, mask);
+// handle ProviderMessage::PushRequestReceived in rx and accept or reject
+```
+
+# Affected versions
+
+The bug has been there since the provider events refactor in 0.94, so all versions from 0.94.0 up to and including 0.103.0 are affected. We published fixed releases for the most popular versions on crates.io and yanked the corresponding broken versions:
+
+| broken | fixed |
+|---|---|
+| 0.103.0 | 0.103.1 |
+| 0.102.0 | 0.102.1 |
+| 0.101.0 | 0.101.1 |
+| 0.100.0 | 0.100.1 |
+| 0.99.0 | 0.99.1 |
+| 0.97.0 | 0.97.1 |
+
+If you are on an older version, please update to one of the fixed versions.
+
+# Sendme
+
+sendme was affected as well: while `sendme send` was running, anyone with the ticket could push data into the sender's temporary store. The store gets deleted when sendme exits. Please update to [sendme 0.36.1][sendme-release].
+
+[release]: https://docs.rs/iroh-blobs/0.103.1/iroh_blobs/
+[eventmask]: https://docs.rs/iroh-blobs/0.103.1/iroh_blobs/provider/events/struct.EventMask.html
+[pr]: https://github.com/n0-computer/iroh-blobs/pull/270
+[frando]: https://github.com/Frando
+[sendme]: https://github.com/n0-computer/sendme
+[sendme-release]: https://github.com/n0-computer/sendme/releases/tag/v0.36.1
