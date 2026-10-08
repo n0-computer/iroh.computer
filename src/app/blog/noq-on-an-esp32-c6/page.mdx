@@ -34,7 +34,7 @@ This means that [extremely tiny and cheap devices] are now fully compatible with
 <figure className="not-prose mx-auto max-w-sm">
   <img src="/blog/noq-on-an-esp32-c6/xiao-esp32-c5.jpg" width={1400} height={1050} alt="The Seeed Studio XIAO ESP32-C5, a thumb-sized board with a USB-C connector, a shielded module and two buttons" />
   <figcaption className="text-center text-sm opacity-60 mt-2">
-    The Seeed Studio XIAO ESP32-C5, 21 × 17.8 mm. Image: <a href="https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32C5-p-6609.html">Seeed Studio</a>.
+    The Seeed Studio XIAO ESP32-C5: 240 MHz RISC-V, 8 MiB flash, 8 MiB PSRAM, dual-band Wi-Fi 6, 21 × 17.8 mm. Image: <a href="https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32C5-p-6609.html">Seeed Studio</a>.
   </figcaption>
 </figure>
 
@@ -88,7 +88,7 @@ App/part. size:    1,772,608/4,128,768 bytes, 42.93%
 
 **Yes!**
 
-The complete binary including the FreeRTOS operating system is just 1.69 MiB in release profile and 1.46 MiB if we pull out all stops reducing binary size, compared to 3.73 MiB for the same example using full iroh.
+The complete binary including the [FreeRTOS] operating system is just 1.69 MiB in release profile and 1.46 MiB if we pull out all stops reducing binary size, compared to 3.73 MiB for the same example using full iroh.
 
 A large part of this is C code, the operating system and WiFi driver. According to a quick symbol analysis Rust only accounts for about half of the size.
 
@@ -129,3 +129,4 @@ If you have a use case that requires iroh interop on very small embedded devices
 [reach out to us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
 [Discord]: https://discord.com/invite/DpmJgtU7cW
 [pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
+[FreeRTOS]: https://www.freertos.org/
