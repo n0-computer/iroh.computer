@@ -6,7 +6,7 @@ export const post = {
   author: 'Rüdiger Klaehn',
   date: '2026-10-09',
   title: 'Iroh on tiny embedded devices',
-  description: 'How to get QUIC connections even on tiny embedded devices',
+  description: 'How to get mTLS encrypted QUIC connections even on tiny embedded devices',
 }
 
 export const metadata = {
@@ -38,6 +38,8 @@ This means that [extremely tiny and cheap devices] are now fully compatible with
     The Seeed Studio XIAO ESP32-C5: 240 MHz RISC-V, 8 MiB flash, 8 MiB PSRAM, dual-band Wi-Fi 6, 21 × 17.8 mm. Image: <a href="https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32C5-p-6609.html">Seeed Studio</a>.
   </figcaption>
 </figure>
+
+# What if even 4 MiB is too big?
 
 But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for embedded devices. Nevertheless we firmly believe that in 2026 **all communication should be encrypted, even in private networks**.
 
@@ -106,7 +108,9 @@ Echo OK — crates.io iroh <-> ESP32!
 
 ## The cost
 
-Should you do this? In general: **No**. Without dial by key you lose a lot of the magic of iroh. For home IoT devices the fact that you can always connect no matter if you are in the same WiFi, in a different WiFi, or on a mobile network is worth its weight (~2 MiB) in gold. Besides, even tiny and cheap devices support full iroh.
+Should you do this? In general: hard **No**.
+
+Without dial by key you lose a lot of the magic of iroh. For end user IoT devices the fact that you can always connect no matter if you are in the same WiFi, in a different WiFi, or on a mobile network is worth its weight (~2 MiB) in gold. Besides, even tiny and cheap devices support full iroh.
 
 But in a situation where you have a complex device where you have a large number of internal components talking to each other, it is a viable option to get modern encryption even inside the device-internal network.
 
@@ -125,7 +129,7 @@ But in a situation where you have a complex device where you have a large number
 
 Iroh for ESP32 and [Raspberry Pi Pico 2 W] currently compiles using a std environment so we can use the tokio async runtime. In many very deep embedded use cases users want a `no_std` build and even more control about the runtime behaviour.
 
-`no_std` support for iroh is a major project. But just for noq, replacing tokio in favour of [Embassy] and supporting `no_std` is a much more limited project.
+`no_std` support for iroh is a major project. But just for noq, replacing tokio in favour of [Embassy] and supporting `no_std` is a much more limited project. We have a *very experimental* fork of noq that does support embassy.
 
 ## Get in touch
 
