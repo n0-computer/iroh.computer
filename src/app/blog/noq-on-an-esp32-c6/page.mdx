@@ -1,3 +1,4 @@
+import { ThemeImage } from '@/components/ThemeImage'
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
@@ -38,7 +39,7 @@ This means that [extremely tiny and cheap devices] are now fully compatible with
   </figcaption>
 </figure>
 
-But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for embedded devices. Nevertheless we firmly believe that in 2026 all communication should be encrypted, even in private networks.
+But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for embedded devices. Nevertheless we firmly believe that in 2026 **all communication should be encrypted, even in private networks**.
 
 So what to do? Iroh itself contains a lot of dependencies, for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
 
@@ -109,6 +110,17 @@ Should you do this? In general: **No**. Without dial by key you lose a lot of th
 
 But in a situation where you have a complex device where you have a large number of internal components talking to each other, it is a viable option to get modern encryption even inside the device-internal network.
 
+<div className="not-prose mx-auto my-8 max-w-2xl">
+  <ThemeImage
+    lightSrc="/blog/noq-on-an-esp32-c6/internal-network.svg"
+    darkSrc="/blog/noq-on-an-esp32-c6/internal-network-dark.svg"
+    width={900}
+    height={470}
+    alt="A device with many internal components running bare noq and one controller running full iroh. All internal links use QUIC with mutual TLS and raw ed25519 keys; only the controller connects to the internet via relays and hole punching."
+    className="w-full h-auto"
+  />
+</div>
+
 ## Can we do more?
 
 Iroh for ESP32 and [Raspberry Pi Pico 2 W] currently compiles using a std environment so we can use the tokio async runtime. In many very deep embedded use cases users want a `no_std` build and even more control about the runtime behaviour.
@@ -117,7 +129,7 @@ Iroh for ESP32 and [Raspberry Pi Pico 2 W] currently compiles using a std enviro
 
 ## Get in touch
 
-If you have a use case that requires iroh interop on very small embedded devices, please [reach out to us], or come tell us what you're building on [Discord].
+If you have a use case that requires iroh interop on very small embedded devices, please [reach out to us].
 
 [iroh 1.3]: /blog/iroh-1-3-0
 [iroh-esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
@@ -127,6 +139,5 @@ If you have a use case that requires iroh interop on very small embedded devices
 [Embassy]: https://embassy.dev
 [Raspberry Pi Pico 2 W]: /blog/iroh-on-rp2350
 [reach out to us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
-[Discord]: https://discord.com/invite/DpmJgtU7cW
 [pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
 [FreeRTOS]: https://www.freertos.org/
