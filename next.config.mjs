@@ -19,6 +19,9 @@ const redirects = async () => {
     { source: '/blog/iroh-on-pimorini-presto', destination: '/blog/iroh-on-rp2350', permanent: true },
     { source: '/blog/iroh-on-pimorini-presto/:path*', destination: '/blog/iroh-on-rp2350/:path*', permanent: true },
 
+    // Removed blog posts
+    { source: '/blog/what-is-derp', destination: 'https://docs.iroh.computer/concepts/relays', permanent: true },
+
     // Solutions page renames
     { source: '/solutions/rave', destination: '/solutions/video', permanent: true },
     { source: '/solutions/nous', destination: '/solutions/distributed-ai', permanent: true },
