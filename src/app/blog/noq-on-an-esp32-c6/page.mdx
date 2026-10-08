@@ -4,8 +4,8 @@ export const post = {
   draft: false,
   author: 'Rüdiger Klaehn',
   date: '2026-10-08',
-  title: 'Iroh is just QUIC',
-  description: 'Interop between iroh and QUIC with mTLS',
+  title: 'Iroh on tiny embedded devices',
+  description: 'How to get QUIC connections even on tiny embedded devices',
 }
 
 export const metadata = {
@@ -40,15 +40,15 @@ This means that [extremely tiny and cheap devices] are now fully compatible with
 
 But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for embedded devices. Nevertheless we firmly believe that in 2026 all communication should be encrypted, even in private networks.
 
-So what to do? Iroh itself contains a lot of dependencies for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
+So what to do? Iroh itself contains a lot of dependencies, for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
 
 But is there something else we can do? What if we can live with having to dial by known address and just care about the encryption?
 
 ## Iroh talking to noq
 
-As we have said a few times before, iroh is just QUIC used in a very specific way, using [raw public keys in TLS] for mutual TLS encryption and [a QUIC extension for hole punching]. So it is possible to have interop between iroh and any correctly set up QUIC endpoint, provided that it is using mTLS with ed25519 keys.
+As we have said a few times before, **iroh is just QUIC** used in a very specific way, using [raw public keys in TLS] for mutual TLS and [a QUIC extension for hole punching]. So it is possible to have interop between iroh and any correctly set up QUIC endpoint, provided that it is using mTLS with ed25519 keys.
 
-- we set up noq without ring, instead using the pure software rustls-rustcrypto crypto provider
+- we set up noq without ring, instead using the [pure software rustls-rustcrypto] crypto provider
 - we listen on a fixed port so the ticket remains stable over reboots
 - we generate an ed25519 keypair and configure raw public keys in TLS to use it
 - we *don't* support the hole punching extension, iroh will handle this correctly
@@ -128,3 +128,4 @@ If you have a use case that requires iroh interop on very small embedded devices
 [Raspberry Pi Pico 2 W]: /blog/iroh-on-rp2350
 [reach out to us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
 [Discord]: https://discord.com/invite/DpmJgtU7cW
+[pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
