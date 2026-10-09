@@ -2,7 +2,7 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
   author: 'Rüdiger Klaehn',
-  date: '2026-08-18',
+  date: '2026-10-13',
   title: 'Blinded address lookup',
   description: 'Iroh public keys are not (yet?) secrets.',
 }
@@ -66,7 +66,11 @@ An active attacker however can connect using a random server public key. The ser
 
 # Can we hide the public key?
 
-For every single place where the public key is exposed, we see a path forward for eliminating exposure. These rough sketches will still need vetting by a cryptography team once implemented to ensure that they are cryptographically sound. Please note, though, that while we have a proof-of-concept solution for one of the attack vectors (address lookup), ensuring that an `iroh` endpoint id can be used securely as a public key is not currently work we are planning to do in the near future.
+For every single place where the public key is exposed, we see a path forward for eliminating exposure. We have a proof-of-concept solution for one of the attack vectors (address lookup). The others are rough sketches.
+
+<Note>
+Making `iroh` public keys private is not on our roadmap. If we ever did tackle this, we would not consider them secret until we have implemented all of the improvements below and had them independently vetted.
+</Note>
 
 ## Blinded address lookup
 
@@ -131,7 +135,7 @@ For hiding the key in the handshake, we would remove the plaintext public key fr
 
 This additional information must be safe against replay attacks.
 
-I haven't worked out the details yet and don't want to share more half-baked ideas, but I am pretty sure this is doable.
+The exact process for achieving this hasn't been worked out, but we are confident that it is theoretically possible.
 
 # But what about the granovetter property?
 
@@ -165,7 +169,7 @@ Only Bob would be able to make use of this chain to access a resource at Carol.
 [`SecretKey`]: https://docs.rs/iroh/latest/iroh/struct.SecretKey.html
 [`raw_sign`]: https://docs.rs/ed25519-dalek/latest/ed25519_dalek/hazmat/fn.raw_sign.html
 [some applications]: https://iroh.computer/sendme
-[granovetter property]: https://erights.org/elib/capability/ode/index.html
+[granovetter property]: https://web.archive.org/web/20260502004346/http://www.erights.org/elib/capability/ode/index.html
 [blinded mainline address lookup]: https://github.com/n0-computer/iroh-mainline-address-lookup-blinded
 [UCAN]: https://ucan.xyz/specification/
 [rcan]: https://github.com/n0-computer/rcan
