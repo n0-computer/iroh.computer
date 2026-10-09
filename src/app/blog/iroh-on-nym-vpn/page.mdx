@@ -87,12 +87,21 @@ Iroh does DNS lookups in a few places. The total volume of data is minuscule, bu
 struct TunnelResolver { tunnel: WgTunnel, nameserver: SocketAddr }
 
 impl Resolver for TunnelResolver {
-    // lookup_ipv4, lookup_ipv6 and lookup_txt encode a DNS query
-    // and send it as a UDP datagram via the tunnel
+    // lookup_ipv4 and lookup_ipv6 resolve via the tunnel's DNS stack,
+    // lookup_txt is not supported
 }
 
 let endpoint = Endpoint::builder()
     .dns_resolver(DnsResolver::custom(TunnelResolver { tunnel, nameserver: wg_config.dns }))
+    // ...
+```
+
+Our tunnel resolver does not support TXT records, so the default DNS based address lookup does not work. Instead we use pkarr over HTTPS both for publishing and resolving, which goes through the proxy like the relay connection.
+
+```rust
+let endpoint = Endpoint::builder(presets::Minimal)
+    .address_lookup(PkarrPublisher::n0_dns())
+    .address_lookup(PkarrResolver::n0_dns())
     // ...
 ```
 
