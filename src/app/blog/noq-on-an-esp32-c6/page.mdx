@@ -16,14 +16,20 @@ export const metadata = {
       title: post.title,
       description: post.description,
       images: [{
-        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        url: `/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/noq-on-an-esp32-c6/internal-network.png')}`,
         width: 1200,
         height: 630,
         alt: post.title,
         type: 'image/png',
       }],
       type: 'article'
-    }
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [`/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/noq-on-an-esp32-c6/internal-network.png')}`],
+    },
 }
 
 export default (props) => <BlogPostLayout article={post} {...props} />
