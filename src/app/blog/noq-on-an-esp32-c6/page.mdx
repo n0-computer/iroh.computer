@@ -1,0 +1,151 @@
+import { ThemeImage } from '@/components/ThemeImage'
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-10-09',
+  title: 'Iroh on tiny embedded devices',
+  description: 'How to get mTLS encrypted QUIC connections even on tiny embedded devices',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+We have made a lot of progress reducing the compiled size of iroh. Since [iroh 1.3], you can use iroh from crates.io on any ESP32 or other embedded device with just 4 MiB of flash. See [iroh-esp32-examples].
+
+This means that [extremely tiny and cheap devices] are now fully compatible with iroh.
+
+<figure className="not-prose mx-auto max-w-sm">
+  <img src="/blog/noq-on-an-esp32-c6/xiao-esp32-c5.jpg" width={1400} height={1050} alt="The Seeed Studio XIAO ESP32-C5, a thumb-sized board with a USB-C connector, a shielded module and two buttons" />
+  <figcaption className="text-center text-sm opacity-60 mt-2">
+    The Seeed Studio XIAO ESP32-C5: 240 MHz RISC-V, 8 MiB flash, 8 MiB PSRAM, dual-band Wi-Fi 6, 21 × 17.8 mm. Image: <a href="https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32C5-p-6609.html">Seeed Studio</a>.
+  </figcaption>
+</figure>
+
+# What if even 4 MiB is too big?
+
+But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for embedded devices. Nevertheless we firmly believe that in 2026 **all communication should be encrypted, even in private networks**.
+
+So what to do? Iroh itself contains a lot of dependencies, for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
+
+But is there something else we can do? What if we know the IP address up front?
+
+## Iroh talking to noq
+
+As we have said a few times before, **iroh is just QUIC** used in a very specific way, using [raw public keys in TLS] for mutual TLS and [a QUIC extension for hole punching]. So it is possible to have interop between iroh and any correctly set up QUIC endpoint, provided that it is using mTLS with ed25519 keys.
+
+- we set up noq without ring, instead using the [pure software rustls-rustcrypto] crypto provider
+- we listen on a fixed port so the ticket remains stable over reboots
+- we generate an ed25519 keypair and configure raw public keys in TLS to use it
+- we *don't* support multipath or the hole punching extension. iroh falls back to a single path. It works, but you will currently see some errors in the iroh logs.
+
+Here is the setup:
+
+```rust
+let crypto = rustls::ServerConfig::builder_with_provider(provider)
+    .with_protocol_versions(&[&rustls::version::TLS13])? // QUIC must use TLS 1.3
+    .with_client_cert_verifier(Arc::new(RawKeyClientVerifier { algs })) // only allow raw keys
+    .with_cert_resolver(Arc::new(RawKeyResolver::new(secret)));
+let endpoint = noq::Endpoint::new(...);
+```
+
+The full example is in [noq-interop].
+
+Since we have an ed25519 key and an IP address, we can construct a ticket. And then dial the noq endpoint using the ticket, just like you would dial an iroh endpoint.
+
+What we lose is the relay connection, hole punching, and the ability to use [AddressLookup]. But for some air gapped embedded use cases this might be perfectly fine. Or you might have a situation where you have many tiny devices running noq and one or two somewhat more powerful management devices running full iroh and talking to the outside world via relays and hole punching.
+
+## The benefit
+
+So let's take a look if it was worth it *in terms of binary size*.
+
+```
+❯ cargo run --release
+...
+[2026-10-08T07:09:40Z INFO ] Serial port: '/dev/cu.usbmodem14201'
+[2026-10-08T07:09:40Z INFO ] Connecting...
+[2026-10-08T07:09:41Z INFO ] Using flash stub
+Chip type:         esp32c6 (revision v0.2)
+Crystal frequency: 40 MHz
+Flash size:        4MB
+Features:          WiFi 6, BT 5
+MAC address:       dc:1e:d5:96:46:44
+App/part. size:    1,772,608/4,128,768 bytes, 42.93%
+[00:00:07] [========================================]      68/68      0x10000  Verifying... OK!
+```
+
+**Yes!**
+
+The complete binary including the [FreeRTOS] operating system is just 1.69 MiB in release profile and 1.46 MiB if we pull out all stops reducing binary size, compared to 3.73 MiB for the same example using full iroh.
+
+A large part of this is C code, the operating system and WiFi driver. According to a quick symbol analysis Rust only accounts for about half of the size.
+
+Connecting with the echo protocol via a long ticket works *exactly as before*.
+
+```
+❯ cargo run endpointadvh2sel2joynww26hpjoonl3gtbrguhyazcxztkgdwwuommxymskaibadakqahpyrlq
+Connecting to ESP32...
+Connected!
+Sent: Hello from iroh (crates.io)!
+Received: Hello from iroh (crates.io)!
+Echo OK — crates.io iroh <-> ESP32!
+```
+
+## The cost
+
+Should you do this? In general: hard **No**.
+
+Without address lookup, relays and hole punching you lose a lot of the magic of iroh. For end user IoT devices the fact that you can always connect no matter if you are in the same WiFi, in a different WiFi, or on a mobile network is worth its weight (~2 MiB) in gold. Besides, even tiny and cheap devices support full iroh.
+
+But in a situation where you have a complex device where you have a large number of internal components talking to each other, it is a viable option to get modern encryption even inside the device-internal network.
+
+<div className="not-prose mx-auto my-8 max-w-2xl">
+  <ThemeImage
+    lightSrc="/blog/noq-on-an-esp32-c6/internal-network.svg"
+    darkSrc="/blog/noq-on-an-esp32-c6/internal-network-dark.svg"
+    width={900}
+    height={470}
+    alt="A device with many internal components running bare noq and one controller running full iroh. All internal links use QUIC with mutual TLS and raw ed25519 keys; only the controller connects to the internet via relays and hole punching."
+    className="w-full h-auto"
+  />
+</div>
+
+## Can we do more?
+
+Iroh for ESP32 and [Raspberry Pi Pico 2 W] currently compiles using a std environment so we can use the tokio async runtime. In many very deep embedded use cases users want a `no_std` build and even more control about the runtime behaviour.
+
+`no_std` support for iroh is a major project. But just for noq, replacing tokio in favour of [Embassy] and supporting `no_std` is a much more limited project. We have a *very experimental* fork of noq that does support embassy.
+
+## Get in touch
+
+If you have a use case that requires iroh interop on very small embedded devices, please [reach out to us].
+
+[iroh 1.3]: /blog/iroh-1-3-0
+[iroh-esp32-examples]: https://github.com/n0-computer/iroh-esp32-examples
+[extremely tiny and cheap devices]: https://www.seeedstudio.com/Seeed-Studio-XIAO-ESP32C5-p-6609.html
+[raw public keys in TLS]: /blog/iroh-0-34-0-raw-public-keys
+[a QUIC extension for hole punching]: https://datatracker.ietf.org/doc/draft-seemann-quic-nat-traversal/
+[Embassy]: https://embassy.dev
+[Raspberry Pi Pico 2 W]: /blog/iroh-on-rp2350
+[reach out to us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
+[pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
+[FreeRTOS]: https://www.freertos.org/
+[AddressLookup]: https://docs.iroh.computer/concepts/address-lookup
+[noq-interop]: https://github.com/n0-computer/iroh-esp32-examples/tree/main/noq-interop
