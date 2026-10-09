@@ -1,7 +1,6 @@
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
-  draft: true,
   author: 'Rüdiger Klaehn',
   date: '2026-10-14',
   title: 'iroh on NymVPN',
@@ -99,7 +98,9 @@ let endpoint = Endpoint::builder()
 Our tunnel resolver does not support TXT records, so the default DNS based address lookup does not work. Instead we use pkarr over HTTPS both for publishing and resolving, which goes through the proxy like the relay connection.
 
 ```rust
-let endpoint = Endpoint::builder(presets::Minimal)
+let endpoint = Endpoint::builder(presets::N0)
+    // replace the default address lookups with pkarr over HTTPS
+    .clear_address_lookup()
     .address_lookup(PkarrPublisher::n0_dns())
     .address_lookup(PkarrResolver::n0_dns())
     // ...
