@@ -45,7 +45,7 @@ But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for em
 
 So what to do? Iroh itself contains a lot of dependencies, for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
 
-But is there something else we can do? What if we just give up on address lookup, so we have to know the IP address up front?
+But is there something else we can do? What if we know the IP address up front?
 
 ## Iroh talking to noq
 
