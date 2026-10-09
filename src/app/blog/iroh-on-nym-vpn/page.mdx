@@ -1,0 +1,48 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: true,
+  author: 'Rüdiger Klaehn',
+  date: '2026-10-13',
+  title: 'iroh on NymVPN',
+  description:
+    'TODO',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Iroh in its default configuration prioritizes performance over privacy. This is a good default for many iroh use cases. Iroh performan
+
+TODO intro
+
+# NymVPN
+
+# From subscription to WireGuard config
+
+# iroh over WireGuard
+
+# Trying it out
+
+# Conclusion
+
+[NymVPN]: https://nym.com
+[nym-vpn-client]: https://github.com/nymtech/nym-vpn-client
+[iroh-nym-transport]: https://github.com/n0-computer/iroh-nym-transport
+[Tor transport]: /blog/tor-custom-transport
