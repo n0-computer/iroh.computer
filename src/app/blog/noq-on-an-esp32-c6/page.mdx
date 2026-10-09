@@ -68,7 +68,7 @@ let endpoint = noq::Endpoint::new(...);
 
 Since we have an ed25519 key and an IP address, we can construct a ticket. And then dial the noq endpoint using the ticket, just like you would dial an iroh endpoint.
 
-What we lose is the relay connection, hole punching, and the ability to dial by just key. But for some air gapped embedded use cases this might be perfectly fine. Or you might have a situation where you have many tiny devices running noq and one or two somewhat more powerful management devices running full iroh and talking to the outside world via relays and hole punching.
+What we lose is the relay connection, hole punching, and the ability to use [AddressLookup]. But for some air gapped embedded use cases this might be perfectly fine. Or you might have a situation where you have many tiny devices running noq and one or two somewhat more powerful management devices running full iroh and talking to the outside world via relays and hole punching.
 
 ## The benefit
 
