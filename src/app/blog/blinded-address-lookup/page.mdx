@@ -56,17 +56,15 @@ Iroh comes with several standard address lookup providers. The [DNS based one][d
 
 So if you disable relays and address discovery you are OK? *Almost*. But if you want to use the public key as a true cryptographic secret almost is not good enough.
 
-We use [raw public keys in TLS] for our QUIC handshake. As part of the handshake the client encodes the expected public key of the server, in a synthetic SNI name `<base32-endpoint-id>.iroh.invalid`.
+We use [raw public keys in TLS] for our QUIC handshake. Up to iroh 1.0.3, the client encoded the expected public key of the server in a synthetic SNI name `<base32-endpoint-id>.iroh.invalid`. So an on-path observer could learn the public key that the client *thinks* the server has just by observing the ClientHello. Since iroh 1.1.0 the client [no longer sends SNI].
 
-So an on-path observer can learn the public key that the client *thinks* the server has just by observing the ClientHello.
+The ServerHello does not contain the server public key, and the rest of the server handshake response is encrypted. So a passive observer can't learn the server public key.
 
-The ServerHello does not contain the server public key, and the rest of the server handshake response is encrypted. So a passive observer can't learn the server public key. It can assume that the key observed in the SNI is the correct key, but that currently need not be the case.
-
-An active attacker however can connect using a random server public key. The server handshake response reveals the actual public key to the client. This requires knowing a socket address under which the server can be contacted.
+Anyone who can reach the server however can connect using a random server public key. The server handshake response reveals the actual public key to the client. This requires knowing a socket address under which the server can be contacted.
 
 # Can we hide the public key?
 
-For every single place where the public key is exposed, we see a path forward for eliminating exposure. We have a proof-of-concept solution for one of the attack vectors (address lookup). The others are rough sketches.
+For every single place where the public key is exposed, we see a path forward for eliminating exposure. We have a proof-of-concept solution for one of the information leaks (address lookup). The others are rough sketches.
 
 <Note>
 Making `iroh` public keys private is not on our roadmap. If we ever did tackle this, we would not consider them secret until we have implemented all of the improvements below and had them independently vetted.
@@ -107,13 +105,13 @@ The blinded key is computed using a salt that has to be known by both the publis
 
 With this trick, it is no longer possible for address lookup services to track the blinded key. Or is it?
 
-For mainline, each blinded key goes to a completely different DHT neighbourhood, so an attacker would have to control a large fraction of all DHT nodes to track over a rotation.
+For mainline, each blinded key goes to a completely different DHT neighbourhood, so you would have to control a large fraction of all DHT nodes to track over a rotation.
 
 For a centralized address lookup service tracking would be trivial. We get two updates for different keys from the same ip address - probably a key rotation.
 
 There is one remaining issue. If you use n0 relays or coarse grained self hosted relays, the relay url in the address lookup record doesn't reveal much.
 
-But in an adversarial scenario you might use a relay that you want to keep secret so the relay operator doesn't get in trouble.
+But you might use a relay that you want to keep private, e.g. so the relay operator doesn't get in trouble.
 
 To solve this we can encrypt the address lookup records so that only somebody who knows the public key can decrypt them.
 
@@ -131,7 +129,7 @@ If we want to make the blinding time dependent, we would have to be very careful
 
 ## Handshake
 
-For hiding the key in the handshake, we would remove the plaintext public key from the SNI. We would then include something in the ClientHello that requires *knowledge* of the public key. We would have the server check that knowledge and otherwise refuse to answer.
+The plaintext public key is no longer in the SNI, but the server still answers anyone who connects. To hide the key in the handshake, we would include something in the ClientHello that requires *knowledge* of the public key. We would have the server check that knowledge and otherwise refuse to answer.
 
 This additional information must be safe against replay attacks.
 
@@ -151,11 +149,13 @@ But let's look at what is actually happening here. Alice has access to Carol, an
 
 If participants in this diagram represent iroh endpoints, they already have identities. What we need is an authorization scheme which allows for delegation.
 
-We are working on exactly just a scheme, a simplified version of [UCAN] called [rcan].
+We are working on exactly such a scheme, a simplified version of [UCAN] called [rcan].
 
 In this scheme you can have chains of delegations that always end at an `audience` public key. In this case Alice would have access to Carol because she has a delegation signed by Carol, and she would then sign a delegation to Bob.
 
 Only Bob would be able to make use of this chain to access a resource at Carol.
+
+Think of an endpoint id like your home address. It's not exactly public, but you shouldn't rely on nobody knowing it. What keeps people out is the lock on the door. With rcan, Alice can give Bob a key that only works for Bob, and it doesn't matter who else learns the address.
 
 [X]: https://x.com/zooko/status/2087190257611747684
 [bluesky]: https://bsky.app/profile/zooko2.bsky.social/post/3mstbtq2aa22m
@@ -173,3 +173,4 @@ Only Bob would be able to make use of this chain to access a resource at Carol.
 [blinded mainline address lookup]: https://github.com/n0-computer/iroh-mainline-address-lookup-blinded
 [UCAN]: https://ucan.xyz/specification/
 [rcan]: https://github.com/n0-computer/rcan
+[no longer sends SNI]: https://github.com/n0-computer/iroh/pull/4473
