@@ -6,7 +6,7 @@ export const post = {
   date: '2026-10-14',
   title: 'iroh on NymVPN',
   description:
-    'TODO',
+    'How to use iroh with VPNs such as NymVPN while retaining usable performance',
 }
 
 export const metadata = {
@@ -30,33 +30,159 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Iroh in its default configuration prioritizes performance over privacy. This is a good default for most iroh use cases.
 
-But sometimes you want more privacy. The usual way to achieve privacy is a VPN, either a simple single hop VPN like protonvpn or a multi-hop VPN like NYM in VPN mode.
+But sometimes you want more privacy. The usual way to achieve privacy is a VPN, either a simple single-hop VPN like [ProtonVPN] or a multi-hop VPN like [NYM] in VPN mode.
 
 But the iroh philosophy is to have these things built into the app. You want to be able to install an app that uses private connections without having to use a VPN for your entire computer.
 
 So let's see what would be involved with making this work.
 
-Switching on a VPN for your entire machine is simple. A well designed VPN guarantees that all traffic goes via the VPN, both TCP and UDP and other transports. But it has some downsides. If your VPN is not tightly integrated into your system, your apps might start up before the VPN, so you expose your real addresses. Also it is now the responsibility of the user to make sure the VPN is always on when the apps that rely on this are running. And just a single misuse exposes your apps.
+Switching on a VPN for your entire machine is simple. A well-designed VPN guarantees that all traffic goes via the VPN, both TCP and UDP and other transports. But it has some downsides. If your VPN is not tightly integrated into your system, your apps might start up before the VPN, so you expose your real addresses. Also it is now the responsibility of the user to make sure the VPN is always on when the apps that rely on this are running. And just a single misuse exposes your apps.
 
 Integrating a VPN into an app is more work for the app developer. You have to make sure that all communications of the app actually go via the VPN, and it is very easy to get this wrong. On the plus side, if it is done right your app will either talk to the internet via the VPN or not at all, no matter if your overall system is using a VPN or not.
 
+For an app that uses iroh for communications, most of the burden to get this right is on iroh itself. All the app developer has to do in addition is to make sure that either there is **no** non-iroh communication, or non-iroh communication like DNS lookups and http requests go via the same channel.
+
+So let's take a look at what we need to do to make iroh use the VPN:
+
 ## Https connections
 
-Iroh is using https connections in various places. Most importantly the relay connection, but also https probing and pkarr address lookup publishing and resolution. Iroh has an existing mechanism to make these connections use a proxy.
+Iroh is using https connections in various places. Most importantly the relay connection, but also https probing and [pkarr] address lookup publishing and resolution. Iroh has an [existing mechanism] to make these connections use a proxy. So for a quick hack we can just open a local proxy and make iroh use it.
 
-TODO intro
+```rust
+// userspace WireGuard tunnel to the VPN entry node
+let tunnel = WgTunnel::connect(wg_config).await?;
+// local HTTP CONNECT proxy that dials all TCP connections through the tunnel
+let proxy = tunnel.spawn_http_proxy("127.0.0.1:0").await?;
+
+let endpoint = Endpoint::builder()
+    .proxy_url(format!("http://{}", proxy.local_addr()).parse()?)
+    .bind()
+    .await?;
+```
+
+## UDP packets
+
+Direct iroh connections are where the bulk of the data flows. We would have to make sure that all UDP traffic goes via the VPN as well. Of course there will be a performance impact - "direct" connections can still exist, but they are direct to the VPN exit node, not direct to your actual machine.
+
+Since the UDP path in iroh is highly optimized this is a more invasive change. For the purpose of this blog post we just patch the UDP socket implementation that iroh uses in [netwatch]. This is normally a thin shim on top of [noq-udp], our UDP socket implementation, that just deals with socket rebinding.
+
+```rust
+// UdpSender::poll_send
+pub fn poll_send(self: Pin<&mut Self>, transmit: &Transmit, cx: &mut Context) -> Poll<io::Result<()>> {
+    if let Some(tunnel) = &self.socket.tunnel {
+        // max_gso_segments() is 1 when tunneled, so a transmit is a single datagram
+        return tunnel.poll_send_udp(cx, self.socket.local_addr, transmit.destination, transmit.contents);
+    }
+    // ... the normal noq-udp path
+}
+```
+
+## DNS lookups
+
+Iroh does DNS lookups in a few places. The total volume of data is minuscule, but these also have to go via the VPN.
+
+```rust
+/// Sends DNS queries through the tunnel to the VPN's nameserver
+#[derive(Debug)]
+struct TunnelResolver { tunnel: WgTunnel, nameserver: SocketAddr }
+
+impl Resolver for TunnelResolver {
+    // lookup_ipv4, lookup_ipv6 and lookup_txt encode a DNS query
+    // and send it as a UDP datagram via the tunnel
+}
+
+let endpoint = Endpoint::builder()
+    .dns_resolver(DnsResolver::custom(TunnelResolver { tunnel, nameserver: wg_config.dns }))
+    // ...
+```
+
+## Port mapping
+
+Some VPNs support port mapping - you get a port on the VPN exit node. But for now we can just disable this feature entirely.
+
+```rust
+let endpoint = Endpoint::builder()
+    .portmapper_config(PortmapperConfig::Disabled)
+    // ...
+```
+
+## Local addresses
+
+If the UDP socket is bound to the unspecified address, iroh will tell peers about the addresses of all local interfaces, so with IPv6 your peer would learn your real public address. So we just bind to the IP address we got assigned inside the tunnel instead.
+
+```rust
+let endpoint = Endpoint::builder()
+    .clear_ip_transports()
+    // the tunnel IP from the `Address =` line of the WireGuard config
+    .bind_addr((wg_config.address, 0))?
+    // ...
+```
+
+## Other leaks
+
+Even if configured with all these changes, you have to be very careful not to add anything that bypasses the VPN. E.g. if you add a custom address lookup implementation or one of the existing ones from n0, [mdns or mainline], you now expose your IP.
+
+Likewise if you download external resources via HTTPS without using the tunnel proxy and the tunnel DNS resolver, you expose your IP. For this there is a clean alternative: download external resources via iroh-blobs.
 
 # NymVPN
 
-# From subscription to WireGuard config
+With these changes, we can create an iroh endpoint that does all interactions via a VPN configured at app level. You can use any [WireGuard] compatible VPN such as [ProtonVPN] out of the box.
 
-# iroh over WireGuard
+For NYM you have to generate the wireguard credentials using your NYM account. I wrote a standalone tool for this, [nym-wg-register].
+
+```
+❯ nym-wg-register --access-code "####### ###### ####### ..."
+account:  ########################################
+device:   ##############################################
+registering this device with the account
+fetching ticketbooks for [V1WireguardEntry] from the subscription
+wrote nym-entry.conf (entry, gateway ####################################)
+```
+
+The access code is the key to your account, so make sure to [clear it from your shell history] afterwards.
+
+After this step, you can use the Nym WireGuard credentials just like before.
 
 # Trying it out
 
+The code is in [wg-iroh]. It contains a small userspace WireGuard implementation based on [boringtun] and [smoltcp], the CONNECT proxy, the DNS resolver, and an echo demo. It uses a branch of netwatch that allows plugging in a custom UDP socket.
+
+Any wg-quick config works, e.g. one downloaded from ProtonVPN or Mullvad, or the one generated by nym-wg-register.
+
+Start a stock iroh endpoint anywhere:
+
+```
+cargo run -p wg-iroh -- accept
+```
+
+Then connect to it from inside the tunnel, dialing by endpoint id:
+
+```
+cargo run -p wg-iroh -- connect nym-entry.conf <endpoint-id>
+```
+
+The connection starts via the relay and then holepunches, just like normal iroh. But the "direct" path goes to the VPN exit, and from there through the tunnel to your machine. The accepting side only ever sees the address of the VPN exit, never your real one.
+
+At this point this is **highly experimental**. It requires iroh main and a patched netwatch. Also the tunnel is IPv4 only.
+
 # Conclusion
+
+Running iroh over a VPN is one point on a spectrum. Default iroh is the fastest, but peers and infrastructure can see your IP address. Over a VPN the IP address is hidden, at a modest cost in performance. The [Tor transport] gives you strong anonymity, but is slower. And the [iroh-nym-transport] routes packets through the Nym mixnet, which also protects against timing analysis. With iroh, it is the app that decides where on this spectrum it wants to be, not the system settings of the user.
 
 [NymVPN]: https://nym.com
 [nym-vpn-client]: https://github.com/nymtech/nym-vpn-client
 [iroh-nym-transport]: https://github.com/n0-computer/iroh-nym-transport
 [Tor transport]: /blog/tor-custom-transport
+[ProtonVPN]: https://protonvpn.com/
+[NYM]: https://nym.com/
+[existing mechanism]: https://docs.rs/iroh/latest/iroh/endpoint/struct.Builder.html#method.proxy_url
+[pkarr]: https://docs.rs/pkarr/latest/pkarr/
+[netwatch]: https://docs.rs/netwatch/latest/netwatch/
+[noq-udp]: https://docs.rs/noq-udp/latest/noq_udp/
+[WireGuard]: https://www.wireguard.com/
+[mdns or mainline]: https://github.com/n0-computer/iroh-address-lookups
+[nym-wg-register]: https://github.com/rklaehn/nym-wg-register
+[clear it from your shell history]: https://www.cyberciti.biz/faq/delete-command-from-history-linux-unix-osx-bash-shell/
+[wg-iroh]: https://github.com/n0-computer/wg-iroh
+[boringtun]: https://docs.rs/boringtun/latest/boringtun/
+[smoltcp]: https://docs.rs/smoltcp/latest/smoltcp/
