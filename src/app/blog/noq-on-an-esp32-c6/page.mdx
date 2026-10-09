@@ -45,7 +45,7 @@ But sometimes even 4 MiB is too much. 2 MiB is a pretty common flash size for em
 
 So what to do? Iroh itself contains a lot of dependencies, for good reasons. It is using HTTPS for the relay connection to work even in very restricted environments, so it comes with an entire HTTP stack. It also is using DNS for address lookup, so it has some DNS dependencies. So getting full iroh to work on a chip with 2 MiB of flash is going to be very hard.
 
-But is there something else we can do? What if we can live with having to dial by known address and just care about the encryption?
+But is there something else we can do? What if we just give up on address lookup, so we have to know the IP address up front?
 
 ## Iroh talking to noq
 
@@ -54,7 +54,7 @@ As we have said a few times before, **iroh is just QUIC** used in a very specifi
 - we set up noq without ring, instead using the [pure software rustls-rustcrypto] crypto provider
 - we listen on a fixed port so the ticket remains stable over reboots
 - we generate an ed25519 keypair and configure raw public keys in TLS to use it
-- we *don't* support the hole punching extension, iroh will handle this correctly
+- we *don't* support multipath or the hole punching extension. iroh falls back to a single path. It works, but you will currently see some errors in the iroh logs.
 
 Here is the setup:
 
@@ -110,7 +110,7 @@ Echo OK — crates.io iroh <-> ESP32!
 
 Should you do this? In general: hard **No**.
 
-Without dial by key you lose a lot of the magic of iroh. For end user IoT devices the fact that you can always connect no matter if you are in the same WiFi, in a different WiFi, or on a mobile network is worth its weight (~2 MiB) in gold. Besides, even tiny and cheap devices support full iroh.
+Without address lookup, relays and hole punching you lose a lot of the magic of iroh. For end user IoT devices the fact that you can always connect no matter if you are in the same WiFi, in a different WiFi, or on a mobile network is worth its weight (~2 MiB) in gold. Besides, even tiny and cheap devices support full iroh.
 
 But in a situation where you have a complex device where you have a large number of internal components talking to each other, it is a viable option to get modern encryption even inside the device-internal network.
 
@@ -145,3 +145,4 @@ If you have a use case that requires iroh interop on very small embedded devices
 [reach out to us]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
 [pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
 [FreeRTOS]: https://www.freertos.org/
+[AddressLookup]: https://docs.iroh.computer/concepts/address-lookup
