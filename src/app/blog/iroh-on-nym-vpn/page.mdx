@@ -3,7 +3,7 @@ import { BlogPostLayout } from '@/components/BlogPostLayout'
 export const post = {
   draft: true,
   author: 'Rüdiger Klaehn',
-  date: '2026-10-13',
+  date: '2026-10-14',
   title: 'iroh on NymVPN',
   description:
     'TODO',
@@ -28,7 +28,21 @@ export const metadata = {
 
 export default (props) => <BlogPostLayout article={post} {...props} />
 
-Iroh in its default configuration prioritizes performance over privacy. This is a good default for many iroh use cases. Iroh performan
+Iroh in its default configuration prioritizes performance over privacy. This is a good default for most iroh use cases.
+
+But sometimes you want more privacy. The usual way to achieve privacy is a VPN, either a simple single hop VPN like protonvpn or a multi-hop VPN like NYM in VPN mode.
+
+But the iroh philosophy is to have these things built into the app. You want to be able to install an app that uses private connections without having to use a VPN for your entire computer.
+
+So let's see what would be involved with making this work.
+
+Switching on a VPN for your entire machine is simple. A well designed VPN guarantees that all traffic goes via the VPN, both TCP and UDP and other transports. But it has some downsides. If your VPN is not tightly integrated into your system, your apps might start up before the VPN, so you expose your real addresses. Also it is now the responsibility of the user to make sure the VPN is always on when the apps that rely on this are running. And just a single misuse exposes your apps.
+
+Integrating a VPN into an app is more work for the app developer. You have to make sure that all communications of the app actually go via the VPN, and it is very easy to get this wrong. On the plus side, if it is done right your app will either talk to the internet via the VPN or not at all, no matter if your overall system is using a VPN or not.
+
+## Https connections
+
+Iroh is using https connections in various places. Most importantly the relay connection, but also https probing and pkarr address lookup publishing and resolution. Iroh has an existing mechanism to make these connections use a proxy.
 
 TODO intro
 
