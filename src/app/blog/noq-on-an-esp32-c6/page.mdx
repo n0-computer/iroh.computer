@@ -66,6 +66,8 @@ let crypto = rustls::ServerConfig::builder_with_provider(provider)
 let endpoint = noq::Endpoint::new(...);
 ```
 
+The full example is in [noq-interop].
+
 Since we have an ed25519 key and an IP address, we can construct a ticket. And then dial the noq endpoint using the ticket, just like you would dial an iroh endpoint.
 
 What we lose is the relay connection, hole punching, and the ability to use [AddressLookup]. But for some air gapped embedded use cases this might be perfectly fine. Or you might have a situation where you have many tiny devices running noq and one or two somewhat more powerful management devices running full iroh and talking to the outside world via relays and hole punching.
@@ -146,3 +148,4 @@ If you have a use case that requires iroh interop on very small embedded devices
 [pure software rustls-rustcrypto]: https://github.com/n0-computer/rustls-rustcrypto/tree/feature-flag-algorithms-v0.0.2
 [FreeRTOS]: https://www.freertos.org/
 [AddressLookup]: https://docs.iroh.computer/concepts/address-lookup
+[noq-interop]: https://github.com/n0-computer/iroh-esp32-examples/tree/main/noq-interop
