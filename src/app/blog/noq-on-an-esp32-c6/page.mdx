@@ -60,7 +60,7 @@ Here is the setup:
 
 ```rust
 let crypto = rustls::ServerConfig::builder_with_provider(provider)
-    .with_protocol_versions(&[&rustls::version::TLS13])? // only allow TLS 1.3
+    .with_protocol_versions(&[&rustls::version::TLS13])? // QUIC must use TLS 1.3
     .with_client_cert_verifier(Arc::new(RawKeyClientVerifier { algs })) // only allow raw keys
     .with_cert_resolver(Arc::new(RawKeyResolver::new(secret)));
 let endpoint = noq::Endpoint::new(...);
