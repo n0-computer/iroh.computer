@@ -34,7 +34,7 @@ In many cases it would be convenient to use the `iroh` public key as a secret. Y
 
 An [Ed25519 public key][ed25519-key-generation] contains roughly 251 bits of entropy, so guessing one is basically impossible. So all good, right?
 
-No.
+**No.**
 
 There are various ways to learn of the existence of an `iroh` public key, so while keeping an `iroh` public key secret provides a modest amount of security that is sufficient for [some applications], it definitely **isn't** a secret in the cryptographic sense.
 
@@ -50,17 +50,15 @@ So the *relay operator* can know the endpoint id/public key of all endpoints tha
 
 Iroh comes with several standard address lookup providers. The [DNS based one][dns-address-lookup] that is enabled by default, and the mDNS and pkarr/[mainline] address lookup providers that come in a [separate n0 crate][iroh-address-lookups].
 
-**As currently implemented**, all of these address providers share the unencrypted public keys. MDNS broadcasts them on the local network, the DNS based provider stores pkarr records using the public key as database key, and mainline address discovery stores the key in plaintext in a [bep_0044] record.
+*As currently implemented*, all of these address providers share the unencrypted public keys. MDNS broadcasts them on the local network, the DNS based provider stores pkarr records using the public key as database key, and mainline address discovery stores the key in plaintext in a [bep_0044] record.
 
 ## Handshake
 
 So if you disable relays and address discovery you are OK? *Almost*. But if you want to use the public key as a true cryptographic secret almost is not good enough.
 
-We use [raw public keys in TLS] for our QUIC handshake. Up to iroh 1.0.3, the client encoded the expected public key of the server in a synthetic SNI name `<base32-endpoint-id>.iroh.invalid`. So an on-path observer could learn the public key that the client *thinks* the server has just by observing the ClientHello. Since iroh 1.1.0 the client [no longer sends SNI].
+We use [raw public keys in TLS] for our QUIC handshake. The ServerHello does not contain the server public key, and the rest of the server handshake response is encrypted. So a passive observer can't learn the server public key.
 
-The ServerHello does not contain the server public key, and the rest of the server handshake response is encrypted. So a passive observer can't learn the server public key.
-
-Anyone who can reach the server however can connect using a random server public key. The server handshake response reveals the actual public key to the client. This requires knowing a socket address under which the server can be contacted.
+However, anyone who can reach the server however can connect using a random server public key. The server handshake response reveals the actual public key to the client. This requires knowing a socket address under which the server can be contacted.
 
 # Can we hide the public key?
 
@@ -129,7 +127,7 @@ If we want to make the blinding time dependent, we would have to be very careful
 
 ## Handshake
 
-The plaintext public key is no longer in the SNI, but the server still answers anyone who connects. To hide the key in the handshake, we would include something in the ClientHello that requires *knowledge* of the public key. We would have the server check that knowledge and otherwise refuse to answer.
+The server answers anyone who connects. To hide the key in the handshake, we would include something in the ClientHello that requires *knowledge* of the public key. We would have the server check that knowledge and otherwise refuse to answer.
 
 This additional information must be safe against replay attacks.
 
@@ -143,7 +141,7 @@ As we have seen, iroh public keys don't fulfill the granovetter property. There 
 
 So in this image, `Alice` forwards the public key of `Carol` to `Bob`. So Bob has it, but possibly also the relay operator, some mainline nodes, iroh DNS discovery, and ~~the NSA~~ a passive observer.
 
-So public keys at this time don't fulfill the granovetter property. Iroh public keys might gain this property in the future.
+So public keys at this time don't fulfill the granovetter property. Iroh public keys *might* gain this property in the future.
 
 But let's look at what is actually happening here. Alice has access to Carol, and she wants to delegate this access to Bob, and **only** Bob.
 
@@ -173,4 +171,3 @@ Think of an endpoint id like your home address. It's not exactly public, but you
 [blinded mainline address lookup]: https://github.com/n0-computer/iroh-mainline-address-lookup-blinded
 [UCAN]: https://ucan.xyz/specification/
 [rcan]: https://github.com/n0-computer/rcan
-[no longer sends SNI]: https://github.com/n0-computer/iroh/pull/4473
