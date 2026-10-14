@@ -1,0 +1,371 @@
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'matheus23',
+  date: '2026-07-21',
+  title: 'Stuffing QUIC frames into datagrams',
+  description: 'About the surprising complexity of trying to stuff QUIC frames into datagrams.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    }
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+When we originally set out to implement QUIC multipath in rust, we knew we had to modify the main internal transmission loop that produces UDP datagrams.
+With QUIC multipath we need to check not only a single path for any frames that should be transmitted or retransmitted or loss probes to send, but instead need to do this for each currently open path.
+It turns out that the logic for how frames make it into datagrams turns out to be quite complicated.
+This blog post is essentially an engineer's braindump of how this logic works and why it works the way it does.
+
+---
+
+One would think stuffing QUIC frames into datagrams would be an easy task.
+Let's assume something else has already prepared *which* frames we want to write into our datagrams.
+In a simple case, constructing a datagram from a bunch of QUIC frames can look like this:
+
+![A UDP datagram containing one QUIC packet: header, frames, and authentication tag](/blog/quic-frames-to-datagrams/quic-datagram.svg)
+
+But that's just the tip of the iceberg.
+Let us dive into the complex world of generic segmentation offload (GSO), QUIC encryption levels, QUIC multipath and packet padding.
+
+
+# First: Wait, what key do we actually use to encrypt?
+
+QUIC packets are encrypted, as the authentication tag above might already hint to.
+But if the client sends the first packet in the connection, which key does it actually use to encrypt?
+
+<Note>If you're confused about what the difference between a packet and a datagram is, read on. The distinction should become clear later and will prove to be useful.</Note>
+
+
+## QUIC's encryption levels: Initial, Handshake and 1-RTT
+
+These three encryption levels are in the order of increasing guarantees.
+A connection starts out using "Initial" keys, then during the handshake moves to "Handshake" keys and after the full key exchange moves on to the "1-RTT" encryption level.
+We only ever send application data using the "1-RTT" encryption level.
+
+<Note>There's some nuance with QUIC's 0-RTT features, but other than that the above holds.</Note>
+
+The first encryption level actually uses a key derived from public information: the connection's destination connection ID which is attached to each QUIC packet in its header.
+This means anyone can read the contents of packets encrypted using the "Initial" encryption level.
+Why encrypt them then?
+Well, most importantly it helps to prevent certain amplification attacks, but it also prevents protocol ossification to a degree and it's also just neat to not have to special-case initial packets in terms of encryption *too much*.
+
+While the first encryption level is mostly used for the first TLS message ("CRYPTO" frame) from the client to the server, the second encryption level already begins once the server has processed the first message from the client.
+At this point, the server has derived a shared secret using the client's key share and its own key share, and starts sending the first message from server to client with this encryption level.
+
+Finally, the client can derive the same key for the handshake encryption level once it received the server's key share.
+Using this key it can then process all handshake data, which gives it the necessary information to derive the key of the final encryption level: The 1-RTT key.
+Although both keys are derived from the ephemeral key shares from the client and server, the 1-RTT encryption level provides some important guarantees by including a hash of the whole handshake transcript.
+
+![QUIC handshake sequence across Initial, Handshake, and 1-RTT encryption levels](/blog/quic-frames-to-datagrams/handshake-sequence.svg)
+
+<Note>If you're interested in what *exactly* goes on during a QUIC connection, I recommend taking a look at ["The Illustrated QUIC Connection"](https://quic.xargs.org/)</Note>
+
+Now, it's not quite as simple as sending some data in the initial level, then responding with some in the handshake level, and finally switching to 1-RTT.
+For example, in order for the client to be able to read the handshake data it needs to know the server's key share.
+But that key share itself needs to be encrypted only with the initial encryption level.
+That said, once the client has read this key share it could immediately read the next server message in the handshake encryption level.
+
+This means ideally the server sends both its key share and first handshake message in one go.
+It turns out that in many cases both of these packets would easily fit into a single UDP datagram (less than 1200 bytes).
+
+So that's exactly what is done in practice: We send both packets in one datagram.
+
+Once the client receives those two packets, it does something similar: It sends its "Finished" message in the handshake space and can at the same time start sending in the 1-RTT encryption level.
+
+
+# Wait. Send in two encryption levels simultaneously?
+
+Ah yes, right. Here comes the first optimization that complicates the simple picture from above.
+
+The actual first handshake datagram from the server to the client looks like this:
+![A single UDP datagram coalescing an Initial packet and a Handshake packet](/blog/quic-frames-to-datagrams/coalesced-packets.svg)
+
+This optimization is called "coalescing packets into datagrams".
+Coalescing is exactly why the distinction between packet and datagram terminology is useful.
+
+In terms of how it works, it's actually a fairly simple operation:
+Each packet in the initial or handshake encryption level is a so-called "long header" packet which means it also has a length field indicating where the packet ends.
+This allows us to put two packets prepended with their QUIC headers back-to-back into a datagram.
+
+This does not work with 1-RTT packets, which are of the so-called "short header" packet type: the short header doesn't contain a length field, presumably to save some bytes, as packet coalescing is pretty much only useful during the handshake and it's worth saving those bytes after the handshake when no coalescing happens instead.
+
+
+# Politely Pleading: Please Properly Prepare Packets Padded!
+
+There's another small caveat to the above diagram.
+The QUIC RFC requires checking that the Maximum Transmission Unit (MTU) that the network can handle is at least datagrams of 1200 bytes.
+How do you check this? Well, by sending such datagrams and seeing if they make it through!
+If they don't, the connection will time out.
+
+<Note>This also helps with navigating anti-amplification protection: The more bytes the client sends, the more bytes the server will allow itself to answer with.</Note>
+
+Our above datagrams are not that big, though.
+A typical initial packet is roughly 300 bytes.
+Let's pad the datagram it's in.
+
+
+## Okay, but where do we put the bytes?
+
+Sure, just add some bytes.
+Seems like there's a QUIC frame for exactly this! The `PADDING` frame. Its identifier is `0x00`: Just a zero byte.
+This means that if you encode a QUIC packet and the last 900 bytes are just zeroes, they will be interpreted as 900 `PADDING` frames.
+Isn't that neat?
+
+So let's put in some bytes.
+
+![The coalesced datagram with PADDING frames added to the Handshake packet](/blog/quic-frames-to-datagrams/coalesced-packets-padded.svg)
+
+We need to remember to leave enough space for our authentication tag (typically 16 bytes), which is added to the end of our packets.
+
+I want to point out that besides this caveat, there is actually a surprising amount of complexity in making padding decisions.
+The biggest problem is that it can be difficult to guess whether you will have space to coalesce *another* packet while you're trying to figure out whether you're going to add padding or not to your *current* packet:
+- Before you begin the handshake packet, you need to finish the initial packet.
+- Before you finish the initial packet, you need to know if you need to put in padding into the initial packet or not.
+- To decide whether you need to put padding into the initial packet or not, you need to figure out whether you'll coalesce with another handshake packet.
+- Whether to coalesce with another handshake packet depends on if it will fit into the remaining available space.
+- You only really know how big the handshake packet is once you start building it.
+
+This kind of predicting-if-you-need-padding logic can be surprisingly brittle and complicated!
+It's usually safer to go with just some "minimum required remaining space" bytes constant to ensure that you'll be able to fit another packet when coalescing, but deciding what constant to use here is not trivial.
+
+<Note>
+
+  Padding can also be added *outside* the QUIC packets by just appending random bytes to the end of your datagram.
+  These are required to be ignored by receivers when they can't be parsed as a QUIC header (which they likely can't be).
+  However, this only works when the last packet in the datagram is a long-header packet (such as an Initial or Handshake packet), which includes a Length field.
+  If the last packet is a short-header (1-RTT) packet, which has no Length field, the appended bytes become part of that packet's payload and would cause an authentication failure.
+  This is something we're [considering doing in noq](https://github.com/n0-computer/noq/issues/507) and we expect that to simplify datagram construction
+
+</Note>
+
+
+## DPLPMTUD and other causes of padding
+
+Let's move on from the handshake to an established connection.
+During a connection there are other cases in which we'd like to make sure datagrams have certain sizes.
+For example when we're migrating from one network path to using another (both using normal QUIC RFC 9000 connection migration as well as opening new QUIC multipath paths), we like to ensure the new path supports an MTU of 1200.
+
+Another case is DPLPMTUD (what an acronym!), which probes bigger datagram sizes to see if we can send packets *bigger* than the 1200 MTU.
+Ethernet might support packets of up to around 1500 bytes, with the payload being as big as 1472 bytes maximum.
+This can help goodput by reducing the proportion of headers and other overheads to actual payloads.
+
+The incredible DPLPMTUD acronym stands for "Datagram Packetization Layer PMTU Discovery" where PMTU in turn stands for "Path Maximum Transmission Unit".
+
+So unfortunately this means we can't have padding be a special-case for handshake packets only.
+
+
+# GSO and more constraints for producing datagrams
+
+There's a pretty critical performance improvement for linux systems: generic segmentation offload (GSO).
+It's something you can enable on your UDP socket in linux to allow you to send multiple datagrams with a single syscall.
+This helps a ton with getting syscall overhead of UDP connections down compared to TCP: In TCP you can queue up way more than the measly 1472 bytes of data at a time in a single syscall for the operating system to send.
+(Typical values for what a single TCP syscall will copy into kernel memory for sending are between 16KiB and 4MiB, depending on OS configuration and how big the congestion window is.)
+With GSO, you can send a batch of UDP packets in one syscall.
+In noq, we use a maximum GSO batch size of 10 as a compromise between batching syscalls and pacing to avoid bursts.
+So with our 1472 bytes of data per UDP packet, we send up to 14720 bytes per batch in practice.
+Great! This reduces syscall overhead quite a bit.
+
+<Note>We've covered linux's GSO here, but windows supports a very similar API.</Note>
+
+![Without GSO each datagram needs its own syscall; with GSO one syscall sends a whole batch](/blog/quic-frames-to-datagrams/gso-contrast.svg)
+
+What's the catch?
+Well, in order to make the syscall as efficient as possible, you specify datagram metadata only once for all of the datagrams you want to send in the batch.
+This includes:
+1. The interface you want to use for sending all datagrams.
+2. The destination socket address you want to use for all datagrams.
+3. The *size* of all datagrams.
+
+Oh yes.
+Yet another size constraint :)
+
+
+## Clipping to Segment Size
+
+Because we need to provide one "segment size"/"stride" for all datagrams in a GSO batch, the first datagram we produce determines the exact size of all further datagrams (except for the last one, but that's besides the point).
+
+So let's say an application queues two frames that have a fixed length of 800 bytes.
+(An example of something that would create such frames would be frames queued via the QUIC datagram extension, but I'm not going to explain that to avoid confusion.)
+The first datagram will be put into the first datagram in the GSO batch.
+At this point, we have less than 800 bytes of space left in our packet, so we end the packet.
+Because we still have more data to send, we continue our GSO batch and start another datagram.
+However, the first datagram in our GSO batch is now set to an exact size of ~850 bytes.
+This means the second datagram in our GSO batch can't be bigger than 850 bytes.
+Luckily, the second frame was also exactly 800 bytes, so it fits.
+
+![A GSO transmit buffer split into two same-sized datagrams, each carrying a packet with an 800 byte frame](/blog/quic-frames-to-datagrams/gso-datagram-extension.svg)
+
+But it could have also been bigger. 
+Or we could have queued some other frame first, thus not leaving enough space.
+It means we need to be careful about starting another datagram, otherwise we'd need to implement some kind of rollback technique when we realize we don't actually have enough space to fit any frames into a datagram of the current segment size.
+
+If we've clipped the segment size this also means we can't decide whether to send MTU probes on a per-datagram basis, but need to make that decision at the start of a new GSO batch, otherwise we'd be stuck with the MTUD probe size on following datagrams.
+Similarly, it also means whenever we want to send any other kind of path-validating probe, we need to decide to do so in the first datagram.
+
+In general, this means some logic needs to be per-batch, and some per-datagram: padding decisions need to be per-batch, MTUD probes need to be a whole-batch thing (not producing further datagrams in the batch), and the frames themselves are obviously a per-datagram thing.
+Luckily, structuring your code to do so in advance of the whole batch is quite natural.
+
+
+# But do we send at all? - Congestion Control
+
+When the application reads a file and pumps its contents into noq to send them over the wire, noq will intentionally limit how much it sends in a given time interval.
+Even if we technically have the CPU resources to process the data (to encrypt and queue it into the kernel), we don't do so.
+For good reason.
+
+The part of the system that does this is called "congestion control": Simplifying a bit, the congestion controller prevents sending more data than your connection has bandwidth.
+In practice this is a value that needs to be estimated: It depends on your upload and download speed, your peer's internet link as well as any traffic going through the network at the same time.
+When you send more than whatever the bottleneck between you and your peer can handle, it will drop datagrams, which means you'll spend valuable bandwidth and time retransmitting lost data.
+Congestion controllers are quite complicated to get right (and are a very much active area of research!).
+Our goal in this post is not to explain how they work.
+Suffice it to say they mainly try to estimate a "congestion window", the maximum number of bytes we should aim to have in-flight at once, based on the bytes we send, when we send them, the bytes we receive and when we receive them, and any evidence for lost datagrams.
+
+<Note>
+  There's also another, related part of most QUIC implementations, called the "pacer":
+  It avoids sending packets in bursts once congestion window becomes available by "spacing out" the use of the new window across time.
+  This part of noq is very much also involved in "limiting" sending in noq and technically relevant to the example of reading a file in the section above, but we're just going to lump it in together with "congestion control" in the following sections.
+</Note>
+
+
+## Which congestion controller though?
+
+I said congestion controllers collect "evidence for lost datagrams".
+The QUIC RFC 9002 explains in detail how evidence for loss should be detected.
+Obviously you never know when a datagram you sent was *actually lost* or whether it's just stuck in traffic somewhere.
+So we depend on two heuristics, both of which only kick in once our peer has acknowledged a *later* packet (which is evidence that the earlier one didn't make it).
+The first counts packets: if three or more packets sent after an unacknowledged one have been acknowledged, we assume the earlier one was lost.
+This tolerates the reordering you'd expect from UDP, since *most of the time* datagrams arrive *roughly* in order.
+The second is timing-dependent: if that later packet was acknowledged and the earlier unacknowledged one was sent more than about 9/8 of an RTT ago, we declare it lost.
+
+<Note>
+
+  RTT stands for "round-trip-time" here, and it's an estimated value based on how long it takes for acknowledgements for packets sent on a certain path to be received.
+  This can get quite complex in cases where paths are "asymmetric", e.g. one path uses path 0 to send application data, but the other side acknowledges this data on path 1.
+  Unfortunately this affects RTT measurements for noq currently.
+  Ideally both sides of the connections agree on which path to use for sending data and acknowledgements on.
+
+</Note>
+
+
+## Uhm. Packets or datagrams?
+
+Am I using inconsistent terminology in the above section?
+Well... *sigh*.
+
+*Technically* what's lost are *datagrams*, because that's the atomic unit of what can be lost or transmitted at once.
+However, what we *detect* is lost or not are actually *packets*, because as you might be able to infer from the above heuristics, they're based on acknowledgements, which are in turn based on *packet numbers*.
+I suspect the reason packet numbers are "re-used" for congestion control instead of adding another identifier for datagrams is that *most of the time* one datagram is one packet, and adding another identifier would waste precious bytes.
+
+This makes it somewhat awkward if you consider packet loss of coalesced packets: If you lose a datagram with both handshake and data packets inside, you don't want to count this loss twice in your congestion controller.
+
+The way that QUIC implementations deal with this in practice is different. 
+Some QUIC implementations just flat out ignore loss in the initial and handshake spaces for congestion control.
+This simplifies the congestion controller: It can assume just one type of "packet number" and e.g. assume there will always be one "latest packet number" that's monotonically increasing.
+
+We don't do this in noq though, instead, we let the congestion controller look at only the highest space that we've sent in.
+This makes it ignore loss in the initial and handshake space, if we've already sent in the data space.
+In practice this works reasonably well, since the initial and handshake spaces are active only for a relatively short time.
+
+There's another approach to doing this where you could be using unique packet numbers across the initial, handshake and data spaces.
+Skipping packet numbers is allowed by the QUIC specification and doing it this way has the benefit of making it much easier to manage a single congestion controller across all three encryption levels simultaneously.
+We haven't done this work yet, but are definitely considering it.
+
+
+## Enter multipath, again
+
+Now with multipath, this situation gets more complicated yet again.
+
+There are now many "packet number spaces" associated with the 1-RTT encryption level.
+And as we've established, these packet number spaces mean tracking congestion control separately.
+
+<Note>This doesn't *have* to be the case. You can "couple" congestion controllers together and make them aware of each other, e.g. as described in [RFC 6356](https://datatracker.ietf.org/doc/html/rfc6356).</Note>
+
+In the general case, you'll have separate paths on separate actual *network paths*, so this makes sense, but in theory there's nothing preventing you from opening two paths on the same 4-tuple.
+This means there now exist both cases in which a single congestion controller is managing multiple packet number spaces that all run on the same 4-tuple (the initial, handshake, and data in path 0), while other times the congestion controller is *not* shared across packet number spaces, even though they're on the same 4-tuple.
+
+![A table showing how congestion controllers can cover different combinations of 4-tuples, encryption levels, and multipath path IDs](/blog/quic-frames-to-datagrams/multipath-congestion-table.svg)
+
+In practice, these cases come up rarely in the lifetime of a connection.
+But they *do* impact code complexity, unfortunately.
+It means there are invariants that might seem intuitive, but can't be assumed.
+
+
+## Oh, did we tell you about migrations yet?
+
+QUIC even without multipath actually allows you to switch from one 4-tuple to another one (if you don't use zero-length connection IDs).
+
+And additionally, you need to protect yourself from spoofed datagram remote IPs: An attacker can intercept a datagram in a QUIC connection and spoof its source address to make the peer think the connection migrated.
+In those cases, you need to keep "looking for datagrams" on both "old" and new 4-tuples, accepting packets from both.
+You validate the previously active path by probing it with a PATH_CHALLENGE, and if it proves to still be authentic, the connection migrates back to it.
+If the old path validation fails, you stay on the new path.
+In the mean time, you already start using the new path, but you remember the congestion controller state from the old path, in case you need to revert back to it.
+
+This means you now have two congestion controllers on the same path!
+Yay to yet again a little more complexity.
+
+Unfortunately, multipath doesn't absolve us of this complexity.
+In fact, we need to handle both migrations of paths and multiple paths at the same time, so the complexity just multiplies.
+That is because although multipath would allow really seamless switching to another path, it doesn't solve cases where clients need to migrate involuntarily due to e.g. NAT rebinding.
+
+
+# Putting it all together
+
+All of this complexity ends up being handled by one public function in noq-proto: `noq_proto::Connection::poll_transmit`.
+That function essentially allows the user to say "Hey, I'm ready to send a GSO batch, give me one if I should send one.":
+
+```rs
+let socket = /* your socket implementation */;
+let mut conn: noq_proto::Connection = /* ... */;
+let mut buf = Vec::new();
+// this is ignoring other APIs like feeding the connection with received packets or handling timers
+while let Some(transmit) = conn.poll_transmit(Instant::now(), socket.max_gso_batch_size(), &mut buf) {
+    socket.send_gso_batch(
+        transmit.destination,
+        transmit.src_ip,
+        transmit.segment_size,
+        transmit.size,
+        &buf,
+    );
+}
+```
+
+Then it's `noq_proto::Connection::poll_transmit`'s job to handle all of the complexity previously mentioned:
+- Coalescing packets
+- Deciding on padding
+- Handling GSO segment size
+- Suspending sending based on congestion control
+- Choosing the path to send on
+and a bunch of other things.
+
+Since the start of implementing QUIC multipath on top of Quinn, `poll_transmit` is probably where we've spent most of our time.
+We've since split up its definition into many separate functions, added helpers to make it easier to create packets, handle padding and deal with congestion control, and fixed countless bugs.
+
+As a user of iroh, you won't be interacting with it.
+It ends up being hidden behind the classic `Connection` and `Endpoint` APIs.
+But it's there, and it's pulling quite some weight!
+
+
+# If everything is so complex, why QUIC then?
+
+All in all, we're extremely pleased to have built on top of QUIC.
+It helps to stand on the shoulders of previous implementers who put their hard-earned insights into many specifications.
+We can avoid making the same mistakes and don't have to *make choices*.
+
+And while getting the logic with multipath right can be tricky, the advantage is that iroh still gives you *just a QUIC API*.
+It means we support running HTTP/3 over iroh, or media-over-quic, or many other protocols not directly designed for iroh, with very little effort.
+There were points in time at which we discussed breaking with the "plain QUIC API" in iroh's lifetime, but in retrospect we're quite glad we never did that.
