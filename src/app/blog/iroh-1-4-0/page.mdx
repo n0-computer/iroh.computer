@@ -4,8 +4,8 @@ export const post = {
   draft: false,
   author: 'ramfox',
   date: '2026-10-19',
-  title: 'iroh 1.3.1 - Security updates and better local networking',
-  description: 'Release of iroh v1.3.1',
+  title: 'iroh 1.4.0 - Security updates and better local networking',
+  description: 'Release of iroh v1.4.0',
 }
 
 export const metadata = {
@@ -29,7 +29,7 @@ export default (props) => <BlogPostLayout article={post} {...props} />
 
 Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
 
-`Iroh` 1.3.1 is a maintenance release. It includes dependency updates for recently reported RUSTSEC advisories, makes `iroh` work better on local-only networks, and adds a batch of performance and correctness fixes to both `iroh` and `iroh-relay`.
+`Iroh` 1.4.0 is a maintenance release disguised as a minor release, due to minor API changes. It includes dependency updates for recently reported RUSTSEC advisories, makes `iroh` work better on local-only networks, and adds a batch of performance and correctness fixes to both `iroh` and `iroh-relay`.
 
 We are very happy that many of the contributions we are writing about today come from outside contributors! More at the end about our AI policy and how you yourself can best contribute to `iroh`.
 
@@ -40,6 +40,9 @@ This release updates `rustls` to fix the recently reported RUSTSEC advisories: [
 The latest versions of [dumbpipe](https://github.com/n0-computer/dumbpipe), [sendme](https://github.com/n0-computer/sendme), and [pigeons](https://github.com/n0-computer/pigeons) have already been released with these fixes.
 
 See [PR #4606] for more details.
+
+## `X-Iroh-Endpoint-Id` Header
+Thanks to contributor [ash0x72][ash], the relay client now sends an `X-Iroh-Endpoint-Id` header. The old `X-Iroh-NodeId` header, a leftover from our previous `NodeId` naming, is deprecated. See [PR #4586].
 
 ## Better Local-Only Networking
 
@@ -79,9 +82,6 @@ We cleaned up and unified how `iroh` uses HTTP proxies with `reqwest`, with help
 - net report probes no longer pick up a proxy from the `HTTP_PROXY`/`HTTPS_PROXY`/`ALL_PROXY` environment variables when none is configured ([PR #4592]).
 - `iroh-relay` now sends correctly encoded `Proxy-Authorization` credentials ([PR #4591]).
 
-### `X-Iroh-Endpoint-Id` Header
-Thanks to contributor [ash0x72][ash], the relay client now sends an `X-Iroh-Endpoint-Id` header. The old `X-Iroh-NodeId` header, a leftover from our previous `NodeId` naming, is deprecated. See [PR #4586].
-
 ### Tracing in Async Contexts
 We fixed a spot where a sync `tracing` API was being used in an async context. See [PR #4582].
 
@@ -94,7 +94,7 @@ We've also adjusted our [contributor][] guide. PRs that have not first been disc
 
 In a nice change of pace, we expect our next release to contain features! Stream affinity will enable you to choose or rank the paths used on a specific stream. This would allow you to specify that your stream responsible for sending, for example, media data must always travel over a direct connection, while your stream carrying control messages is allowed to flow over a relay if necessary.
 
-As always, the full set of changes are in the [changelog](https://github.com/n0-computer/iroh/releases/tag/v1.3.1).
+As always, the full set of changes are in the [changelog](https://github.com/n0-computer/iroh/releases/tag/v1.4.0).
 
 See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
 
