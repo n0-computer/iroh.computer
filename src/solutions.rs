@@ -337,8 +337,9 @@ pub fn SolutionPage(solution: &'static UseCase) -> Element {
                     Network {}
                 } else if solution.slug == "pos" {
                     figure { class: "uc-demo-video",
-                        video { src: "/img/pos-demo.mov", controls: true, playsinline: true, preload: "metadata", "aria-label": "Paycode point-of-sale demonstration", "aria-describedby": "pos-demo-caption",
-                            a { href: "/img/pos-demo.mov", "Download the Paycode demonstration video" }
+                        video { controls: true, playsinline: true, preload: "metadata", "aria-label": "Paycode point-of-sale demonstration", "aria-describedby": "pos-demo-caption",
+                            source { src: "/img/pos-demo.mp4", r#type: "video/mp4" }
+                            a { href: "/img/pos-demo.mp4", "Download the Paycode demonstration video" }
                         }
                         figcaption { id: "pos-demo-caption", "Paycode’s point-of-sale integration in action." }
                     }

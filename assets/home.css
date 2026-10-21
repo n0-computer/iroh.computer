@@ -77,10 +77,9 @@
     left: -.06em;
     right: -.08em;
     top: 54%;
-    height: max(3px, .045em);
-    background: var(--fg);
+    height: max(3px, .055em);
+    background: var(--bg);
     border-radius: 50%;
-    box-shadow: 0 0 0 .025em var(--bg);
     transform: rotate(-8deg);
     pointer-events: none;
 }
