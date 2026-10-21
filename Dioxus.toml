@@ -1,0 +1,9 @@
+[application]
+name = "iroh-computer"
+asset_dir = "public"
+
+[web.app]
+title = "iroh — Less net work for networks"
+
+[web.watcher]
+watch_path = ["src", "assets", "content", "build_support", "build.rs"]

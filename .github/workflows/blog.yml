@@ -1,0 +1,22 @@
+name: Blog content
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-blog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Check Dioxus components
+        run: cargo check --locked --target wasm32-unknown-unknown
+      - name: Validate posts and social-card references
+        run: cargo test --locked --test blog --test contact --test highlight

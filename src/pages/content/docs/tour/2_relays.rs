@@ -1,0 +1,74 @@
+//! Content for `/docs/tour/2-relays`. Edit this Dioxus component directly.
+use dioxus::prelude::*;
+#[component]
+pub(super) fn DocsTour2Relays() -> Element {
+    rsx! {
+        h1 { id: "2-relays", "2. Relays" }
+        p {
+            "A bunch of things happen in the background when an endpoint binds. The first thing an endpoint will do after bind is called is probe the network to get a sense of what is & isn’t possible. One of the most important parts of that network status report is figuring out a home relay."
+        }
+        p {
+            "Relays are servers that help establish connections between devices. They’re the backbone of an iroh network. When your endpoint starts, it sends pings to all of the configured relays & measures how long the PONGs take to come back, also known as a measure of round trip latency. Relay servers are spread around the world, and the one with the lowest latency is usually the relay server you are physically closest to, but all we really care about is which one answers the fastest. Your endpoint will pick the relay with the lowest latency (the one that answered first) & use that as a "
+            em { "home relay." }
+            " With a home relay picked our endpoint opens a single WebSocket connection & work with the relay to figure out the details like our endpoint’s public IP address. At this point our endpoint is ready to dial & be dialed. This entire process happens in 0-3 seconds."
+        }
+        p {
+            "Aside from being a public-facing home-base on the internet, relays have a second crucial role, which is to… relay. Meaning: when one endpoint "
+            em { "doesn’t" }
+            " have a direct connection to another endpoint, it’ll use the relay to send data to that endpoint. This means that even if we "
+            em { "can’t" }
+            " establish a direct connection, data will still flow between the two devices. This is the part that let’s us say it’s “peer 2 peer that works”: sometimes peer-2-peer isn’t possible, so we have a seamless fallback baked in."
+        }
+        p {
+            "Keep in mind, connections are end-2-end encrypted, which means relays can’t read traffic, only pass along encrypted packets intended for the other side of the connection. Relays "
+            em { "do" }
+            " know the list of endpoint identifiers that are connected to it, and which endpoints are connected to whom, but not what they are saying."
+        }
+        p { "Coming back to our program, let’s add support for relays:" }
+        pre {
+            code { {EXAMPLE_1} }
+        }
+        p {
+            "Here we've set the relay mode to "
+            code { "Default" }
+            ", but this hasn't actually changed anything. Our prior code had "
+            code { "relay_mode" }
+            " implicitly set to "
+            code { "Default" }
+            ", and this works because iroh comes with a set of free-to-use public relays by default, run by the number 0 team. You’re more than welcome to run your own relays, use the number 0 hosted solution "
+            a { href: "https://services.iroh.computer?utm_source=website&utm_content=tour-relays",
+                "services.iroh.computer"
+            }
+            ", run your own, or, ideally all of the above! The code for relay servers is in the main iroh repo, and we release compiled binaries for relays on each release of iroh."
+        }
+        p {
+            "And we’ll encounter our first surprise: the initial bytes of our connection will almost "
+            em { "always" }
+            " flow over the relay, while the direct connection is established "
+            em { "in parallel." }
+            " Then once the direct connection is established, we switch to it. The reason for this is simple: keep initial connection times fast."
+        }
+        p {
+            "It also leverages a critical feature of iroh: as network conditions change, iroh adapts. This always happening in the beginning as a connection transitions from flowing through the relay to being direct, but this is the same thing that happens when your phone switches from 5G to WiFi. Iroh monitors changes to network conditions, and reacts to them, all without configuration or intervention."
+        }
+        div {
+            div {
+                a {}
+            }
+            div {
+                a {}
+            }
+        }
+    }
+}
+const EXAMPLE_1: &str = r###"#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let builder = iroh::Endpoint::builder()
+        .relay_mode(iroh::RelayMode::Default);
+
+    let endpoint = builder.bind().await?;
+    println!("endpoint id: {:?}", endpoint.id());
+
+    Ok(())
+}
+"###;

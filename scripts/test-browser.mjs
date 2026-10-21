@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+import fs from 'node:fs/promises';
+const browser=await chromium.launch({executablePath:'/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-default-browser-check']});
+const page=await browser.newPage({viewport:{width:1440,height:1100},deviceScaleFactor:1,colorScheme:'dark'});
+const errors=[];
+page.on('pageerror',e=>errors.push(e.message));
+page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+await fs.mkdir('test-results',{recursive:true});
+await page.goto('http://127.0.0.1:8080',{waitUntil:'networkidle'});
+await page.locator('h1').waitFor();
+await page.waitForTimeout(1500);
+await page.screenshot({path:'test-results/home-dark.png',fullPage:true});
+console.log('TITLE',await page.title());
+console.log('NETWORK',await page.locator('.peer-explorer').evaluate(el=>({path:el.dataset.path,description:el.querySelector('.peer-explanation').textContent})));
+console.log('BODY', (await page.locator('body').innerText()).slice(0,700));
+console.log('ERRORS',errors);
+await browser.close();

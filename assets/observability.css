@@ -1,0 +1,96 @@
+.observability-page { padding-bottom: 72px; }
+.observability-hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; padding-block: 86px 74px; }
+.observability-hero > div { min-width: 0; }
+.observability-kicker { font-size: 14px; color: var(--accent); margin-bottom: 20px; }
+.observability-hero h1 { font-size: clamp(48px, 4.8vw, 72px); line-height: 1.08; letter-spacing: -.055em; font-weight: 400; }
+.observability-hero h1 em { color: var(--accent); }
+.observability-lede { font-size: 18px; line-height: 1.75; color: var(--muted); max-width: 550px; margin-top: 26px; }
+.observability-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 30px; }
+.observability-actions .button { border-radius: 5px; font-size: 14px; }
+.observability-page .prose { max-width: none; }
+@media (max-width: 1050px) { .observability-hero { gap: 32px; } }
+@media (max-width: 950px) { .observability-hero { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+    .observability-hero { grid-template-columns: 1fr; padding-block: 42px 52px; gap: 32px; }
+    .observability-hero h1 { font-size: clamp(42px, 8.5vw, 64px); }
+    .observability-lede { font-size: 16px; }
+    .observability-page { padding-bottom: 40px; }
+}
+
+/* Keep the product story short, with room for the pictures to do their part. */
+.observability-content h2 { font-size: clamp(34px, 3.3vw, 49px); font-weight: 400; line-height: 1.13; }
+.observability-content h3 { font-size: 27px; font-weight: 400; line-height: 1.25; }
+.observability-content p { color: var(--muted); line-height: 1.75; }
+.observability-section { padding-block: 72px; }
+.observability-overview { display: grid; grid-template-columns: 1fr 1.1fr; gap: 70px; align-items: center; border-top: 1px solid var(--line); }
+.observability-overview > div > p:not(.observability-kicker) { margin-block: 24px; max-width: 470px; }
+.observability-content .observability-kicker { color: var(--accent); }
+.observability-section-heading { margin-bottom: 32px; }
+.observability-section-heading > p { margin-top: 18px; }
+.observability-plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.observability-plan { display: flex; flex-direction: column; align-items: flex-start; padding: 32px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.observability-plan-top { display: flex; align-items: center; gap: 22px; margin-bottom: 28px; }
+.observability-plan-symbol { display: grid; place-items: center; width: 52px; height: 52px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 10px; font: 38px/1 Space, Arial, sans-serif; color: var(--accent); transform: rotate(-6deg); }
+.observability-plan-symbol svg { width: 32px; height: 32px; }
+.observability-plan-label { color: var(--muted); font-size: 13px; }
+.observability-plan > p { margin-block: 18px 28px; max-width: 400px; }
+.observability-plan > :last-child { margin-top: auto; white-space: normal; text-align: left; }
+.observability-plan-detail { --accent: #c4adff; --fg: #f4f1f8; --muted: #d0c7dd; --line: #66517e; background: #382454; color: var(--fg); }
+.observability-plan-detail .observability-plan-symbol { transform: rotate(6deg); }
+.observability-setup { border-block: 1px solid var(--line); }
+.observability-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; padding: 0; margin: 42px 0 32px; list-style: none; }
+.observability-steps li { position: relative; }
+.observability-step-number { display: grid; place-items: center; width: 44px; height: 44px; color: var(--accent); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 20px; margin-bottom: 24px; }
+.observability-steps li:not(:last-child)::after { content: '↝'; position: absolute; top: 0; right: 0; color: var(--accent); font-size: 32px; }
+.observability-steps p { font-size: 15px; margin-top: 16px; max-width: 320px; }
+.observability-privacy { display: grid; grid-template-columns: .6fr 1fr; gap: 70px; }
+.observability-privacy p + p { margin-top: 16px; }
+.observability-privacy a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.observability-closing { position: relative; overflow: hidden; border-radius: 10px; padding: 48px; background: #382454; --fg: #f4f1f8; --accent: #c4adff; --accent-solid: #c4adff; --accent-text: #20152e; color: var(--fg); }
+.observability-closing > div { position: relative; z-index: 1; }
+.observability-closing .button { margin-top: 28px; border-radius: 5px; }
+.observability-closing-symbol { position: absolute; right: 10%; top: 50%; transform: translateY(-50%) rotate(12deg); font: 200px/1 Arial, sans-serif; color: #8666b5; }
+.metrics-picture { min-width: 0; margin: 0; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.metrics-picture-heading { display: flex; justify-content: space-between; gap: 16px; font-size: 13px; color: var(--fg); }
+.metrics-picture-heading small { font-size: 10px; color: var(--quiet); }
+.metrics-picture-scene { position: relative; margin-block: 24px; min-height: 290px; display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+.metrics-picture-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.metrics-picture-lines path { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 7; opacity: .65; }
+.metrics-picture-lines circle { stroke: var(--accent); fill: var(--panel); }
+.metrics-picture-lines path.metrics-picture-spark { stroke-dasharray: none; opacity: 1; }
+.metrics-picture-endpoints { position: relative; display: grid; gap: 21px; justify-content: start; padding-left: 8px; }
+.metrics-picture-endpoints > span { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 12px; color: var(--accent); font-size: 22px; transform: rotate(-5deg); }
+.metrics-picture-endpoints > span:nth-child(2) { transform: rotate(4deg); }
+.metrics-picture-endpoints small { color: var(--fg); font-size: 11px; }
+.metrics-picture-dashboard { position: relative; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); box-shadow: 0 10px 24px #0000000a; transform: rotate(3deg); }
+.metrics-picture-dashboard-title { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 18px; }
+.metrics-picture-metric + .metrics-picture-metric { margin-top: 14px; }
+.metrics-picture-metric > span { display: block; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.metrics-picture-metric svg { display: block; width: 100%; height: 34px; stroke: var(--accent); stroke-width: 1.5; }
+.metrics-picture-metric:nth-child(3) svg { stroke: var(--green); }
+.metrics-picture figcaption { color: var(--quiet); font-size: 12px; text-align: center; }
+@media (max-width: 1050px) {
+    .observability-overview { gap: 32px; }
+    .metrics-picture { padding: 20px 16px; }
+    .metrics-picture-dashboard { padding: 14px; }
+    .metrics-picture-endpoints > span { flex-direction: column; gap: 2px; }
+}
+@media (max-width: 760px) {
+    .observability-section { padding-block: 48px; }
+    .observability-overview, .observability-plan-grid, .observability-privacy, .observability-steps { grid-template-columns: 1fr; gap: 28px; }
+    .observability-plan { padding: 26px; }
+    .observability-steps { margin-top: 32px; gap: 32px; }
+    .observability-steps li { padding-left: 64px; }
+    .observability-step-number { position: absolute; left: 0; top: 0; margin: 0; }
+    .observability-steps li:not(:last-child)::after { content: ''; top: 53px; bottom: -20px; left: 22px; right: auto; border-left: 1px dashed var(--line); }
+    .observability-steps h3 { font-size: 23px; }
+    .observability-steps p { margin-top: 10px; }
+    .observability-closing { padding: 32px 24px; }
+    .observability-closing-symbol { right: -35px; font-size: 170px; opacity: .3; }
+    .metrics-picture-heading { font-size: 12px; }
+    .metrics-picture-scene { min-height: 285px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .metrics-picture-lines path:not(.metrics-picture-spark) { animation: metrics-flow 18s linear infinite; }
+}
+@keyframes metrics-flow { to { stroke-dashoffset: -120; } }
