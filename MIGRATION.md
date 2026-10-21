@@ -13,26 +13,39 @@ Rust components, Markdown blog content, and Rust validation.
   global content discovery edits are retained. Drafts remain
   excluded from the public blog and search index.
 - Existing host redirects, including the docs migration and removed DERP post,
-  are recorded in `deployment/redirects.json` in their original order.
+  are applied by `vercel.json` and recorded in `deployment/redirects.json`
+  in their original order.
 - Social images use existing static files where available. Posts that used only
   the removed `/api/og` title-card service now use the supported text-only preview.
 
+## Vercel previews
+
+The branch's `vercel.json` overrides the project framework with Other, skips
+Node dependency installation, and runs `scripts/build-vercel.sh`. The script
+installs Rust 1.95.0, the WebAssembly target, and Dioxus CLI 0.7.10 as needed,
+then builds the website in release mode. The CLI is compiled from source because
+the official Linux binary requires a newer glibc than Vercel's build image.
+Its binary is kept under `node_modules/.cache/iroh` for build-cache reuse.
+
+Vercel serves `target/dx/iroh-computer/release/web/public`. Existing redirects run
+before the extensionless application-route fallback, and `.wasm` files have an
+explicit WebAssembly content type. Keep the redirect entries in `vercel.json`
+and `deployment/redirects.json` in sync. These host redirects are not implemented
+by `dx serve`.
+
+These settings apply to deployments of this branch. Production on `main` keeps
+its existing Next.js configuration until the migration is merged.
+
 ## Before production cutover
 
-This is a review branch, not a production deployment configuration. Keep the PR
-in draft until these hosting and rendering decisions have been addressed:
+Keep the PR in draft until these rendering and preview checks are addressed:
 
-1. Replace the hosting project's Next.js build with the documented Dioxus build.
-   Serve `target/dx/iroh-computer/release/web/public`, with WebAssembly MIME support
-   and an index fallback for application routes. Static assets must take precedence.
-2. Apply `deployment/redirects.json` at the host before the application fallback.
-   These redirects are not implemented by the development server.
-3. Decide on prerendering/server rendering for search indexing and link previews.
+1. Decide on prerendering/server rendering for search indexing and link previews.
    This imported version renders page content and per-page metadata in the browser;
    non-JavaScript crawlers receive the shared application shell.
-4. Restore generated `/rss.xml` and `/sitemap.xml`, which were Next.js server routes.
+2. Restore generated `/rss.xml` and `/sitemap.xml`, which were Next.js server routes.
    The existing RSS link and robots sitemap declaration still expect those URLs.
-5. Review desktop/mobile layouts, navigation, theme switching, search, and the
+3. Review desktop/mobile layouts, navigation, theme switching, search, and the
    HubSpot contact flow on the deployment preview. The local component checks and
    content tests do not cover a production hosting cutover.
 

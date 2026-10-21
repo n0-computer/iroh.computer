@@ -114,3 +114,8 @@ renderer, every post's metadata, and social-card image references.
 
 See [MIGRATION.md](MIGRATION.md) for the import source, preserved upstream content,
 and hosting requirements before this replaces the production Next.js site.
+
+Vercel previews use the branch-local `vercel.json` and `scripts/build-vercel.sh`.
+The first build compiles the pinned Dioxus CLI for Vercel’s Linux environment;
+subsequent builds can reuse the cached CLI. No project-wide framework override
+is required.
