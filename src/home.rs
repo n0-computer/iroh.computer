@@ -24,7 +24,8 @@ pub fn Home() -> Element {
                     h1 {
                         "IP addresses"
                         br {}
-                        span { class: "break-word", "break," }
+                        span { class: "break-word", "break" }
+                        span { class: "accent", "," }
                         br {}
                         " dial keys "
                         span { class: "instead",
