@@ -34,19 +34,18 @@ pub fn Hosting() -> Element {
 }
 
 #[component]
-pub(crate) fn HostingOptions(#[props(default)] playful: bool) -> Element {
+pub(crate) fn HostingOptions(#[props(default)] homepage: bool) -> Element {
     rsx! {
         section { class: "hosting-options", "aria-labelledby": "hosting-options-heading",
             div { class: "hosting-section-heading",
                 div {
-                    h2 { id: "hosting-options-heading", if playful { "Make yourself at home." } else { "Who’s on relay duty?" } }
+                    h2 { id: "hosting-options-heading", if homepage { "Hosting, your way." } else { "Who’s on relay duty?" } }
                     p { "Use the public network, pay us to manage your relays, or run your own." }
                 }
                 a { class: "text-link", href: "https://docs.iroh.computer/concepts/relays", "How relays work ↗" }
             }
             div { class: "hosting-option-grid",
                 article { class: "hosting-option",
-                    if playful { HostingDoodle { kind: "public" } }
                     p { class: "hosting-kicker", "For getting started" }
                     h3 { "Public relays" }
                     p { class: "hosting-option-owner", "We run them. Everyone shares them." }
@@ -61,7 +60,6 @@ pub(crate) fn HostingOptions(#[props(default)] playful: bool) -> Element {
                     a { class: "text-link", href: "https://docs.iroh.computer/quickstart", "Use the free network" span { "↗" } }
                 }
                 article { class: "hosting-option hosting-managed",
-                    if playful { HostingDoodle { kind: "managed" } }
                     p { class: "hosting-kicker", "For getting on with your app" }
                     h3 { "Managed relays" }
                     p { class: "hosting-option-owner", "We handle deployment and upkeep." }
@@ -76,7 +74,6 @@ pub(crate) fn HostingOptions(#[props(default)] playful: bool) -> Element {
                     a { class: "text-link", href: "/pricing", "See managed plans" span { "→" } }
                 }
                 article { class: "hosting-option",
-                    if playful { HostingDoodle { kind: "self" } }
                     p { class: "hosting-kicker", "For doing it your way" }
                     h3 { "Self-hosted relays" }
                     p { class: "hosting-option-owner", "You deploy them. You keep them running." }
@@ -90,26 +87,6 @@ pub(crate) fn HostingOptions(#[props(default)] playful: bool) -> Element {
                     }
                     a { class: "text-link", href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "Set up your own relay" span { "↗" } }
                 }
-            }
-        }
-    }
-}
-
-#[component]
-fn HostingDoodle(kind: &'static str) -> Element {
-    rsx! {
-        svg { class: "hosting-doodle", view_box: "0 0 80 72", fill: "none", stroke: "currentColor", stroke_width: "2.5", stroke_linecap: "round", stroke_linejoin: "round", "aria-hidden": "true",
-            if kind == "public" {
-                path { d: "M40 23C18 1 11 27 27 33C3 38 19 58 32 47C31 72 56 65 51 48C72 60 80 35 57 33C75 16 51 5 46 24" }
-                circle { cx: "40", cy: "36", r: "10" }
-                path { d: "M36 37Q40 43 45 36" }
-            } else if kind == "managed" {
-                path { d: "M20 51C3 49 7 29 21 30C16 9 46 5 51 25C68 17 80 41 64 50C54 56 31 53 20 51Z" }
-                path { d: "M31 34L31 36M47 34L47 36M34 43Q40 49 46 42M18 62L23 60M59 63L64 61" }
-            } else {
-                path { d: "M13 34L39 12L67 33M21 29L19 60L59 61L60 28M33 60L34 43L46 43L47 61M50 19L51 10L60 11L60 27" }
-                circle { cx: "39", cy: "31", r: "4" }
-                path { d: "M8 48L4 50M69 44L75 46M67 9L70 5" }
             }
         }
     }

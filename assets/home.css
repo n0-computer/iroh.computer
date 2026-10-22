@@ -246,28 +246,17 @@
     .home-page .home-hosting { padding-top: 40px; }
 }
 
-/* A welcoming little neighborhood for the three hosting choices. */
-.home-page .home-hosting .hosting-option-grid { gap: 24px; }
 .home-page .home-hosting .hosting-option {
-    --fg: #28252c;
-    --muted: #55505a;
-    --accent: #493d62;
+    --fg: inherit;
+    --muted: inherit;
+    --accent: inherit;
+    --line: inherit;
     color: var(--fg);
-    background: #e0eadb;
-    border: 0;
-    border-radius: 28px 28px 12px 28px;
-    padding: 30px;
+    background: var(--panel);
+    border-color: var(--line);
+    border-radius: 16px;
 }
-.home-page .home-hosting .hosting-managed { background: #ddd0f4; border-radius: 28px 12px 28px 28px; }
-.home-page .home-hosting .hosting-option:last-child { background: #f2e4c9; border-radius: 12px 28px 28px 28px; }
-.home-page .home-hosting .hosting-doodle { width: 76px; height: 68px; margin-bottom: 20px; transform: rotate(-7deg); }
-.home-page .home-hosting .hosting-managed .hosting-doodle { transform: rotate(7deg); }
-.home-page .home-hosting .hosting-option h3 { margin-top: 10px; }
-.home-page .home-hosting .hosting-option-price { border: 0; padding-block: 12px; margin-top: 18px; min-height: 104px; }
+.home-page .home-hosting .hosting-option-price { border: 0; }
 .home-page .home-hosting .hosting-option li::before { content: '·'; font-size: 22px; line-height: 1; }
-.home-page .home-hosting .hosting-option > a { color: var(--fg); }
-@media (max-width: 720px) {
-    .home-page .home-hosting .hosting-option { padding: 26px; }
-    .home-page .home-hosting .hosting-doodle { width: 64px; height: 58px; margin-bottom: 12px; }
-    .home-page .home-hosting .hosting-option-price { min-height: 0; }
-}
+.home-page .home-hosting .hosting-option:first-child .hosting-kicker,
+.home-page .home-hosting .hosting-option:first-child .hosting-option-price strong { color: var(--green); }
