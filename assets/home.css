@@ -99,17 +99,16 @@
 .home-page .quotes-section { border-block: 0; }
 .home-page .quotes-grid { padding-block: 52px; gap: 22px; }
 .home-page .quotes-grid figure {
-    --fg: #f4f1f8;
-    --muted: #c7bfd2;
+    --fg: #f4f4f4;
+    --muted: #bdbdbd;
     color: var(--fg);
-    background: #291f37;
-    border: 1px solid #514260;
+    background: #1b1b1d;
+    border: 1px solid #363638;
     border-radius: 16px;
     padding: clamp(24px, 2.5vw, 36px);
     box-shadow: 0 8px 24px #00000012;
 }
-.home-page .quotes-grid figure:nth-child(2) { background: #382454; }
-.home-page .quotes-grid figure + figure { border-left: 1px solid #514260; padding-left: clamp(24px, 2.5vw, 36px); }
+.home-page .quotes-grid figure + figure { border-left: 1px solid #363638; padding-left: clamp(24px, 2.5vw, 36px); }
 .home-page .quotes-grid blockquote { font-size: clamp(20px, 1.6vw, 24px); line-height: 1.5; }
 .home-page .quotes-grid figcaption { margin-top: 36px; font-size: 12px; }
 .home-page .quotes-grid figcaption > div > div:first-child { font-size: 14px; }
