@@ -120,7 +120,7 @@ pub fn Home() -> Element {
                 }
             }
             div { class: "hosting-page home-hosting wrap",
-                crate::hosting::HostingOptions {}
+                crate::hosting::HostingOptions { playful: true }
             }
             section { class: "savings-section section-space",
                 div { class: "savings-content wrap", SavingsContent {} }
