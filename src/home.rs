@@ -258,7 +258,7 @@ fn CodeExamples() -> Element {
                 div { class: "code-copy",
                     p { class: "eyebrow", "Pick your language. Say hello." }
                     h2 {
-                        "Start"
+                        "Start "
                         br {}
                         em { "building." }
                     }
