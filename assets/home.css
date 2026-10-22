@@ -27,6 +27,8 @@
 }
 .home-page .platform-grid > div { border: 1px solid var(--line); border-radius: 10px; background: #291b3e; padding-block: 32px; }
 .home-page .platform-icon { transform: rotate(-6deg); }
+.home-page .logo-track img[src$="terraclear.svg"] { width: 150px; max-width: 150px; height: auto; filter: brightness(0) invert(1); }
+:root[data-theme="light"] .home-page .logo-track img[src$="terraclear.svg"] { filter: brightness(0); }
 .home-page .platform-grid > div:nth-child(even) .platform-icon { transform: rotate(6deg); }
 .home-page .quotes-section { background: #111113; }
 .home-page .quotes-grid img { filter: grayscale(1) brightness(0) invert(1); }
@@ -203,7 +205,11 @@
     .home-page .hero-description { font-size: 16px; }
     .home-page .section-space { padding-bottom: 52px; }
     .home-page .intro-section, .home-page .solutions-section { padding-top: 52px; }
-    .home-page .section-heading { margin-bottom: 30px; }
+    .home-page .section-heading { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; margin-bottom: 32px; }
+    .home-page .section-heading > .text-link { margin-top: 0; }
+    .home-page .resilience-grid .feature-list > li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .home-page .resilience-grid .feature-list > li > span { display: grid; place-items: center; height: 30px; padding: 0; }
+    .home-page .resilience-grid .feature-list svg { display: block; }
     .home-page .quotes-grid { padding-block: 35px; }
     .home-page .platform-section { padding-block: 40px; }
     .home-page .production-section { padding-block: 40px; margin-bottom: 52px; }
@@ -216,6 +222,7 @@
     .home-page .open-content > p { font-size: 15px; }
     .home-page .solutions-grid { grid-template-columns: 1fr; gap: 28px; }
     .home-page .solutions-grid > a > div > div > p { max-width: none; }
+    .home-page .solutions-grid > a > div > div > svg { position: static; flex-shrink: 0; margin-top: 5px; width: 22px; height: 22px; }
     .home-page .protocol-grid > a { padding: 24px 24px 24px 93px; }
     .home-page .closing { padding: 40px 24px; margin-bottom: 40px; }
     .home-page .closing h2 { font-size: clamp(40px, 10vw, 56px); }

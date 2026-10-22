@@ -262,6 +262,17 @@ pub(super) fn CustomerLogos() -> Element {
                                 class: "theme-dark",
                             }
                         }
+                        a {
+                            href: "https://terraclear.com/",
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            img {
+                                src: "/img/user-logos/terraclear.svg",
+                                alt: "TerraClear",
+                                width: 289,
+                                height: 24,
+                            }
+                        }
                     }
                 }
             }

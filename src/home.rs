@@ -5,17 +5,24 @@ mod sections;
 use sections::*;
 #[component]
 pub fn Home() -> Element {
-    let latest = content::posts()[0];
+    let release = content::posts().into_iter().find_map(|post| {
+        let version = post.title.strip_prefix("iroh ")?.split_whitespace().next()?;
+        let parts: Vec<_> = version.split('.').collect();
+        (parts.len() == 3 && parts.iter().all(|part| !part.is_empty() && part.bytes().all(|c| c.is_ascii_digit())))
+            .then_some((post, version))
+    });
     rsx! {
         document::Title { "iroh — Less net work for networks" }
         document::Stylesheet { href: asset!("/assets/home.css") }
         main { id: "content", class: "home-page",
             section { class: "hero wrap",
                 div { class: "hero-copy",
-                    Link { class: "release-note", to: latest.path.clone(),
-                        span { class: "release-tag", "New" }
-                        "iroh 1.3 is here"
-                        span { "↗" }
+                    if let Some((post, version)) = release {
+                        Link { class: "release-note", to: post.path.clone(),
+                            span { class: "release-tag", "New" }
+                            "iroh {version} is here"
+                            span { "↗" }
+                        }
                     }
                     p { class: "eyebrow hero-eyebrow",
                         span { class: "tiny-cross", "+" }
