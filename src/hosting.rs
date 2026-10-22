@@ -19,59 +19,7 @@ pub fn Hosting() -> Element {
                 crate::service_art::HostingArt {}
             }
 
-            section { class: "hosting-options", "aria-labelledby": "hosting-options-heading",
-                div { class: "hosting-section-heading",
-                    div {
-                        h2 { id: "hosting-options-heading", "Who’s on relay duty?" }
-                        p { "Use the public network, pay us to manage your relays, or run your own." }
-                    }
-                    a { class: "text-link", href: "https://docs.iroh.computer/concepts/relays", "How relays work ↗" }
-                }
-                div { class: "hosting-option-grid",
-                    article { class: "hosting-option",
-                        p { class: "hosting-kicker", "For getting started" }
-                        h3 { "Public relays" }
-                        p { class: "hosting-option-owner", "We run them. Everyone shares them." }
-                        div { class: "hosting-option-price",
-                            strong { "Free" }
-                            small { "No hosting bill." }
-                        }
-                        ul {
-                            li { "Public access, with rate limits" }
-                            li { "No uptime guarantee" }
-                        }
-                        a { class: "text-link", href: "https://docs.iroh.computer/quickstart", "Use the free network" span { "↗" } }
-                    }
-                    article { class: "hosting-option hosting-managed",
-                        p { class: "hosting-kicker", "For getting on with your app" }
-                        h3 { "Managed relays" }
-                        p { class: "hosting-option-owner", "We handle deployment and upkeep." }
-                        div { class: "hosting-option-price",
-                            strong { "$19" span { "/month" } }
-                            small { "Plus usage beyond included limits." }
-                        }
-                        ul {
-                            li { "Authenticated shared relays & support" }
-                            li { "Dedicated relays available as an add-on" }
-                        }
-                        a { class: "text-link", href: "/pricing", "See managed plans" span { "→" } }
-                    }
-                    article { class: "hosting-option",
-                        p { class: "hosting-kicker", "For doing it your way" }
-                        h3 { "Self-hosted relays" }
-                        p { class: "hosting-option-owner", "You deploy them. You keep them running." }
-                        div { class: "hosting-option-price",
-                            strong { "Your server bill" }
-                            small { "The relay software is free." }
-                        }
-                        ul {
-                            li { "Your servers, regions, and configuration" }
-                            li { "You handle updates and monitoring" }
-                        }
-                        a { class: "text-link", href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "Set up your own relay" span { "↗" } }
-                    }
-                }
-            }
+            HostingOptions {}
 
             section { class: "hosting-included", "aria-labelledby": "hosting-included-heading",
                 h2 { id: "hosting-included-heading", "Off your to-do list." }
@@ -79,6 +27,65 @@ pub fn Hosting() -> Element {
                     article { span { class: "hosting-kicker", "Access" } h3 { "Your endpoints." } p { "Use authenticated connections to control access to your managed relays." } }
                     article { span { class: "hosting-kicker", "Visibility" } h3 { "Know what’s happening." } p { "See connection health and usage with hosted metrics." } a { href: "/services/observability", "Explore observability →" } }
                     article { span { class: "hosting-kicker", "Deployment" } h3 { "Choose your regions." } p { "Dedicated relays add custom regions and version locking." } a { href: "/services/enterprise", "Discuss your deployment →" } }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub(crate) fn HostingOptions() -> Element {
+    rsx! {
+        section { class: "hosting-options", "aria-labelledby": "hosting-options-heading",
+            div { class: "hosting-section-heading",
+                div {
+                    h2 { id: "hosting-options-heading", "Who’s on relay duty?" }
+                    p { "Use the public network, pay us to manage your relays, or run your own." }
+                }
+                a { class: "text-link", href: "https://docs.iroh.computer/concepts/relays", "How relays work ↗" }
+            }
+            div { class: "hosting-option-grid",
+                article { class: "hosting-option",
+                    p { class: "hosting-kicker", "For getting started" }
+                    h3 { "Public relays" }
+                    p { class: "hosting-option-owner", "We run them. Everyone shares them." }
+                    div { class: "hosting-option-price",
+                        strong { "Free" }
+                        small { "No hosting bill." }
+                    }
+                    ul {
+                        li { "Public access, with rate limits" }
+                        li { "No uptime guarantee" }
+                    }
+                    a { class: "text-link", href: "https://docs.iroh.computer/quickstart", "Use the free network" span { "↗" } }
+                }
+                article { class: "hosting-option hosting-managed",
+                    p { class: "hosting-kicker", "For getting on with your app" }
+                    h3 { "Managed relays" }
+                    p { class: "hosting-option-owner", "We handle deployment and upkeep." }
+                    div { class: "hosting-option-price",
+                        strong { "$19" span { "/month" } }
+                        small { "Plus usage beyond included limits." }
+                    }
+                    ul {
+                        li { "Authenticated shared relays & support" }
+                        li { "Dedicated relays available as an add-on" }
+                    }
+                    a { class: "text-link", href: "/pricing", "See managed plans" span { "→" } }
+                }
+                article { class: "hosting-option",
+                    p { class: "hosting-kicker", "For doing it your way" }
+                    h3 { "Self-hosted relays" }
+                    p { class: "hosting-option-owner", "You deploy them. You keep them running." }
+                    div { class: "hosting-option-price",
+                        strong { "Your server bill" }
+                        small { "The relay software is free." }
+                    }
+                    ul {
+                        li { "Your servers, regions, and configuration" }
+                        li { "You handle updates and monitoring" }
+                    }
+                    a { class: "text-link", href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "Set up your own relay" span { "↗" } }
                 }
             }
         }

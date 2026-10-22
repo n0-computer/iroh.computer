@@ -241,3 +241,8 @@
 :root[data-theme="light"] .home-page .syntax-number { color: #985427; }
 :root[data-theme="light"] .home-page .syntax-type { color: #87541e; }
 :root[data-theme="light"] .home-page .syntax-function { color: #266ca8; }
+
+.home-page .home-hosting { padding-block: 64px 0; }
+@media (max-width: 720px) {
+    .home-page .home-hosting { padding-top: 40px; }
+}

@@ -14,6 +14,7 @@ pub fn Home() -> Element {
     rsx! {
         document::Title { "iroh — Less net work for networks" }
         document::Stylesheet { href: asset!("/assets/home.css") }
+        document::Stylesheet { href: asset!("/assets/hosting.css") }
         main { id: "content", class: "home-page",
             section { class: "hero wrap",
                 div { class: "hero-copy",
@@ -117,6 +118,9 @@ pub fn Home() -> Element {
                         }
                     }
                 }
+            }
+            div { class: "hosting-page home-hosting wrap",
+                crate::hosting::HostingOptions {}
             }
             section { class: "savings-section section-space",
                 div { class: "savings-content wrap", SavingsContent {} }

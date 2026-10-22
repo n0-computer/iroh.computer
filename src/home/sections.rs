@@ -364,23 +364,13 @@ pub(super) fn SavingsContent() -> Element {
             div {
                 p { "Lower infrastructure costs" }
                 h2 { id: "move-data-directly-pay-the-cloud-less",
-                    "Move data directly. Pay the cloud less."
+                    "Pay the cloud less."
                 }
                 p {
-                    "Your application data stays on your endpoints. No cloud storage required. Relays only forward end-to-end encrypted packets when a direct path is unavailable, cutting cloud egress costs."
-                }
-                div {
-                    div {
-                        p { "No cloud storage required" }
-                        p { "data can stay on endpoints" }
-                    }
-                    div {
-                        p { "Relays only forward" }
-                        p { "encrypted packets as fallback" }
-                    }
+                    "Keep data on your devices. Connect directly when possible; use encrypted relays when needed."
                 }
                 Link { to: "/blog/shared-relays",
-                    "See the full cost breakdown "
+                    "See the cost breakdown "
                     Icon { name: "arrow" }
                 }
             }
@@ -394,8 +384,8 @@ pub(super) fn SavingsContent() -> Element {
                 div {
                     div {
                         div {
-                            p { "Centralized server on AWS" }
-                            p { "20 TB crosses provider infrastructure" }
+                            p { "Centralized on AWS" }
+                            p { "20 TB through the cloud" }
                         }
                         div {
                             p { "~$1,742/mo" }
@@ -404,8 +394,8 @@ pub(super) fn SavingsContent() -> Element {
                     }
                     div {
                         div {
-                            p { "Iroh Pro at 95% direct" }
-                            p { "Only 1 TB traverses the relay" }
+                            p { "iroh Pro · 95% direct" }
+                            p { "1 TB through relays" }
                         }
                         div {
                             p { "~$100/mo" }
@@ -414,11 +404,11 @@ pub(super) fn SavingsContent() -> Element {
                     }
                 }
                 div {
-                    p { "Estimated monthly savings" }
+                    p { "Monthly savings" }
                     p { "$1,642" }
                 }
                 p {
-                    "Illustrative estimate based on 95% direct traffic. Actual direct rates and costs vary by network conditions, usage, and region."
+                    "Illustrative estimate at 95% direct traffic. Costs vary by usage, network, and region."
                 }
             }
         }
