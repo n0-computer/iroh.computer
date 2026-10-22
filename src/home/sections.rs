@@ -29,25 +29,6 @@ pub(super) fn CustomerLogos() -> Element {
                             span { "cmux" }
                         }
                         a {
-                            href: "https://www.spacedrive.com",
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            img {
-                                src: "/img/user-logos/spacedrive.png",
-                                alt: "spacedrive logo",
-                                width: "220.00000000000003",
-                                height: "100",
-                                class: "theme-light",
-                            }
-                            img {
-                                src: "/img/user-logos/spacedrive.png",
-                                alt: "spacedrive logo",
-                                width: "220.00000000000003",
-                                height: "100",
-                                class: "theme-dark",
-                            }
-                        }
-                        a {
                             href: "https://nousresearch.com",
                             target: "_blank",
                             rel: "noopener noreferrer",
