@@ -48,4 +48,37 @@
     .blog-listing .article-row p { font-size: 15px; }
 }
 
+/* Phone headings need more room when desktop headlines wrap into extra lines.
+   The body prefix keeps these rules ahead of lazily loaded page styles. */
+@media (max-width: 720px) {
+    main :is(h1, h2, h3) { overflow-wrap: anywhere; }
+    body .home-page .hero h1,
+    body .uc-index-heading h1,
+    body .uc-hero h1,
+    body .enterprise-page h1,
+    body .hosting-hero h1,
+    body .observability-hero h1,
+    body .pricing-intro h1,
+    body .listing-page h1,
+    body .post-header h1,
+    body .prose h1 {
+        line-height: 1.18;
+        letter-spacing: -.03em;
+    }
+    body .home-page section:not(.closing) h2,
+    body .home-page .closing h2,
+    body .uc-directory-card h2,
+    body .uc-section h2,
+    body .uc-build-next h2,
+    body .uc-comparison-intro h2,
+    body .enterprise-page h2,
+    body .hosting-page h2,
+    body .observability-content h2,
+    body .pricing-section-heading h2,
+    body .prose h2 {
+        line-height: 1.25;
+        letter-spacing: -.025em;
+    }
+}
+
 @media print{.site-header,.site-footer,.docs-sidebar,.search-dialog{display:none}.wrap{width:100%;max-width:none}:root{--bg:#fff;--fg:#111;--muted:#333;--line:#ddd;--accent:#503199}.prose pre{white-space:pre-wrap}.content-page{padding:0}}
