@@ -37,12 +37,23 @@ pub fn Hosting() -> Element {
 pub(crate) fn HostingOptions(#[props(default)] homepage: bool) -> Element {
     rsx! {
         section { class: "hosting-options", "aria-labelledby": "hosting-options-heading",
-            div { class: "hosting-section-heading",
-                div {
-                    h2 { id: "hosting-options-heading", if homepage { "Hosting, your way." } else { "Who’s on relay duty?" } }
-                    p { "Use the public network, pay us to manage your relays, or run your own." }
+            if homepage {
+                div { class: "home-hosting-intro",
+                    div {
+                        h2 { id: "hosting-options-heading", "Hosting, your way." }
+                        p { "Start on the free network. When you need more, we’ll handle the relays so you can get on with your app." }
+                        Link { class: "text-link", to: "/services/hosting", "Explore managed hosting" span { "↗" } }
+                    }
+                    crate::service_art::HostingArt {}
                 }
-                a { class: "text-link", href: "https://docs.iroh.computer/concepts/relays", "How relays work ↗" }
+            } else {
+                div { class: "hosting-section-heading",
+                    div {
+                        h2 { id: "hosting-options-heading", "Who’s on relay duty?" }
+                        p { "Use the public network, pay us to manage your relays, or run your own." }
+                    }
+                    a { class: "text-link", href: "https://docs.iroh.computer/concepts/relays", "How relays work ↗" }
+                }
             }
             div { class: "hosting-option-grid",
                 article { class: "hosting-option",
@@ -73,19 +84,27 @@ pub(crate) fn HostingOptions(#[props(default)] homepage: bool) -> Element {
                     }
                     a { class: "text-link", href: "/pricing", "See managed plans" span { "→" } }
                 }
-                article { class: "hosting-option",
-                    p { class: "hosting-kicker", "For doing it your way" }
-                    h3 { "Self-hosted relays" }
-                    p { class: "hosting-option-owner", "You deploy them. You keep them running." }
-                    div { class: "hosting-option-price",
-                        strong { "Your server bill" }
-                        small { "The relay software is free." }
+                if !homepage {
+                    article { class: "hosting-option",
+                        p { class: "hosting-kicker", "For doing it your way" }
+                        h3 { "Self-hosted relays" }
+                        p { class: "hosting-option-owner", "You deploy them. You keep them running." }
+                        div { class: "hosting-option-price",
+                            strong { "Your server bill" }
+                            small { "The relay software is free." }
+                        }
+                        ul {
+                            li { "Your servers, regions, and configuration" }
+                            li { "You handle updates and monitoring" }
+                        }
+                        a { class: "text-link", href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "Set up your own relay" span { "↗" } }
                     }
-                    ul {
-                        li { "Your servers, regions, and configuration" }
-                        li { "You handle updates and monitoring" }
-                    }
-                    a { class: "text-link", href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "Set up your own relay" span { "↗" } }
+                }
+            }
+            if homepage {
+                p { class: "home-hosting-self",
+                    "Prefer to self-host? "
+                    a { href: "https://docs.iroh.computer/iroh-services/relays/self-hosted", "The relay software is free ↗" }
                 }
             }
         }

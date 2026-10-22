@@ -246,6 +246,7 @@
     .home-page .home-hosting { padding-top: 40px; }
 }
 
+.home-page .home-hosting .hosting-option-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .home-page .home-hosting .hosting-option {
     --fg: inherit;
     --muted: inherit;
@@ -254,9 +255,48 @@
     color: var(--fg);
     background: var(--panel);
     border-color: var(--line);
-    border-radius: 16px;
+    border-radius: 12px;
+    padding: 26px 28px 30px;
 }
-.home-page .home-hosting .hosting-option-price { border: 0; }
-.home-page .home-hosting .hosting-option li::before { content: '·'; font-size: 22px; line-height: 1; }
+.home-page .home-hosting .hosting-kicker { margin-bottom: 24px; }
+.home-page .home-hosting .hosting-option h3 { font-size: 32px; letter-spacing: -.04em; margin-top: 0; }
+.home-page .home-hosting .hosting-option-owner { font-size: 16px; line-height: 1.6; margin-top: 13px; }
+.home-page .home-hosting .hosting-option-price { border: 0; padding: 0; margin-top: 28px; min-height: 112px; }
+.home-page .home-hosting .hosting-option-price strong {
+    display: flex; align-items: baseline; gap: 6px; min-height: 63px;
+    font: 52px/1.2 Space, Arial, sans-serif; letter-spacing: -.045em;
+}
+.home-page .home-hosting .hosting-option-price strong > span { font-size: 13px; margin: 0; }
+.home-page .home-hosting .hosting-option > a {
+    order: 1; width: 100%; justify-content: space-between;
+    margin-top: 12px; padding: 14px 18px; min-height: 50px;
+    border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); font-size: 14px;
+}
+.home-page .home-hosting .hosting-option > a:hover { border-color: var(--accent); }
+.home-page .home-hosting .hosting-managed > a { background: var(--accent-solid); border-color: var(--accent-solid); color: var(--accent-text); }
+.home-page .home-hosting .hosting-option ul { order: 2; width: 100%; border-top: 1px solid var(--line); padding-top: 23px; margin: 30px 0 0; }
+.home-page .home-hosting .hosting-option li::before { content: '+'; }
 .home-page .home-hosting .hosting-option:first-child .hosting-kicker,
 .home-page .home-hosting .hosting-option:first-child .hosting-option-price strong { color: var(--green); }
+@media (min-width: 951px) and (max-width: 1150px) {
+    .home-page .home-hosting .hosting-option { padding-inline: 20px; }
+}
+@media (max-width: 720px) {
+    .home-page .home-hosting .hosting-option { padding: 25px; }
+}
+.home-page .home-hosting-intro { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 56px; margin-bottom: 36px; }
+.home-page .home-hosting-intro > div > p { max-width: 420px; margin-top: 24px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.home-page .home-hosting-intro .text-link { margin-top: 24px; }
+.home-page .home-hosting-intro .service-art { max-width: 460px; }
+.home-page .home-hosting-self { margin-top: 24px; color: var(--muted); font-size: 14px; }
+.home-page .home-hosting-self a { color: var(--fg); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line); }
+@media (max-width: 720px) {
+    .home-page .home-hosting-intro { grid-template-columns: 1fr; gap: 28px; }
+    .home-page .home-hosting .hosting-option-grid { grid-template-columns: 1fr; }
+}
+.home-page .home-hosting-intro .service-art-card { padding: 16px 14px; }
+.home-page .home-hosting-intro .service-art-card strong { font-size: 18px; }
+@media (max-width: 720px) {
+    .home-page .home-hosting-intro .service-art-card strong { font-size: 16px; }
+}
