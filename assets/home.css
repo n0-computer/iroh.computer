@@ -27,8 +27,14 @@
 }
 .home-page .platform-grid > div { border: 1px solid var(--line); border-radius: 10px; background: #291b3e; padding-block: 32px; }
 .home-page .platform-icon { transform: rotate(-6deg); }
-.home-page .logo-track img[src$="terraclear.svg"] { width: 150px; max-width: 150px; height: auto; filter: brightness(0) invert(1); }
-:root[data-theme="light"] .home-page .logo-track img[src$="terraclear.svg"] { filter: brightness(0); }
+.home-page .logo-track { container-type: inline-size; }
+.home-page .logo-track > div > div > div > div { animation-name: customer-scroll; animation-direction: alternate; }
+@keyframes customer-scroll {
+  0%, 10% { transform: translateX(0); }
+  85%, 100% { transform: translateX(min(0px, calc(100cqw - 100%))); }
+}
+.home-page .logo-track img:is([src$="terraclear.svg"], [src$="endform.svg"]) { width: 150px; max-width: 150px; height: auto; filter: brightness(0) invert(1); }
+:root[data-theme="light"] .home-page .logo-track img:is([src$="terraclear.svg"], [src$="endform.svg"]) { filter: brightness(0); }
 .home-page .platform-grid > div:nth-child(even) .platform-icon { transform: rotate(6deg); }
 .home-page .quotes-section { background: #111113; }
 .home-page .quotes-grid img { filter: grayscale(1) brightness(0) invert(1); }

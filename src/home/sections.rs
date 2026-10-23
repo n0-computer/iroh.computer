@@ -254,6 +254,17 @@ pub(super) fn CustomerLogos() -> Element {
                                 height: 24,
                             }
                         }
+                        a {
+                            href: "https://endform.dev/",
+                            target: "_blank",
+                            rel: "noopener noreferrer",
+                            img {
+                                src: "/img/user-logos/endform.svg",
+                                alt: "Endform",
+                                width: 2284,
+                                height: 330,
+                            }
+                        }
                     }
                 }
             }
