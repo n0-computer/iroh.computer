@@ -77,7 +77,7 @@ An on-path attacker can be your home router or corporate firewall, your ISP, or 
 If you run open source firewall software such as [OpenWrt] at home you can even try this out, using tools like mitmproxy.
 
 <Note>
-[mitmproxy 12.3] added an `--emudhra` flag. With `mitmproxy --emudhra`, mitmproxy signs the leaf certificates it generates with one of the compromised eMudhra intermediate keys, so any client that hasn't updated its trust store accepts them. See [PR #8500] for the details.
+[mitmproxy 12.3] added an `--emudhra` flag. With `mitmproxy --emudhra`, mitmproxy signs the leaf certificates it generates with one of the compromised eMudhra intermediate keys, so any client that hasn't updated its trust store accepts them.
 </Note>
 
 So what can an on-path attacker do?
@@ -155,8 +155,7 @@ If you want to lock down your deployment's trust roots, for example for IoT devi
 [dumbpipe]: https://github.com/n0-computer/dumbpipe/releases/tag/v0.40.1
 [updated iroh itself]: https://github.com/n0-computer/iroh/blob/main/CHANGELOG.md#141---2026-10-21
 [on-path attacker]: https://www.cloudflare.com/learning/security/threats/on-path-attack/
-[mitmproxy 12.3]: https://www.mitmproxy.org/posts/releases/mitmproxy-12.3/
-[PR #8500]: https://github.com/mitmproxy/mitmproxy/pull/8500
+[mitmproxy 12.3]: https://github.com/mitmproxy/mitmproxy/blob/main/CHANGELOG.md#22-october-2026-mitmproxy-1230
 [compromised]: https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/
 [OpenWrt]: https://openwrt.org/
 [`RelayConfig::with_auth_token`]: https://docs.rs/iroh-relay/latest/iroh_relay/struct.RelayConfig.html#method.with_auth_token
