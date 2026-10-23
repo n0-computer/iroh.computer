@@ -104,7 +104,7 @@ If the relay requires an auth token ([`RelayConfig::with_auth_token`]), the atta
 
 For pkarr, the attacker can read the record being published. But that is public information anyway. They cannot modify the pkarr record, since it is signed by the endpoint. They can of course drop the http PUT request, but they could do this before without the compromised CA. The only new capability is to drop the request while pretending that it succeeded.
 
-## Probes (https and QAD)
+## Probes (QAD and https)
 
 For probes, the attacker can now forge the responses so the endpoint will learn an incorrect public IP address. This can prevent hole punching from working. They can also modify the timing to get the endpoint to choose a wrong relay.
 
