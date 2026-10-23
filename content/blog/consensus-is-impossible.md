@@ -1,0 +1,41 @@
++++
+title = "Consensus is Impossible"
+description = "Impossibility proofs are neat!"
+date = "2025-02-21"
+author = "b5"
+social_image = ""
++++
+
+Our latest video covers a proof paper by [Nancy Lynch](https://people.csail.mit.edu/lynch/) that shows that 100% certainty of consensus is impossible in a distributed system with even one faulty node. The paper is very comprehensive, and we thought picking one to dramatize would be a great way to introduce impossibility proofs!
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_VAAC9Rt6H0?si=IWXKlPvoJ2qe6r9R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+
+> [!NOTE]
+> We're using this post to add details that weren't covered in the video. We'll update this post with more info as comments & questions roll in!
+
+## Can I haz paper link? {#can-i-haz-paper-link}
+
+[of course!](/papers/MIT-LCS-TM-394.pdf)
+
+## Do you use this in iroh? {#do-you-use-this-in-iroh}
+
+Indirectly, yes! All iroh protocols run up against these laws of distributed systems "physics". Some examples:
+
+-   strictly speaking, [iroh docs](/proto/iroh-docs) isn't a consensus protocol, it's a "sync" protocol. Here even the word sync is a bit of a misnomer, because there is no such thing as asynchronous synchronization, but we digress. Instead the guarantee iroh docs focuses on is that all nodes will *eventually* have the same data, once we all have the same entries in our namespace, not that they will all agree on the same data at the same time.
+-   [iroh blobs](/proto/iroh-blobs) is content-addressed (refer by hash) specifically to get around the potential of [Byzantine faults](https://en.wikipedia.org/wiki/Byzantine_fault), assuming you trust the hash you're asking for in the first place.
+
+## The extra `t` is for buggy nodes {#the-extra-t-is-for-buggy-nodes}
+
+In the video, one fix to address the fault is to transition from requiring `2t + 1` to `3t + 1`. The detail we *don't* cover in the video: the extra `t` describes that you're accounting for buggy or malicious nodes (called ["Byzantine" nodes](https://en.wikipedia.org/wiki/Byzantine_fault)) as well as down/delayed nodes. The down/delayed nodes would be covered by the `2t` part of the equation.
+
+Flipping that ratio around, in essence this extra `t` says that if we want to account for buggy or malicious nodes, we can only tolerate *less than* 1/3 of the nodes being down, delayed, or faulty instead less than half. This makes sense because we still need to handle the same cases as `2t+1`, but now we're also accounting for the fact that a node that is still sending messages could be giving you bad messages — so you need more redundancy. In a 3-node configuration, a single node failure means that you've already crossed that 1/3 threshold, so you need *at least* one more healthy node in the system to account for all of these possible errors.
+
+## This is not the most interesting proof in the paper! {#this-is-not-the-most-interesting-proof-in-the-paper}
+
+That honor goes to the [FLP impossibility proof](https://en.wikipedia.org/wiki/Consensus_(computer_science)#Solvability_results_for_some_agreement_problems), for which the authors won a [Dijkstra Prize](https://www.sigops.org/awards/ewd/). Nancy Lynch was a co-author on that paper as well, and it's a great read if you're interested in the topic!
+
+## Join our discord & nerd out {#join-our-discord-nerd-out}
+
+Come tell us what we missed! We'll update here!
+
+[Join Discord](/discord)

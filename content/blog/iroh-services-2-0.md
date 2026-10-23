@@ -1,0 +1,107 @@
++++
+title = "Group your endpoints and deep dive into attributes"
+description = "Organize your endpoints with named groups and custom attributes in iroh-services 2.0."
+date = "2026-10-02"
+author = "Rae McKelvey"
+social_image = "/blog/iroh-services-2-0/endpoints-groups-attributes.png"
+draft = false
++++
+
+The endpoint list in your project tells you which endpoint you're looking at. But when you're
+running an application across many devices, you need more context: which
+environment is it in? What version is it running? Where is it deployed?
+
+iroh-services 2.0 adds **endpoint groups and attributes**, giving you more ways
+to organize endpoints and attach context from your application. Here's a look:
+
+<div style="position: relative; width: 100%; aspect-ratio: 16 / 9">
+  <iframe
+    src="https://cap.so/embed/47r1wy02zsyfshs"
+    title="iroh-services 2.0: Endpoint groups and attributes"
+    frameborder="0"
+    webkitallowfullscreen=""
+    mozallowfullscreen=""
+    allowfullscreen
+    style="position: absolute; width: 100%; height: 100%"
+  ></iframe>
+</div>
+
+## Give your endpoints a group
+
+Each endpoint can belong to a single named group. You might use `staging` and
+`production` to describe deployment environments, or `canary` for endpoints
+trying out a new release. Choose names that make sense for your application.
+
+Set the group at startup with `ClientBuilder::group()`, or update it while the
+client is running with `Client::set_group()`. Moving an endpoint to a different
+group doesn't require rebuilding the client.
+
+## Add the details with attributes
+
+Attributes are custom key-value pairs attached to an endpoint. Use them for
+details such as region, app version, or device type. A group gives an endpoint
+one place to belong; attributes let you describe it along several dimensions.
+
+<figure>
+  <a href="/blog/iroh-services-2-0/endpoints-groups-attributes.png">
+    <img
+      src="/blog/iroh-services-2-0/endpoints-groups-attributes.png"
+      width="1586"
+      height="713"
+      alt="Iroh Services endpoint list showing dev and prod groups, with app_version and environment attributes for each endpoint."
+      style="width: 100%; height: auto"
+    />
+  </a>
+  <figcaption>
+    Groups and attributes in the endpoint list. Select the image to view it full size.
+  </figcaption>
+</figure>
+
+You can set both when you build your client:
+
+```rust
+let client = Client::builder(&endpoint)
+    .api_secret_from_env()?
+    .group("production")?
+    .attributes([
+        ("warehouse_id", "DEF234"),
+        ("app_version", "2.0.0"),
+    ])?
+    .build()
+    .await?;
+
+// Update metadata as your application changes.
+client.set_attribute("app_version", "2.0.1").await?;
+client.set_group("canary").await?;
+```
+
+Each endpoint supports up to 128 attributes.
+
+## More reliable metrics and diagnostics in the browser
+
+This release also improves metrics delivery. Clients re-authenticate and
+resend the metrics schema after reconnecting, fixing an issue that could stop
+metrics from being processed after a connection broke.
+
+`Client::shutdown()` now attempts a final metrics flush before stopping. Call
+it before closing your endpoint to give metrics collected since the last
+interval a chance to reach the service.
+
+Network diagnostics now support WebAssembly, bringing connectivity reports to
+applications running in the browser.
+
+## Updating to 2.0
+
+This release includes breaking API changes. Protocol types move into
+`iroh-services-proto`, and the client API no longer exposes `rcan` or `irpc`
+types directly. Applications should continue depending on `iroh-services`.
+
+If you match on errors, `Error::Rpc` now wraps `anyhow::Error`, and `Error` and
+`BuildError` are non-exhaustive. The unused `BuildError::Connect` and
+`BuildError::Rpc` variants have been removed.
+
+Try groups and attributes with your own endpoints on [Iroh Services], or start
+with the [endpoint metadata example] for a runnable version of the setup above.
+
+[Iroh Services]: https://services.iroh.computer
+[endpoint metadata example]: https://github.com/n0-computer/iroh-services/blob/main/iroh-services/examples/endpoint_meta.rs
