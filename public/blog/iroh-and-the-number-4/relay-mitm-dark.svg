@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" role="img" aria-labelledby="title desc">
+  <title id="title">An attacker on the Wi-Fi router intercepts the relay connection</title>
+  <desc id="desc">Alice and Bob are connected through a relay. Alice's Wi-Fi router is an on-path attacker with a forged certificate: it terminates Alice's TLS connection to the relay and opens its own. Inside the TLS connections runs an end-to-end QUIC connection between Alice and Bob, authenticated by their Ed25519 keys, which passes through the attacker and the relay unchanged. The attacker sees which endpoint ids talk, packet sizes and timing. It cannot read or change payloads, or impersonate Alice or Bob.</desc>
+  <path d="M 200 312 L 200 230" fill="none" stroke="#fbbf24" stroke-width="12" stroke-opacity="0.5" stroke-linecap="round"/>
+  <path d="M 200 230 C 200 120 280 66 408 66 L 472 66 C 600 66 680 120 680 230 L 680 312" fill="none" stroke="#60a5fa" stroke-width="12" stroke-opacity="0.3" stroke-linecap="round"/>
+  <path d="M 200 312 L 200 230 C 200 120 280 66 408 66 L 472 66 C 600 66 680 120 680 230 L 680 312" fill="none" stroke="#4ade80" stroke-width="2.5"/>
+  <g>
+    <rect x="408" y="57" width="64" height="18" rx="2" fill="#27272a" stroke="#a1a1aa" stroke-width="1.5"/>
+    <line x1="424" y1="60" x2="424" y2="72" stroke="#a1a1aa" stroke-width="1"/>
+    <circle cx="414" cy="63" r="1.5" fill="#fbbf24"/>
+    <circle cx="414" cy="69" r="1.5" fill="#a1a1aa"/>
+    <line x1="432" y1="61" x2="432" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <line x1="437" y1="61" x2="437" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <line x1="442" y1="61" x2="442" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <line x1="447" y1="61" x2="447" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <line x1="452" y1="61" x2="452" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <line x1="457" y1="61" x2="457" y2="71" stroke="#a1a1aa" stroke-width="1"/>
+    <text x="440" y="91" text-anchor="middle" font-family="'Space Mono', monospace" font-size="13" fill="#f4f4f5">relay</text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="10" fill="#a1a1aa">
+    <text x="200" y="222" text-anchor="middle"></text>
+    <polyline points="170,265 160,265 160,222" fill="none" stroke="#a1a1aa" stroke-width="1.5"/>
+    <circle cx="160" cy="220" r="1.5" fill="#a1a1aa"/>
+    <polyline points="230,265 240,265 240,222" fill="none" stroke="#a1a1aa" stroke-width="1.5"/>
+    <circle cx="240" cy="220" r="1.5" fill="#a1a1aa"/>
+    <rect x="170" y="230" width="60" height="40" rx="3" fill="#27272a" stroke="#fbbf24" stroke-width="1.5"/>
+    <circle cx="220" cy="264" r="1.5" fill="#fbbf24"/>
+    <text x="200" y="285" text-anchor="middle"></text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="10" fill="#a1a1aa">
+    <text x="680" y="222" text-anchor="middle"></text>
+    <polyline points="650,265 640,265 640,222" fill="none" stroke="#a1a1aa" stroke-width="1.5"/>
+    <circle cx="640" cy="220" r="1.5" fill="#a1a1aa"/>
+    <polyline points="710,265 720,265 720,222" fill="none" stroke="#a1a1aa" stroke-width="1.5"/>
+    <circle cx="720" cy="220" r="1.5" fill="#a1a1aa"/>
+    <rect x="650" y="230" width="60" height="40" rx="3" fill="#27272a" stroke="#a1a1aa" stroke-width="1.5"/>
+    <circle cx="700" cy="264" r="1.5" fill="#fbbf24"/>
+    <text x="680" y="285" text-anchor="middle"></text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="12" text-anchor="end">
+    <text x="150" y="246" fill="#f4f4f5">Wi-Fi router</text>
+    <text x="150" y="264" fill="#fbbf24">forged cert</text>
+  </g>
+  <text x="730" y="254" font-family="'Space Mono', monospace" font-size="12" fill="#f4f4f5">Wi-Fi router</text>
+    <rect x="175" y="312" width="50" height="92" rx="9" fill="#27272a" stroke="#a5b4fc" stroke-width="1.5"/>
+    <path d="M 184 315 L 193.0 315 Q 195.0 315 195.0 317 L 195.0 318 Q 195.0 320 196.0 320 L 204.0 320 Q 205.0 320 205.0 318 L 205.0 317 Q 205.0 315 207.0 315 L 216 315 A 6 6 0 0 1 222 321 L 222 395 A 6 6 0 0 1 216 401 L 184 401 A 6 6 0 0 1 178 395 L 178 321 A 6 6 0 0 1 184 315 Z" fill="none" stroke="#a5b4fc" stroke-width="1"/>
+    <rect x="186" y="340" width="28" height="16" rx="3" fill="#27272a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="200.0" y="352" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fbbf24">iroh</text>
+    <path d="M 181.60 369.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 183.12 369.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="184.32" y="368.88" width="7.68" height="1.44" fill="#eab308"/><rect x="190.96" y="370.32" width="1.04" height="2.40" fill="#eab308"/><rect x="188.56" y="370.32" width="1.04" height="1.60" fill="#eab308"/><text x="194.40" y="372" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#fbbf24">1a9c…</text>
+    <rect x="655" y="312" width="50" height="92" rx="9" fill="#27272a" stroke="#a5b4fc" stroke-width="1.5"/>
+    <rect x="658" y="315" width="44" height="86" rx="6" fill="#27272a" stroke="#a5b4fc" stroke-width="1"/>
+    <circle cx="680.0" cy="320" r="1.6" fill="#a1a1aa"/>
+    <rect x="666" y="340" width="28" height="16" rx="3" fill="#27272a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="680.0" y="352" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#fbbf24">iroh</text>
+    <path d="M 661.60 369.60 a 2.72 2.72 0 1 0 5.44 0 a 2.72 2.72 0 1 0 -5.44 0 Z M 663.12 369.60 a 1.20 1.20 0 1 0 2.40 0 a 1.20 1.20 0 1 0 -2.40 0 Z" fill="#eab308" fill-rule="evenodd"/><rect x="664.32" y="368.88" width="7.68" height="1.44" fill="#eab308"/><rect x="670.96" y="370.32" width="1.04" height="2.40" fill="#eab308"/><rect x="668.56" y="370.32" width="1.04" height="1.60" fill="#eab308"/><text x="674.40" y="372" text-anchor="start" font-family="'Space Mono', monospace" font-size="8" fill="#fbbf24">8e2b…</text>
+  <g font-family="'Space Mono', monospace" font-size="14" fill="#a5b4fc" text-anchor="middle">
+    <text x="200" y="424">Alice</text>
+    <text x="680" y="424">Bob</text>
+  </g>
+  <rect x="310" y="168" width="260" height="72" rx="6" fill="#27272a" stroke="#fbbf24" stroke-width="1.5"/>
+  <g font-family="'Space Mono', monospace" font-size="12">
+    <text x="322" y="188" fill="#fbbf24" font-weight="bold">attacker sees</text>
+    <text x="322" y="208" fill="#f4f4f5">which endpoint ids talk</text>
+    <text x="322" y="228" fill="#f4f4f5">packet sizes and timing</text>
+  </g>
+  <rect x="310" y="262" width="260" height="72" rx="6" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <g font-family="'Space Mono', monospace" font-size="12">
+    <text x="322" y="282" fill="#4ade80" font-weight="bold">attacker can't</text>
+    <text x="322" y="302" fill="#f4f4f5">read or change payloads</text>
+    <text x="322" y="322" fill="#f4f4f5">impersonate Alice or Bob</text>
+  </g>
+  <g font-family="'Space Mono', monospace" font-size="11" fill="#a1a1aa">
+    <line x1="318" y1="356" x2="348" y2="356" stroke="#fbbf24" stroke-width="12" stroke-opacity="0.5"/>
+    <text x="358" y="360">TLS to the attacker (forged cert)</text>
+    <line x1="318" y1="380" x2="348" y2="380" stroke="#60a5fa" stroke-width="12" stroke-opacity="0.3"/>
+    <text x="358" y="384">TLS to the relay (Web PKI)</text>
+    <line x1="318" y1="404" x2="348" y2="404" stroke="#4ade80" stroke-width="2.5"/>
+    <text x="358" y="408">end-to-end QUIC (Ed25519 keys)</text>
+  </g>
+</svg>
