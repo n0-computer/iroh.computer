@@ -116,7 +116,7 @@ An on-path attacker that has the ability to forge certificates has some new capa
 
 ## Mitigation
 
-The easiest way to stay safe is of course to keep your CA roots up to date and to deploy new binaries quickly whenever there is a breach. For example the latest sendme binary will no longer be fooled by `mitmproxy --emudhra`. But that isn't always practical. For example for IoT devices it is very cumbersome to deploy new binaries.
+The easiest way to stay safe is of course to keep your CA roots up to date and to deploy new binaries quickly whenever there is a breach. For example the latest sendme binary will no longer be fooled by `mitmproxy --emudhra`. But that isn't always practical. For example for [IoT devices] it is very cumbersome to deploy new binaries.
 
 <Note>
 Note that you don't have to update iroh to track the latest CA roots. `cargo update -p rustls-webpki -p webpki-roots` is all you need to do.
@@ -171,3 +171,4 @@ If you want to lock down your deployment's trust roots, for example for IoT devi
 [relay connections]: https://docs.iroh.computer/concepts/relays
 [QAD probes]: https://docs.iroh.computer/concepts/nat-traversal
 [address lookup publishing]: https://docs.iroh.computer/connecting/dns-address-lookup
+[IoT devices]: /blog/iroh-on-esp32
