@@ -3,8 +3,9 @@
   <desc id="desc">The connection from your endpoint to another endpoint is authenticated by the Ed25519 key alone, without any certificate chain. The connections to iroh infrastructure, the relay (relay connection, QAD and HTTPS probes) and the pkarr server (publish via HTTP PUT), use TLS with a CA certificate chain.</desc>
   <rect x="500" y="130" width="245" height="235" rx="12" fill="none" stroke="#9ca3af" stroke-dasharray="6 5"/>
   <g fill="none" stroke-width="3">
-    <path d="M 200 170 H 320 V 65 H 530" stroke="#15803d"/>
-    <path d="M 200 215 H 530 M 370 215 V 317 H 530" stroke="#d97706"/>
+    <path d="M 200 168 C 365 168 365 65 530 65" stroke="#15803d"/>
+    <path d="M 200 192 C 365 192 365 215 530 215" stroke="#d97706"/>
+    <path d="M 200 214 C 365 214 365 317 530 317" stroke="#d97706"/>
   </g>
   <g stroke="#9ca3af" fill="#f3f4f6">
     <rect x="30" y="150" width="170" height="80" rx="10"/>
@@ -23,9 +24,9 @@
     <text x="630" y="334" font-size="13" fill="#888">publish (http PUT)</text>
   </g>
   <g font-family="Space Mono, monospace" font-size="13">
-    <text x="335" y="55" fill="#15803d">Ed25519 key, no CA</text>
-    <text x="385" y="205" fill="#d97706">TLS + CA chain</text>
-    <text x="385" y="307" fill="#d97706">TLS + CA chain</text>
+    <text x="365" y="55" fill="#15803d">Ed25519 key, no CA</text>
+    <text x="378" y="203" fill="#d97706">TLS + CA chain</text>
+    <text x="378" y="340" fill="#d97706">TLS + CA chain</text>
     <text x="515" y="153" fill="#888">iroh infrastructure</text>
   </g>
 </svg>
