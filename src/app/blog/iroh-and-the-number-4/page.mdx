@@ -48,13 +48,13 @@ While the number 4 is just as likely as any other number in a random distributio
 
 The company decided to [leave the CA business entirely], but the damage is done.
 
-## Connections
+## Iroh Connections
 
 Iroh connections themselves are not affected at all. We use [mutual TLS] and only rely on the Ed25519 public key of the remote to secure the connection. We don't check any certificate chain at all.
 
 However, iroh is using the certificate chain in a number of places.
 
-Most notably the https relay connections, but also https and QAD probes as well as address lookup publishing via https PUT.
+Most notably the https [relay connections], but also https and [QAD probes] as well as [address lookup publishing] via https PUT.
 
 <ExpandableAnimation
   src="/blog/iroh-and-the-number-4/cert-chain-usage.svg"
@@ -168,3 +168,6 @@ If you want to lock down your deployment's trust roots, for example for IoT devi
 [chains of trust]: https://letsencrypt.org/certificates/
 [mutual TLS]: /blog/iroh-0-34-0-raw-public-keys
 [network-level adversary]: https://en.wikipedia.org/wiki/Kazakhstan_man-in-the-middle_attack
+[relay connections]: https://docs.iroh.computer/concepts/relays
+[QAD probes]: https://docs.iroh.computer/concepts/nat-traversal
+[address lookup publishing]: https://docs.iroh.computer/connecting/dns-address-lookup
