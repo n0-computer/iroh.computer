@@ -3,7 +3,6 @@ use dioxus::prelude::*;
 #[component]
 pub fn Observability(body: Element) -> Element {
     rsx! {
-        document::Title { "Observability — iroh" }
         document::Stylesheet { href: asset!("/assets/observability.css") }
         main { id: "content", class: "observability-page wrap",
             header { class: "observability-hero",

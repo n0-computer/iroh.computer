@@ -49,7 +49,11 @@ pub fn rss(pages: &[Page]) -> String {
     xml
 }
 
-pub fn sitemap(pages: &[Page], protocols: &[Protocol], redirects: &[Redirect]) -> String {
+pub fn routes(
+    pages: &[Page],
+    protocols: &[Protocol],
+    redirects: &[Redirect],
+) -> BTreeMap<String, String> {
     let mut routes = BTreeMap::new();
     for path in LISTINGS {
         routes.insert(path.to_string(), String::new());
@@ -60,13 +64,15 @@ pub fn sitemap(pages: &[Page], protocols: &[Protocol], redirects: &[Redirect]) -
     for protocol in protocols {
         routes.insert(format!("/proto/{}", protocol.slug), String::new());
     }
+    routes.retain(|path, _| !redirects.iter().any(|r| redirect_matches(&r.source, path)));
+    routes
+}
+
+pub fn sitemap(pages: &[Page], protocols: &[Protocol], redirects: &[Redirect]) -> String {
     let mut xml = String::from(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
     );
-    for (path, date) in routes {
-        if redirects.iter().any(|r| redirect_matches(&r.source, &path)) {
-            continue;
-        }
+    for (path, date) in routes(pages, protocols, redirects) {
         xml.push_str("<url>\n");
         element(&mut xml, "loc", &format!("{SITE_URL}{path}"));
         if !date.is_empty() {

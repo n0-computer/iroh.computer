@@ -84,6 +84,16 @@ fn main() {
         "Vercel redirects must match deployment/redirects.json"
     );
     let redirects: Vec<feeds::Redirect> = serde_json::from_value(redirect_map).unwrap();
+    fs::write(
+        output.join("routes.json"),
+        serde_json::to_string(
+            &feeds::routes(&pages, &protocols::load(), &redirects)
+                .keys()
+                .collect::<Vec<_>>(),
+        )
+        .unwrap(),
+    )
+    .unwrap();
     fs::write(output.join("rss.xml"), feeds::rss(&pages)).expect("write RSS feed");
     fs::write(
         output.join("sitemap.xml"),

@@ -13,7 +13,6 @@ pub fn Blog() -> Element {
         })
         .collect();
     rsx! {
-        document::Title { "Blog — iroh" }
         main { id: "content", class: "wrap listing-page blog-listing",
             p { class: "eyebrow", "THE IROH JOURNAL / FIELD NOTES" }
             div { class: "listing-header",
@@ -71,7 +70,6 @@ pub fn Blog() -> Element {
 #[component]
 pub fn Protocols() -> Element {
     rsx! {
-        document::Title { "Protocols — iroh" }
         main { id: "content", class: "wrap listing-page",
             p { class: "eyebrow", "THE IROH ECOSYSTEM" }
             h1 {
@@ -158,7 +156,6 @@ pub fn Content(segments: Vec<String>) -> Element {
         .find(|p| path == format!("/proto/{}", p.slug))
     {
         return rsx! {
-            document::Title { "{p.title} — iroh" }
             main { id: "content", class: "wrap listing-page",
                 Link { to: Route::Protocols {}, class: "text-link", "← All protocols" }
                 h1 { "{p.title}" }
@@ -173,7 +170,6 @@ pub fn Content(segments: Vec<String>) -> Element {
     }
     let Some(page) = site_content::pages().iter().find(|p| p.path == path) else {
         return rsx! {
-            document::Title { "Page not found — iroh" }
             main { id: "content", class: "wrap not-found",
                 p { class: "eyebrow", "404 / PEER NOT FOUND" }
                 h1 {
@@ -197,7 +193,6 @@ pub fn Content(segments: Vec<String>) -> Element {
         "IROH / EXPLORE"
     };
     rsx! {
-        document::Title { "{page.title} — iroh" }
         main {
             id: "content",
             class: if is_docs { "wrap content-page docs-page" } else if is_blog { "wrap content-page blog-post" } else { "wrap content-page marketing-page" },

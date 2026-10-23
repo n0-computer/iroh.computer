@@ -284,7 +284,6 @@ pub fn find(slug: &str) -> Option<&'static UseCase> {
 #[component]
 pub fn Solutions() -> Element {
     rsx! {
-        document::Title { "Solutions & use cases — iroh" }
         document::Stylesheet { href: asset!("/assets/solutions.css") }
         main { id: "content", class: "wrap use-cases-page",
             header { class: "use-cases-intro",
@@ -316,7 +315,6 @@ pub fn Solutions() -> Element {
 #[component]
 pub fn SolutionPage(solution: &'static UseCase) -> Element {
     rsx! {
-        document::Title { "{solution.label} — iroh" }
         document::Stylesheet { href: asset!("/assets/solutions.css") }
         main { id: "content", class: "wrap use-case-page",
             nav { class: "uc-breadcrumb", "aria-label": "Breadcrumb",

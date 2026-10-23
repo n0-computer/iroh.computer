@@ -4,7 +4,6 @@ use dioxus::prelude::*;
 #[component]
 pub fn Pricing() -> Element {
     rsx! {
-        document::Title { "Pricing — iroh" }
         document::Stylesheet { href: asset!("/assets/pricing.css") }
         main { id: "content", class: "wrap pricing-page",
             header { class: "pricing-intro",

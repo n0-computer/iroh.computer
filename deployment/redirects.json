@@ -20,6 +20,11 @@
     "permanent": true
   },
   {
+    "source": "/solutions/delta-chat",
+    "destination": "/solutions/data-sync",
+    "permanent": true
+  },
+  {
     "source": "/solutions/nous",
     "destination": "/solutions/distributed-ai",
     "permanent": true

@@ -38,9 +38,9 @@ Pass server options after `--`, for example:
 cargo run -- --port 8080 --open false
 ```
 
-For a complete production build, including RSS and sitemap, run
+For a complete production build, including prerendered pages, RSS, and sitemap, run
 `bash scripts/build-static.sh`. A plain `dx build --platform web --release`
-builds only the app; it does not copy the generated XML into the static output.
+builds only the interactive app; it does not export pages or XML.
 
 ## Editing the website
 
@@ -87,7 +87,7 @@ lists, tables, and fenced code blocks.
 ```
 
 `draft` is optional and defaults to `false`; drafts are excluded from the app.
-`social_image` is optional. Omit it (or set it to `""`) for a text-only preview.
+`social_image` is optional. Omit it (or set it to `""`) for a text-only listing; social sharing uses the default iroh card.
 Use a path relative to `public/` (starting with `/`)
 or an HTTPS image URL. For example, the value above points to
 `public/blog/my-post/social.png`. The homepage and blog listing use this image.
@@ -135,8 +135,33 @@ cargo test --locked --test feeds
 
 Keep `deployment/redirects.json` and `vercel.json` synchronized; the build checks
 their parity. CI validates XML structure, dates, GUIDs, draft exclusion, and
-sitemap coverage. This does not prerender application pages; that is a separate
-migration step.
+sitemap coverage.
+
+## Static HTML and metadata
+
+The complete build renders every canonical route with the existing Dioxus
+components, using `dioxus-ssr` and an in-memory router. Stylesheet URLs come from
+the web build manifest. All page content, canonical links, Open Graph/Twitter
+metadata, and article dates are present before JavaScript runs. Posts without a
+custom social image use the existing iroh artwork.
+
+The browser mounts the interactive app separately and swaps it into view once
+ready, preserving the reader's scroll position. This is a static snapshot plus
+client mounting, not Dioxus hydration. Without WebAssembly, the rendered content
+and ordinary navigation links remain available; search, dialogs, and animations
+require the app. Client navigation updates the same metadata model.
+
+Vercel's `cleanUrls` serves generated HTML at extensionless routes. There is no
+catch-all rewrite; unknown URLs return the branded `404.html` with HTTP 404.
+The build clears its generated output first so deleted or newly drafted posts
+cannot remain published from an earlier build.
+
+```sh
+cargo test --locked --test prerender
+bash scripts/build-static.sh
+# The build also runs both output validators:
+python3 scripts/check-html.py target/dx/iroh-computer/release/web/public
+```
 
 ## Migration review
 

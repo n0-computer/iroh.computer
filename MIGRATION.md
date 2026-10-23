@@ -16,7 +16,7 @@ Rust components, Markdown blog content, and Rust validation.
   are applied by `vercel.json` and recorded in `deployment/redirects.json`
   in their original order.
 - Social images use existing static files where available. Posts that used only
-  the removed `/api/og` title-card service now use the supported text-only preview.
+  the removed `/api/og` title-card service now use the existing default iroh artwork for sharing.
 
 ## Vercel previews
 
@@ -28,7 +28,7 @@ the official Linux binary requires a newer glibc than Vercel's build image.
 Its binary is kept under `node_modules/.cache/iroh` for build-cache reuse.
 
 Vercel serves `target/dx/iroh-computer/release/web/public`. Existing redirects run
-before the extensionless application-route fallback, and `.wasm` files have an
+before static routes. `cleanUrls` serves prerendered HTML, and `.wasm` files have an
 explicit WebAssembly content type. Keep the redirect entries in `vercel.json`
 and `deployment/redirects.json` in sync. These host redirects are not implemented
 by `dx serve`.
@@ -36,18 +36,24 @@ by `dx serve`.
 These settings apply to deployments of this branch. Production on `main` keeps
 its existing Next.js configuration until the migration is merged.
 
+## Static rendering and HTTP status
+
+All 114 canonical routes are rendered at build time from the existing Dioxus
+components. Initial HTML contains page content, stylesheets, canonical URLs,
+Open Graph/Twitter tags, and article publication dates. The interactive client
+mounts after this readable snapshot and updates metadata on navigation.
+
+The blanket app-shell rewrite is removed. Vercel serves generated clean URLs
+and a branded `404.html` for missing pages. Legacy redirects remain in place,
+including the former Delta Chat use-case alias. Search links use normal navigation
+so legacy documentation URLs reach their host redirects.
+
 ## Before production cutover
 
-Keep the PR in draft until these rendering and preview checks are addressed:
-
-1. Decide on prerendering/server rendering for search indexing and link previews.
-   This imported version renders page content and per-page metadata in the browser;
-   non-JavaScript crawlers receive the shared application shell.
-2. Restore real HTTP 404 responses for unknown routes. The current extensionless
-   fallback serves the app shell with HTTP 200 even when the client shows a 404.
-3. Review desktop/mobile layouts, navigation, theme switching, search, and the
-   HubSpot contact flow on the deployment preview. The local component checks and
-   content tests do not cover a production hosting cutover.
+Keep the PR in draft for the final review of this full-site replacement. Verify
+preview layouts, navigation, theme switching, search, and contact-dialog validation.
+The live HubSpot submission and receipt must be checked with an authorized real
+inquiry before cutover; automated validation does not send test leads.
 
 ## RSS and sitemap restored
 
@@ -61,8 +67,11 @@ routes. CI validates the generated XML and catalog coverage.
 
 ```sh
 cargo check --locked --target wasm32-unknown-unknown
-cargo test --locked --test blog --test contact --test highlight --test feeds
+cargo test --locked --test blog --test contact --test highlight --test feeds --test prerender
 # Dioxus CLI 0.7.10 and wasm32-unknown-unknown must be installed.
 bash scripts/build-static.sh
 python3 scripts/check-feeds.py target/dx/iroh-computer/release/web/public
 ```
+
+The static build validates the generated HTML, metadata, stylesheet/bootstrap
+assets, 404 page, RSS, and sitemap before deployment.

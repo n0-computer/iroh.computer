@@ -1,6 +1,37 @@
 (() => {
   const root = document.documentElement;
   window.iroh = {
+    activate() {
+      const snapshot = document.getElementById('prerender');
+      if (!snapshot) return;
+      // Keep the readable HTML until the interactive tree has mounted. Swap in
+      // one task, retaining the scroll position if someone started reading early.
+      const { scrollX, scrollY } = window;
+      snapshot.remove();
+      document.getElementById('main').hidden = false;
+      window.scrollTo(scrollX, scrollY);
+      if (location.hash && !scrollY) {
+        document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+      }
+    },
+    setMetadata(metadata) {
+      document.title = metadata.title;
+      document.querySelectorAll('[data-iroh-meta]').forEach(tag => tag.remove());
+      if (metadata.canonical) {
+        const link = document.createElement('link');
+        link.dataset.irohMeta = '';
+        link.rel = 'canonical';
+        link.href = metadata.canonical;
+        document.head.append(link);
+      }
+      for (const [attribute, name, value] of metadata.tags) {
+        const tag = document.createElement('meta');
+        tag.dataset.irohMeta = '';
+        tag.setAttribute(attribute, name);
+        tag.content = value;
+        document.head.append(tag);
+      }
+    },
     setTheme(mode) {
       root.dataset.theme = mode;
       try { localStorage.setItem('iroh-theme', mode); } catch (_) {}

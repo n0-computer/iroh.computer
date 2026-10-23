@@ -26,3 +26,6 @@ opt-level = "s"
 lto = true
 codegen-units = 1
 strip = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+dioxus-ssr = "0.7.10"

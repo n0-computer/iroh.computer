@@ -3,7 +3,6 @@ use dioxus::prelude::*;
 #[component]
 pub fn Hosting() -> Element {
     rsx! {
-        document::Title { "Hosting — iroh" }
         document::Stylesheet { href: asset!("/assets/hosting.css") }
         main { id: "content", class: "hosting-page wrap",
             header { class: "hosting-hero",

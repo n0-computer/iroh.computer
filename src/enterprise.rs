@@ -5,11 +5,6 @@ use dioxus::prelude::*;
 #[component]
 pub fn Enterprise() -> Element {
     rsx! {
-        document::Title { "Enterprise — iroh" }
-        document::Meta {
-            name: "description",
-            content: "Take peer-to-peer to production with custom metrics, network diagnostics, and direct access to the team building iroh.",
-        }
         document::Stylesheet { href: asset!("/assets/enterprise.css") }
         main { id: "content", class: "enterprise-page",
             section { class: "enterprise-hero wrap",

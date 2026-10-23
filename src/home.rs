@@ -12,7 +12,6 @@ pub fn Home() -> Element {
             .then_some((post, version))
     });
     rsx! {
-        document::Title { "iroh — Less net work for networks" }
         document::Stylesheet { href: asset!("/assets/home.css") }
         document::Stylesheet { href: asset!("/assets/hosting.css") }
         main { id: "content", class: "home-page",
