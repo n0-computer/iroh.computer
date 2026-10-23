@@ -29,5 +29,4 @@ if ! command -v dx >/dev/null 2>&1 || ! dx --version | grep -q "^dioxus $dx_vers
         --version "=$dx_version" --locked --debug --root "$tool_dir"
 fi
 
-dx build --platform web --release --locked
-test -s target/dx/iroh-computer/release/web/public/index.html
+bash scripts/build-static.sh

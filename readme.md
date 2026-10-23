@@ -38,7 +38,9 @@ Pass server options after `--`, for example:
 cargo run -- --port 8080 --open false
 ```
 
-For a production web build, run `dx build --platform web --release`.
+For a complete production build, including RSS and sitemap, run
+`bash scripts/build-static.sh`. A plain `dx build --platform web --release`
+builds only the app; it does not copy the generated XML into the static output.
 
 ## Editing the website
 
@@ -53,7 +55,7 @@ directly; there is no HTML-in-JSON content layer or import step.
 - `src/contact.rs`: shared Dioxus contact dialog connected to the existing HubSpot form.
 - `src/enterprise.rs`, `src/hosting.rs`, `src/pricing.rs`, `src/solutions.rs`: dedicated marketing pages.
 - `src/pages/content/`: remaining pages, organized by route, including documentation.
-- `src/pages/content/mod.rs`: page metadata for navigation and search.
+- `src/content/page_metadata.rs`: page metadata shared by search and sitemap generation.
 - `src/content/snippets.rs` and `src/content/protocols.rs`: code examples and protocol listings.
 - `assets/`: stylesheets. Homepage and enterprise styles are in `home.css` and `enterprise.css`.
 
@@ -109,6 +111,32 @@ Cargo rebuilds the blog when Markdown files change, including additions and
 deletions. If the Dioxus watcher does not trigger a rebuild, press `r` in its
 terminal or restart `cargo run`. Run `cargo test --test blog` to check the
 renderer, every post's metadata, and social-card image references.
+
+## RSS and sitemap
+
+`build.rs` generates `/rss.xml` and `/sitemap.xml` from the same metadata as the
+app. Draft posts are excluded. RSS keeps the production feed's URL-based GUIDs,
+publication dates, and newest-first order. The sitemap includes the homepage,
+listings, published posts, content pages, and protocol pages, excluding routes
+redirected by Vercel. Undated pages omit `lastmod` instead of claiming every build
+changed them. Both files always use `https://iroh.computer` URLs, including previews.
+
+The complete build command above exports the XML after Dioxus finishes copying
+static assets. Vercel runs this same command. XML is generated into ignored build
+output; do not edit it or commit generated copies into `public/`.
+
+To regenerate and validate just the XML:
+
+```sh
+cargo run --locked --example export_feeds -- target/feed-check
+python3 scripts/check-feeds.py target/feed-check
+cargo test --locked --test feeds
+```
+
+Keep `deployment/redirects.json` and `vercel.json` synchronized; the build checks
+their parity. CI validates XML structure, dates, GUIDs, draft exclusion, and
+sitemap coverage. This does not prerender application pages; that is a separate
+migration step.
 
 ## Migration review
 

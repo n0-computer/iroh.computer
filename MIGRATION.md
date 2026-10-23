@@ -43,17 +43,26 @@ Keep the PR in draft until these rendering and preview checks are addressed:
 1. Decide on prerendering/server rendering for search indexing and link previews.
    This imported version renders page content and per-page metadata in the browser;
    non-JavaScript crawlers receive the shared application shell.
-2. Restore generated `/rss.xml` and `/sitemap.xml`, which were Next.js server routes.
-   The existing RSS link and robots sitemap declaration still expect those URLs.
+2. Restore real HTTP 404 responses for unknown routes. The current extensionless
+   fallback serves the app shell with HTTP 200 even when the client shows a 404.
 3. Review desktop/mobile layouts, navigation, theme switching, search, and the
    HubSpot contact flow on the deployment preview. The local component checks and
    content tests do not cover a production hosting cutover.
+
+## RSS and sitemap restored
+
+`build.rs` generates RSS and sitemap from shared page, protocol, and blog metadata.
+`bash scripts/build-static.sh` builds the app and exports both XML files into the
+static output; Vercel uses this same pipeline. RSS preserves existing item GUIDs
+and publication dates. Drafts are excluded, and the sitemap omits redirected
+routes. CI validates the generated XML and catalog coverage.
 
 ## Validation
 
 ```sh
 cargo check --locked --target wasm32-unknown-unknown
-cargo test --locked --test blog --test contact --test highlight
+cargo test --locked --test blog --test contact --test highlight --test feeds
 # Dioxus CLI 0.7.10 and wasm32-unknown-unknown must be installed.
-dx build --platform web --release
+bash scripts/build-static.sh
+python3 scripts/check-feeds.py target/dx/iroh-computer/release/web/public
 ```

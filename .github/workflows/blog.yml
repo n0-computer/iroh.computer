@@ -19,4 +19,8 @@ jobs:
       - name: Check Dioxus components
         run: cargo check --locked --target wasm32-unknown-unknown
       - name: Validate posts and social-card references
-        run: cargo test --locked --test blog --test contact --test highlight
+        run: cargo test --locked --test blog --test contact --test highlight --test feeds
+      - name: Generate and validate RSS and sitemap XML
+        run: |
+          cargo run --locked --example export_feeds -- target/feed-check
+          python3 scripts/check-feeds.py target/feed-check
