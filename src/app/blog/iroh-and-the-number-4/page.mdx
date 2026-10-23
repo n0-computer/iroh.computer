@@ -50,7 +50,7 @@ The company decided to [leave the CA business entirely], but the damage is done.
 
 ## Connections
 
-Iroh connections themselves are not affected at all. We use mutual TLS and only rely on the Ed25519 public key of the remote to secure the connection. We don't check any certificate chain at all.
+Iroh connections themselves are not affected at all. We use [mutual TLS] and only rely on the Ed25519 public key of the remote to secure the connection. We don't check any certificate chain at all.
 
 However, iroh is using the certificate chain in a number of places.
 
@@ -167,3 +167,4 @@ If you want to lock down your deployment's trust roots, for example for IoT devi
 [leave the CA business entirely]: https://thehackernews.com/2026/10/emudhra-to-exit-global-ssltls-business.html
 [new generation of roots]: https://letsencrypt.org/2025/11/24/gen-y-hierarchy
 [chains of trust]: https://letsencrypt.org/certificates/
+[mutual TLS]: /blog/iroh-0-34-0-raw-public-keys
