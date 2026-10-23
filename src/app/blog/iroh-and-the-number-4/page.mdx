@@ -1,4 +1,5 @@
 import { ThemeImage } from '@/components/ThemeImage'
+import { ExpandableAnimation } from '@/components/ExpandableAnimation'
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
 export const post = {
@@ -55,16 +56,13 @@ However, iroh is using the certificate chain in a number of places.
 
 Most notably the https relay connections, but also https and QAD probes as well as address lookup publishing via https PUT.
 
-<div className="not-prose mx-auto my-8 max-w-2xl">
-  <ThemeImage
-    lightSrc="/blog/iroh-and-the-number-4/cert-chain-usage.svg"
-    darkSrc="/blog/iroh-and-the-number-4/cert-chain-usage-dark.svg"
-    width={760}
-    height={380}
-    alt="The connection to another endpoint uses only its Ed25519 key, no CA. Connections to the relay (relay connection, QAD and HTTPS probes) and the pkarr server use TLS with a CA chain."
-    className="w-full h-auto"
-  />
-</div>
+<ExpandableAnimation
+  src="/blog/iroh-and-the-number-4/cert-chain-usage.svg"
+  darkSrc="/blog/iroh-and-the-number-4/cert-chain-usage-dark.svg"
+  width={760}
+  height={380}
+  alt="The connection to another endpoint uses only its Ed25519 key, no CA. Connections to the relay (relay connection, QAD and HTTPS probes) and the pkarr server use TLS with a CA chain."
+/>
 
 We have of course published an update to binaries published by us such as [sendme] and [dumbpipe], and also [updated iroh itself].
 
@@ -88,16 +86,13 @@ So what can an on-path attacker do?
 
 An on-path attacker could intercept the https/TLS connection to the relay.
 
-<div className="not-prose mx-auto my-8 max-w-2xl">
-  <ThemeImage
-    lightSrc="/blog/iroh-and-the-number-4/relay-mitm.svg"
-    darkSrc="/blog/iroh-and-the-number-4/relay-mitm-dark.svg"
-    width={880}
-    height={470}
-    alt="Alice and Bob talk through a relay. Alice's Wi-Fi router is the attacker: it terminates her TLS connection with a forged certificate. The end-to-end QUIC connection passes through unchanged: the attacker sees endpoint ids, sizes and timing, but can't read payloads or impersonate Alice or Bob."
-    className="w-full h-auto"
-  />
-</div>
+<ExpandableAnimation
+  src="/blog/iroh-and-the-number-4/relay-mitm.svg"
+  darkSrc="/blog/iroh-and-the-number-4/relay-mitm-dark.svg"
+  width={880}
+  height={470}
+  alt="Alice and Bob talk through a relay. Alice's Wi-Fi router is the attacker: it terminates her TLS connection with a forged certificate. The end-to-end QUIC connection passes through unchanged: the attacker sees endpoint ids, sizes and timing, but can't read payloads or impersonate Alice or Bob."
+/>
 
 This gives them the ability to see the endpoints that your local iroh endpoint is talking to via the relay, including timing and packet sizes.
 
