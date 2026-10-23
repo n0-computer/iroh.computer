@@ -72,7 +72,7 @@ So let's take a look what the impact would be for an iroh based application if t
 
 First of all, what does it take to exploit these? You need to be able to intercept at least some traffic from the iroh endpoint to the internet, so you need to be a so called [on-path attacker].
 
-An on-path attacker can be your home router or corporate firewall, your ISP, or really anybody on the internet between your iroh endpoint and the infrastructure that it uses, such as a [state-level adversary]. So this is definitely not a hypothetical scenario.
+An on-path attacker can be your home router or corporate firewall, your ISP, or really anybody on the internet between your iroh endpoint and the infrastructure that it uses, such as a [network-level adversary]. So this is definitely not a hypothetical scenario.
 
 If you run open source firewall software such as [OpenWrt] at home you can even try this out, using tools like mitmproxy.
 
@@ -168,4 +168,4 @@ If you want to lock down your deployment's trust roots, for example for IoT devi
 [new generation of roots]: https://letsencrypt.org/2025/11/24/gen-y-hierarchy
 [chains of trust]: https://letsencrypt.org/certificates/
 [mutual TLS]: /blog/iroh-0-34-0-raw-public-keys
-[state-level adversary]: https://en.wikipedia.org/wiki/Kazakhstan_man-in-the-middle_attack
+[network-level adversary]: https://en.wikipedia.org/wiki/Kazakhstan_man-in-the-middle_attack
