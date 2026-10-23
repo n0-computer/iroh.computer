@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" role="img" aria-labelledby="title desc">
+  <title id="title">An on-path attacker with a forged certificate on the relay connection</title>
+  <desc id="desc">Endpoint A connects to the relay over TLS, but an on-path attacker with a forged certificate terminates that TLS connection and opens its own to the relay. The relay forwards to endpoint B over TLS. Inside these TLS connections runs an end-to-end QUIC connection between A and B, authenticated by their Ed25519 keys, which passes through the attacker and the relay unchanged. The attacker sees which endpoint ids talk to each other, packet sizes and timing. It cannot read or change payloads, or impersonate A or B.</desc>
+  <g fill="none" stroke-width="2">
+    <rect x="170" y="86" width="80" height="28" stroke="#d97706"/>
+    <rect x="410" y="86" width="80" height="28" stroke="#9ca3af"/>
+    <rect x="640" y="86" width="70" height="28" stroke="#9ca3af"/>
+  </g>
+  <g fill="#f3f4f6" stroke-width="2">
+    <rect x="20" y="50" width="150" height="100" rx="10" stroke="#9ca3af"/>
+    <rect x="250" y="50" width="160" height="100" rx="10" stroke="#d97706"/>
+    <rect x="490" y="50" width="150" height="100" rx="10" stroke="#9ca3af"/>
+    <rect x="710" y="50" width="150" height="100" rx="10" stroke="#9ca3af"/>
+  </g>
+  <path d="M 95 100 H 785" stroke="#15803d" stroke-width="3"/>
+  <circle cx="95" cy="100" r="5" fill="#15803d"/>
+  <circle cx="785" cy="100" r="5" fill="#15803d"/>
+  <path d="M 95 170 V 180 H 785 V 170" fill="none" stroke="#15803d" stroke-width="2"/>
+  <g font-family="Space Mono, monospace" text-anchor="middle">
+    <text x="95" y="80" font-size="16" fill="#111">Endpoint A</text>
+    <text x="330" y="80" font-size="16" fill="#111">Attacker</text>
+    <text x="330" y="137" font-size="12" fill="#d97706">forged certificate</text>
+    <text x="565" y="80" font-size="16" fill="#111">Relay</text>
+    <text x="785" y="80" font-size="16" fill="#111">Endpoint B</text>
+    <text x="210" y="78" font-size="12" fill="#d97706">TLS</text>
+    <text x="450" y="78" font-size="12" fill="#888">TLS</text>
+    <text x="675" y="78" font-size="12" fill="#888">TLS</text>
+    <text x="440" y="204" font-size="14" fill="#15803d">end-to-end QUIC, authenticated by Ed25519 keys</text>
+  </g>
+  <g fill="none" stroke-width="2">
+    <rect x="150" y="225" width="280" height="90" rx="10" stroke="#d97706"/>
+    <rect x="450" y="225" width="280" height="90" rx="10" stroke="#15803d"/>
+  </g>
+  <g font-family="Space Mono, monospace" font-size="13">
+    <text x="166" y="250" font-size="14" fill="#d97706">The attacker sees</text>
+    <text x="166" y="276" fill="#333">which endpoint ids talk</text>
+    <text x="166" y="298" fill="#333">packet sizes and timing</text>
+    <text x="466" y="250" font-size="14" fill="#15803d">The attacker can't</text>
+    <text x="466" y="276" fill="#333">read or change payloads</text>
+    <text x="466" y="298" fill="#333">impersonate A or B</text>
+  </g>
+</svg>
