@@ -150,7 +150,7 @@ let endpoint = Endpoint::builder(presets::N0)
 The downside of this approach is that you would have to change this when Let's Encrypt changes their roots, and you would not be able to connect to relays that don't use Let's Encrypt.
 
 <Note>
-This pins both the current Let's Encrypt roots and their [new generation of roots], so it should keep working well into the 2030s. Check their [chains of trust] page now and then.
+This pins both the current Let's Encrypt roots and their [new generation of roots], so it should keep working well into the 2030s. Check their [chains of trust] page every so often.
 </Note>
 
 We will not encode this into `presets::N0` since iroh is meant to be an open system by default where every iroh endpoint can talk to every other, but it is easy enough to do yourself if you know that your deployment is closed.
