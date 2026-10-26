@@ -39,7 +39,7 @@ Unless you have been blissfully offline for the last week you probably got the n
 Eight intermediate certificates of the certificate authority [eMudhra] have been [compromised] in an extremely embarrassing way. The private keys of these certificates were all single byte numbers.
 
 ```
-$ openssl ec -noout -text
+$ openssl ec -in em-ov-tls-ca-g3c.pem -noout -text
 Private-Key: (384 bit field, 192 bit security level)
 priv:
     00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:
