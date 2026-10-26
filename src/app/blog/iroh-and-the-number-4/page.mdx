@@ -1,4 +1,3 @@
-import { ThemeImage } from '@/components/ThemeImage'
 import { ExpandableAnimation } from '@/components/ExpandableAnimation'
 import { BlogPostLayout } from '@/components/BlogPostLayout'
 
@@ -39,16 +38,24 @@ Unless you have been blissfully offline for the last week you probably got the n
 
 Eight intermediate certificates of the certificate authority [eMudhra] have been [compromised] in an extremely embarrassing way. The private keys of these certificates were all single byte numbers.
 
-<div className="not-prose mx-auto my-8 max-w-xl">
-  <ThemeImage
-    lightSrc="/blog/iroh-and-the-number-4/private-key-4.svg"
-    darkSrc="/blog/iroh-and-the-number-4/private-key-4-dark.svg"
-    width={680}
-    height={456}
-    alt="OpenSSL text dump of a P-384 key: the 48-byte private key is all zeros except the last byte, 04, while the public key looks random."
-    className="w-full h-auto"
-  />
-</div>
+```
+$ openssl ec -noout -text
+Private-Key: (384 bit field, 192 bit security level)
+priv:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:04
+pub:
+    04:13:82:51:cd:52:ac:92:98:c1:c8:aa:d9:77:32:1d:
+    eb:97:e7:09:bd:0b:4c:a0:ac:a5:5d:c8:ad:51:dc:fc:
+    9d:15:89:a1:59:7e:3a:51:20:e1:ef:d6:31:c6:3e:18:
+    35:ca:ca:e2:98:69:a6:2e:16:31:e8:a2:81:81:ab:56:
+    61:6d:c4:5d:91:8a:bc:09:f3:ab:0e:63:cf:79:2a:a4:
+    dc:ed:73:87:be:37:bb:a5:69:54:9f:1c:02:b2:70:ed:
+    67
+ASN1 OID: secp384r1
+NIST CURVE: P-384
+```
 
 While the number 4 is just as likely as any other number in a random distribution, the probability that you get eight single byte numbers by random selection is an astonishing 1 in 3 × 10<sup>905</sup>.
 
