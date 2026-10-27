@@ -101,7 +101,11 @@ The blog listing, homepage, and site search all use this generated index.
 
 Headings get automatic anchors. Use `## Heading {#existing-anchor}` when an
 anchor must stay stable. GitHub-style tables, task lists, strikethrough,
-footnotes, and `> [!NOTE]` callouts are supported. Put images and diagrams in
+footnotes, and `> [!NOTE]` callouts are supported. Fenced code blocks with a recognized
+language (for example, `rust`, `python`, or `bash`) get syntax highlighting
+during the content build, with colors for both site themes. Unlabelled output
+and unknown languages remain plain text. No highlighting engine is loaded in
+the browser. Put images and diagrams in
 `public/blog/<slug>/` and reference them with Markdown image syntax. Existing
 theme-specific images and video embeds use small HTML media blocks where
 Markdown has no equivalent. Legacy footnote links retain their HTML anchors;

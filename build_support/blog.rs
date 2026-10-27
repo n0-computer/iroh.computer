@@ -1,6 +1,11 @@
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, html};
+use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd, html};
 use serde::Deserialize;
-use std::collections::HashSet;
+use std::{collections::HashSet, sync::OnceLock};
+use syntect::{
+    html::{ClassStyle, ClassedHTMLGenerator},
+    parsing::SyntaxSet,
+    util::LinesWithEndings,
+};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -111,11 +116,67 @@ pub fn compile_post(slug: &str, source: &str) -> Result<Post, String> {
         }
     }
     let mut rendered = String::new();
-    html::push_html(&mut rendered, events.into_iter());
+    html::push_html(&mut rendered, highlight_code_blocks(events)?.into_iter());
     Ok(Post {
         metadata,
         html: rendered,
     })
+}
+
+// Run only in the content build and its tests. The browser gets ordinary HTML
+// and theme-aware CSS classes, without a highlighting runtime or syntax tables.
+fn highlight_code_blocks(events: Vec<Event<'_>>) -> Result<Vec<Event<'_>>, String> {
+    static SYNTAXES: OnceLock<SyntaxSet> = OnceLock::new();
+    let syntaxes = SYNTAXES.get_or_init(SyntaxSet::load_defaults_newlines);
+    let mut highlighted = Vec::with_capacity(events.len());
+    let mut events = events.into_iter();
+    while let Some(event) = events.next() {
+        if let Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(info))) = &event {
+            let language = info.split_whitespace().next().unwrap_or("");
+            if let Some(syntax) = syntaxes
+                .find_syntax_by_token(language)
+                .filter(|_| !language.is_empty())
+            {
+                let mut code = String::new();
+                for event in events.by_ref() {
+                    match event {
+                        Event::Text(text) => code.push_str(&text),
+                        Event::End(TagEnd::CodeBlock) => break,
+                        _ => {}
+                    }
+                }
+                let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                    syntax,
+                    syntaxes,
+                    ClassStyle::SpacedPrefixed { prefix: "syntax-" },
+                );
+                for line in LinesWithEndings::from(&code) {
+                    generator
+                        .parse_html_for_line_which_includes_newline(line)
+                        .map_err(|error| format!("could not highlight {language} code: {error}"))?;
+                }
+                // The info string is author-controlled; escape it even when a
+                // recognized syntax token is used as the class name.
+                let language = language
+                    .replace('&', "&amp;")
+                    .replace('"', "&quot;")
+                    .replace('<', "&lt;")
+                    .replace('>', "&gt;");
+                highlighted.push(Event::Html(
+                    format!(
+                        "<pre><code class=\"language-{language}\">{}</code></pre>\n",
+                        generator.finalize()
+                    )
+                    .into(),
+                ));
+                continue;
+            }
+        }
+        // Unlabelled code, terminal output, and unknown languages stay readable
+        // and retain pulldown-cmark's normal escaping and whitespace handling.
+        highlighted.push(event);
+    }
+    Ok(highlighted)
 }
 
 fn validate_date(date: &str) -> Result<(), String> {

@@ -107,6 +107,77 @@ fn reads_draft_flag() {
 }
 
 #[test]
+fn highlighted_code_preserves_copyable_text_and_escapes_html() {
+    let code = "fn greet<'a>(name: &'a str) -> &'a str {\n\t/* a multiline\n       comment */\n\tlet text = r#\"<script>& hello 🌍\"#;\n\tname\n}\n";
+    let source = format!("{FRONT_MATTER}\n```rust\n{code}```\n");
+    let post = blog::compile_post("highlighted", &source).unwrap();
+    assert!(post.html.contains("syntax-comment"));
+    assert!(post.html.contains("syntax-string"));
+    assert!(!post.html.contains("<script>"));
+    let code_html = post
+        .html
+        .split("<code class=\"language-rust\">")
+        .nth(1)
+        .unwrap()
+        .split("</code>")
+        .next()
+        .unwrap();
+    let mut in_tag = false;
+    let text: String = code_html
+        .chars()
+        .filter(|ch| match ch {
+            '<' => {
+                in_tag = true;
+                false
+            }
+            '>' => {
+                in_tag = false;
+                false
+            }
+            _ => !in_tag,
+        })
+        .collect();
+    let text = text
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&#x27;", "'")
+        .replace("&amp;", "&");
+    assert_eq!(
+        text, code,
+        "highlighting must preserve whitespace and copied source"
+    );
+}
+
+#[test]
+fn unlabelled_and_unknown_code_remain_plain_and_escaped() {
+    for info in ["", "not-a-language", "text"] {
+        let source = format!("{FRONT_MATTER}\n```{info}\n  <output>&\n\n  done\n```\n");
+        let post = blog::compile_post("plain-code", &source).unwrap();
+        assert!(post.html.contains("  &lt;output&gt;&amp;\n\n  done\n"));
+        assert!(!post.html.contains("<output>"));
+    }
+}
+
+#[test]
+fn esp32_article_rust_example_is_highlighted_at_build_time() {
+    let source = include_str!("../content/blog/noq-on-an-esp32-c6.md");
+    let post = blog::compile_post("noq-on-an-esp32-c6", source).unwrap();
+    let example = post
+        .html
+        .split("<code class=\"language-rust\">")
+        .nth(1)
+        .unwrap()
+        .split("</code>")
+        .next()
+        .unwrap();
+    assert!(example.contains("syntax-"));
+    assert!(example.contains("syntax-comment"));
+    assert!(example.contains("builder_with_provider"));
+}
+
+#[test]
 fn validates_social_cards_and_allows_text_only_posts() {
     let no_card = FRONT_MATTER.replace("social_image = \"/blog/example/social.png\"\n", "");
     assert!(

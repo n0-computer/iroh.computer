@@ -75,3 +75,13 @@ python3 scripts/check-feeds.py target/dx/iroh-computer/release/web/public
 
 The static build validates the generated HTML, metadata, stylesheet/bootstrap
 assets, 404 page, RSS, and sitemap before deployment.
+
+## Non-blocking performance follow-up
+
+Published blog bodies are currently embedded in the client WebAssembly bundle,
+so navigating between posts does not fetch article text. Per the PR review,
+loading article bodies on demand is a follow-up, not a launch blocker. Keep the
+prerendered HTML and metadata when doing this, and verify direct entry, client
+navigation, failed requests, and scroll restoration. Syntax highlighting runs
+at build time; only its resulting HTML is included in the app, not the parser
+or syntax definitions.

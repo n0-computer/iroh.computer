@@ -15,8 +15,10 @@ time = { version = "0.3", features = ["formatting"] }
 pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
+syntect = { version = "5.3.0", default-features = false, features = ["default-syntaxes", "html", "regex-fancy"] }
 
 [dev-dependencies]
+syntect = { version = "5.3.0", default-features = false, features = ["default-syntaxes", "html", "regex-fancy"] }
 time = { version = "0.3", features = ["formatting"] }
 pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
 toml = "0.8"

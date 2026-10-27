@@ -70,14 +70,14 @@ fn Shell() -> Element {
                     span { class: "brand-cursor", "_" }
                 }
                 nav { class: "desktop-nav", "aria-label": "Main navigation",
-                    details { summary { "Use cases" span { "⌄" } }
+                    details { summary { "Use cases" Icon { name: "chevron-down" } }
                         div { class: "nav-menu",
                             for (label, url) in [("Remote access","vpn"),("Distributed AI","distributed-ai"),("Video streaming","video"),("Data sync","data-sync"),("Payments & POS","pos"),("IoT & embedded","iot")] {
                                 Link { to: format!("/solutions/{url}"), "{label}" span { "↗" } }
                             }
                         }
                     }
-                    details { summary { "Services" span { "⌄" } }
+                    details { summary { "Services" Icon { name: "chevron-down" } }
                         div { class: "nav-menu",
                             for (label,url) in [("Hosting","hosting"),("Observability","observability"),("Enterprise","enterprise")] {
                                 Link { to: format!("/services/{url}"), "{label}" span { "↗" } }
@@ -121,6 +121,7 @@ fn Shell() -> Element {
 #[component]
 fn Icon(name: &'static str) -> Element {
     let path = match name {
+        "chevron-down" => "M6 9l6 6 6-6",
         "sun" => {
             "M12 3v1m0 16v1M3 12h1m16 0h1M5.6 5.6l.7.7m11.4 11.4.7.7M5.6 18.4l.7-.7M17.7 6.3l.7-.7M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
         }
