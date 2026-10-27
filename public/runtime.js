@@ -1,9 +1,27 @@
 (() => {
   const root = document.documentElement;
+  const initialArticle = document.querySelector('#prerender [data-article-body]');
+  let initialArticlePending = initialArticle?.dataset.articleBody;
+  const loadArticle = createArticleLoader(async (path, url) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) throw new Error(`Article request failed: ${response.status}`);
+      return validateArticleBody(path, await response.text());
+    } finally {
+      clearTimeout(timeout);
+    }
+  }, initialArticle ? { path: initialArticle.dataset.articleBody, html: initialArticle.innerHTML } : null);
   window.iroh = {
+    loadArticle,
     activate() {
       const snapshot = document.getElementById('prerender');
       if (!snapshot) return;
+      const main = document.getElementById('main');
+      // Article text comes from the initial HTML or an asynchronous request.
+      // Do not replace a readable snapshot with a loading indicator or error.
+      if (!main.firstChild || main.querySelector('[data-article-loading], [data-article-error]')) return;
       // Keep the readable HTML until the interactive tree has mounted. Swap in
       // one task, retaining the scroll position if someone started reading early.
       const { scrollX, scrollY } = window;
@@ -13,6 +31,20 @@
       if (location.hash && !scrollY) {
         document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
       }
+    },
+    articleReady(path) {
+      this.activate();
+      // activate() preserves any reading position established before WASM
+      // started. Only later client navigations need a deferred anchor jump.
+      if (initialArticlePending === path) {
+        initialArticlePending = null;
+        return;
+      }
+      if (location.pathname !== path || !location.hash) return;
+      try {
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        target?.scrollIntoView();
+      } catch (_) {}
     },
     setMetadata(metadata) {
       document.title = metadata.title;
@@ -83,5 +115,8 @@
       const button=document.createElement('button');button.type='button';button.dataset.copyCode='';button.textContent='Copy';button.setAttribute('aria-label','Copy code');pre.append(button);
     });
   };
-  new MutationObserver(enhance).observe(document.getElementById('main'),{childList:true,subtree:true});
+  new MutationObserver(() => {
+    window.iroh.activate();
+    enhance();
+  }).observe(document.getElementById('main'),{childList:true,subtree:true});
 })();

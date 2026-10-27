@@ -32,3 +32,9 @@ pub fn posts() -> Vec<&'static Page> {
     posts.sort_by(|a, b| b.date.cmp(&a.date));
     posts
 }
+
+#[cfg(target_arch = "wasm32")]
+pub fn article_body_url(path: &str) -> String {
+    use dioxus::prelude::manganis;
+    include!(concat!(env!("OUT_DIR"), "/article_assets.rs"))
+}

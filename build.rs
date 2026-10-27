@@ -37,6 +37,7 @@ fn main() {
     files.sort();
 
     let mut generated = String::from("vec![\n");
+    let mut article_assets = String::from("match path {\n");
     let mut pages = page_metadata::metadata();
     for file in files {
         let slug = file.file_stem().unwrap().to_str().expect("UTF-8 blog slug");
@@ -55,10 +56,22 @@ fn main() {
                 local_path
             );
         }
-        let html_path = output.join(format!("blog-{slug}.html"));
-        fs::write(&html_path, post.html).expect("write rendered blog post");
+        // A plain-text asset avoids HTML clean-URL redirects. Manganis copies
+        // and hashes it for both dx serve and production, without embedding its
+        // contents in the WebAssembly module.
+        let html_path = output.join(format!("blog-{slug}.txt"));
+        fs::write(
+            &html_path,
+            format!("<!-- iroh-article:/blog/{slug} -->\n{}", post.html),
+        )
+        .expect("write rendered blog post");
+        article_assets.push_str(&format!(
+            "{:?} => dioxus::prelude::asset!({:?}).to_string(),\n",
+            format!("/blog/{slug}"),
+            html_path.strip_prefix(&root).expect("article assets require a target directory inside the project")
+        ));
         generated.push_str(&format!(
-            "Page {{ path: {:?}.into(), title: {:?}.into(), description: {:?}.into(), date: {:?}.into(), author: {:?}.into(), social_image: {:?}.into(), html: include_str!({:?}).into() }},\n",
+            "Page {{ path: {:?}.into(), title: {:?}.into(), description: {:?}.into(), date: {:?}.into(), author: {:?}.into(), social_image: {:?}.into(), html: {{ #[cfg(not(target_arch = \"wasm32\"))] {{ include_str!({:?}).into() }} #[cfg(target_arch = \"wasm32\")] {{ String::new() }} }} }},\n",
             format!("/blog/{slug}"), post.metadata.title, post.metadata.description,
             post.metadata.date, post.metadata.author, post.metadata.social_image, html_path,
         ));
@@ -74,6 +87,8 @@ fn main() {
     }
     generated.push_str("]\n");
     fs::write(output.join("blog.rs"), generated).expect("write blog index");
+    article_assets.push_str("_ => panic!(\"unknown article\"),\n}\n");
+    fs::write(output.join("article_assets.rs"), article_assets).expect("write article asset index");
     let config: serde_json::Value =
         serde_json::from_str(&fs::read_to_string(root.join("vercel.json")).unwrap()).unwrap();
     let redirect_map: serde_json::Value =

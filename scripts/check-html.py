@@ -22,6 +22,21 @@ class Page(HTMLParser):
 
 def check(output):
     urls = [e.text for e in ET.parse(output / 'sitemap.xml').findall('.//{*}loc')]
+    article_paths = {urlsplit(url).path for url in urls if urlsplit(url).path.startswith('/blog/')}
+    article_assets = {}
+    wasm_files = list((output / 'assets').glob('*.wasm'))
+    assert len(wasm_files) == 1, wasm_files
+    wasm = wasm_files[0].read_bytes()
+    for asset in (output / 'assets').glob('blog-*.txt'):
+        body = asset.read_text()
+        marker, content = body.split('\n', 1)
+        assert marker.startswith('<!-- iroh-article:/blog/') and marker.endswith(' -->'), asset
+        path = marker.removeprefix('<!-- iroh-article:').removesuffix(' -->')
+        assert path not in article_assets, path
+        assert content.strip(), asset
+        assert marker.encode() not in wasm, f'article body embedded in WASM: {path}'
+        article_assets[path] = body
+    assert set(article_assets) == article_paths, (set(article_assets) ^ article_paths)
     for url in urls + ['https://iroh.computer/404']:
         path = urlsplit(url).path
         file = output / ('index.html' if path == '/' else path.lstrip('/') + '.html')
@@ -36,6 +51,10 @@ def check(output):
         assert len(page.select('div', id='main')) == 1, file
         assert 'hidden' in page.select('div', id='main')[0], file
         assert '/private/' not in html and 'PLACEHOLDER_HASH' not in html, file
+        if path in article_paths:
+            assert len(page.select('div', **{'data-article-body': path})) == 1, file
+            assert article_assets[path] in html, f'prerendered article differs from asset: {path}'
+            assert 'data-article-loading' not in html, file
         if path == '/404':
             assert page.select('meta', name='robots', content='noindex'), file
             assert not page.select('link', rel='canonical'), file
@@ -48,12 +67,15 @@ def check(output):
         scripts = page.select('script', type='module')
         assert scripts, file
         resources += [a['src'] for a in scripts]
+        for runtime in ['/article-content.js', '/runtime.js']:
+            assert page.select('script', src=runtime), file
+            resources.append(runtime)
         image = page.select('meta', property='og:image')[0]['content']
         if urlsplit(image).netloc == 'iroh.computer':
             resources.append(urlsplit(image).path)
         for resource in resources:
             assert (output / resource.lstrip('/')).is_file(), (file, resource)
-    print(f'Validated {len(urls)} prerendered pages, the 404 page, metadata, and bundled assets')
+    print(f'Validated {len(urls)} prerendered pages, {len(article_assets)} separate article assets, the 404 page, metadata, and bundled assets')
 
 
 if __name__ == '__main__':

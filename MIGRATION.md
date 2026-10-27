@@ -68,6 +68,7 @@ routes. CI validates the generated XML and catalog coverage.
 ```sh
 cargo check --locked --target wasm32-unknown-unknown
 cargo test --locked --test blog --test contact --test highlight --test feeds --test prerender
+node --test tests/article-content.test.cjs
 # Dioxus CLI 0.7.10 and wasm32-unknown-unknown must be installed.
 bash scripts/build-static.sh
 python3 scripts/check-feeds.py target/dx/iroh-computer/release/web/public
@@ -76,12 +77,20 @@ python3 scripts/check-feeds.py target/dx/iroh-computer/release/web/public
 The static build validates the generated HTML, metadata, stylesheet/bootstrap
 assets, 404 page, RSS, and sitemap before deployment.
 
-## Non-blocking performance follow-up
+## Article loading and bundle size
 
-Published blog bodies are currently embedded in the client WebAssembly bundle,
-so navigating between posts does not fetch article text. Per the PR review,
-loading article bodies on demand is a follow-up, not a launch blocker. Keep the
-prerendered HTML and metadata when doing this, and verify direct entry, client
-navigation, failed requests, and scroll restoration. Syntax highlighting runs
-at build time; only its resulting HTML is included in the app, not the parser
-or syntax definitions.
+The local release module is 505,116 bytes gzipped (down from 845,102 bytes
+after syntax highlighting, and about 802 KB in the initial review).
+
+Blog bodies are excluded from client WebAssembly. The build emits one hashed
+text asset per published post; titles and descriptions stay in the app for
+listings and search. Direct visits reuse the full article already in the
+prerendered HTML without fetching it again. Client navigation fetches only the
+selected article, with an eight-article cache, deduplicated requests, a timeout,
+and a retry option. A keyed article component prevents a late response from
+replacing the next article. Anchor scrolling waits for the requested body.
+
+Syntax highlighting runs at build time. Its HTML remains in the prerendered
+page and separate body asset; the parser and syntax definitions never enter
+the browser bundle. The build verifies that every published article has a
+matching asset and complete static HTML, and that bodies are absent from WASM.

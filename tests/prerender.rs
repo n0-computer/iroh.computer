@@ -33,6 +33,9 @@ fn blog_html_contains_the_article_and_social_metadata_without_javascript() {
     let page = render("/blog/iroh-services-2-0");
     assert!(page.body.contains("post-header"));
     assert!(page.body.contains("class=\"prose\""));
+    assert!(page.body.contains("data-article-body=\"/blog/iroh-services-2-0\""));
+    assert!(page.body.contains("<!-- iroh-article:/blog/iroh-services-2-0 -->"));
+    assert!(!page.body.contains("data-article-loading"));
     assert!(
         page.head
             .contains("property=\"og:type\" content=\"article\"")

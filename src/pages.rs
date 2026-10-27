@@ -233,7 +233,7 @@ pub fn Content(segments: Vec<String>) -> Element {
                     }
                     div { class: "prose",
                         if is_blog {
-                            div { dangerous_inner_html: page.html.clone() }
+                            ArticleBody { key: "{page.path}", path: page.path.clone() }
                         } else {
                             { content::render(&
                                     path) }
@@ -252,5 +252,44 @@ pub fn Content(segments: Vec<String>) -> Element {
                 }
             }
         }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[component]
+fn ArticleBody(path: String) -> Element {
+    let page = site_content::pages().iter().find(|p| p.path == path).expect("published article");
+    rsx! { div { "data-article-body": path, dangerous_inner_html: page.html.clone() } }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[component]
+fn ArticleBody(path: String) -> Element {
+    let mut body = use_resource(use_reactive((&path,), |(path,)| async move {
+        let url = site_content::article_body_url(&path);
+        let mut request = document::eval(&format!(
+            "try {{ dioxus.send(await window.iroh.loadArticle({}, {})); }} catch (_) {{ dioxus.send(null); }}",
+            serde_json::to_string(&path).unwrap(), serde_json::to_string(&url).unwrap()
+        ));
+        request.recv::<Option<String>>().await.ok().flatten()
+    }));
+    match &*body.read_unchecked() {
+        Some(Some(html)) => rsx! {
+            div {
+                "data-article-body": path.clone(),
+                dangerous_inner_html: html.clone(),
+                onmounted: move |_| {
+                    document::eval(&format!("window.iroh.articleReady({})", serde_json::to_string(&path).unwrap()));
+                },
+            }
+        },
+        Some(None) => rsx! {
+            div { "data-article-error": "", role: "alert",
+                p { "The article couldn’t load. Check your connection and try again." }
+                button { class: "button", onclick: move |_| body.restart(), "Try again" }
+                a { class: "text-link", href: path, "Reload this page ↗" }
+            }
+        },
+        None => rsx! { p { "data-article-loading": "", role: "status", "Loading article…" } },
     }
 }

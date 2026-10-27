@@ -99,6 +99,14 @@ HTML in Cargo's ignored output directory. There is no generated blog JSON or
 HTML to edit or check in, and adding a post needs no manual index update.
 The blog listing, homepage, and site search all use this generated index.
 
+Article bodies are excluded from the WebAssembly bundle. Dioxus copies them as
+hashed text assets for both development and production. Keep Cargo's target
+directory inside the project so Dioxus can resolve these generated assets.
+Direct visits reuse article text from prerendered HTML; client navigation loads
+only the selected article and caches up to eight recent articles. Failed requests
+offer retry and full-page reload actions. Run `node --test tests/article-content.test.cjs`
+to validate caching, concurrent requests, retries, and response checks.
+
 Headings get automatic anchors. Use `## Heading {#existing-anchor}` when an
 anchor must stay stable. GitHub-style tables, task lists, strikethrough,
 footnotes, and `> [!NOTE]` callouts are supported. Fenced code blocks with a recognized
