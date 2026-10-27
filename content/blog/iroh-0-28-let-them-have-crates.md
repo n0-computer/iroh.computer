@@ -1,0 +1,112 @@
++++
+title = "iroh 0.28.0 - Let them have crates"
+description = "Iroh 0.28 release"
+date = "2024-11-06"
+author = "ramfox"
+social_image = ""
++++
+
+Welcome to a new release of iroh, a library for building on direct connections between devices, putting more control in the hands of your users.
+
+Buckle up, folks! We’ve been talking a big game about [focusing iroh](https://www.iroh.computer/blog/smaller-is-better) and [gearing up for a 1.0 release](https://www.iroh.computer/blog/road-to-1-0) and v0.28 is where we’ve started to do the major refactors to make these promises a reality.
+
+The most dramatic changes are around slimming down the iroh codebase, moving code to new repos, and marking chunks of code as deprecated. Don’t worry, though, we didn’t only shuffle things around, but we’ve also added new functionality to `Discovery`, new configuration options to `iroh-dns-server`, and squashed some nasty bugs.
+
+This was a complicated release and some things got confused in the shuffle. You’ll notice that iroh `v0.28.0` was yanked. `v0.28.1` is the “canonical” version of the latest release! This is also true of `iroh-net`, `iroh-cli` , `iroh-blobs`, and `iroh-gossip`.
+
+## 📦 New Crates {#new-crates}
+
+Part of our journey to getting to iroh v1.0 includes reorganizing our crate structure and pulling existing code into new crates.
+
+We are slimming down the iroh codebase, starting with pulling the protocols that we’ve developed at number0 and the general networking tools we’ve developed to help with holepunching into their own crates.
+
+Here is a brief tour:
+
+-   `iroh-router`: this new crate contains the definitions for protocols. It lives inside the iroh repo.
+-   `iroh-gossip`: the crate that contains the `iroh-gossip` protocol. It exists in its own repo now: [https://github.com/n0-computer/iroh-gossip](https://github.com/n0-computer/iroh-gossip)
+-   `iroh-docs`: the crate that contains the `iroh-docs` protocol. It exists in its own repo now: [https://github.com/n0-computer/iroh-docs](https://github.com/n0-computer/iroh-docs)
+-   `iroh-blobs`: the crate that contains the `iroh-blobs` protocol. It exists in its own repo now: [https://github.com/n0-computer/iroh-blobs](https://github.com/n0-computer/iroh-blobs)
+-   `portmapper`: a new crate, pulled from `iroh-net`. A library to ensure a mapping for a local port is maintained despite network changes. Provides upnp, pcp and nat-pmp protocols support. It currently still exists in the iroh repo, but will move into a new `net-tools` repo in future refactors.
+-   `netwatcher`: a new crate, pulled from `iroh-net`. A cross-platform library for monitoring networking interfaces and route changes. It currently exists in the iroh repo, but will move into a new `net-tools` repo in future refactors.
+
+## ⚔️ Deprecations {#deprecations}
+
+We’ve got some big API changes coming down the pipe in our next release. Here is a guide to what changes you can expect to come!
+
+### Explicitly add custom protocols {#explicitly-add-custom-protocols}
+
+As we stated in our blog post [“Smaller is Better”](https://www.iroh.computer/blog/smaller-is-better), we are doubling down on iroh as a networking library that allows its users to easily use direct connections in their custom protocols. Because of that, the custom protocols that we at number0 have developed along-side developing iroh (namely, `iroh-docs`, `iroh-gossip`, and `iroh-blobs`) have moved out of iroh, and, after v0.29 is released, they will no longer get “special treatment”. If you want to use any of these protocols, you will have to add them the same way you would add your own custom protocol.
+
+If you rely on `iroh-docs`, `iroh-gossip`, or `iroh-blobs`, we will have an extensive guide on how to migrate your current code with the `0.29` release.
+
+### CLI {#cli}
+
+Iroh will no longer include a CLI and the current CLI will be split up and moved into the protocol repos. So, for example, the `iroh-blobs` crate will get an example that shows the current `iroh blobs` functionality.
+
+The current `iroh doctor` functionality will be moved into an `iroh-doctor` repo. This binary will be all about diagnosing your network setup and measuring your holepunching rates.
+
+### RPC {#rpc}
+
+RPC functionality will also be moving out of iroh itself and into their respective protocol crates. Examples for how to add RPC functionality will also move into the custom protocol crates.
+
+As a consequence of removing RPC from iroh, we will also be removing the `client` API in iroh.
+
+If you rely on RPC commands in your code, we will have an extensive guide on how to migrate to the new normal with the `0.29` release.
+
+## 📓 Static Discovery {#static-discovery}
+
+We will be doing some adjusting and experimenting with how we add node information to the `iroh_net::Endpoint`. Long term, we hope to be able to remove `add_node_addr` from the endpoint and just use the `Discovery` services to inform the endpoint about node information.
+
+The first step is to add a `StaticDiscovery` service. This service allows you to manually add and remove node address information to the service. So, for example, if you have a side channel that informs you of nodes that you need to dial, you would explicitly add that information to the `StaticDiscovery` service before you dial by `NodeId`. Then, when you call `connect` with that `NodeId`, the `iroh_net::Endpoint` will query the `StaticDiscovery` service to request the latest node information it has for that `NodeId`.
+
+This helps iroh long-term since it takes the burden of having to manage node information off of the iroh internals, and into something that you the user can manage on top of iroh. Along side this `StaticDiscovery` that the user has full control over, iroh will still try to resolve the given `NodeId` with any other `Discovery` services that are available.
+
+For more information, check out [https://github.com/n0-computer/iroh/pull/2825](https://github.com/n0-computer/iroh/pull/2825).
+
+## ⌛ `iroh-dns-server` gets configurable rate limiting {#iroh-dns-server-gets-configurable-rate-limiting}
+
+Thanks to [HeavenVolkoff](https://github.com/HeavenVolkoff) from [Spacedrive](https://github.com/spacedriveapp/spacedrive), we now have configurable rate limiting on the `iroh-dns-server!`
+
+In the `iroh-dns-server` configuration file, the field is called `pkarr_put_rate_limit` and can have the following values:
+
+-   `"disabled"` - No rate limiting applied
+-   `"simple"` - Simple rate limiting based on connected peer IP address. [Details](https://docs.rs/tower_governor/latest/tower_governor/key_extractor/struct.PeerIpKeyExtractor.html)
+-   `"smart"` - Smart rate limiting logic logic for extracting the connection original IP address, useful for reverse proxies. [Details](https://docs.rs/tower_governor/latest/tower_governor/key_extractor/struct.SmartIpKeyExtractor.html)
+
+For more information, check out [https://github.com/n0-computer/iroh/pull/2772](https://github.com/n0-computer/iroh/pull/2772)
+
+## ⚠️ Breaking Changes {#breaking-changes}
+
+### Protocol {#protocol}
+
+No protocol level changes 🎉
+
+### API {#api}
+
+-   `iroh-net`
+    -   removed
+        -   the `secret_key` property of the `iroh-relay` config
+        -   `iroh_net::relay::server::ServerActorTask::secret_key`
+        -   `iroh_net::relay::server::ServerActorTask::public_key`
+        -   `iroh_net::relay::server::ServerActorTask::meta_cert`
+        -   field `secret_key` in `iroh_net::relay::server::RelayConfig`
+        -   `iroh_net::portmapper` is moved to its own crate: `portmapper`
+        -   `iroh_net::net` has been split and added to the `netwatch` crate
+    -   changed
+        -   `iroh_net::relay::server::ServerActorTask::new` now takes no arguments
+        -   `MagicsockMetrics` is now `#[non_exhaustive]`. This allows us to add more metrics without breaking backwards compatibility in the future. The struct is not meant to be constructed outside of `iroh-net` anyways.
+-   `iroh-base`
+    -   removed
+        -   `iroh_base::rpc::RpcError`
+        -   `iroh_base::rpc::RpcResult`
+-   `iroh`
+    -   changed
+        -   `iroh::node::ProtocolHandler` -> `iroh::router::ProtocolHandler`
+
+## But wait, there's more! {#but-wait-there-s-more}
+
+Many bugs were squashed, and smaller features were added. For all those details, check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.28.0](https://github.com/n0-computer/iroh/releases/tag/v0.28.0) and [https://github.com/n0-computer/iroh/releases/tag/v0.28.1](https://github.com/n0-computer/iroh/releases/tag/v0.28.1).
+
+If you want to know what is coming up, check out the [0.29.0](https://github.com/n0-computer/iroh/milestone/36), and our [Roadmap to 1.0](https://www.iroh.computer/roadmap). If you have any wishes or see something missing, let us know about in the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)!
+
+To keep up with all things iroh, check us out on [Twitter](https://x.com/iroh_n0) or [Mastodon](https://mastodon.social/@n0iroh).

@@ -1,0 +1,146 @@
++++
+title = "Iroh 0.16 - A Better Client!"
+description = "Iroh 0.16 Release"
+date = "2024-05-13"
+author = "ramfox"
+social_image = ""
++++
+
+# iroh@0.16 — A Better Client! {#iroh-0-16-a-better-client}
+
+Hello again folks, and welcome to the latest iroh release!
+
+This time, we shifted focus to our APIs: streamlining exports, taking ownership of our networking API, and making the iroh node simpler to use, without sacrificing functionality. We’ve also added some useful tools to help with debugging!
+
+## 📓 Improved API DX {#improved-api-dx}
+
+We’ve been focusing on some quality-of-life improvements for devs using iroh, starting with making our crate structure and exports more logical and better named. We wanted to make it more obvious that the `iroh::client` module is the main entry point to using iroh, so the largest changes are concentrated there. Most types that you will use to interact with your iroh node will come from that module.
+
+## 🚥 Cleaner networking integration {#cleaner-networking-integration}
+
+In order to squeeze out latency performance improvements, we recently had to fork [quinn](https://github.com/quinn-rs/quinn). Forking quinn allowed us to manipulate certain quinn APIs, so we could better integrate the pieces we use for hole-punching with lower-level QUIC systems, like the congestion controller. This was not a decision we made lightly; it certainly made switching to iroh easier when our QUIC connections API was simply the quinn API.
+
+Thankfully, this switch is relatively simple as well. Rather than the `accept` method returning a `quinn::Accept`, it now returns a `magic_endpoint::Accept`; `connect` returns `magic_endpoint::Connecting` rather than `quinn::Connecting`. Other API changes are listed below.
+
+Also, we wanted to make life easier on folks using iroh, so we now also export the QUIC API from iroh itself. This way, devs do not have to drag around two copies of QUIC implementations in their dependencies.
+
+For more information, check out PR [#2279](%5Bhttps://github.com/n0-computer/iroh/pull/2279%5D(https://github.com/n0-computer/iroh/pull/2279)) and [iroh-quinn](%5Bhttps://crates.io/crates/iroh-quinn%5D(https://crates.io/crates/iroh-quinn)) on crates.io.
+
+## 🩺 iroh doctor {#iroh-doctor}
+
+You can use the `iroh doctor` command to test out iroh connections.
+
+The `iroh doctor connect` and `iroh doctor accept` commands allow you to test the connection between different devices, by transferring and echoing data. It will show you the speed at which the data is sending, how much of the data is being sent directly over ipv4 vs ipv6 vs over the relay. In this last update, we now report the connection *type* (over the relay, direct, or a mix between the two) in a rolling fashion, as the data transfers occur.
+
+For more information, check out PR [#2251](https://github.com/n0-computer/iroh/pull/2251)
+
+## 📉 iroh doctor plot {#iroh-doctor-plot}
+
+View prometheus-like metrics plotting from the terminal, that displays data from your running iroh node!
+
+`iroh doctor plot` takes a list of metrics, as well flags for the reporting interval (e.g. report every 500ms) and the timeframe (e.g. show the lastest 60 seconds).
+
+Metrics are defined in `[metrics.rs](https://github.com/n0-computer/iroh/blob/main/iroh/src/metrics.rs)` files throughout the codebase. To get metrics on `send_data` in the `magicsock::Metrics` struct, you would call:
+
+```bash
+$ iroh doctor plot magicsock_send_data
+```
+
+If you also wanted to add the `download_bytes_total` metrics in the `iroh-blobs::Metrics` struct you would call:
+
+```bash
+$ iroh doctor plot magic_sock_send_data, download_bytes_total
+```
+
+![iroh doctor plot](/blog/iroh-0-16-a-better-client/iroh-doctor-plot.png)
+
+To learn more, check out PR [#2206](https://github.com/n0-computer/iroh/pull/2206)
+
+## ⚠️  Breaking Changes {#breaking-changes}
+
+### Protocol Changes {#protocol-changes}
+
+None!
+
+### API Changes {#api-changes}
+
+As mentioned earlier, this release contains a number of breaking changes to the `iroh` and `iroh-net`API. As always, changed APIs are documented here, and all pull requests that introduced a breaking change include documentation on the details of the change.
+
+### crate renames {#crate-renames}
+
+-   `iroh-bytes` is now `iroh-blobs`
+-   `iroh-sync` is now `iroh-docs`
+
+### `iroh-net` {#iroh-net}
+
+-   renamed:
+    -   `magicsock::ConnectionType` -> `magic_endpoint::ConnectionType`
+    -   `magicsock::ControlMsg` -> `iroh_net::magic_endpoint::ControlMsg`
+    -   `magicsock::ConnectionInfo` -> `iroh_net::magic_endpoint::ConnectionInfo`
+    -   `magicsock::ConnectionTypeStream` -> `iroh_net::magic_endpoint::ConnectionTypeStream`
+    -   `magicsock::DirectAddrInfo` -> `iroh_net::magic_endpoint::DirectAddrInfo`
+    -   `magicsock::LocalEndpointsStream` -> `iroh_net::magic_endpoint::LocalEndpointsStream`
+-   made private:
+    -   `net::interfaces`
+    -   `magicsock`
+-   `MagicEndpoint::accept` now returns `magic_endpoint::Accept` rather than Quinn's `Accept` type.
+-   `magic_endpoint::Connecting` replaces `quinn::Connecting`. This is the type returned by `.await`ing the `Accept` future.
+-   `magic_endpoint::accept_conn` and `magic_endpoint::get_alpn` have been removed. You now accept the connection by directly awaiting the futures returned. To retrieve the ALPN use the new `Connecting::alpn` method.
+
+### `iroh` {#iroh}
+
+-   renamed:
+    -   `sync` -> `docs`
+    -   `bytes` -> `blobs`
+    -   `ProviderService` -> `RpcService`
+    -   `iroh::client`
+        -   `mem::Iroh` -> `MemIroh`
+        -   `mem::Doc` -> `MemDoc`
+        -   `quic::Iroh` -> `QuicIroh`
+        -   `quic::Doc` -> `QuicDoc`
+        -   `blobs::BlobReader` -> `blobs::Reader`
+        -   `blobs::BlobAddProgress` -> `blobs::AddProgress`
+        -   `blobs::BlobAddOutcome` -> `blobs::AddOutcome`
+        -   `blobs::BlobDownloadProgress` -> `blobs::DownloadProgress`
+        -   `blobs::BlobDownloadOutcome` -> `blobs::DownloadOutcome`
+        -   `blobs::BlobExportProgress` -> `blobs::ExportProgress`
+        -   `docs::DocImportFileProgress` -> `docs::ImportFileProgress`
+        -   `docs::DocExportFileProgress` -> `docs::ExportFileProgress`
+        -   `docs::DocImportFileOutcome` -> `docs::ImportFileOutcome`
+        -   `docs::DocExportFileOutcome` -> `docs::ExportFileOutcome`
+    -   `rpc_protocol::NodeStatusResponse` -> `client::node::NodeStatus`
+    -   `rpc_protocol::ListTagsResponse` -> `client::tags::TagInfo`
+    -   `rpc_protocol::BlobListResponse` -> `client::blobs::BlobInfo`
+    -   `rpc_protocol::BlobListIncompleteResponse` -> `client::blobs::IncompleteBlobInfo`
+    -   `rpc_protocol::BlobListCollectionResponse` -> `client::blobs::CollectionInfo`
+    -   `rpc_protocol::DownloadMode` -> `client::blobs::DownloadMode`
+-   moved:
+    -   `DocTicket` into `iroh-sync`
+    -   `client::Node::stats` -> `client::Client::stats`
+    -   `client::Node::connections` -> `client::Client::connections`
+    -   `client::Node::connection_info` -> `client::Client::connection_info`
+    -   `client::Node::status` -> `client::Client::status`
+    -   `client::Node::id` -> `client::Client::node_id`
+    -   `client::Node::shutdown` -> `client::Client::shutdown`
+-   removed:
+    -   `ticket` module
+    -   `dial` module
+-   made private:
+    -   `sync_engine`
+    -   `client::rpc_protocol`
+    -   `client::quic::RPC_ALPN`
+    -   `client::quic::connect_raw`
+-   added:
+    -   `client::node::Client::id`
+    -   `client::blobs::Client::download_with_opts`
+    -   `client::blobs::Client::download_hash_seq`
+    -   `client::Client::my_relay`
+    -   `client::Client::my_addr`
+-   removed
+    -   `node::Node::ticket`, use `client::blobs::Client::share` instead
+
+### But wait there’s more! {#but-wait-there-s-more}
+
+Many bugs were squashed and smaller features were added. For all those details you can check out the full changelog: [https://github.com/n0-computer/iroh/releases/tag/v0.16.0](https://github.com/n0-computer/iroh/releases/tag/v0.15.0).
+
+If you want to know what is coming up, check out the [0.17.0 milestone](https://github.com/n0-computer/iroh/milestone/23), and if you have any wishes let us know in the [issues](https://github.com/n0-computer/iroh/issues)! If you need help using iroh or just want to chat, please join us on [discord](https://discord.com/invite/DpmJgtU7cW)!

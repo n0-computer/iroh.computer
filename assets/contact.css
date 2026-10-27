@@ -1,0 +1,23 @@
+.contact-trigger.text-link { border: 0; padding: 0; text-align: left; }
+body:has(#contact-dialog[open]) { overflow: hidden; }
+.contact-dialog { width: min(540px, calc(100% - 32px)); max-height: calc(100dvh - 40px); padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--fg); box-shadow: 0 24px 90px #0005; overflow-y: auto; }
+.contact-dialog::backdrop { background: #11111388; backdrop-filter: blur(5px); }
+.contact-dialog-content { position: relative; padding: 40px; }
+.contact-close { position: absolute; right: 18px; top: 12px; width: 36px; height: 36px; border: 0; font: 28px/1 Space, Arial, sans-serif; color: var(--muted); }
+.contact-kicker { color: var(--accent); font-size: 13px; margin-bottom: 15px; }
+.contact-dialog h2 { font-size: 36px; line-height: 1.15; }
+#contact-description { color: var(--muted); font-size: 15px; margin-block: 15px 25px; }
+.contact-dialog label { display: block; font-size: 14px; margin-top: 18px; margin-bottom: 7px; }
+.contact-dialog label > span { color: var(--accent); }
+.contact-dialog .contact-optional { color: var(--muted); font-size: 12px; }
+.contact-dialog input, .contact-dialog select { display: block; width: 100%; min-height: 46px; background: var(--panel); border-radius: 5px; font-size: 15px; }
+.contact-dialog .contact-consent { color: var(--muted); font-size: 12px; line-height: 1.65; margin-block: 22px; }
+.contact-dialog .contact-submit { width: 100%; border-radius: 5px; }
+.contact-dialog button:disabled { opacity: .6; cursor: wait; }
+.contact-error { color: #c2415b; font-size: 14px; line-height: 1.6; margin-top: 18px; }
+:root[data-theme="dark"] .contact-error { color: #f6a2ae; }
+.contact-success { border-top: 1px solid var(--line); padding-top: 24px; }
+.contact-success h3 { font-size: 24px; }
+.contact-success p { color: var(--muted); margin-block: 15px 25px; }
+.contact-honeypot { position: absolute; left: -5000px; width: 1px; height: 1px; overflow: hidden; }
+@media (max-width: 560px) { .contact-dialog-content { padding: 34px 24px 28px; } .contact-dialog h2 { font-size: 31px; } }

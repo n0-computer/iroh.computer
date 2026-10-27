@@ -1,52 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/scripts/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-
-
-# misc
-.DS_Store
-*.pem
-.parcel-cache
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env
-.env*.local
-
-# playwright MCP debug output
-.playwright-mcp/
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# go
-extern
-iroh_data_dir
-
-# rust
-api-code-examples/target
-
-# nodejs
-api-code-examples/node_modules
-.env.local
+/target/
+/dist/
+/node_modules/
+/.content-build/
+/test-results/
