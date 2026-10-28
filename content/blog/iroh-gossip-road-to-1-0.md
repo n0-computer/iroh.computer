@@ -1,6 +1,6 @@
 +++
 title = "A new iroh-gossip release and the road to 1.0"
-description = "iroh-gossip 0.102 fixes a lot of bugs, and a roadmap for iroh-gossip 1.0"
+description = "Fixing old bugs and exciting new features"
 date = "2026-10-30"
 author = "Franz Heinzmann (Frando)"
 social_image = ""
@@ -12,17 +12,17 @@ Now that iroh 1.0 is out of the door, we finally have more capacity to work on o
 
 This is also the last release on the current wire protocol. For the upcoming iroh-gossip 1.0 release, we have a couple of changes planned that need a wire protocol. The second half of this post describes our plans, to which we welcome your feedback!
 
-### So many fixes
+## So many fixes
 
 While iroh-gossip fared rather well in production already, we had a number of long-standing bugs around connection lifecycle management, recovery, and dealing with slow or stalled peers in the swarm. We're happy to report that this release fixes many of them, and we're quite confident that this is the best iroh-gossip release yet :)
 
-#### Slow peers no longer block a node
+### Slow peers no longer block a node
 
 Before 0.102, a node sent to each peer through a queue of 64 messages, and waited when that queue was full. So one peer that read slowly, or stopped reading, stopped every topic on the node. Messages from all other peers stopped too.
 
-Now each peer has its own queue of 1 MiB, and the node never waits on it. When a message does not fit, the node drops it for that peer and announces it again later. The peer can then fetch it while the message is still cached. A publisher waits only when the queues to all its eager neighbors are half full, because then its own uplink is most likely the limit. It waits at most 100 ms at a time. ([#185])
+Now each peer has its own queue of 1 MiB, and pushing into this queue never waits. When a message does not fit, the node drops it for that peer and announces it again later. The peer can then fetch it while the message is still cached. Broadcasting waits only when the queues to all its eager neighbors are half full, because then its own uplink is most likely the limit. ([#185])
 
-We measured this with [patchbay]. The lab has 10 nodes, and the slow ones are on 1 Mbit/s links. The publisher sends 1 KB messages for 60 s. Each cell is the median of three runs, as 0.101 → 0.102.
+We measured this with [patchbay], a tool for network simulations. I created lab with 10 gossip nodes with some of them on slow 1 Mbit/s links. The publisher sends 1 KB messages for 60 s. Each cell in the table below is the median of three runs, as 0.101 → 0.102.
 
 | Scenario | Messages sent | Received per slow node | p99 latency of healthy nodes |
 |---|---|---|---|
@@ -60,7 +60,7 @@ Both papers report how their protocol behaves in simulation, for example how fas
 
 You can run 0.102 nodes and older nodes in the same swarm, and update one node at a time.
 
-This needed extra work. Nodes up to 0.101 have a bug ([#155]). When the connection to a peer that is not their neighbor closes, they keep a dead handle for that peer. They lose all later messages to it, until the peer dials them again. Because 0.102 closes unused connections, old nodes would hit this bug often.
+This needed extra work. Nodes up to 0.101 have a bug ([#155]): When the connection to a peer that is not their neighbor closes, they keep a dead handle for that peer. They lose all later messages to it, until the peer dials them again. Because 0.102 closes unused connections, old nodes would hit this bug often.
 
 So a 0.102 node adds a flag to its stream headers. The flag says "I can handle closed connections", and old nodes ignore it. A new node closes an unused connection only after the peer sent this flag. Connections to old nodes stay open as before, so for them the leak stays until they update. ([#189])
 
@@ -74,19 +74,19 @@ Several of these fixes build on pull requests and issues from the community:
 
 Thank you!
 
-### Next: iroh-gossip 1.0
+## Next up: iroh-gossip 1.0
 
-Our plan is to change the wire protocol in the next release, and to release it as iroh-gossip 1.0. We know that wire changes are hard for gossip users, because every node of a swarm has to update. But the features that users ask for most need them. After 1.0, we want to stop changing the wire. So we are writing the new protocol down as a specification first. [TODO: link to the draft.]
+Our plan is to change the wire protocol in the next release, and to release it as a canary release for the upcoming iroh-gossip 1.0. We know that wire changes are hard for gossip users, because every node of a swarm has to update. But the features that users ask for most need them. After 1.0, we want to stop changing the wire, and will design the new protocol in a way where we can add new features over time, something the current protocol hardly permits.
 
-Here is what the current draft contains. All of it can still change.
+Here is what we have planned:
 
 #### Authorized topics
 
 Today, anyone who knows the topic id and one online member can join a swarm. A secret topic id is the only access control. To remove someone, you have to move everyone to a new topic id.
 
-We plan to let a node present a token when it opens a topic on a connection. The receiving node would pass the token to a verifier that the app provides, and the app would accept or reject the peer. The default verifier would accept everyone, so apps without this need would change nothing.
+We plan to let a node present a token when it opens a topic on a connection. The receiving node would pass the token to a verifier that the app provides, and the app would accept or reject the peer. The default verifier would accept everyone, so apps without this need wouldn't need to change at all.
 
-iroh-gossip would treat the token as opaque bytes, so the app decides what it means. It can be a shared secret or a signed capability, for example. Until the app accepts a peer, the node would send it only membership messages and no data. A node would never forward a token to other peers.
+iroh-gossip will treat the token as opaque bytes, so only the app decides what it means. It can be a shared secret or a signed capability, for example. Until the app accepts a peer, the node would send it only membership messages and no data. A node never forwards a token to other peers.
 
 We want to publish examples for shared secrets and for capability tokens. One rule will matter for all of them: bind the token to the endpoint id of its holder. Otherwise a peer that saw your token can use it as its own.
 
@@ -104,15 +104,13 @@ Much of the work in 0.102 went into connections. The hardest part is a restarted
 
 Our plan is a random session id that each node picks for each peer, and sends with every stream. A node would then see at once when a peer restarted, and drop the state of the old run. A node would send on one connection per peer. When any connection to the peer ends, both sides would end the session and clean up once, and the app would get one clear signal. The compatibility rules of 0.102 would go away, and every unused connection would close.
 
-We also want to give each topic a separate stream for membership messages. A membership message would then never wait behind a megabyte of data, and a leave and a rejoin would keep their order. In 0.102, a peer can still read a `Join` before an earlier `Disconnect`, and then drop a neighbor that just joined.
-
 #### Migration
 
 The draft uses a new protocol name (ALPN), so 0.102 and 1.0 nodes will not talk to each other. We don't plan to add backwards compatibility. This means that once you want to move to iroh-gossip 1.0, you will either have to update all your users at the same time, or ship both iroh-gossip 0.102 and 1.0 in your app for a while. While not ideal, this is what it is, and shipping two versions for a while is not too bad. Be assured that this will be the last breaking change for a long time. We are designing the new wire protocol such that we can add extensions over time without breaking old clients.
 
 We want your feedback on the design before we finish it. [TODO: link to the wire draft or tracking issue.]
 
-Please try 0.102 and tell us how it works for you, on [GitHub] or on Discord.
+Please try 0.102 and tell us how it works for you, on [GitHub] or on [Discord].
 
 ## The changes in detail
 
@@ -176,3 +174,4 @@ These are not semver-breaking, but your app may notice them:
 [#196]: https://github.com/n0-computer/iroh-gossip/pull/196
 [#198]: https://github.com/n0-computer/iroh-gossip/pull/198
 [#201]: https://github.com/n0-computer/iroh-gossip/pull/201
+[Discord] https://iroh.computer/discord
