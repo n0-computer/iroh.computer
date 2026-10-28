@@ -1,7 +1,7 @@
 +++
 title = "A new iroh-gossip release and the road to 1.0"
 description = "iroh-gossip 0.102 fixes a lot of bugs, and a roadmap for iroh-gossip 1.0"
-date = "2024-07-11"
+date = "2026-10-30"
 author = "Franz Heinzmann (Frando)"
 social_image = ""
 +++
