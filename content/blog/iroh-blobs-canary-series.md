@@ -50,6 +50,7 @@ We also want to do some internal refactors prior to 1.0 and add an abstraction t
 - [#294] Observing a poisoned entry in the fs store, e.g. one whose data file was deleted, panicked and killed the entity actor for that hash, which stayed down until the store was restarted. Writing to a poisoned entry reported success while storing nothing. Observe streams now end for poisoned entries, writes fail with the actual io error, and the cause of poisoning is logged.
 - [#296] Re-adding the content of a poisoned entry reported success, but the blob stayed unreadable. A finished import now replaces a poisoned entry.
 - [#302] An entry with external data only tried the first of its paths, so it stayed poisoned if that file was deleted, even when the same content was available at another path. All paths are now tried.
+- [#317] It was possible for the garbage collector to remove the children of a hash seq root even though it was already marked as live, deleting data that should have been kept. Thanks to [Damian Miles] for finding this in production and contributing a test!
 - [#299] `Blobs::add_stream` hung forever when the source stream yielded an error. The source error is now returned to the caller.
 - [#282] `Hash::from_str` panicked on base32 input that does not decode to exactly 32 bytes. This was fixed before, but the fix got lost when the crate was replaced with the blobs2 code.
 - [#313] `Bitfield::total_bytes` underflowed for a range starting past the size: a panic in debug builds, a huge value in release builds.
@@ -80,6 +81,8 @@ We also want to do some internal refactors prior to 1.0 and add an abstraction t
 [#313]: https://github.com/n0-computer/iroh-blobs/commit/cd2780e8e878f0dc12e64e2e68f77542f44a6c13
 [#285]: https://github.com/n0-computer/iroh-blobs/commit/dda1d5e270da119df23b9cdd1afe831eb238cc6a
 [#280]: https://github.com/n0-computer/iroh-blobs/commit/8368de668ac67e85c9134c4386b17f20b87a6e05
+[#317]: https://github.com/n0-computer/iroh-blobs/commit/49f557341ef54d5e54a08cd0ce9b307bb1f0259a
+[Damian Miles]: https://github.com/damianmiles
 [canary series]: /blog/iroh-0-90-the-canary-series
 [iroh global content discovery]: /blog/iroh-global-content-discovery
 [iroh-docs]: /proto/iroh-docs
