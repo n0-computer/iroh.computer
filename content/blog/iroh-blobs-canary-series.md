@@ -21,11 +21,11 @@ Others were discovered by the many external users of iroh-blobs. Iroh-blobs was 
 
 Here are a few of the projects that use iroh-blobs today:
 
-- [deCDN] is a peer-to-peer CDN for large files such as AI models and datasets. Nodes cache and serve content-addressed blobs over iroh. The deCDN team also sent us the most comprehensive list of bugs for this release, thank you!
+- [deCDN] is a peer-to-peer CDN for large files such as AI models and datasets. Nodes cache and serve content-addressed blobs over iroh. The deCDN team also sent us a comprehensive list of bugs for this release, thank you!
 - [DashBeam], previously AltSendme, is a cross-platform file transfer app with no accounts and no size limits, inspired by sendme.
 - [Flipflop] does file sharing over persistent iroh tunnels between trusted devices.
 - [Dash Chat] by darksoil studio is an offline-first peer-to-peer messenger built on p2panda and iroh.
-- [Radicle], the peer-to-peer code collaboration stack, uses iroh-blobs to seed artifacts.
+- [Radicle Artifact] is [Radicle]'s take on Git LFS: large files bound to commits, seeded and fetched peer-to-peer with iroh-blobs.
 
 ## What is next
 
@@ -89,3 +89,4 @@ Also we want to do some internal refactorings prior to 1.0 and also add an abstr
 [Flipflop]: https://github.com/andunieee/flipflop
 [Dash Chat]: https://darksoil.studio/dashchat
 [Radicle]: https://radicle.xyz
+[Radicle Artifact]: https://radicle.network/nodes/iris.radicle.network/rad:z4VYyJ9KuwMNkXGQnmKuGPGKw3inv
