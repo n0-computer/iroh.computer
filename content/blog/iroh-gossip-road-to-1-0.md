@@ -1,28 +1,28 @@
 +++
 title = "A new iroh-gossip release and the road to 1.0"
-description = "Fixing old bugs and exciting new features"
+description = "Fixing old bugs and planning exciting new features"
 date = "2026-10-30"
 author = "Franz Heinzmann (Frando)"
 social_image = ""
 +++
 
-iroh-gossip is a protocol to broadcast messages to a swarm of peers, without central coordination. It is one of the most used iroh protocols, and often forms the backbone for real-time communication across online endpoints of apps.
+`iroh-gossip` is a protocol to broadcast messages to a swarm of peers, without central coordination. It is one of the most used `iroh` protocols, and often forms the backbone for real-time communication between endpoints in apps.
 
-Now that iroh 1.0 is out of the door, we finally have more capacity to work on our protocols again. And today we released iroh-gossip version 0.102.0, which fixes many long-standing bugs and increases reliability and efficiency of iroh-gossip considerably.
+Now that `iroh` 1.0 is out the door, we finally have more capacity to work on our protocols again. And today we released `iroh-gossip` version 0.102.0, which fixes many long-standing bugs and increases reliability and efficiency considerably.
 
-This is also the last release on the current wire protocol. For the upcoming iroh-gossip 1.0 release, we have a couple of changes planned that need a wire protocol. The second half of this post describes our plans, to which we welcome your feedback!
+This is also the last release on the current wire protocol. For the upcoming `iroh-gossip` 1.0 release, we have a couple of changes planned that break the wire protocol. The second half of this post describes our plans, to which we welcome your feedback!
 
-## So many fixes
+## So Many Fixes
 
-While iroh-gossip fared rather well in production already, we had a number of long-standing bugs around connection lifecycle management, recovery, and dealing with slow or stalled peers in the swarm. We're happy to report that this release fixes many of them, and we're quite confident that this is the best iroh-gossip release yet :)
+While `iroh-gossip` has fared rather well in production already, we have had a number of long-standing bugs around connection lifecycle management, recovery, and dealing with slow or stalled peers in the swarm. We're happy to report that this release fixes many of those bugs and we're quite confident that this is the best `iroh-gossip` release yet :)
 
-### Slow peers no longer block a node
+### Slow Peers No Longer Block a Node
 
-Before 0.102, a node sent to each peer through a queue of 64 messages, and waited when that queue was full. So one peer that read slowly, or stopped reading, stopped every topic on the node. Messages from all other peers stopped too.
+Before 0.102, a node shared a single 64-message queue for all of its peers and was blocked on sending more messages when that queue was full. So one peer that read slowly, or stopped reading, stopped every topic on the node. Messages from all other peers stopped too.
 
-Now each peer has its own queue of 1 MiB, and pushing into this queue never waits. When a message does not fit, the node drops it for that peer and announces it again later. The peer can then fetch it while the message is still cached. Broadcasting waits only when the queues to all its eager neighbors are half full, because then its own uplink is most likely the limit. ([#185])
+Now each peer has its own queue of 1 MiB, and pushing into this queue never waits. When a message does not fit, the node drops it for that peer and announces it again later. The peer can then fetch it while the message is still cached. Broadcasting waits only when the queues to all eager neighbors of the topic are half full, because then its own uplink is most likely the limit. ([#185])
 
-We measured this with [patchbay], a tool for network simulations. I created lab with 10 gossip nodes with some of them on slow 1 Mbit/s links. The publisher sends 1 KB messages for 60 s. Each cell in the table below is the median of three runs, as 0.101 → 0.102.
+We measured this with [patchbay], a tool for network simulations. We created a lab with 10 gossip nodes with some of them on slow 1 Mbit/s links. The publisher sends 1 KB messages for 60 s. Each cell in the table below is the median of three runs, as 0.101 → 0.102.
 
 | Scenario | Messages sent | Received per slow node | p99 latency of healthy nodes |
 |---|---|---|---|
@@ -31,22 +31,22 @@ We measured this with [patchbay], a tool for network simulations. I created lab 
 | 1 slow node, 3 publishers on 2 topics | 7141 → 15001 | 3925 → 3496 | 32 s → 230 ms |
 | 3 slow nodes, 100 msg/s | 4638 → 6001 | 4187 → 3927 | 21 s → 20 ms |
 
-With 0.101, the slow nodes set the pace for everyone: the publisher got out between 30 and 77 % of its messages. With 0.102, the publisher keeps its rate, and the healthy nodes keep their latency. The slow nodes receive about as many messages as before, because their link is the limit. They miss the rest.
+With 0.101, the slow nodes set the pace for everyone: the publisher got out between 30 and 77% of its messages. With 0.102, the publisher keeps its rate, and the healthy nodes keep their latency. The slow nodes receive about as many messages as before, because their link is the limit. They miss the rest.
 
-One case is still weak. With eight slow nodes out of ten, the one healthy node receives data only through slow relays. In one run, it received 37.7 % of the messages.
+One case is still weak. With eight slow nodes out of ten, the one healthy node receives data only through slow relays. In one run, it received 37.7% of the messages.
 
 0.102 also fixes two other cases that blocked a node. A publisher that always had a message ready starved everything else. A peer that sent half a stream header blocked the other streams of its connection. ([#186])
 
-#### Correctness fixes and regression tests
+### Correctness Fixes and Regression Tests
 
-Both papers report how their protocol behaves in simulation, for example how fast a swarm recovers after half its nodes fail. We turned these claims into tests that run in our simulator. At first, 10 of these tests failed. With the fixes below, all of them pass on 50 random seeds. ([#191])
+Both the [Plumtree] and [HyParView] papers report how their protocols behaves in simulation, for example how fast a swarm recovers after half its nodes fail. We turned these claims into tests that run in our simulator. At first, 10 of these tests failed. With the fixes below, all of them pass on 50 random seeds. ([#191])
 
 - A node that lost all its neighbors did not look for new ones. It stayed alone until the app joined again. Now it joins again through the peers that the app joined with. It also tries one of its recent neighbors, in case those peers are gone. ([#192])
 - A node now looks for new neighbors before it has none left, also after a failed dial.
 - The first shuffle fills the list of backup peers. It now runs one second after a join instead of after one minute.
 - Late messages from a former neighbor no longer add it back to the tree.
 
-#### Other fixes
+#### Other Fixes
 
 - **Memory leaks.** Several maps kept entries for peers that left, so the memory of long-running nodes grew without limit. ([#161])
 - **Unused connections.** A connection stayed open forever, even when no topic used the peer anymore. Now it closes five seconds after it becomes unused. ([#178], [#195])
@@ -56,11 +56,11 @@ Both papers report how their protocol behaves in simulation, for example how fas
 - **Shutdown.** Shutting down the tokio runtime no longer makes the gossip actor panic. ([#183])
 - [TODO, if merged before the release] **Fewer dials in a full swarm.** A node with too few neighbors asked every full peer for a slot every five seconds, each time on a new connection. Now it asks at most three peers at a time, and waits longer after each round, up to one minute. ([#196])
 
-### Swarms with old and new nodes
+### Swarms with Old and New Nodes
 
 You can run 0.102 nodes and older nodes in the same swarm, and update one node at a time.
 
-This needed extra work. Nodes up to 0.101 have a bug ([#155]): When the connection to a peer that is not their neighbor closes, they keep a dead handle for that peer. They lose all later messages to it, until the peer dials them again. Because 0.102 closes unused connections, old nodes would hit this bug often.
+This needed extra work. Nodes up to 0.101 have a bug ([#155]): when the connection to a peer that is not their neighbor closes, they keep a dead handle for that peer. They lose all later messages to it, until the peer dials them again. Because 0.102 closes unused connections, old nodes would hit this bug often.
 
 So a 0.102 node adds a flag to its stream headers. The flag says "I can handle closed connections", and old nodes ignore it. A new node closes an unused connection only after the peer sent this flag. Connections to old nodes stay open as before, so for them the leak stays until they update. ([#189])
 
@@ -68,29 +68,31 @@ So a 0.102 node adds a flag to its stream headers. The flag says "I can handle c
 
 Several of these fixes build on pull requests and issues from the community:
 
-- @drlukeangel, @caiogondim, and @jgrund worked on the leaks ([#145], [#146], [#147], [#154]).
-- @adiibanez and @javruben reported and worked on slow peers ([#47], [#143]).
-- @TapGhoul found the dead handle bug ([#155]).
+- [@drlukeangel], [@caiogondim], and [@jgrund] worked on the leaks ([#145], [#146], [#147], [#154]).
+- [@adiibanez] and [@javruben] reported and worked on slow peers ([#47], [#143]).
+- [@TapGhoul] found the dead handle bug ([#155]).
 
 Thank you!
 
-## Next up: iroh-gossip 1.0
+## Next up: `iroh-gossip` 1.0
 
-Our plan is to change the wire protocol in the next release, and to release it as a canary release for the upcoming iroh-gossip 1.0. We know that wire changes are hard for gossip users, because every node of a swarm has to update. But the features that users ask for most need them. After 1.0, we want to stop changing the wire, and will design the new protocol in a way where we can add new features over time, something the current protocol hardly permits.
+Our plan is to change the wire protocol in the next release, and to ship it as a canary for the upcoming `iroh-gossip` 1.0. We know that wire changes are hard for gossip users, because every node of a swarm has to update. **But the most pressing features that users are asking for need wire-level breaking changes.**
+
+After 1.0, we want to stop changing the wire, and will design the new protocol in a way where we can add new features over time, something the current protocol hardly permits.
 
 Here is what we have planned:
 
-#### Authorized topics
+#### Authorized Topics
 
 Today, anyone who knows the topic id and one online member can join a swarm. A secret topic id is the only access control. To remove someone, you have to move everyone to a new topic id.
 
 We plan to let a node present a token when it opens a topic on a connection. The receiving node would pass the token to a verifier that the app provides, and the app would accept or reject the peer. The default verifier would accept everyone, so apps without this need wouldn't need to change at all.
 
-iroh-gossip will treat the token as opaque bytes, so only the app decides what it means. It can be a shared secret or a signed capability, for example. Until the app accepts a peer, the node would send it only membership messages and no data. A node never forwards a token to other peers.
+`iroh-gossip` will treat the token as opaque bytes, so only the app decides what it means. It can be a shared secret or a signed capability, for example. Until the app accepts a peer, the node would send it only membership messages and no data. A node never forwards a token to other peers.
 
-We want to publish examples for shared secrets and for capability tokens. One rule will matter for all of them: bind the token to the endpoint id of its holder. Otherwise a peer that saw your token can use it as its own.
+We want to publish examples for shared secrets and for capability tokens. One rule will matter for all of them: bind the token to the endpoint id of its holder. Otherwise, a peer that saw your token can use it as its own.
 
-### One broadcast tree per sender
+#### One Broadcast Tree Per Sender
 
 Today, all senders of a topic share one Plumtree tree. When a node gets a message twice, it makes the link of the duplicate lazy. This removes a cycle from the tree, and with one sender it works well.
 
@@ -98,41 +100,41 @@ When several nodes send at the same time, their duplicates arrive on different l
 
 The Plumtree paper already recommends a tree per sender, and that is our plan for 1.0. Every message would name the tree of its sender, and each node would keep its eager and lazy links per tree. In our prototype, a tree costs a node about 1.4 KB. Nodes would cap the number of trees, and drop the trees they have not used for a while. A dropped tree costs one flood of the next message of that sender. In a first test with four senders on one machine, the prototype moved about eight times more messages per second.
 
-#### A clear model for connections
+#### A Clear Model for Connections
 
-Much of the work in 0.102 went into connections. The hardest part is a restarted peer, because the current protocol cannot tell it apart from a late connection of its previous run.
+Much of the work in 0.102 went into connections. The hardest case to reason about is a restarted peer, because the current protocol cannot tell it apart from a late connection of its previous run.
 
 Our plan is a random session id that each node picks for each peer, and sends with every stream. A node would then see at once when a peer restarted, and drop the state of the old run. A node would send on one connection per peer. When any connection to the peer ends, both sides would end the session and clean up once, and the app would get one clear signal. The compatibility rules of 0.102 would go away, and every unused connection would close.
 
 #### Migration
 
-The draft uses a new protocol name (ALPN), so 0.102 and 1.0 nodes will not talk to each other. We don't plan to add backwards compatibility. This means that once you want to move to iroh-gossip 1.0, you will either have to update all your users at the same time, or ship both iroh-gossip 0.102 and 1.0 in your app for a while. While not ideal, this is what it is, and shipping two versions for a while is not too bad. Be assured that this will be the last breaking change for a long time. We are designing the new wire protocol such that we can add extensions over time without breaking old clients.
+The draft uses a new protocol name (ALPN), so 0.102 and 1.0 nodes will not talk to each other. We don't plan to add backwards compatibility. This means that once you want to move to `iroh-gossip` 1.0, you will either have to update all your users at the same time, or ship both `iroh-gossip` 0.102 and 1.0 in your app for a while. While not ideal, this is the nature of upgrading gossip swarms. Be assured that this will be the last breaking change for a long time. We are designing the new wire protocol such that we can add extensions over time without breaking old clients.
 
 We want your feedback on the design before we finish it. [TODO: link to the wire draft or tracking issue.]
 
-Please try 0.102 and tell us how it works for you, on [GitHub] or on [Discord].
+Please try 0.102 and tell us how it works for you on [GitHub] or [Discord].
 
-## The changes in detail
+## The Changes in Detail
 
-#### Breaking changes
+#### Breaking Changes
 
 - The event and command enums in `api` and `proto` are now `#[non_exhaustive]`. Add a wildcard arm to your matches. ([#198])
 - `metrics::Metrics` is now `#[non_exhaustive]`. Create it with `Metrics::default()`, not with a struct literal. ([#198])
 
-#### Behavior changes
+#### Behavior Changes
 
 These are not semver-breaking, but your app may notice them:
 
 - A broadcast can wait, for at most 100 ms at a time, while the queues to all eager neighbors of its topic are half full. ([#185])
 - A full send queue drops data for that peer. A membership message that does not fit, or a write that stalls for 60 s, closes the connection. ([#185])
 - `broadcast` and `broadcast_neighbors` return `ApiError::TooLarge` for content over `max_content_size`. ([#187])
-- A connection closes five seconds after no topic uses the peer, also a connection that the app passed to `Gossip::handle_connection`. ([#178])
+- A connection closes five seconds after no topic uses the peer, including a connection that the app passed to `Gossip::handle_connection`. ([#178])
 - `Gossip::handle_connection` expects an accepted, server-side connection. ([#185])
 - A rejoin can dial a peer that the app did not name: one of the recent neighbors of the node. ([#192])
 
-#### New features
+#### New Features
 
-- [#187] `GossipSender::max_content_size` and `GossipTopic::max_content_size` return the largest content that a broadcast takes. An RPC client asks its server once.
+- [#187] `GossipSender::max_content_size` and `GossipTopic::max_content_size` return the largest content size that a broadcast accepts. An RPC client asks its server once.
 - [#185] `Builder::send_queue` and `QueueOptions` set the size of the send queue to each peer. The new metrics `msgs_dropped` and `peers_send_queue_full` count the messages that a full queue dropped, and the connections that it closed.
 - [#192] A node with no neighbors and no backup peers also rejoins through one of its last eight neighbors.
 - [#191] `proto::Ttl` and `proto::Round` are now public. Four public config fields used these types before.
@@ -143,7 +145,7 @@ These are not semver-breaking, but your app may notice them:
 - [#186] A publisher with a command always ready starved the actor, and half a stream header blocked all streams of a connection.
 - [#161] State for departed peers leaked, and a topic could close a connection that another topic still used.
 - [#178] Unused connections never closed. A connection that closed before the peer became a neighbor left a dead handle, and later messages to that peer were lost.
-- [#189] A node closes unused connections only to peers that handle it, so nodes up to 0.101 keep working.
+- [#189] A node closes unused connections only to peers that support it, so nodes up to 0.101 keep working.
 - [#195] A node also closes a connection on which neither side ever sent.
 - [#191] A node rejoins when it has no neighbors left, refills its neighbors before it runs out, and shuffles soon after a join.
 - [#187] `broadcast` of an oversized message returned `Ok`, and the node dropped the message later without notice.
@@ -174,4 +176,10 @@ These are not semver-breaking, but your app may notice them:
 [#196]: https://github.com/n0-computer/iroh-gossip/pull/196
 [#198]: https://github.com/n0-computer/iroh-gossip/pull/198
 [#201]: https://github.com/n0-computer/iroh-gossip/pull/201
-[Discord] https://iroh.computer/discord
+[@drlukeangel]: https://github.com/drlukeangel
+[@caiogondim]: https://github.com/caiogondim
+[@jgrund]: https://github.com/jgrund
+[@adiibanez]: https://github.com/adiibanez
+[@javruben]: https://github.com/javruben
+[@TapGhoul]: https://github.com/TapGhoul
+[Discord]: https://iroh.computer/discord
