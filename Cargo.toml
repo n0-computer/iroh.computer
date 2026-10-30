@@ -1,0 +1,33 @@
+[package]
+name = "iroh-computer"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+dioxus = { version = "0.7.10", features = ["web", "router"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[build-dependencies]
+serde_json = "1"
+time = { version = "0.3", features = ["formatting"] }
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+syntect = { version = "5.3.0", default-features = false, features = ["default-syntaxes", "html", "regex-fancy"] }
+
+[dev-dependencies]
+syntect = { version = "5.3.0", default-features = false, features = ["default-syntaxes", "html", "regex-fancy"] }
+time = { version = "0.3", features = ["formatting"] }
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
+toml = "0.8"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+dioxus-ssr = "0.7.10"

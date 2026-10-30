@@ -1,0 +1,44 @@
+/* Service illustrations share enterprise's paper cards and wandering paths. */
+.service-art { position: relative; width: 100%; max-width: 600px; aspect-ratio: 520 / 480; margin: 0 auto; min-width: 0; }
+.service-art-routes { position: absolute; inset: 0; width: 100%; height: auto; }
+.service-art-direct, .service-art-orbit { stroke: var(--accent); stroke-width: 1.5; }
+.service-art-orbit { stroke-dasharray: 6 8; opacity: .45; }
+.service-art-orbit-secondary { stroke: var(--green); }
+.service-art-dot { fill: var(--accent); }
+.service-art-route-label { position: absolute; top: 4%; left: 50%; transform: translateX(-50%) rotate(3deg); color: var(--accent); font-size: 13px; background: var(--bg); padding: 3px 10px; }
+.service-art-card { position: absolute; display: flex; flex-direction: column; align-items: flex-start; width: 39%; padding: 20px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--fg); box-shadow: 0 12px 32px #00000012; }
+.service-art-symbol { color: var(--accent); font: 32px/1 Space, Arial, sans-serif; }
+.service-art-card strong { font-size: clamp(17px, 1.7vw, 24px); font-weight: 400; line-height: 1.3; letter-spacing: -.025em; margin-top: 12px; }
+.service-art-card small { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 5px; }
+.service-art-purple { background: #382454; border-color: #705393; color: #f4f1f8; }
+.service-art-purple small { color: #d3c6e2; }
+.service-art-purple .service-art-symbol { color: #c4adff; }
+.hosting-art-app { left: 3%; top: 17%; transform: rotate(-6deg); }
+.hosting-art-peer { right: 1%; top: 22%; transform: rotate(5deg); }
+.hosting-art-relay { left: 29%; top: 57%; width: 43%; transform: rotate(-3deg); }
+.service-art figcaption { position: absolute; bottom: 0; inset-inline: 0; text-align: center; font-size: 12px; line-height: 1.6; color: var(--quiet); padding-inline: 10px; }
+.observability-art-connections { top: 8%; left: 3%; transform: rotate(-6deg); }
+.observability-art-dashboard { top: 25%; right: 1%; width: 44%; transform: rotate(5deg); }
+.observability-art-latency { top: 57%; left: 9%; width: 43%; transform: rotate(-3deg); }
+.service-art-mini { width: 100%; height: 40px; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.service-art-mini circle { fill: var(--panel); }
+.service-art-bars { display: flex; align-items: flex-end; gap: 8%; height: 48px; width: 100%; margin-top: 20px; }
+.service-art-bars span { flex: 1; height: 46%; border-radius: 3px 3px 0 0; background: #c4adff; }
+.service-art-bars span:nth-child(2n) { height: 72%; opacity: .7; }
+.service-art-bars span:nth-child(3n) { height: 58%; }
+.service-art-bars span:last-child { height: 90%; }
+@media (max-width: 760px) {
+    .service-art { max-width: 460px; min-height: 360px; }
+    .service-art-card { padding: 16px 14px; }
+    .service-art-card strong { font-size: 16px; }
+    .service-art-card small { font-size: 10px; }
+    .hosting-art-relay { top: 54%; width: 46%; left: 27%; }
+    .service-art-mini { height: 30px; }
+    .service-art-bars { height: 34px; margin-top: 15px; }
+    .service-art figcaption { font-size: 11px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .service-art-orbit { animation: service-art-flow 24s linear infinite; }
+    .service-art-orbit-secondary { animation-direction: reverse; }
+}
+@keyframes service-art-flow { to { stroke-dashoffset: -168; } }

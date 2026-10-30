@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-labelledby="title desc">
+  <title id="title">Encryption inside a device</title>
+  <desc id="desc">A device with many internal components (sensor, motor, camera, display, actuator, battery) running bare noq, and one controller running full iroh. All links on the device-internal network use QUIC with mutual TLS and raw ed25519 keys. Only the controller connects to the internet, using iroh's relays and hole punching.</desc>
+  <rect x="10" y="10" width="880" height="450" rx="12" fill="#27272a"/>
+  <rect x="30" y="140" width="840" height="270" rx="12" fill="none" stroke="#71717a" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <path d="M 385 117 A 28 28 0 0 1 382 62 A 38 38 0 0 1 452 44 A 32 32 0 0 1 515 62 A 28 28 0 0 1 515 117 Z" fill="#27272a" stroke="#71717a" stroke-width="1.5" stroke-linejoin="round"/>
+  <g fill="none" stroke-width="2">
+    <path d="M 450 117 V 170" stroke="#a5b4fc"/>
+    <path d="M 450 226 V 270" stroke="#4ade80"/>
+    <path d="M 60 270 H 840" stroke="#71717a" stroke-width="3"/>
+    <path d="M 110 270 V 330" stroke="#4ade80"/>
+    <path d="M 238 270 V 330" stroke="#4ade80"/>
+    <path d="M 366 270 V 330" stroke="#4ade80"/>
+    <path d="M 534 270 V 330" stroke="#4ade80"/>
+    <path d="M 662 270 V 330" stroke="#4ade80"/>
+    <path d="M 790 270 V 330" stroke="#4ade80"/>
+  </g>
+  <g font-family="Space Mono, monospace">
+    <text x="50" y="168" font-size="15" fill="#d4d4d8">Device</text>
+    <text x="840" y="262" font-size="12" fill="#d4d4d8" text-anchor="end">internal network</text>
+  </g>
+  <g font-family="Space Mono, monospace" text-anchor="middle">
+    <text x="450" y="94" font-size="15" fill="#e4e4e7">Internet</text>
+    <rect x="365" y="170" width="170" height="56" rx="10" fill="#27272a" stroke="#a5b4fc"/>
+    <text x="450" y="194" font-size="15" fill="#e4e4e7">Controller</text>
+    <text x="450" y="214" font-size="12" fill="#d4d4d8">full iroh</text>
+    <rect x="55" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="110" y="354" font-size="15" fill="#e4e4e7">Sensor</text>
+    <text x="110" y="374" font-size="12" fill="#d4d4d8">noq</text>
+    <rect x="183" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="238" y="354" font-size="15" fill="#e4e4e7">Motor</text>
+    <text x="238" y="374" font-size="12" fill="#d4d4d8">noq</text>
+    <rect x="311" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="366" y="354" font-size="15" fill="#e4e4e7">Camera</text>
+    <text x="366" y="374" font-size="12" fill="#d4d4d8">noq</text>
+    <rect x="479" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="534" y="354" font-size="15" fill="#e4e4e7">Display</text>
+    <text x="534" y="374" font-size="12" fill="#d4d4d8">noq</text>
+    <rect x="607" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="662" y="354" font-size="15" fill="#e4e4e7">Actuator</text>
+    <text x="662" y="374" font-size="12" fill="#d4d4d8">noq</text>
+    <rect x="735" y="330" width="110" height="56" rx="10" fill="#27272a" stroke="#71717a"/>
+    <text x="790" y="354" font-size="15" fill="#e4e4e7">Battery</text>
+    <text x="790" y="374" font-size="12" fill="#d4d4d8">noq</text>
+  </g>
+  <g stroke-width="2">
+    <path d="M 50 441 H 80" stroke="#4ade80"/>
+    <path d="M 400 441 H 430" stroke="#a5b4fc"/>
+  </g>
+  <g font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8">
+    <text x="90" y="445">QUIC + mutual TLS, raw ed25519 keys</text>
+    <text x="440" y="445">iroh: relays, hole punching</text>
+  </g>
+</svg>

@@ -1,0 +1,103 @@
++++
+title = "iroh 1.4.0 - Security updates and better local networking"
+description = "Release of iroh v1.4.0"
+date = "2026-10-19"
+author = "ramfox"
+social_image = ""
+draft = false
++++
+
+Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
+
+`Iroh` 1.4.0 is a maintenance release disguised as a minor release, due to minor API changes. It includes dependency updates for recently reported RUSTSEC advisories, makes `iroh` work better on local-only networks, and adds a batch of performance and correctness fixes to both `iroh` and `iroh-relay`.
+
+We are very happy that many of the contributions we are writing about today come from outside contributors! More at the end about our AI policy and how you yourself can best contribute to `iroh`.
+
+## 🚨 RUSTSEC Dependency Updates
+
+This release updates `rustls` to fix the recently reported RUSTSEC advisories: [RUSTSEC-2026-0346], [RUSTSEC-2026-0347], [RUSTSEC-2026-0348], and [RUSTSEC-2026-0349]. If you're running `iroh-relay` or `iroh-dns-server`, than you should rebuild from source or switch to the binaries in this release.
+
+The latest versions of [dumbpipe](https://github.com/n0-computer/dumbpipe), [sendme](https://github.com/n0-computer/sendme), and [pigeons](https://github.com/n0-computer/pigeons) have already been released with these fixes.
+
+See [PR #4606] for more details.
+
+## `X-Iroh-Endpoint-Id` Header
+Thanks to contributor [ash0x72][ash], the relay client now sends an `X-Iroh-Endpoint-Id` header. The old `X-Iroh-NodeId` header, a leftover from our previous `NodeId` naming, is deprecated. See [PR #4586].
+
+## Better Local-Only Networking
+
+When the network on your device changes, `iroh` usually waits until it has re-probed a relay before updating its addresses. The probe tells `iroh` what its public-facing IP addresses are now.
+
+But on a local-only network with no relays, there's nothing to probe, and nothing to wait for. On a LAN, the addresses `iroh` finds by checking the local system are exactly the ones other devices on the network should dial.
+
+Now, when your local network configuration changes and there are no relays, `iroh` updates the addresses it advertises immediately.
+
+Many thanks to contributor [ok300][ok300] for fixing this in [PR #4605]. Check it out for more details.
+
+## Performance & Correctness
+
+### Faster `iroh-relay` Startup
+Thanks to contributor [orielhaim][oh] for switching the LRU caches in `iroh-relay` and `iroh-dns-server` to a sparse cache that doesn't allocate its full capacity upfront.
+
+See [PR #4574] for more details.
+
+### Bounded Path Queues
+Thanks to contributor [damianmiles][dm] for fixing unbounded growth of a `VecDeque` that could happen when a path was waiting for more connection IDs or path IDs to become available.
+
+See [PR #4551] for more details.
+
+### Captive Portal Check Timeouts
+One of the relay's jobs is to help clients detect whether they are behind a captive portal. Previously, the relay kept connections to its `/generate_204` route open with a keep-alive and no timeout, so it would hold onto idle connections indefinitely. Connections close after one response and time out after 30 seconds.
+
+See [PR #4614] for more details.
+
+## Other Fixes
+
+### IPv6 Relays with no Domain Name
+Previously, we couldn't run a net report against relays addressed by an IPv6 literal, because QAD probes passed the bracketed address on as the TLS server name. Thanks again to contributor [William-Herly][wh] for the fix. See [PR #4527].
+
+### HTTP Proxy Cleanup
+We cleaned up and unified how `iroh` uses HTTP proxies with `reqwest`, with help from contributor [fluffypony][fp]:
+- pkarr lookups and publishes now go through the endpoint's configured proxy, just like relay connections ([PR #4595]).
+- net report probes no longer pick up a proxy from the `HTTP_PROXY`/`HTTPS_PROXY`/`ALL_PROXY` environment variables when none is configured ([PR #4592]).
+- `iroh-relay` now sends correctly encoded `Proxy-Authorization` credentials ([PR #4591]).
+
+### Tracing in Async Contexts
+We fixed a spot where a sync `tracing` API was being used in an async context. See [PR #4582].
+
+## AI Policy
+We have a new AI policy! Check it out [here][ai-policy]. To summarize: issues, PRs, and comments should have the breadth and depth of a normal, human-to-human conversation and should not be AI- generated. Any AI- generated content should exist between `<details></details>` tags. All contributors must be able to motivate and explain any code changes.
+
+We've also adjusted our [contributor][] guide. PRs that have not first been discussed in an issue and given the "ready-for-pr" label will likely be closed.
+
+## What's Next?
+
+In a nice change of pace, we expect our next release to contain features! Stream affinity will enable you to choose or rank the paths used on a specific stream. This would allow you to specify that your stream responsible for sending, for example, media data must always travel over a direct connection, while your stream carrying control messages is allowed to flow over a relay if necessary.
+
+As always, the full set of changes are in the [changelog](https://github.com/n0-computer/iroh/releases/tag/v1.4.0).
+
+See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
+
+[RUSTSEC-2026-0346]: https://rustsec.org/advisories/RUSTSEC-2026-0346
+[RUSTSEC-2026-0347]: https://rustsec.org/advisories/RUSTSEC-2026-0347
+[RUSTSEC-2026-0348]: https://rustsec.org/advisories/RUSTSEC-2026-0348
+[RUSTSEC-2026-0349]: https://rustsec.org/advisories/RUSTSEC-2026-0349
+[PR #4527]: https://github.com/n0-computer/iroh/pull/4527
+[PR #4551]: https://github.com/n0-computer/iroh/pull/4551
+[PR #4574]: https://github.com/n0-computer/iroh/pull/4574
+[PR #4582]: https://github.com/n0-computer/iroh/pull/4582
+[PR #4586]: https://github.com/n0-computer/iroh/pull/4586
+[PR #4591]: https://github.com/n0-computer/iroh/pull/4591
+[PR #4592]: https://github.com/n0-computer/iroh/pull/4592
+[PR #4595]: https://github.com/n0-computer/iroh/pull/4595
+[PR #4605]: https://github.com/n0-computer/iroh/pull/4605
+[PR #4606]: https://github.com/n0-computer/iroh/pull/4606
+[PR #4614]: https://github.com/n0-computer/iroh/pull/4614
+[ok300]: https://github.com/ok300
+[oh]: https://github.com/orielhaim
+[dm]: https://github.com/damianmiles
+[wh]: https://github.com/William-Herly
+[fp]: https://github.com/fluffypony
+[ash]: https://github.com/ash0x72
+[ai-policy]: https://github.com/n0-computer/iroh/blob/main/AI_POLICY.md
+[contributor]: https://github.com/n0-computer/iroh/blob/main/CONTRIBUTING.md
