@@ -219,7 +219,8 @@
     .home-page .platform-section { padding-block: 40px; }
     .home-page .production-section { padding-block: 40px; margin-bottom: 52px; }
     .home-page .production-section .section-heading { align-items: flex-start; }
-    .platform-spark { font-size: 56px; }
+    .home-page .platform-spark,
+    .home-page .closing-star { display: none; }
     .home-page .platform-grid > div { border-radius: 6px; padding: 24px 8px; }
     .home-page .savings-section { padding-top: 40px; }
     .home-page .open-section { padding: 32px 0; }
