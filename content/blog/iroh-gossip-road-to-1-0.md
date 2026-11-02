@@ -35,7 +35,7 @@ With 0.101, the slow nodes set the pace for everyone: the publisher only could s
 
 ### Correctness Fixes and Regression Tests
 
-Both the [Plumtree] and [HyParView] papers report how their protocols behaves in simulation, for example how fast a swarm recovers after half its nodes fail. We turned these claims into tests that run in our simulator. At first, 10 of these tests failed. We then went to fix a few issues, and now all of them pass on 50 random seeds. ([#191])
+Both the [Plumtree] and [HyParView] papers report how their protocols behave in simulation, for example how fast a swarm recovers after half its nodes fail. We turned these claims into tests that run in our simulator. At first, 10 of these tests failed. We then went to fix a few issues, and now all of them pass on 50 random seeds. ([#191])
 
 - A node that lost all its neighbors did not look for new ones. It stayed alone until the app joined again. Now it joins again through the peers that the app joined with. It also tries one of its recent neighbors, in case those peers are gone. ([#192])
 - A node now looks for new neighbors before it has none left, also after a failed dial.
