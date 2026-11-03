@@ -1,7 +1,7 @@
 +++
 title = "A new iroh-gossip release and the road to 1.0"
 description = "Fixing old bugs and planning exciting new features"
-date = "2026-10-30"
+date = "2026-11-03"
 author = "Franz Heinzmann (Frando)"
 social_image = ""
 +++
@@ -18,7 +18,7 @@ While `iroh-gossip` has fared rather well in production already, we have had a n
 
 ### Slow Peers No Longer Block a Node
 
-Before 0.102, a node had a queue of 64 messages per peer connection. When one of these queues became full because the peer wouldn't read fast enough, our main actor loop blocked on sending into the full queue. This means that a single slow or stalled peer stopped every topic and every new broadcast, potentially infintely.
+Before 0.102, a node had a queue of 64 messages per peer connection. When one of these queues became full because the peer wouldn't read fast enough, our main actor loop blocked on sending into the full queue. This means that a single slow or stalled peer stopped every topic and every new broadcast, potentially infinitely.
 
 Now each peer has a size-limited queue, and pushing into this queue never waits. Instead, when a message does not fit, the node drops it for that peer and announces it again later. The peer can then fetch it while the message is still cached. Broadcasting waits only when the queues to all eager neighbors of the topic are half full, because then its own uplink is most likely the limit. ([#185])
 
@@ -26,12 +26,12 @@ We measured this with [patchbay], a tool for network simulations. We created a l
 
 | Scenario | Messages sent | Received per slow node | p99 latency of healthy nodes |
 |---|---|---|---|
-| 1 slow node, 250 msg/s | 5870 → 15001 | 3106 → 3550 | 29 s → 90 ms |
-| 8 slow nodes, 250 msg/s | 4480 → 15001 | 4115 → 5414 | 44 s → 10 ms |
-| 1 slow node, 3 publishers on 2 topics | 7141 → 15001 | 3925 → 3496 | 32 s → 230 ms |
-| 3 slow nodes, 100 msg/s | 4638 → 6001 | 4187 → 3927 | 21 s → 20 ms |
+| 1 slow node, 250 msg/s | 5383 → 15001 | 3924 → 3547 | 20 s → 124 ms |
+| 8 slow nodes, 250 msg/s | 4875 → 15001 | 4219 → 5684 | 36 s → 10 ms |
+| 1 slow node, 3 publishers on 2 topics | 9496 → 15001 | 5757 → 4058 | 13 s → 235 ms |
+| 3 slow nodes, 100 msg/s | 4621 → 6001 | 4092 → 3979 | 12 s → 20 ms |
 
-With 0.101, the slow nodes set the pace for everyone: the publisher only could send between 30 and 77% of its messages. With 0.102, the publisher keeps its full rate, and the healthy nodes keep their latency. The slow nodes receive about as many messages as before, because their link is the limit. But importantly they no longer block the publisher, and no longer block other fast nodes.
+With 0.101, the slow nodes set the pace for everyone: the publisher could only send between 30 and 75% of its messages. With 0.102, the publisher keeps its full rate, and the healthy nodes keep their latency. The slow nodes receive about as many messages as before, because their link is the limit. But importantly they no longer block the publisher, and no longer block other fast nodes. That slow nodes sometimes receive a bit less than in 0.101 is related to the fact that their saturated link is doing a lot of duplicate grafts, which is not new, just slightly elevated by the higher publishing rate. This is something we want to improve on in the next release.
 
 ### Correctness Fixes and Regression Tests
 
@@ -41,16 +41,18 @@ Both the [Plumtree] and [HyParView] papers report how their protocols behave in 
 - A node now looks for new neighbors before it has none left, also after a failed dial.
 - The first shuffle fills the list of backup peers. It now runs one second after a join instead of after one minute.
 - Late messages from a former neighbor no longer add it back to the tree.
+- A link that a node adds to the tree after a slow message now stays, instead of being cut again right away. Before, the next message repeated the same churn. ([#207])
 
 #### Other Fixes
 
 - **Memory leaks.** Several maps kept entries for peers that left, so the memory of long-running nodes grew without limit. ([#161])
-- **Unused connections.** A connection stayed open forever, even when no topic used the peer anymore. Now it closes ten seconds after it becomes unused. ([#178], [#195])
+- **Unused connections.** A connection stayed open forever, even when no topic used the peer anymore. Now it closes ten seconds after neither side has a stream on it. ([#178], [#195], [#206])
 - **Restarted peers.** A peer that restarted and joined again quickly could get no reply to its join. ([#161])
 - **Lost peers.** When a connection to a peer closed before the peer became a neighbor, the node never dialed that peer again. ([#178])
 - **Oversized messages.** `broadcast` returned `Ok` for a message over the size limit. The node then dropped the message without notice. ([#187])
 - **Shutdown.** Shutting down the tokio runtime no longer makes the gossip actor panic. ([#183])
 - **Fewer dials in a full swarm.** A node with too few neighbors asked every full peer for a slot every five seconds, each time on a new connection. Now it asks at most three peers at a time, and waits longer after each round, up to one minute. ([#196])
+- **Lost joins.** A join that got lost on the way was not retried if the node had other neighbors. Now the node retries it once. ([#217])
 
 ### Swarms with Old and New Nodes
 
@@ -67,6 +69,7 @@ Several of these fixes build on pull requests and issues from the community:
 - [@drlukeangel], [@caiogondim], and [@jgrund] worked on the leaks ([#145], [#146], [#147], [#154]).
 - [@adiibanez] and [@javruben] reported and worked on slow peers ([#47], [#143]).
 - [@TapGhoul] found the dead handle bug ([#155]).
+- [@sigaloid] fixed the chat example, so that it sends identical messages and shares nicknames with new peers ([#200]).
 
 Thank you!
 
@@ -126,9 +129,10 @@ These are not semver-breaking, but your app may notice them:
 - A broadcast can wait, for at most 100 ms at a time, while the queues to all eager neighbors of its topic are half full. ([#185])
 - A full send queue drops data for that peer. A membership message that does not fit, or a write that stalls for 60 s, closes the connection. ([#185])
 - `broadcast` and `broadcast_neighbors` return `ApiError::TooLarge` for content over `max_content_size`. ([#187])
-- A connection closes five seconds after no topic uses the peer, including a connection that the app passed to `Gossip::handle_connection`. ([#178])
+- A connection closes ten seconds after neither side had a stream on it, including a connection that the app passed to `Gossip::handle_connection`. Connections to nodes up to 0.101 stay open. ([#178], [#189], [#206])
 - `Gossip::handle_connection` expects an accepted, server-side connection. ([#185])
 - A rejoin can dial a peer that the app did not name: one of the recent neighbors of the node. ([#192])
+- A join to a peer that is already a neighbor doesn't send a new message. An unanswered join is sent once more after ten seconds. ([#217])
 
 #### New Features
 
@@ -149,6 +153,13 @@ These are not semver-breaking, but your app may notice them:
 - [#187] `broadcast` of an oversized message returned `Ok`, and the node dropped the message later without notice.
 - [#183] Shutting down the tokio runtime made the actor panic.
 - [#201] The log shows a duplicate message with its short hash.
+- [#196] A node short of neighbors asked every full peer for a slot every five seconds. Now it asks at most three at a time, and backs off up to one minute.
+- [#206] A node could close a connection on which the peer still sent. A connection now closes only after neither side had a stream on it for ten seconds, and a message to an unused peer goes out on the existing connection.
+- [#206] A message for a topic that the node had left didn't get any answer. Now it answers with a `Disconnect`.
+- [#206] A `Neighbor` request could overtake the `Disconnect` sent before it. Now the streams of one topic are read in order.
+- [#207] A peer grafted after a slow message was often pruned again at once, and the next message repeated the graft. Now grafts are not pruned while pending.
+- [#215] The address lookup kept an unbounded number of addresses per peer. Now it keeps at most 32.
+- [#217] A lost join was not retried if the node had other neighbors. Now it is retried once. A join to a peer that is already a neighbor is no longer sent.
 
 [HyParView]: https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf
 [Plumtree]: https://asc.di.fct.unl.pt/~jleitao/pdf/srds07-leitao.pdf
@@ -177,11 +188,17 @@ These are not semver-breaking, but your app may notice them:
 [#195]: https://github.com/n0-computer/iroh-gossip/pull/195
 [#196]: https://github.com/n0-computer/iroh-gossip/pull/196
 [#198]: https://github.com/n0-computer/iroh-gossip/pull/198
+[#200]: https://github.com/n0-computer/iroh-gossip/pull/200
 [#201]: https://github.com/n0-computer/iroh-gossip/pull/201
+[#206]: https://github.com/n0-computer/iroh-gossip/pull/206
+[#207]: https://github.com/n0-computer/iroh-gossip/pull/207
+[#215]: https://github.com/n0-computer/iroh-gossip/pull/215
+[#217]: https://github.com/n0-computer/iroh-gossip/pull/217
 [@drlukeangel]: https://github.com/drlukeangel
 [@caiogondim]: https://github.com/caiogondim
 [@jgrund]: https://github.com/jgrund
 [@adiibanez]: https://github.com/adiibanez
 [@javruben]: https://github.com/javruben
 [@TapGhoul]: https://github.com/TapGhoul
+[@sigaloid]: https://github.com/sigaloid
 [Discord]: https://iroh.computer/discord
