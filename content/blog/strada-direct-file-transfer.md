@@ -26,7 +26,7 @@ devices. Strada selected iroh as the networking layer to build on to have that c
 
 Founded by brothers Michael and Peter Cioni in 2023, Strada uses a distributed architecture built on peer-to-peer connectivity rather than centralised cloud infrastructure. It has been downloaded by more than 12,000 users since launch and serves both independent creators and media teams at Fortune 500 companies.
 
-## Why iorh?
+## Why iroh?
 
 Iroh establishes an end-to-end encrypted connection between the two devices
 and attempts to connect them directly, including across NATs and firewalls.
@@ -37,6 +37,11 @@ contents, and Strada runs discovery under its own domain.
 The relays help when direct connections cannot be established. This ensures that
 at a minimum, the product continues working without interruption even in flaky
 networking conditions.
+
+Through our [enterprise partnership](/services/enterprise), we worked directly
+with Strada's engineers, providing responsive technical support and
+peer-to-peer expertise. Their team had a direct line to iroh's maintainers as
+they built networking into their media workflows.
 
 Each layer has a distinct role:
 
@@ -74,7 +79,8 @@ access, dataset distribution, and other products that move large amounts of
 data. Central infrastructure can coordinate that movement without carrying
 every payload across servers, which makes a slower user experience and a higher bill.
 
-[Visit Strada](https://strada.tech) or read more about [how iroh connects
+Explore [Strada's remote media workflow](/solutions/data-sync),
+[visit Strada](https://strada.tech), or read more about [how iroh connects
 devices directly](https://docs.iroh.computer/what-is-iroh).
 
 *Benchmark assumptions: 1 TB equals 1,024 GB. The model applies $0.09/GB to the
