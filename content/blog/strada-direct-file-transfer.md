@@ -8,10 +8,9 @@ draft = false
 +++
 
 Strada helps creative teams access and edit media stored on remote drives. From
-the outset, the team chose to build peer-to-peer because of the economics it
-could offer customers: large files could move directly between devices, without
-making central-server bandwidth a cost of every transfer. That was Strada's
-product vision. They chose iroh to help execute it.
+the beginning, the team chose to build peer-to-peer because of the latency & economics it
+could offer: large files could move directly between devices, without
+making a central server the bottleneck of every transfer.
 
 Strada's July 2026 production workload shows the advantage of that decision.
 Of **150 TB** of transfer volume, **13.9 TB** crossed centralized infrastructure.
@@ -22,26 +21,22 @@ The other **90.7%** stayed off central servers.
 Media professionals work with files spread across local and remote drives.
 Strada lets them mount remote storage as a virtual drive, so they can browse,
 preview, and work with media without first uploading an entire library to a
-cloud service.
+cloud service. Users can work with remote media while most of the file traffic stays between their
+devices. Strada selected iroh as the networking layer to build on to have that competitive edge in latency, user experience, and overall cost of operation compared to it's competitors. And it's working. 
 
-A centralized design would put a data center between the devices exchanging
-those files, even when a direct connection is possible. Every transfer would
-then consume central-server bandwidth. Strada chose a different foundation:
-let the devices holding and using the media exchange it directly, and use
-centralized services where they add value.
+Founded by brothers Michael and Peter Cioni in 2023, Strada uses a distributed architecture built on peer-to-peer connectivity rather than centralised cloud infrastructure. It has been downloaded by more than 12,000 users since launch and serves both independent creators and media teams at Fortune 500 companies.
 
-That choice connects the product experience to its economics. Customers can
-work with remote media while most of the file traffic stays between their
-devices. Strada designed for that advantage and selected iroh as the networking
-layer to build on.
-
-## Iroh helps Strada deliver the connection
+## Why iorh?
 
 Iroh establishes an end-to-end encrypted connection between the two devices
 and attempts to connect them directly, including across NATs and firewalls.
 When network conditions prevent a direct connection, a relay forwards the
 encrypted traffic so the transfer can continue. Relays cannot read the file
 contents, and Strada runs discovery under its own domain.
+
+The relays help when direct connections cannot be established. This ensures that
+at a minimum, the product continues working without interruption even in flaky
+networking conditions.
 
 Each layer has a distinct role:
 
@@ -50,16 +45,8 @@ Each layer has a distinct role:
 - Iroh finds and maintains an encrypted path between those endpoints.
 - Relays preserve connectivity when a direct path is unavailable.
 
-This gives Strada a networking foundation for the peer-to-peer product it set
-out to build, including connectivity when a direct connection isn't possible.
 
 ## What 90.7% off the central path means
-
-In July 2026, Strada handled **150 TB** of transfer volume while **13.9 TB**
-crossed centralized infrastructure. A design that routed every byte through
-central servers would have carried all 150 TB there. That all-centralized
-scenario is a comparison for the same workload; it was never Strada's previous
-central-server traffic.
 
 The table below models the bandwidth-cost difference using a fixed set of AWS
 egress rates as a benchmark. Both cost columns are estimates, not Strada's
@@ -80,23 +67,12 @@ This illustrates the economic advantage Strada chose to build into its
 product: most media traffic can move without incurring central-server egress
 costs.
 
-## Building for the economics you want
-
-Strada's approach makes peer-to-peer part of the product's competitive
-advantage. In an all-centralized design, each additional file transfer adds
-its full volume to central-server traffic. With Strada's design, most of that
-traffic moves between the devices already sending and receiving it.
+## Building for the experience you want
 
 The same architectural choice is relevant to backup, synchronization, remote
 access, dataset distribution, and other products that move large amounts of
 data. Central infrastructure can coordinate that movement without carrying
-every payload.
-
-Strada brought the vision for a peer-to-peer media product and the customer
-economics behind it. Iroh supplies the connection layer that helps the team
-put that vision into practice. July's workload shows the result: creative
-teams accessing remote media, with 90.7% of transfer volume staying off central
-servers.
+every payload across servers, which makes a slower user experience and a higher bill.
 
 [Visit Strada](https://strada.tech) or read more about [how iroh connects
 devices directly](https://docs.iroh.computer/what-is-iroh).
