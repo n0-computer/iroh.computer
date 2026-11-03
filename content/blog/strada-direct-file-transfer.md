@@ -1,7 +1,7 @@
 +++
 title = "How Strada built peer-to-peer media workflows with iroh"
 description = "Strada built peer-to-peer media workflows to give customers an economic advantage. In July 2026, 90.7% of transfer volume stayed off central servers."
-date = "2026-09-30"
+date = "2026-11-02"
 author = "Rae McKelvey"
 social_image = "/blog/strada-direct-file-transfer/strada-finder.webp"
 draft = false
@@ -43,6 +43,10 @@ with Strada's engineers, providing responsive technical support and
 peer-to-peer expertise. Their team had a direct line to iroh's maintainers as
 they built networking into their media workflows.
 
+> “As early adopters of Iroh (v.35), we knew we were taking a technological risk building on top of iroh, but the Iroh team made that not just possible but easy. They are responsive and they are informative. They know peer-to-peer and they are people you want to have by your side when its foundational to your business”
+>
+> — Austin Case, Director of Engineering, Strada
+
 Each layer has a distinct role:
 
 - Strada provides the media workflow and remote-drive experience.
@@ -69,7 +73,7 @@ infrastructure**. At the benchmark rates, the two designs differ by about
 would put the modeled annual difference at about **$123,700**.
 
 This illustrates the economic advantage Strada chose to build into its
-product: most media traffic can move without incurring central-server egress
+product: most media traffic can move without incurring egress
 costs.
 
 ## Building for the experience you want
