@@ -161,6 +161,15 @@ These are not semver-breaking, but your app may notice them:
 - [#215] The address lookup kept an unbounded number of addresses per peer. Now it keeps at most 32.
 - [#217] A lost join was not retried if the node had other neighbors. Now it is retried once. A join to a peer that is already a neighbor is no longer sent.
 
+#### Performance
+
+- [#221] Removed some unecessary allocations.
+- [#222] Switched to more performant hash maps.
+
+#### Docs
+
+- [#219] Improved the docs of the public items.
+
 [HyParView]: https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf
 [Plumtree]: https://asc.di.fct.unl.pt/~jleitao/pdf/srds07-leitao.pdf
 [patchbay]: https://github.com/n0-computer/patchbay
@@ -194,6 +203,9 @@ These are not semver-breaking, but your app may notice them:
 [#207]: https://github.com/n0-computer/iroh-gossip/pull/207
 [#215]: https://github.com/n0-computer/iroh-gossip/pull/215
 [#217]: https://github.com/n0-computer/iroh-gossip/pull/217
+[#219]: https://github.com/n0-computer/iroh-gossip/pull/219
+[#221]: https://github.com/n0-computer/iroh-gossip/pull/221
+[#222]: https://github.com/n0-computer/iroh-gossip/pull/222
 [@drlukeangel]: https://github.com/drlukeangel
 [@caiogondim]: https://github.com/caiogondim
 [@jgrund]: https://github.com/jgrund
