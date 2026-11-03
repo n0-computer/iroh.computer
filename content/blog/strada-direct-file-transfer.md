@@ -1,97 +1,95 @@
 +++
-title = "How Strada reduced traffic through central servers by 90.7% with iroh"
-description = "Strada moved large media transfers out of the centralized data path, reducing monthly transfer volume from 150 TB to 13.9 TB."
-date = "2026-09-14"
+title = "How Strada built peer-to-peer media workflows with iroh"
+description = "Strada built peer-to-peer media workflows to give customers an economic advantage. In July 2026, 90.7% of transfer volume stayed off central servers."
+date = "2026-11-02"
 author = "Rae McKelvey"
 social_image = "/blog/strada-direct-file-transfer/strada-finder.webp"
-draft = true
+draft = false
 +++
 
-In a client-server architecture, the path is familiar: a computer uploads a file to
-a data center, and then gets sent around the world again to the other computer
-that needs it. This happens sometimes even if the devices are in the same room.
-It's a ridiculously inefficient use of data centers, and it's also costly for
-organizations that have to pay for that unnecessary egress.
+Strada helps creative teams access and edit media stored on remote drives. From
+the beginning, the team chose to build peer-to-peer because of the latency & economics it
+could offer: large files could move directly between devices, without
+making a central server the bottleneck of every transfer.
 
-Strada is changing this by using iroh. Strada helps creative teams access and edit media stored on remote drives.
-Strada's app allows files to move directly between devices instead of uploading
-files to the cloud unnecessarily. In Strada's July 2026 production workload,
-**150 TB** would have crossed centralized infrastructure if every byte had gone
-through central servers. **13.9 TB** actually did—a **90.7% reduction**.
+Strada's July 2026 production workload shows the advantage of that decision.
+Of **150 TB** of transfer volume, **13.9 TB** crossed centralized infrastructure.
+The other **90.7%** stayed off central servers.
 
-Centralized services still make sense for the parts of a product that benefit
-from them. The important change is that central infrastructure no longer has to
-sit in the data path for most large file transfers.
+## Peer-to-peer as a product decision
 
-## Why media workflows are a great use case for peer to peer
+Media professionals work with files spread across local and remote drives.
+Strada lets them mount remote storage as a virtual drive, so they can browse,
+preview, and work with media without first uploading an entire library to a
+cloud service. Users can work with remote media while most of the file traffic stays between their
+devices. Strada selected iroh as the networking layer to build on to have that competitive edge in latency, user experience, and overall cost of operation compared to it's competitors. And it's working. 
 
-Media professionals need to access information on multiple drives, which could
-be local or remote. It's a much quicker workflow to mount
-remote storage as a virtual drive, so you can browse, preview, and work with
-files without uploading or downloading.
+Founded by brothers Michael and Peter Cioni in 2023, Strada uses a distributed architecture built on peer-to-peer connectivity rather than centralised cloud infrastructure. It has been downloaded by more than 12,000 users since launch and serves both independent creators and media teams at Fortune 500 companies.
 
-## Put the shortest reliable path in the data plane
+## Why iroh?
 
-Iroh establishes an end-to-end encrypted connection between the two devices. It tries the
-direct path first, including across NATs and firewalls. When network conditions
-prevent that path, a relay forwards the end-to-end encrypted traffic so the
-transfer can continue. Relays cannot read or store the file data, and Strada
-runs discovery under its own domain.
+Iroh establishes an end-to-end encrypted connection between the two devices
+and attempts to connect them directly, including across NATs and firewalls.
+When network conditions prevent a direct connection, a relay forwards the
+encrypted traffic so the transfer can continue. Relays cannot read the file
+contents, and Strada runs discovery under its own domain.
 
-This separation also lets each layer do a clearer job:
+The relays help when direct connections cannot be established. This ensures that
+at a minimum, the product continues working without interruption even in flaky
+networking conditions.
 
+Through our [enterprise partnership](/services/enterprise), we worked directly
+with Strada's engineers, providing responsive technical support and
+peer-to-peer expertise. Their team had a direct line to iroh's maintainers as
+they built networking into their media workflows.
+
+> “As early adopters of Iroh (v.35), we knew we were taking a technological risk building on top of iroh, but the Iroh team made that not just possible but easy. They are responsive and they are informative. They know peer-to-peer and they are people you want to have by your side when its foundational to your business”
+>
+> — Austin Case, Director of Engineering, Strada
+
+Each layer has a distinct role:
+
+- Strada provides the media workflow and remote-drive experience.
 - The endpoints hold and exchange the large media files.
 - Iroh finds and maintains an encrypted path between those endpoints.
-- Relays preserve connectivity when a direct path is unavailable, without reading or storing file data.
+- Relays preserve connectivity when a direct path is unavailable.
 
-It is a more deliberate use of the cloud: keep it for coordination and services
-that need centralization, rather than paying it to carry every byte between
-devices.
 
-## 150 TB through central servers, compared with 13.9 TB in practice
+## What 90.7% off the central path means
 
-The change in traffic crossing Strada’s centralized infrastructure is substantial.
-To put its potential cost impact in context, the estimates use standard
-US-region internet data-transfer rates of about $0.09/GB as a benchmark:
+The table below models the bandwidth-cost difference using a fixed set of AWS
+egress rates as a benchmark. Both cost columns are estimates, not Strada's
+actual bills.
 
-| Metric | If every byte crossed central servers | What actually crossed central servers | Difference |
+| Metric | Hypothetical all-centralized design | Strada's peer-to-peer design | Difference between designs |
 | --- | ---: | ---: | ---: |
-| Monthly traffic | 150 TB | 13.9 TB | −136.1 TB (−90.7%) |
-| Estimated monthly egress cost | $11,571.20 | $1,261.06 | −$10,310.14 |
-| Annualized estimated cost | $138,854.40 | $15,132.72 | −$123,721.68 |
+| July traffic through central servers | 150 TB | 13.9 TB | 136.1 TB (90.7%) |
+| Modeled monthly egress cost | $11,571.20 | $1,261.06 | $10,310.14 |
+| Modeled annual cost at that monthly volume | $138,854.40 | $15,132.72 | $123,721.68 |
 
-That is **136.1 TB less traffic through centralized infrastructure each month**.
-At the AWS benchmark rates, that reduction would be worth about **$10,310 per
-month**, or **$123,700 annualized**. These figures illustrate the economics of
-the traffic reduction; they are not a statement about Strada’s cloud provider
-or its actual bill.
+For that workload, **136.1 TB traveled without crossing centralized
+infrastructure**. At the benchmark rates, the two designs differ by about
+**$10,310 in monthly egress cost**. Holding the same volume for twelve months
+would put the modeled annual difference at about **$123,700**.
 
+This illustrates the economic advantage Strada chose to build into its
+product: most media traffic can move without incurring egress
+costs.
 
-## A better scaling model for large-file products
+## Building for the experience you want
 
-Strada shows why architecture matters to a product’s unit economics. Under a
-centralized model, successful adoption creates a nearly linear increase in
-egress: every additional file transferred adds another full file to the cloud
-bill. With a direct-first model, much of that traffic stays between the devices
-already sending and receiving it.
+The same architectural choice is relevant to backup, synchronization, remote
+access, dataset distribution, and other products that move large amounts of
+data. Central infrastructure can coordinate that movement without carrying
+every payload across servers, which makes a slower user experience and a higher bill.
 
-The same pattern applies beyond professional media. Backup, synchronization,
-remote access, dataset distribution, and other data-heavy products all benefit
-when central infrastructure coordinates movement without automatically carrying
-the payload.
-
-For Strada, putting iroh in the data plane meant preserving reliable access to
-remote media while removing centralized infrastructure from the path of most
-file data. Creative teams keep moving the files they need; Strada carries
-dramatically less traffic through centralized infrastructure.
-
-[Visit Strada](https://strada.tech) or read more about [how iroh connects
+Explore [Strada's remote media workflow](/solutions/data-sync),
+[visit Strada](https://strada.tech), or read more about [how iroh connects
 devices directly](https://docs.iroh.computer/what-is-iroh).
 
-
-**The AWS pricing benchmark assumes 1 TB equals 1,024 GB and applies rates of
-$0.09/GB for the first 10 TB, $0.085/GB for the next 40 TB, and $0.07/GB for the
-next 100 TB. It excludes taxes, negotiated discounts, credits, and the 100 GB
-monthly free allowance. It is not Strada’s actual bill and does not imply that
-Strada uses AWS. The more durable result is the traffic reduction itself: only
-9.3% of the volume in the central-server scenario actually crossed centralized infrastructure.**
+*Benchmark assumptions: 1 TB equals 1,024 GB. The model applies $0.09/GB to the
+first 10 TB, $0.085/GB to the next 40 TB, and $0.07/GB to the next 100 TB. It
+excludes taxes, negotiated discounts, credits, and the 100 GB monthly free
+allowance. Annual figures multiply the monthly estimate by twelve; they are
+not a forecast. These are bandwidth-only estimates, not Strada's actual bills,
+and do not imply that Strada uses AWS.*
