@@ -7,6 +7,8 @@ social_image = "/blog/strada-direct-file-transfer/strada-finder.webp"
 draft = false
 +++
 
+![Strada Finder browsing video files on a remote drive, with a selected clip in the preview pane.](/blog/strada-direct-file-transfer/strada-finder.webp)
+
 Strada helps creative teams access and edit media stored on remote drives. From
 the beginning, the team chose to build peer-to-peer because of the latency & economics it
 could offer: large files could move directly between devices, without
