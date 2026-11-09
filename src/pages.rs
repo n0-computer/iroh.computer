@@ -143,6 +143,9 @@ pub fn Content(segments: Vec<String>) -> Element {
             crate::solutions::Solutions {}
         };
     }
+    if path == "/sendme" {
+        return content::render(&path);
+    }
     if let Some(solution) = path
         .strip_prefix("/solutions/")
         .and_then(crate::solutions::find)
