@@ -1,0 +1,76 @@
+@font-face { font-family: Koulen; src: url('/fonts/koulen.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: swap; }
+
+/* Always light: the page overrides the site theme tokens with its original white palette. */
+.sendme-page { --bg: #fff; --panel: #f4f4f5; --panel-2: #e4e4e7; --fg: #3f3f46; --muted: #6b7280; --quiet: #a1a1aa; --line: #d4d4d8; --accent: #6946c9; --accent-solid: #7952d4; --accent-text: #fff; --subtle: #e8e2f0; --sendme-display: Koulen, Impact, 'Arial Narrow', sans-serif; color-scheme: light; background: var(--bg); color: var(--fg); padding: 40px 0 80px; }
+.sendme-page ::selection { background: var(--accent); color: var(--accent-text); }
+.sendme-inner { max-width: 1024px; }
+.sendme-page h1, .sendme-page h2, .sendme-page h3 { font-family: var(--sendme-display); font-weight: 400; letter-spacing: .01em; line-height: 1.05; }
+.sendme-page p { color: var(--muted); }
+.sendme-page code { font: 13px/1.6 var(--mono); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 2px 6px; }
+
+.sendme-hero { text-align: center; margin-top: 80px; }
+.sendme-kicker { font-family: var(--sendme-display); font-size: 18px; }
+.sendme-hero h1 { font-size: clamp(48px, 7vw, 72px); margin: 4px 0; }
+.sendme-tagline { font-size: 18px; }
+.sendme-hero-art { display: block; width: 100%; height: auto; margin-top: -80px; }
+
+.sendme-spacer { height: 20px; margin-inline: 20px; border-inline: 1px solid var(--line); }
+.sendme-spacer-hero { height: 40px; margin-top: -80px; }
+.sendme-sheet { margin-inline: 20px; border: 1px solid var(--line); border-bottom: 0; }
+.sendme-cell { padding: 40px 20px; border-bottom: 1px solid var(--line); }
+.sendme-cell p { margin-top: 4px; font-size: 14px; line-height: 1.7; }
+.sendme-cell h3 { font-size: 30px; }
+
+.sendme-split { display: grid; grid-template-columns: 5fr 7fr; }
+.sendme-intro { border-right: 1px solid var(--line); }
+.sendme-intro h2 { font-size: 36px; }
+.sendme-intro p { margin-top: 20px; font-size: 16px; line-height: 1.8; }
+
+.sendme-copy { display: flex; align-items: center; gap: 8px; width: 100%; margin: 8px 0 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); text-align: left; font-size: 13px; }
+.sendme-copy:hover { border-color: var(--accent); color: var(--fg); }
+.sendme-copy-cmd { flex: 1; font-family: var(--mono); overflow-wrap: anywhere; }
+.sendme-copy-status { flex-shrink: 0; min-width: 48px; font-size: 12px; color: var(--muted); }
+.sendme-copy svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--muted); }
+.sendme-install-note { font-size: 13px; }
+
+.sendme-section-title { padding: 40px 20px 0; }
+.sendme-section-title h3 { font-size: 20px; color: var(--muted); }
+.sendme-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; border-bottom: 1px solid var(--line); }
+.sendme-step { padding: 20px 20px 40px; }
+.sendme-step h3 { font-size: 30px; }
+.sendme-step > p { margin-top: 4px; font-size: 14px; line-height: 1.7; }
+.sendme-terminal { position: relative; height: 160px; margin-bottom: 20px; padding: 32px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); overflow: hidden; }
+.sendme-terminal p { font: 13px/1.6 var(--mono); color: var(--quiet); }
+.sendme-terminal .sendme-terminal-cmd { font-weight: 700; color: var(--fg); }
+.sendme-terminal-dots { position: absolute; top: 0; left: 0; display: flex; gap: 4px; padding: 8px; }
+.sendme-terminal-dots div { width: 12px; height: 12px; border: 1px solid var(--quiet); border-radius: 50%; }
+.sendme-chat { display: flex; align-items: flex-start; height: 160px; margin-bottom: 20px; padding: 8px; }
+.sendme-chat svg { flex-shrink: 0; width: 24px; height: 24px; margin-right: 8px; }
+.sendme-bubble { min-height: 80px; padding: 8px 8px 40px; border: 1px solid var(--line); border-radius: 0 8px 8px 8px; background: var(--panel); font-size: 15px; color: var(--fg); overflow-wrap: anywhere; }
+
+.sendme-feature-lead { font-size: 30px; }
+.sendme-features { display: grid; grid-template-columns: repeat(3, 1fr); }
+.sendme-features .sendme-cell { padding-block: 20px; border-right: 1px solid var(--line); }
+.sendme-features .sendme-cell:last-child { border-right: 0; }
+
+.sendme-built-on { padding: 80px 20px; border-bottom: 1px solid var(--line); background: #fff url('/img/kv/iroh-kv-1.png') center / cover; }
+.sendme-built-on h2 { font: 700 24px/1.3 var(--mono); letter-spacing: 0; }
+.sendme-built-on p { max-width: 520px; margin: 20px 0; color: var(--fg); }
+.sendme-built-on a:not(.button) { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 760px) {
+    .sendme-page { padding: 16px 0 48px; }
+    .sendme-hero { margin-top: 40px; }
+    .sendme-hero-art { margin-top: 0; }
+    .sendme-spacer-hero { margin-top: 0; }
+    .sendme-split, .sendme-steps, .sendme-features { grid-template-columns: 1fr; gap: 0; }
+    .sendme-intro { border-right: 0; }
+    .sendme-features .sendme-cell { border-right: 0; }
+    .sendme-features .sendme-cell:not(:last-child) { border-bottom: 1px solid var(--line); }
+    .sendme-features .sendme-cell:last-child { border-bottom: 1px solid var(--line); }
+    .sendme-step { padding-inline: 20px; }
+    .sendme-built-on { padding: 48px 20px; }
+}
+@media (max-width: 720px) {
+    .sendme-spacer, .sendme-sheet { margin-inline: 0; }
+}
