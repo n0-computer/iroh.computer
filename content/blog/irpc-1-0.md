@@ -110,7 +110,7 @@ Unlike sending a message in-process, sending a long message over the wire is not
 
 Nevertheless, a cancelled send future should guarantee that the message *does not get received* and should not terminate the *entire* mpsc stream. Otherwise you might get a nasty surprise if you write code involving timeouts that works fine locally.
 
-Our encoding is using varint length prefixes. So once we have written the length prefix we are committed to writing `length` bytes. So we have to add an additional byte to signal if the message was sent to the end or cancelled.
+Our encoding is using [varint] length prefixes. So once we have written the length prefix we are committed to writing `length` bytes. So we have to add an additional byte to signal if the message was sent to the end or cancelled.
 
 If that byte is set to cancelled, we still have to send the entire frame, but it will be completely ignored on the receive side.
 
@@ -125,7 +125,7 @@ The result of all this machinery is that the send future is now cancellation saf
 
 Prior to 1.0, irpc would immediately abort the entire connection as soon as it would receive a message that it could not decode. In most cases this is the right thing to do. When using irpc internally you want to have the same protocol enum on both sides. But this behaviour made it hard to evolve a protocol. So now we have an option, [`Handler::skip_bad_requests`], to only fail the request that could not be decoded and keep the connection open.
 
-This allows a primitive form of protocol evolution by just adding new request variants *at the end* of the request enum and handling the errors. It only works if the server already had `skip_bad_requests` enabled in the old version, so you have to turn it on from the start if you want to evolve the protocol this way.
+This allows a primitive form of protocol evolution: add new request variants *at the end* of the request enum. An old server skips a new variant that it can't decode, and keeps serving the connection. A new client must handle the [`ErrorCode::RequestDecodeFailed`] that it gets for such a request, for example by falling back to an older call. It only works if the server already had `skip_bad_requests` enabled in the old version, so you have to turn it on from the start if you want to evolve the protocol this way.
 
 We have a much more sophisticated system for protocol evolution, [irpc-schema]. This allows not just *evolving* protocols but serving *multiple* protocols from the same ALPN. Very roughly this works by giving each rpc call a unique [BLAKE3] hash that is derived from a structural or semantic schema of the call. We will talk about this more in the future, but using it also requires the `skip_bad_requests` mechanism.
 
@@ -155,6 +155,8 @@ See you at the next release, and keep [filing] those bugs!
 [`server_streaming`]: https://docs.rs/irpc/1.0.0/irpc/struct.Client.html#method.server_streaming
 [`bidi_streaming`]: https://docs.rs/irpc/1.0.0/irpc/struct.Client.html#method.bidi_streaming
 [`Handler::skip_bad_requests`]: https://docs.rs/irpc/1.0.0/irpc/rpc/struct.Handler.html#method.skip_bad_requests
+[`ErrorCode::RequestDecodeFailed`]: https://docs.rs/irpc/1.0.0/irpc/rpc/enum.ErrorCode.html#variant.RequestDecodeFailed
+[varint]: https://webassembly.github.io/spec/core/binary/values.html#integers
 [irpc-schema]: https://github.com/n0-computer/irpc-schema
 [BLAKE3]: https://github.com/BLAKE3-team/BLAKE3
 [COBS]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
