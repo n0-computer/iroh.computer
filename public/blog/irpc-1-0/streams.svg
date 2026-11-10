@@ -19,23 +19,18 @@
   <rect x="230" y="280" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#6366f1" stroke-width="1.5"/>
   <text x="295.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">request</text>
   <rect x="370" y="280" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
-  <text x="435.0" y="305.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
-  <text x="435.0" y="323.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">rx</text>
+  <text x="435.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
   <rect x="510" y="280" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
-  <text x="575.0" y="305.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
-  <text x="575.0" y="323.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">rx</text>
+  <text x="575.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
   <rect x="650" y="280" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
-  <text x="715.0" y="305.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
-  <text x="715.0" y="323.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">rx</text>
+  <text x="715.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
   <path d="M 794 288 V 328" stroke="#333" stroke-width="3"/>
   <text x="804" y="313" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="start">FIN</text>
   <text x="40" y="379" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="start">server → client</text>
   <rect x="230" y="346" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
-  <text x="295.0" y="371.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
-  <text x="295.0" y="389.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">tx</text>
+  <text x="295.0" y="379.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
   <rect x="370" y="346" width="130" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
-  <text x="435.0" y="371.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
-  <text x="435.0" y="389.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">tx</text>
+  <text x="435.0" y="379.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">mpsc</text>
   <path d="M 514 354 V 394" stroke="#333" stroke-width="3"/>
   <text x="524" y="379" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="start">FIN</text>
 </svg>

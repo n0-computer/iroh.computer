@@ -1,9 +1,9 @@
 +++
 title = "irpc 1.0 - Stable RPC for the iroh ecosystem"
-description = ""
+description = "irpc 1.0 is out: a stable wire format, cancellation-safe streaming sends, and a way to evolve protocols."
 date = "2026-11-10"
 author = "Rüdiger Klaehn"
-social_image = ""
+social_image = "/blog/irpc-1-0/hero.png"
 draft = false
 +++
 
