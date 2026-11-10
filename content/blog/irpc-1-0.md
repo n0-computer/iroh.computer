@@ -1,5 +1,5 @@
 +++
-title = "irpc 1.0"
+title = "irpc 1.0 - Stable RPC for the iroh ecosystem"
 description = ""
 date = "2026-11-10"
 author = "Rüdiger Klaehn"
@@ -7,7 +7,7 @@ social_image = ""
 draft = false
 +++
 
-Today we released irpc 1.0. Many of our public iroh protocols are built on irpc, so releasing a stable version is a prerequisite and major milestone for releasing stable versions of these protocols.
+Today we released irpc 1.0. Many of our public iroh protocols, such as blobs and gossip, are built on irpc, so releasing a stable version is a prerequisite and major milestone for releasing stable versions of these protocols.
 
 ## What is irpc
 
