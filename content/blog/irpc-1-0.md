@@ -22,7 +22,7 @@ Irpc allows multiple interaction patterns, such as server streaming or client st
 So when defining a new protocol, you start by defining an enum enumerating the requests, and then annotating it with the type of update and response for each request.
 
 ```rust
-// Get, Set, SetMany and List are plain serde structs.
+// Get, Set, SetMany and List are plain structs.
 #[rpc_requests(message = StorageMessage)]
 #[derive(Serialize, Deserialize, Debug)]
 enum StorageProtocol {
