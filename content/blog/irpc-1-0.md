@@ -142,7 +142,7 @@ In terms of functionality, we now use the [QUIC stream id] as a request id, and 
 
 ## Next steps
 
-Releasing 1.0 doesn't mean that irpc is done. We are confident that it does the job very well for many use cases, and we are committed to the wire format. But we already have some additional convenience functions planned that are purely additive and can be released later.
+Releasing 1.0 doesn't mean that irpc is done. We are confident that it does the job very well for many use cases, and we are committed to the wire format. But we already have some [additional convenience functions] planned that are purely additive and can be released later.
 
 As always, the full set of changes is in the [changelog].
 
@@ -176,3 +176,4 @@ See you at the next release, and keep [filing] those bugs!
 [optional feature flag]: https://docs.rs/crate/irpc/1.0.0/features#tracing-subscriber-03
 [separate crate]: https://docs.rs/irpc-opentelemetry/0.1.0/irpc_opentelemetry/
 [QUIC stream id]: https://docs.iroh.computer/protocols/using-quic#key-insights
+[additional convenience functions]: https://github.com/n0-computer/irpc/pull/131
