@@ -39,13 +39,13 @@ enum StorageProtocol {
 
 See the [full example] for the request types, the server, and the client.
 
-You can use any combination of receive (rx) and transmit (tx) stream types. For the most common ones we have syntax sugar.
+You can use any combination of transmit (tx) and receive (rx) stream types. For the most common ones we have syntax sugar.
 
-| tx \ rx  | none                 | oneshot | mpsc                 |
-|----------|----------------------|---------|----------------------|
-| none     | [`notify`]           | -       | [`notify_streaming`] |
-| oneshot  | [`rpc`]              | -       | [`client_streaming`] |
-| mpsc     | [`server_streaming`] | -       | [`bidi_streaming`]   |
+| tx ↓ / rx → | none                 | oneshot | mpsc                 |
+|-------------|----------------------|---------|----------------------|
+| none        | [`notify`]           | -       | [`notify_streaming`] |
+| oneshot     | [`rpc`]              | -       | [`client_streaming`] |
+| mpsc        | [`server_streaming`] | -       | [`bidi_streaming`]   |
 
 ### Channels
 
