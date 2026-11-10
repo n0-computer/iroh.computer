@@ -22,23 +22,7 @@ Irpc allows multiple interaction patterns, such as server streaming or client st
 So when defining a new protocol, you start by defining an enum enumerating the requests, and then annotating it with the type of update and response for each request.
 
 ```rust
-#[derive(Debug, Serialize, Deserialize)]
-struct Get {
-    key: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct List;
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Set {
-    key: String,
-    value: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct SetMany;
-
+// Get, Set, SetMany and List are plain serde structs.
 #[rpc_requests(message = StorageMessage)]
 #[derive(Serialize, Deserialize, Debug)]
 enum StorageProtocol {
@@ -52,6 +36,8 @@ enum StorageProtocol {
     List(List),
 }
 ```
+
+See the [full example] for the request types, the server and the client.
 
 You can use any combination of receive (rx) and transmit (tx) stream types. For the most common ones we have syntax sugar.
 
@@ -185,3 +171,4 @@ See you at the next release, and keep [filing] those bugs!
 [blobs]: https://github.com/n0-computer/iroh-blobs
 [gossip]: https://github.com/n0-computer/iroh-gossip
 [releasing stable versions]: /blog/iroh-blobs-canary-series
+[full example]: https://github.com/n0-computer/irpc/blob/v1.0.0/examples/derive.rs
