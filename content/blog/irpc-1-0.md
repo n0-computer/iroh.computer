@@ -7,7 +7,7 @@ social_image = ""
 draft = false
 +++
 
-Today we released irpc 1.0. Many of our public iroh protocols, such as blobs and gossip, are built on irpc, so releasing a stable version is a prerequisite and major milestone for releasing stable versions of these protocols.
+Today we released irpc 1.0. Many of our public iroh protocols, such as [blobs] and [gossip], are built on irpc, so releasing a stable version is a prerequisite and major milestone for [releasing stable versions] of these protocols.
 
 ## What is irpc
 
@@ -182,3 +182,6 @@ See you at the next release, and keep [filing] those bugs!
 [termination signalling]: https://docs.iroh.computer/protocols/using-quic#aborting-streams
 [stream multiplexing]: https://docs.iroh.computer/protocols/using-quic#multiple-requests-%26-responses
 [IoT projects]: /blog/an-iroh-powered-smart-fan
+[blobs]: https://github.com/n0-computer/iroh-blobs
+[gossip]: https://github.com/n0-computer/iroh-gossip
+[releasing stable versions]: /blog/iroh-blobs-canary-series
