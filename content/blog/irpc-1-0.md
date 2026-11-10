@@ -15,7 +15,7 @@ Irpc is a library for RPC-style interactions using in-process or cross-process m
 
 Irpc has been our go-to tool both to implement new iroh protocols and frequently even to define in-process protocols, including internally in iroh services. It is lightweight enough to use it for [IoT projects] on extremely resource-constrained devices such as ESP32 embedded computers.
 
-### RPC
+### Defining a protocol
 
 Irpc allows multiple interaction patterns, such as server streaming or client streaming. But they all start with a request from the client to the server.
 
