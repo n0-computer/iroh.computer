@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 230" role="img" aria-labelledby="title desc">
+  <title id="title">irpc lines changed in the run-up to 1.0</title>
+  <desc id="desc">Lines changed per day on irpc main from June 2026 to the 1.0 release in November 2026: almost nothing over the summer, then a dense push from late September up to the release.</desc>
+  <rect x="10" y="10" width="880" height="210" rx="12" fill="#f3f4f6"/>
+  <rect x="115.1" y="163.5" width="4" height="1.5" fill="#6366f1"/>
+  <rect x="172.6" y="163.2" width="4" height="1.8" fill="#6366f1"/>
+  <rect x="191.7" y="163.3" width="4" height="1.7" fill="#6366f1"/>
+  <rect x="316.3" y="163.4" width="4" height="1.6" fill="#6366f1"/>
+  <rect x="622.9" y="146.3" width="4" height="18.7" fill="#6366f1"/>
+  <rect x="627.6" y="112.9" width="4" height="52.1" fill="#6366f1"/>
+  <rect x="632.4" y="162.8" width="4" height="2.2" fill="#6366f1"/>
+  <rect x="637.2" y="108.1" width="4" height="56.9" fill="#6366f1"/>
+  <rect x="656.4" y="136.6" width="4" height="28.4" fill="#6366f1"/>
+  <rect x="675.5" y="102.2" width="4" height="62.8" fill="#6366f1"/>
+  <rect x="685.1" y="121.2" width="4" height="43.8" fill="#6366f1"/>
+  <rect x="694.7" y="90.8" width="4" height="74.2" fill="#6366f1"/>
+  <rect x="752.2" y="67.2" width="4" height="97.8" fill="#6366f1"/>
+  <rect x="761.8" y="132.1" width="4" height="32.9" fill="#6366f1"/>
+  <rect x="800.1" y="149.6" width="4" height="15.4" fill="#6366f1"/>
+  <rect x="804.9" y="80.5" width="4" height="84.5" fill="#6366f1"/>
+  <rect x="819.3" y="40.8" width="4" height="124.2" fill="#6366f1"/>
+  <line x1="50" y1="165" x2="850" y2="165" stroke="#9ca3af" stroke-width="1.5"/>
+  <line x1="50.0" y1="165" x2="50.0" y2="171" stroke="#9ca3af"/>
+  <text x="50.0" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Jun</text>
+  <text x="50.0" y="203" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">2026</text>
+  <line x1="193.7" y1="165" x2="193.7" y2="171" stroke="#9ca3af"/>
+  <text x="193.7" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Jul</text>
+  <line x1="342.2" y1="165" x2="342.2" y2="171" stroke="#9ca3af"/>
+  <text x="342.2" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Aug</text>
+  <line x1="490.7" y1="165" x2="490.7" y2="171" stroke="#9ca3af"/>
+  <text x="490.7" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Sep</text>
+  <line x1="634.4" y1="165" x2="634.4" y2="171" stroke="#9ca3af"/>
+  <text x="634.4" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Oct</text>
+  <line x1="782.9" y1="165" x2="782.9" y2="171" stroke="#9ca3af"/>
+  <text x="782.9" y="187" font-family="Space Mono, monospace" font-size="10" fill="#555" text-anchor="middle">Nov</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 410" role="img" aria-labelledby="title desc">
+  <title id="title">irpc frame types</title>
+  <desc id="desc">Requests and oneshot values are a varint length followed by the postcard-encoded message. mpsc values add a one-byte end marker, 0 for complete and 1 for aborted, which the length includes.</desc>
+  <rect x="10" y="10" width="880" height="390" rx="12" fill="#f3f4f6"/>
+  <text x="40" y="103.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="start">request</text>
+  <rect x="200" y="70" width="120" height="56" rx="8" fill="#f3f4f6" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="260.0" y="95.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">len</text>
+  <text x="260.0" y="113.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">varint</text>
+  <rect x="330" y="70" width="380" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
+  <text x="520.0" y="95.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">message</text>
+  <text x="520.0" y="113.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">postcard</text>
+  <text x="40" y="193.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="start">oneshot</text>
+  <rect x="200" y="160" width="120" height="56" rx="8" fill="#f3f4f6" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="260.0" y="185.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">len</text>
+  <text x="260.0" y="203.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">varint</text>
+  <rect x="330" y="160" width="380" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
+  <text x="520.0" y="185.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">message</text>
+  <text x="520.0" y="203.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">postcard</text>
+  <text x="40" y="283.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="start">mpsc</text>
+  <rect x="200" y="250" width="120" height="56" rx="8" fill="#f3f4f6" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="260.0" y="275.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">len</text>
+  <text x="260.0" y="293.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">varint</text>
+  <rect x="330" y="250" width="380" height="56" rx="8" fill="#f3f4f6" stroke="#15803d" stroke-width="1.5"/>
+  <text x="520.0" y="275.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">message</text>
+  <text x="520.0" y="293.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">postcard</text>
+  <rect x="720" y="250" width="120" height="56" rx="8" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5"/>
+  <text x="780.0" y="275.0" font-family="Space Mono, monospace" font-size="15" fill="#333" text-anchor="middle">end</text>
+  <text x="780.0" y="293.0" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">1 byte</text>
+  <path d="M 331 316 V 324 H 839 V 316" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="585" y="344" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="middle">len bytes</text>
+  <text x="40" y="380" font-family="Space Mono, monospace" font-size="12" fill="#555" text-anchor="start">end: 0 = complete, 1 = aborted (a cancelled send)</text>
+</svg>
