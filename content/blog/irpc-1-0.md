@@ -133,7 +133,7 @@ Note that irpc-schema just changes the way the protocol enums are serialized, so
 
 ### Tracing spans
 
-Tracing is no longer an optional dependency. Despite it being 0.1, we decided to have it in the public API. This allowed us to simplify the feature flags. Tracing-subscriber is available via an optional feature flag, and opentelemetry has moved into a separate crate.
+Tracing is no longer an optional dependency. Despite it being 0.1, we decided to have it in the public API. This allowed us to simplify the feature flags. Tracing-subscriber is available via an [optional feature flag], and opentelemetry has moved into a [separate crate].
 
 In terms of functionality, we now use the QUIC stream id as a request id, and create a span for each request on both the client and the server, so the log lines for a request can be matched up across both sides of the connection.
 
@@ -173,3 +173,5 @@ See you at the next release, and keep [filing] those bugs!
 [releasing stable versions]: /blog/iroh-blobs-canary-series
 [full example]: https://github.com/n0-computer/irpc/blob/v1.0.0/examples/derive.rs
 [`select!`]: https://docs.rs/tokio/latest/tokio/macro.select.html
+[optional feature flag]: https://docs.rs/crate/irpc/1.0.0/features#tracing-subscriber-03
+[separate crate]: https://docs.rs/irpc-opentelemetry/0.1.0/irpc_opentelemetry/
