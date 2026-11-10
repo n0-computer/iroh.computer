@@ -114,7 +114,7 @@ Our encoding is using [varint] length prefixes. So once we have written the leng
 
 If that byte is set to cancelled, we still have to send the entire frame, but it will be completely ignored on the receive side.
 
-The result of all this machinery is that the send future is now cancellation safe for both local and remote sends.
+The result of all this machinery is that the [mpsc send future] is now cancellation safe for both local and remote sends.
 
 > [!NOTE]
 > We have briefly experimented with [COBS] encoding. COBS encoding would allow to terminate a cancelled message immediately, but it has performance problems for the happy path.
@@ -157,6 +157,7 @@ See you at the next release, and keep [filing] those bugs!
 [`Handler::skip_bad_requests`]: https://docs.rs/irpc/1.0.0/irpc/rpc/struct.Handler.html#method.skip_bad_requests
 [`ErrorCode::RequestDecodeFailed`]: https://docs.rs/irpc/1.0.0/irpc/rpc/enum.ErrorCode.html#variant.RequestDecodeFailed
 [varint]: https://webassembly.github.io/spec/core/binary/values.html#integers
+[mpsc send future]: https://docs.rs/irpc/1.0.0/irpc/channel/mpsc/struct.Sender.html#method.send
 [irpc-schema]: https://github.com/n0-computer/irpc-schema
 [BLAKE3]: https://github.com/BLAKE3-team/BLAKE3
 [COBS]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
