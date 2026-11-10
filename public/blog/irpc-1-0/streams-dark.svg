@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 432" role="img" aria-labelledby="title desc">
+  <title id="title">irpc requests on QUIC streams</title>
+  <desc id="desc">Every request opens one bidirectional QUIC stream. The client sends the request frame, followed by the frames of the rx channel if there is one. The server answers on the other direction with the frames of the tx channel. Each direction ends with a QUIC FIN.</desc>
+  <rect x="10" y="10" width="880" height="412" rx="12" fill="#27272a"/>
+  <text x="40" y="52" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="start">rpc</text>
+  <text x="40" y="103" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">client → server</text>
+  <rect x="230" y="70" width="130" height="56" rx="8" fill="#27272a" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="295.0" y="103.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">request</text>
+  <path d="M 374 78 V 118" stroke="#e4e4e7" stroke-width="3"/>
+  <text x="384" y="103" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">FIN</text>
+  <text x="40" y="169" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">server → client</text>
+  <rect x="230" y="136" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="295.0" y="169.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">oneshot</text>
+  <path d="M 374 144 V 184" stroke="#e4e4e7" stroke-width="3"/>
+  <text x="384" y="169" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">FIN</text>
+  <path d="M 30 222 H 870" stroke="#71717a" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="40" y="262" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="start">bidi_streaming</text>
+  <text x="40" y="313" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">client → server</text>
+  <rect x="230" y="280" width="130" height="56" rx="8" fill="#27272a" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="295.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">request</text>
+  <rect x="370" y="280" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="435.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">mpsc</text>
+  <rect x="510" y="280" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="575.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">mpsc</text>
+  <rect x="650" y="280" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="715.0" y="313.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">mpsc</text>
+  <path d="M 794 288 V 328" stroke="#e4e4e7" stroke-width="3"/>
+  <text x="804" y="313" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">FIN</text>
+  <text x="40" y="379" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">server → client</text>
+  <rect x="230" y="346" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="295.0" y="379.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">mpsc</text>
+  <rect x="370" y="346" width="130" height="56" rx="8" fill="#27272a" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="435.0" y="379.0" font-family="Space Mono, monospace" font-size="15" fill="#e4e4e7" text-anchor="middle">mpsc</text>
+  <path d="M 514 354 V 394" stroke="#e4e4e7" stroke-width="3"/>
+  <text x="524" y="379" font-family="Space Mono, monospace" font-size="12" fill="#d4d4d8" text-anchor="start">FIN</text>
+</svg>
