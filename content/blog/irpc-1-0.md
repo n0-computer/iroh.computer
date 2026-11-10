@@ -135,7 +135,7 @@ Note that irpc-schema just changes the way the protocol enums are serialized, so
 
 Tracing is no longer an optional dependency. Despite it being 0.1, we decided to have it in the public API. This allowed us to simplify the feature flags. Tracing-subscriber is available via an [optional feature flag], and opentelemetry has moved into a [separate crate].
 
-In terms of functionality, we now use the QUIC stream id as a request id, and create a span for each request on both the client and the server, so the log lines for a request can be matched up across both sides of the connection.
+In terms of functionality, we now use the [QUIC stream id] as a request id, and create a span for each request on both the client and the server, so the log lines for a request can be matched up across both sides of the connection.
 
 > [!NOTE]
 > QUIC never reuses a stream id within a connection, but every connection starts counting from zero. So the request id is only unique per connection. On the server, the request span is nested in a connection span, so the two together identify a request.
@@ -175,3 +175,4 @@ See you at the next release, and keep [filing] those bugs!
 [`select!`]: https://docs.rs/tokio/latest/tokio/macro.select.html
 [optional feature flag]: https://docs.rs/crate/irpc/1.0.0/features#tracing-subscriber-03
 [separate crate]: https://docs.rs/irpc-opentelemetry/0.1.0/irpc_opentelemetry/
+[QUIC stream id]: https://docs.iroh.computer/protocols/using-quic#key-insights
