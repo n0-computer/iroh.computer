@@ -51,7 +51,7 @@ You can use any combination of receive (rx) and transmit (tx) stream types. For 
 
 When used in-process, irpc channels have zero overhead over just tokio oneshot and mpsc channels. Messages are not serialized, and all senders and receivers have special cases for in-process to prevent allocations.
 
-So irpc message handling will look very similar to Rust async message handling, with `select!` or stream combinators.
+So irpc message handling will look very similar to Rust async message handling, with [`select!`] or stream combinators.
 
 When used cross-process, irpc works over [QUIC] connections, either iroh connections or connections using our QUIC implementation [noq]. It takes advantage of the [cheap streams] of QUIC to multiplex rpc requests.
 
@@ -172,3 +172,4 @@ See you at the next release, and keep [filing] those bugs!
 [gossip]: https://github.com/n0-computer/iroh-gossip
 [releasing stable versions]: /blog/iroh-blobs-canary-series
 [full example]: https://github.com/n0-computer/irpc/blob/v1.0.0/examples/derive.rs
+[`select!`]: https://docs.rs/tokio/latest/tokio/macro.select.html
