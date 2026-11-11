@@ -143,7 +143,7 @@ pub fn Content(segments: Vec<String>) -> Element {
             crate::solutions::Solutions {}
         };
     }
-    if path == "/sendme" {
+    if path == "/sendme" || path == "/legal/subprocessors" {
         return content::render(&path);
     }
     if let Some(solution) = path

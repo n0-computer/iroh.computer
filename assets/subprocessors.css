@@ -1,0 +1,12 @@
+.subprocessor-page{max-width:872px;padding-top:54px;padding-bottom:140px;min-height:68vh}
+.subprocessor-page .content-breadcrumb{margin-bottom:54px;text-transform:uppercase}
+.subprocessor-page h1{font-size:clamp(38px,5vw,60px);line-height:1.12;letter-spacing:-.045em;margin-bottom:27px}
+.subprocessor-intro{font-size:17px;line-height:1.85;color:var(--muted);max-width:740px}
+.subprocessor-download{display:flex;align-items:center;gap:24px;margin-top:48px;padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.subprocessor-download>div{flex:1}
+.subprocessor-document-title{display:block;font-size:19px;color:var(--accent);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.subprocessor-document-date{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+.subprocessor-document-format{color:var(--muted);border:1px solid var(--line);padding:3px 8px;border-radius:3px}
+.subprocessor-document-arrow{font-size:24px;color:var(--accent)}
+.subprocessor-download:hover .subprocessor-document-title{text-decoration-thickness:2px}
+@media(max-width:720px){.subprocessor-page{padding-top:30px;padding-bottom:80px;min-height:65vh}.subprocessor-page .content-breadcrumb{margin-bottom:40px}.subprocessor-intro{font-size:16px}.subprocessor-download{gap:16px;margin-top:36px;padding:24px 0}.subprocessor-document-title{font-size:17px}}

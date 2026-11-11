@@ -29,8 +29,10 @@ cargo run
 
 On native targets, this launches `dx serve --platform web`. The application
 itself runs as WebAssembly in the browser; launching the web renderer as a
-native executable would panic. You can also run `dx serve --platform web`
-directly.
+native executable would panic. The launcher prefers Cargo's bin directory and
+verifies that `dx` is Dioxus, since Deno also installs a command named `dx`.
+You can also run `~/.cargo/bin/dx serve --platform web` directly (or use
+`$CARGO_HOME/bin/dx` if you configured a custom Cargo home).
 
 Pass server options after `--`, for example:
 
