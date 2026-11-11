@@ -64,6 +64,7 @@ mod docs_tour_index;
 mod docs_wasm_browser_support;
 #[path = "legal.rs"]
 mod legal;
+mod subprocessors;
 #[path = "roadmap.rs"]
 mod roadmap;
 #[path = "sendme.rs"]
@@ -232,6 +233,7 @@ pub(crate) fn render(path: &str) -> Element {
                 legal::Legal {}
             }
         }
+        "/legal/subprocessors" => rsx! { subprocessors::Subprocessors {} },
         "/roadmap" => {
             rsx! {
                 roadmap::Roadmap {}

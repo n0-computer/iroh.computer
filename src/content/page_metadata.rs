@@ -291,8 +291,17 @@ pub(crate) fn metadata() -> Vec<Page> {
         Page {
             path: "/legal".into(),
             title: "Legal".into(),
-            description: "Privacy policy and terms of service for Iroh and Iroh Services."
+            description: "Privacy policy, subprocessors, and terms of service for Iroh and Iroh Services."
                 .into(),
+            date: "".into(),
+            author: "".into(),
+            social_image: String::new(),
+            html: String::new(),
+        },
+        Page {
+            path: "/legal/subprocessors".into(),
+            title: "Subprocessor List".into(),
+            description: "View the current list of subprocessors that help provide Iroh Services and download the PDF.".into(),
             date: "".into(),
             author: "".into(),
             social_image: String::new(),

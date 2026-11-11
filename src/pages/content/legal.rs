@@ -8,7 +8,19 @@ pub(super) fn Legal() -> Element {
                 section {
                     div {
                         h1 { id: "legal", "Legal" }
-                        p { "Privacy policy and terms of service for Iroh and Iroh Services." }
+                        p { "Privacy policy, subprocessors, and terms of service for Iroh and Iroh Services." }
+                    }
+                }
+                section {
+                    div {
+                        h2 { id: "subprocessors", "Subprocessors" }
+                        p { "View the subprocessors that help provide Iroh Services and their processing activities." }
+                        p {
+                            Link {
+                                to: "/legal/subprocessors",
+                                "Subprocessor List"
+                            }
+                        }
                     }
                 }
                 section {
