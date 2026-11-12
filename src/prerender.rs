@@ -48,6 +48,9 @@ pub fn paths() -> Vec<String> {
     serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/routes.json"))).unwrap()
 }
 
+/// Export direct-entry pages without adding them to search or the public sitemap.
+pub const UNLISTED_PATHS: &[&str] = &["/nori"];
+
 /// Manganis resolves native assets to their sources. Match each to the hashed
 /// stylesheet produced by the web build, keeping the browser's stylesheet URLs.
 pub fn stylesheet_url(source: &str, output: &Path) -> String {

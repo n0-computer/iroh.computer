@@ -71,3 +71,22 @@ fn canonical_routes_exclude_drafts_and_host_redirects() {
     }
     assert!(paths.iter().any(|p| p == "/solutions/video"));
 }
+
+#[test]
+fn nori_is_rendered_but_unlisted_and_unindexable() {
+    assert!(iroh_computer::prerender::UNLISTED_PATHS.contains(&"/nori"));
+    assert!(!paths().iter().any(|path| path == "/nori"));
+    let sitemap = include_str!(concat!(env!("OUT_DIR"), "/sitemap.xml"));
+    assert!(!sitemap.contains("/nori"));
+    for path in ["/nori", "/nori/"] {
+        let page = render(path);
+        assert!(page.body.contains("class=\"nori-page\""));
+        assert!(page.body.contains("Get early access"));
+        assert!(page.head.contains("<title>Nori —"));
+        assert!(page.head.contains("name=\"robots\" content=\"noindex, nofollow\""));
+        assert!(page.styles.iter().any(|s| s.ends_with("/nori.css")));
+    }
+    for path in paths() {
+        assert!(!render(&path).body.contains("href=\"/nori\""), "unlisted page linked from {path}");
+    }
+}

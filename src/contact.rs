@@ -22,6 +22,7 @@ pub fn ContactButton(
 }
 #[component]
 pub fn ContactDialog(source: &'static str) -> Element {
+    let is_nori = source.starts_with("nori-");
     let mut contact = use_context::<ContactState>();
     let mut email = use_signal(String::new);
     let mut company = use_signal(String::new);
@@ -60,8 +61,8 @@ pub fn ContactDialog(source: &'static str) -> Element {
                     "×"
                 }
                 p { class: "contact-kicker", "Let’s make a connection" }
-                h2 { id: "contact-heading", "How can we help?" }
-                p { id: "contact-description", "Drop your details and we’ll reach out." }
+                h2 { id: "contact-heading", if is_nori { "Get early access to Nori" } else { "How can we help?" } }
+                p { id: "contact-description", if is_nori { "Leave your details and we’ll be in touch about Nori." } else { "Drop your details and we’ll reach out." } }
                 if succeeded() {
                     div { class: "contact-success", role: "status",
                         h3 { "Thanks for saying hello." }
@@ -160,7 +161,7 @@ pub fn ContactDialog(source: &'static str) -> Element {
                             if sending() {
                                 "Sending…"
                             } else {
-                                "Talk to us"
+                                if is_nori { "Get early access" } else { "Talk to us" }
                                 Icon { name: "arrow" }
                             }
                         }

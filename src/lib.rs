@@ -8,6 +8,7 @@ mod home;
 mod hosting;
 mod metadata;
 mod network;
+mod nori;
 mod observability;
 mod pages;
 #[cfg(not(target_arch = "wasm32"))]

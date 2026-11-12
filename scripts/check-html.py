@@ -37,7 +37,9 @@ def check(output):
         assert marker.encode() not in wasm, f'article body embedded in WASM: {path}'
         article_assets[path] = body
     assert set(article_assets) == article_paths, (set(article_assets) ^ article_paths)
-    for url in urls + ['https://iroh.computer/404']:
+    unlisted_urls = ['https://iroh.computer/nori']
+    assert not set(unlisted_urls).intersection(urls), 'unlisted page in sitemap'
+    for url in urls + unlisted_urls + ['https://iroh.computer/404']:
         path = urlsplit(url).path
         file = output / ('index.html' if path == '/' else path.lstrip('/') + '.html')
         html = file.read_text()
@@ -60,7 +62,11 @@ def check(output):
             assert not page.select('link', rel='canonical'), file
         else:
             assert page.select('link', rel='canonical') == [{'data-iroh-meta': None, 'rel': 'canonical', 'href': url}], file
-            assert not page.select('meta', name='robots'), file
+            if url in unlisted_urls:
+                assert page.select('meta', name='robots', content='noindex, nofollow'), file
+            else:
+                assert not page.select('meta', name='robots'), file
+                assert not page.select('a', href='/nori'), f'unlisted page linked from {file}'
         styles = page.select('link', rel='stylesheet')
         assert styles and 'style-dxh' in styles[0]['href'], file
         resources = [a['href'] for a in styles]
@@ -75,7 +81,7 @@ def check(output):
             resources.append(urlsplit(image).path)
         for resource in resources:
             assert (output / resource.lstrip('/')).is_file(), (file, resource)
-    print(f'Validated {len(urls)} prerendered pages, {len(article_assets)} separate article assets, the 404 page, metadata, and bundled assets')
+    print(f'Validated {len(urls)} public pages, {len(unlisted_urls)} unlisted pages, {len(article_assets)} separate article assets, the 404 page, metadata, and bundled assets')
 
 
 if __name__ == '__main__':
