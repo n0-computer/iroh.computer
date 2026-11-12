@@ -20,13 +20,16 @@ from svglib.svglib import svg2rlg
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "public/legal/subprocessor-list.pdf"
-UPDATED = "November 11, 2026"
+UPDATED = "November 12, 2026"
 SUBPROCESSORS = [
     ("N0, Inc.", "Provision of support services"),
     ("Amazon Web Services, Inc.", "Provision of hosting services"),
     ("Blacksmith.sh", "Provision of continuous integration infrastructure"),
+    ("Cal.com", "Meeting scheduling with Authorized Users in connection with the provision of the Services and support"),
+    ("Cloudflare", "Provision of DNS, content delivery, and network security services"),
     ("Discord", "Communication with Authorized Users in connection with the provision of the Services and support"),
     ("Fastmail", "Email communication with Authorized Users in connection with the provision of the Services and support"),
+    ("Figma", "Design collaboration and file sharing"),
     ("GitHub, Inc.", "Authorized Users account authentication"),
     ("Google Drive", "Document storage and collaboration"),
     ("Grafana", "Monitoring and observability"),
@@ -35,6 +38,7 @@ SUBPROCESSORS = [
     ("Notion Labs, Inc.", "Communication with Authorized Users in connection with the provision of the Services and support"),
     ("PagerDuty", "Incident management and alerting"),
     ("Slack", "Communication with Authorized Users in connection with the provision of the Services and support"),
+    ("Stripe", "Payment processing and billing"),
     ("Vercel, Inc.", "Provision of hosting services"),
     ("Functional Software, Inc. d/b/a Sentry", "Error monitoring and tracing"),
     ("Plausible", "Provision of customer insight services"),
