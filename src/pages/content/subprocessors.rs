@@ -23,7 +23,7 @@ pub(super) fn Subprocessors() -> Element {
                         span { class: "subprocessor-document-title", "Subprocessor List" }
                         span { class: "subprocessor-document-date",
                             "Updated "
-                            time { datetime: "2026-11-11", "November 11, 2026" }
+                            time { datetime: "2026-11-12", "November 12, 2026" }
                         }
                     }
                     span { class: "subprocessor-document-format mono", "PDF" }
