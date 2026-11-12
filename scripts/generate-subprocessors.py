@@ -2,7 +2,7 @@
 """Generate the public subprocessor PDF (requires reportlab and svglib).
 
 Run from any directory: python scripts/generate-subprocessors.py
-Update the date here and on the Legal page when revising the list.
+Update the date here and on the subprocessor page when revising the list.
 """
 
 from pathlib import Path
@@ -24,14 +24,21 @@ UPDATED = "November 11, 2026"
 SUBPROCESSORS = [
     ("N0, Inc.", "Provision of support services"),
     ("Amazon Web Services, Inc.", "Provision of hosting services"),
+    ("Blacksmith.sh", "Provision of continuous integration infrastructure"),
+    ("Discord", "Communication with Authorized Users in connection with the provision of the Services and support"),
+    ("Fastmail", "Email communication with Authorized Users in connection with the provision of the Services and support"),
     ("GitHub, Inc.", "Authorized Users account authentication"),
+    ("Google Drive", "Document storage and collaboration"),
     ("Grafana", "Monitoring and observability"),
     ("Hetzner", "Provision of hosting services"),
     ("HubSpot, Inc.", "Communication with Authorized Users in connection with the provision of the Services and support"),
     ("Notion Labs, Inc.", "Communication with Authorized Users in connection with the provision of the Services and support"),
+    ("PagerDuty", "Incident management and alerting"),
+    ("Slack", "Communication with Authorized Users in connection with the provision of the Services and support"),
     ("Vercel, Inc.", "Provision of hosting services"),
     ("Functional Software, Inc. d/b/a Sentry", "Error monitoring and tracing"),
     ("Plausible", "Provision of customer insight services"),
+    ("Zoom", "Video communication with Authorized Users in connection with the provision of the Services and support"),
 ]
 
 
