@@ -1,0 +1,187 @@
+import { ExpandableAnimation } from '@/components/ExpandableAnimation'
+import { BlogPostLayout } from '@/components/BlogPostLayout'
+
+export const post = {
+  draft: false,
+  author: 'Rüdiger Klaehn',
+  date: '2026-10-27',
+  title: 'Iroh and the number 4',
+  description: 'How the eMudhra CA key compromise affects iroh.',
+}
+
+export const metadata = {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      images: [{
+        url: `/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/iroh-and-the-number-4/private-key-4.png')}`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+        type: 'image/png',
+      }],
+      type: 'article'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [`/api/og?title=Blog&subtitle=${post.title}&image=${encodeURIComponent('/blog/iroh-and-the-number-4/private-key-4.png')}`],
+    },
+}
+
+export default (props) => <BlogPostLayout article={post} {...props} />
+
+Unless you have been blissfully offline for the last week you probably got the news.
+
+Eight intermediate certificates of the certificate authority [eMudhra] have been [compromised] in an extremely embarrassing way. The private keys of these certificates were all single byte numbers.
+
+```
+$ openssl ec -in em-ov-tls-ca-g3c.pem -noout -text
+Private-Key: (384 bit field, 192 bit security level)
+priv:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:
+    00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:04
+pub:
+    04:13:82:51:cd:52:ac:92:98:c1:c8:aa:d9:77:32:1d:
+    eb:97:e7:09:bd:0b:4c:a0:ac:a5:5d:c8:ad:51:dc:fc:
+    9d:15:89:a1:59:7e:3a:51:20:e1:ef:d6:31:c6:3e:18:
+    35:ca:ca:e2:98:69:a6:2e:16:31:e8:a2:81:81:ab:56:
+    61:6d:c4:5d:91:8a:bc:09:f3:ab:0e:63:cf:79:2a:a4:
+    dc:ed:73:87:be:37:bb:a5:69:54:9f:1c:02:b2:70:ed:
+    67
+ASN1 OID: secp384r1
+NIST CURVE: P-384
+```
+
+While the number 4 is just as likely as any other number in a random distribution, the probability that you get eight single byte numbers by random selection is an astonishing 1 in 3 × 10<sup>905</sup>.
+
+The company decided to [leave the CA business entirely], but the damage is done.
+
+## Iroh Connections
+
+Iroh connections themselves are not affected at all. We use [mutual TLS] and only rely on the Ed25519 public key of the remote to secure the connection. We don't check any certificate chain at all.
+
+However, iroh is using the certificate chain in a number of places.
+
+Most notably the https [relay connections], but also [QAD probes] and https probes as well as [address lookup publishing] via https PUT.
+
+<ExpandableAnimation
+  src="/blog/iroh-and-the-number-4/cert-chain-usage.svg"
+  darkSrc="/blog/iroh-and-the-number-4/cert-chain-usage-dark.svg"
+  width={760}
+  height={380}
+  alt="The connection to another endpoint uses only its Ed25519 key, no CA. Connections to the relay (relay connection, QAD and HTTPS probes) and the pkarr server use TLS with a CA chain."
+/>
+
+We have of course published an update to binaries published by us such as [sendme] and [dumbpipe], and also [updated iroh itself].
+
+But you might have old binaries using iroh, and also we really can't be sure that there isn't another eMudhra.
+
+So let's take a look what the impact would be for an iroh based application if there was another compromised certificate.
+
+First of all, what does it take to exploit these? You need to be able to intercept at least some traffic from the iroh endpoint to the internet, so you need to be a so called [on-path attacker].
+
+An on-path attacker can be your home router or corporate firewall, your ISP, or really anybody on the internet between your iroh endpoint and the infrastructure that it uses, such as a [network-level adversary]. So this is definitely not a hypothetical scenario.
+
+If you run open source firewall software such as [OpenWrt] at home you can even try this out, using tools like mitmproxy.
+
+<Note>
+[mitmproxy 12.3] added an `--emudhra` flag. With `mitmproxy --emudhra`, mitmproxy signs the leaf certificates it generates with one of the compromised eMudhra intermediate keys, so any client that hasn't updated its trust store accepts them.
+</Note>
+
+So what can an on-path attacker do?
+
+## Relay connection
+
+An on-path attacker could intercept the https/TLS connection to the relay.
+
+<ExpandableAnimation
+  src="/blog/iroh-and-the-number-4/relay-mitm.svg"
+  darkSrc="/blog/iroh-and-the-number-4/relay-mitm-dark.svg"
+  width={880}
+  height={470}
+  alt="Alice and Bob talk through a relay. Alice's Wi-Fi router is the attacker: it terminates her TLS connection with a forged certificate. The end-to-end QUIC connection passes through unchanged: the attacker sees endpoint ids, sizes and timing, but can't read payloads or impersonate Alice or Bob."
+/>
+
+This gives them the ability to see the endpoints that your local iroh endpoint is talking to via the relay, including timing and packet sizes.
+
+They can also just flat out prevent the relay connection from happening. But a firewall could just drop all connections to known iroh relays even without the ability to forge certificates.
+
+If the relay requires an auth token ([`RelayConfig::with_auth_token`]), the attacker can also read that token. But it isn't of much use to them. The relays we host use [rcan] tokens that are bound to your endpoint id and expire, so they don't work without your secret key. Only a self-hosted relay using a plain `shared_token` would give the attacker free relay access.
+
+## Pkarr publish via https/TLS
+
+For pkarr, the attacker can read the record being published. But that is public information anyway. They cannot modify the pkarr record, since it is signed by the endpoint. They can of course drop the http PUT request, but they could do this before without the compromised CA. The only new capability is to drop the request while pretending that it succeeded.
+
+## Probes (QAD and https)
+
+For probes, the attacker can now forge the responses so the endpoint will learn an incorrect public IP address. This can prevent hole punching from working. They can also modify the timing to get the endpoint to choose a wrong relay.
+
+But this isn't much compared to what an on-path attacker could do. They could already just deny https or QAD probes entirely or add delays to select a wrong relay.
+
+## Summary
+
+An on-path attacker that has the ability to forge certificates has some new capabilities to mess with your iroh endpoint in creative ways. But all attacks I could come up with involve denial of service and observing metadata. The end-to-end encryption of the connection itself is at no point compromised.
+
+## Mitigation
+
+The easiest way to stay safe is of course to keep your CA roots up to date and to deploy new binaries quickly whenever there is a breach. For example the latest sendme binary will no longer be fooled by `mitmproxy --emudhra`. But that isn't always practical. For example for [IoT devices] it is very cumbersome to deploy new binaries.
+
+<Note>
+Note that you don't have to update iroh to track the latest CA roots. `cargo update -p rustls-webpki -p webpki-roots` is all you need to do.
+</Note>
+
+What else you can do depends on the type of your iroh deployment. If your iroh deployment only talks to specific relays, you can restrict the CA roots to a minimal set.
+
+For example, all number0 infrastructure uses [Let's Encrypt], so you could configure the endpoint to just trust the Let's Encrypt roots:
+
+```rust
+// https://letsencrypt.org/certificates/
+const LETS_ENCRYPT_ROOTS: [&[u8]; 4] = [
+    include_bytes!("isrgrootx1.der"),
+    include_bytes!("isrg-root-x2.der"),
+    include_bytes!("root-ye.der"),
+    include_bytes!("root-yr.der"),
+];
+
+let endpoint = Endpoint::builder(presets::N0)
+    .ca_tls_config(CaTlsConfig::custom_roots(LETS_ENCRYPT_ROOTS.map(CertificateDer::from)))
+    .bind()
+    .await?;
+```
+
+The downside of this approach is that you would have to change this when Let's Encrypt changes their roots, and you would not be able to connect to relays that don't use Let's Encrypt.
+
+<Note>
+This pins both the current Let's Encrypt roots and their [new generation of roots], so it should keep working well into the 2030s. Check their [chains of trust] page every so often.
+</Note>
+
+We will not encode this into `presets::N0` since iroh is meant to be an open system by default where every iroh endpoint can talk to every other, but it is easy enough to do yourself if you know that your deployment is closed.
+
+If you want to lock down your deployment's trust roots, for example for IoT devices that rarely get updates, please [get in touch].
+
+[sendme]: https://github.com/n0-computer/sendme/releases/tag/v0.37.1
+[dumbpipe]: https://github.com/n0-computer/dumbpipe/releases/tag/v0.40.1
+[updated iroh itself]: https://github.com/n0-computer/iroh/blob/main/CHANGELOG.md#141---2026-10-21
+[on-path attacker]: https://www.cloudflare.com/learning/security/threats/on-path-attack/
+[mitmproxy 12.3]: https://github.com/mitmproxy/mitmproxy/blob/main/CHANGELOG.md#22-october-2026-mitmproxy-1230
+[compromised]: https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/
+[OpenWrt]: https://openwrt.org/
+[`RelayConfig::with_auth_token`]: https://docs.rs/iroh-relay/latest/iroh_relay/struct.RelayConfig.html#method.with_auth_token
+[rcan]: https://docs.rs/rcan/latest/rcan/
+[Let's Encrypt]: https://letsencrypt.org/
+[get in touch]: https://cal.com/team/number-0/iroh-services?overlayCalendar=true
+[eMudhra]: https://emudhra.com/
+[leave the CA business entirely]: https://thehackernews.com/2026/10/emudhra-to-exit-global-ssltls-business.html
+[new generation of roots]: https://letsencrypt.org/2025/11/24/gen-y-hierarchy
+[chains of trust]: https://letsencrypt.org/certificates/
+[mutual TLS]: /blog/iroh-0-34-0-raw-public-keys
+[network-level adversary]: https://en.wikipedia.org/wiki/Kazakhstan_man-in-the-middle_attack
+[relay connections]: https://docs.iroh.computer/concepts/relays
+[QAD probes]: https://docs.iroh.computer/concepts/nat-traversal
+[address lookup publishing]: https://docs.iroh.computer/connecting/dns-address-lookup
+[IoT devices]: /blog/iroh-on-esp32
