@@ -123,6 +123,9 @@ pub fn Content(segments: Vec<String>) -> Element {
             crate::pricing::Pricing {}
         };
     }
+    if path == "/auth" {
+        return rsx! { crate::auth::IrohAuth {} };
+    }
     if path == "/services/hosting" {
         return rsx! {
             crate::hosting::Hosting {}

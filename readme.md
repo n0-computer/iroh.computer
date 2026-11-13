@@ -40,6 +40,13 @@ Pass server options after `--`, for example:
 cargo run -- --port 8080 --open false
 ```
 
+The prelaunch iroh auth landing page lives at `/auth` (`src/auth.rs` and
+`assets/auth.css`). It is intentionally absent from navigation, search, and the
+sitemap. The static export includes it via `prerender::UNLISTED_PATHS`, with
+`noindex, nofollow` metadata on direct loads and client navigation. Anyone with
+the URL can visit it. Its early-access
+CTAs reuse the HubSpot contact form with `iroh-auth-hero` and `iroh-auth-footer` source labels.
+
 For a complete production build, including prerendered pages, RSS, and sitemap, run
 `bash scripts/build-static.sh`. A plain `dx build --platform web --release`
 builds only the interactive app; it does not export pages or XML.
