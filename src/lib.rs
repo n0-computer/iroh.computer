@@ -1,3 +1,4 @@
+mod auth;
 use dioxus::prelude::*;
 mod contact;
 mod contact_fields;
@@ -8,7 +9,6 @@ mod home;
 mod hosting;
 mod metadata;
 mod network;
-mod nori;
 mod observability;
 mod pages;
 #[cfg(not(target_arch = "wasm32"))]

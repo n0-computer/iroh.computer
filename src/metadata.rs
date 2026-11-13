@@ -29,8 +29,8 @@ pub fn for_path(path: &str) -> Metadata {
         .find(|p| path == format!("/proto/{}", p.slug));
     let (title, description) = match path {
         "/" => ("iroh — Less net work for networks".into(), DESCRIPTION),
-        "/nori" => (
-            "Nori — Secrets, in the right hands".into(),
+        "/auth" => (
+            "iroh auth — Secrets, in the right hands".into(),
             "Secrets and encryption management built for distributed, edge, and peer-to-peer networks. Store secrets, keep encryption keys protected, and delegate precisely scoped access to apps and devices.",
         ),
         "/blog" => (
@@ -61,7 +61,7 @@ pub fn for_path(path: &str) -> Metadata {
             "The page may have moved. Let's get you back on the network.",
         ),
     };
-    let found = matches!(path, "/" | "/blog" | "/proto" | "/nori") || page.is_some() || protocol.is_some();
+    let found = matches!(path, "/" | "/blog" | "/proto" | "/auth") || page.is_some() || protocol.is_some();
     let canonical = found.then(|| format!("{SITE}{path}"));
     let image = page
         .map(|p| p.social_image.as_str())
@@ -97,7 +97,7 @@ pub fn for_path(path: &str) -> Metadata {
     if let Some(url) = &canonical {
         tag("property", "og:url", url);
     }
-    if path == "/nori" {
+    if path == "/auth" {
         tag("name", "robots", "noindex, nofollow");
     } else if !found {
         tag("name", "robots", "noindex");

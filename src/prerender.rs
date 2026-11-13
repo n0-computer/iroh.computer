@@ -49,7 +49,7 @@ pub fn paths() -> Vec<String> {
 }
 
 /// Export direct-entry pages without adding them to search or the public sitemap.
-pub const UNLISTED_PATHS: &[&str] = &["/nori"];
+pub const UNLISTED_PATHS: &[&str] = &["/auth"];
 
 /// Manganis resolves native assets to their sources. Match each to the hashed
 /// stylesheet produced by the web build, keeping the browser's stylesheet URLs.

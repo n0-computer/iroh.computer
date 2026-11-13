@@ -37,7 +37,7 @@ def check(output):
         assert marker.encode() not in wasm, f'article body embedded in WASM: {path}'
         article_assets[path] = body
     assert set(article_assets) == article_paths, (set(article_assets) ^ article_paths)
-    unlisted_urls = ['https://iroh.computer/nori']
+    unlisted_urls = ['https://iroh.computer/auth']
     assert not set(unlisted_urls).intersection(urls), 'unlisted page in sitemap'
     for url in urls + unlisted_urls + ['https://iroh.computer/404']:
         path = urlsplit(url).path
@@ -66,7 +66,7 @@ def check(output):
                 assert page.select('meta', name='robots', content='noindex, nofollow'), file
             else:
                 assert not page.select('meta', name='robots'), file
-                assert not page.select('a', href='/nori'), f'unlisted page linked from {file}'
+                assert not page.select('a', href='/auth'), f'unlisted page linked from {file}'
         styles = page.select('link', rel='stylesheet')
         assert styles and 'style-dxh' in styles[0]['href'], file
         resources = [a['href'] for a in styles]

@@ -123,8 +123,8 @@ pub fn Content(segments: Vec<String>) -> Element {
             crate::pricing::Pricing {}
         };
     }
-    if path == "/nori" {
-        return rsx! { crate::nori::Nori {} };
+    if path == "/auth" {
+        return rsx! { crate::auth::IrohAuth {} };
     }
     if path == "/services/hosting" {
         return rsx! {

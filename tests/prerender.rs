@@ -73,20 +73,23 @@ fn canonical_routes_exclude_drafts_and_host_redirects() {
 }
 
 #[test]
-fn nori_is_rendered_but_unlisted_and_unindexable() {
-    assert!(iroh_computer::prerender::UNLISTED_PATHS.contains(&"/nori"));
-    assert!(!paths().iter().any(|path| path == "/nori"));
+fn iroh_auth_is_rendered_but_unlisted_and_unindexable() {
+    assert!(iroh_computer::prerender::UNLISTED_PATHS.contains(&"/auth"));
+    assert!(!paths().iter().any(|path| path == "/auth"));
     let sitemap = include_str!(concat!(env!("OUT_DIR"), "/sitemap.xml"));
-    assert!(!sitemap.contains("/nori"));
-    for path in ["/nori", "/nori/"] {
+    assert!(!sitemap.contains("<loc>https://iroh.computer/auth</loc>"));
+    for path in ["/auth", "/auth/"] {
         let page = render(path);
-        assert!(page.body.contains("class=\"nori-page\""));
+        assert!(page.body.contains("class=\"iroh-auth-page\""));
         assert!(page.body.contains("Get early access"));
-        assert!(page.head.contains("<title>Nori —"));
+        assert!(page.body.contains("Meet iroh auth"));
+        assert!(!page.body.contains("Nori"));
+        assert!(page.head.contains("href=\"https://iroh.computer/auth\""));
+        assert!(page.head.contains("<title>iroh auth —"));
         assert!(page.head.contains("name=\"robots\" content=\"noindex, nofollow\""));
-        assert!(page.styles.iter().any(|s| s.ends_with("/nori.css")));
+        assert!(page.styles.iter().any(|s| s.ends_with("/auth.css")));
     }
     for path in paths() {
-        assert!(!render(&path).body.contains("href=\"/nori\""), "unlisted page linked from {path}");
+        assert!(!render(&path).body.contains("href=\"/auth\""), "unlisted page linked from {path}");
     }
 }
