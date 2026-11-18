@@ -14,34 +14,61 @@ This is also our last feature release of 2026. More on that below.
 
 ## Stream Affinity
 
-`iroh` connections can have several paths at once, usually one through a relay and one or more direct paths. Until now, `noq` decided which path each stream's data went over, and you couldn't tell it otherwise.
+`iroh` connections can have several paths at once, usually one through a relay and one or more direct paths. Until now, you could not specify with path your stream data went over.
 
-That's a problem when some data must never go through a relay, or must stay on a particular path. Now you can set an affinity on a `SendStream`. The kinds of affinities you can set are as follows:
+That's a problem when some data must never go through a relay due to egress cost, or you want to prefer a specific path in particular. Now you can set an affinity on a `SendStream`. The kinds of affinities you can set are as follows:
 
 - `StreamAffinity::Any`: the default. The connection picks the path, as before.
 - `StreamAffinity::Sticky(path_id)`: send this stream's data only on this path.
 - `StreamAffinity::Block`: don't send this stream's data on any path for now.
 
+One thing to note: setting an affinity affects which path your application data takes, it does not prevent other kinds of QUIC packets, such as ACKs, from flowing on whatever open path `noq` chooses.
+
 For example, to keep a stream on a direct path, wait for one to appear before opening the stream:
 
 ```rust
 let mut paths = conn.paths_stream();
-let direct_path = loop {
-    let paths = paths.next().await.expect("path watcher stopped");
-    if let Some(direct) = paths.iter().find(|p| p.is_ip()) {
-        break direct.id();
-    }
-};
+let mut direct_path = paths
+    .wait_any(|p| p.is_ip())
+    .await
+    .expect("connection closed")
+    .id();
 
 let mut send_stream = conn.open_uni().await?;
 send_stream.set_affinity(StreamAffinity::Sticky(direct_path))?;
 ```
 
-If that path closes, you choose what happens next: stick to another direct path, or `Block` the stream until one comes back. Use `Block` judiciously. Data written to a blocked stream still uses up the connection's send window, so it's best to wait to open the stream until the path you want exists, rather than opening it blocked and writing ahead.
+If that path closes, you choose what happens next: stick to another direct path, or `Block` the stream until one comes back:
 
-The [`stream_affinity_direct`][example] example shows the whole thing, including watching for path changes mid-transfer.
+```rust
+while let Some(list) = paths.wait_closed(direct_path).await {
+    direct_path = if let Some(path) = list.iter().find(|p| p.is_ip()) {
+        // Another direct path is already open. Use it.
+        path.id()
+    } else {
+        // No direct path left. Block the stream until one comes back.
+        send_stream.set_affinity(StreamAffinity::Block)?;
+        paths.wait_any(|p| p.is_ip()).await.expect("connection closed").id()
+    };
+    send_stream.set_affinity(StreamAffinity::Sticky(direct_path))?;
+}
+```
 
-See [PR #4654], [PR #4667] and [noq PR #881] for more details.
+Use `Block` judiciously. Data written to a blocked stream still uses up the connection's send window, so it's best to wait to open the stream until the path you want exists, rather than opening it blocked and writing ahead.
+
+The [`stream_affinity_direct`][example] example shows the whole thing, running the path watcher in its own task while the data is sent.
+
+## Waiting on Paths
+
+The snippets above use new helpers on the `PathListStream` you get from `Connection::paths_stream`. Before, you had to loop over every snapshot of the path list and check it yourself. Now you can wait for the change you care about directly:
+
+- `wait_any(condition)` waits until any open path matches the condition, and returns that path.
+- `wait_none(condition)` waits until no open path matches the condition.
+- `wait_closed(path_id)` waits until a specific path closes.
+
+Each one checks the current paths first, so it returns right away if the condition already holds. They return `None` once the connection closes.
+
+See [PR #4654], [PR #4667], [PR #4672] and [noq PR #881] for more details.
 
 ## Relay URLs with a Path Prefix
 
@@ -53,10 +80,7 @@ Thanks to contributor [meiyasan][meiyasan] for fixing this long-standing issue. 
 
 ## Heads Down for the Rest of 2026
 
-1.5 is our last feature release this year. From now until January, we're not adding features to `iroh`. We're spending that time on:
-
-- fixing bugs, especially around connection reliability and the relay
-- security fixes and dependency updates.
+1.5 is our last feature release this year. From now until January, we're not adding features to `iroh`. We're spending that time responding to the new security landscape and ensuring that `iroh` can stand up to AI bug-finding scrutiny.
 
 We'll keep shipping patch releases as fixes land, so expect 1.5.x versions over the next few weeks.
 
@@ -64,9 +88,7 @@ We'll keep shipping patch releases as fixes land, so expect 1.5.x versions over 
 
 If you've opened a feature request on GitHub recently and haven't heard back, this is why. We're reading them, but we won't triage, discuss or label new feature work until the new year. Please don't read the silence as a no.
 
-The same goes for feature PRs. As our [contributor][] guide says, PRs need to be discussed in an issue and given the "ready-for-pr" label first, and we won't be handing out that label for feature work until January.
-
-Bug reports are the opposite: we want them more than ever. If something is broken, panics, leaks or stalls, please [file an issue](https://github.com/n0-computer/iroh/issues) with as much detail as you can, ideally logs and a way to reproduce it. If you'd like to fix a bug yourself, start with our [contributor guide][contributor].
+The same goes for feature PRs. As our [contributor] guide says, PRs need to be discussed in an issue and given the "ready-for-pr" label first, and we won't be handing out that label for feature work until January.
 
 ## What's Next?
 
@@ -79,6 +101,7 @@ See you at the next release, and keep [filing](https://github.com/n0-computer/ir
 [PR #4617]: https://github.com/n0-computer/iroh/pull/4617
 [PR #4654]: https://github.com/n0-computer/iroh/pull/4654
 [PR #4667]: https://github.com/n0-computer/iroh/pull/4667
+[PR #4672]: https://github.com/n0-computer/iroh/pull/4672
 [noq PR #881]: https://github.com/n0-computer/noq/pull/881
 [example]: https://github.com/n0-computer/iroh/blob/main/iroh/examples/stream_affinity_direct.rs
 [meiyasan]: https://github.com/meiyasan
