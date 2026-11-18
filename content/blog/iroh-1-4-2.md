@@ -8,7 +8,9 @@ social_image = ""
 
 Welcome to a new release of `iroh`, a modular networking stack in Rust, for building direct connections between devices.
 
-`iroh` 1.4.2 is a security release. It fixes several issues in `iroh-relay`, and a few in `iroh` itself. If you run your own relays, upgrade them. If you ship an application built on `iroh`, upgrade that too. There are no new features and no API changes you need to act on, so upgrading from 1.4.x should be a drop-in change.
+`iroh` 1.4.2 is a security release. It fixes several issues in `iroh-relay`, and a few in `iroh` itself. If you run your own relays, upgrade them. If you ship an application built on `iroh`, upgrade that too:
+
+`cargo update -p iroh -p iroh-relay`
 
 ## 🚨 Fixes in `iroh-relay`: Upgrade Your Relays
 
