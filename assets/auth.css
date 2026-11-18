@@ -1,4 +1,4 @@
-/* iroh auth uses the existing iroh palette and typography. */
+/* iroh-auth uses the existing iroh palette and typography. */
 .iroh-auth-page { padding-bottom: 80px; }
 .iroh-auth-page h1, .iroh-auth-page h2, .iroh-auth-page h3 { font-weight: 400; }
 .iroh-auth-page em { color: var(--accent); }

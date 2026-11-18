@@ -30,7 +30,7 @@ pub fn for_path(path: &str) -> Metadata {
     let (title, description) = match path {
         "/" => ("iroh — Less net work for networks".into(), DESCRIPTION),
         "/auth" => (
-            "iroh auth — Secrets, in the right hands".into(),
+            "iroh-auth — Secrets, in the right hands".into(),
             "Secrets and encryption management built for distributed, edge, and peer-to-peer networks. Store secrets, keep encryption keys protected, and delegate precisely scoped access to apps and devices.",
         ),
         "/blog" => (

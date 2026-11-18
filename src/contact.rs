@@ -61,8 +61,8 @@ pub fn ContactDialog(source: &'static str) -> Element {
                     "×"
                 }
                 p { class: "contact-kicker", "Let’s make a connection" }
-                h2 { id: "contact-heading", if is_iroh_auth { "Get early access to iroh auth" } else { "How can we help?" } }
-                p { id: "contact-description", if is_iroh_auth { "Leave your details and we’ll be in touch about iroh auth." } else { "Drop your details and we’ll reach out." } }
+                h2 { id: "contact-heading", if is_iroh_auth { "Get early access to iroh-auth" } else { "How can we help?" } }
+                p { id: "contact-description", if is_iroh_auth { "Leave your details and we’ll be in touch about iroh-auth." } else { "Drop your details and we’ll reach out." } }
                 if succeeded() {
                     div { class: "contact-success", role: "status",
                         h3 { "Thanks for saying hello." }

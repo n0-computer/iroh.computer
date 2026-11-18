@@ -9,7 +9,7 @@ pub fn IrohAuth() -> Element {
         main { id: "content", class: "iroh-auth-page",
             section { class: "iroh-auth-hero wrap",
                 div { class: "iroh-auth-hero-copy",
-                    p { class: "iroh-auth-intro", span { class: "iroh-auth-wordmark", "iroh auth" } span { class: "iroh-auth-status mono", "COMING SOON" } }
+                    p { class: "iroh-auth-intro", span { class: "iroh-auth-wordmark", "iroh-auth" } span { class: "iroh-auth-status mono", "COMING SOON" } }
                     h1 { "Secrets, in" br {} em { "the right hands." } }
                     p { class: "iroh-auth-lede",
                         "Secrets and encryption management built for iroh networks. Control and manage endpoint auth without stress."
@@ -18,13 +18,13 @@ pub fn IrohAuth() -> Element {
                         ContactButton { class: "button primary", source: "iroh-auth-hero",
                             "Get early access" Icon { name: "arrow" }
                         }
-                        a { class: "text-link", href: "#how-iroh-auth-works", "Meet iroh auth" span { "↓" } }
+                        a { class: "text-link", href: "#how-iroh-auth-works", "Meet iroh-auth" span { "↓" } }
                     }
                     p { class: "iroh-auth-footnote", "From the team behind iroh." }
                 }
                 DelegationIllustration {}
             }
-            section { class: "iroh-auth-capabilities wrap", "aria-label": "What iroh auth does",
+            section { class: "iroh-auth-capabilities wrap", "aria-label": "What iroh-auth does",
                 for (number, title, description) in [
                     ("01", "Keep your secrets.", "Store API keys, passwords, and other sensitive values with version history. Secrets are encrypted before they reach storage."),
                     ("02", "Put your keys to work.", "Encrypt, decrypt, and sign data. Your encryption and signing keys stay inside the service."),
@@ -41,7 +41,7 @@ pub fn IrohAuth() -> Element {
                 div {
                     h2 { "Delegation at every step" br {} em { "Signed and encrypted." } }
                     p { class: "iroh-auth-detail-lede",
-                        "iroh auth manages cryptographic material using a delegation chain: a signed list of grants that leads from a root key to the key of the client making the request."
+                        "iroh-auth manages cryptographic material using a delegation chain: a signed list of grants that leads from a root key to the key of the client making the request."
                     }
                 }
                 ol { class: "iroh-auth-steps",
@@ -55,13 +55,13 @@ pub fn IrohAuth() -> Element {
                     }
                     li {
                         span { class: "mono", "03" }
-                        div { h3 { "Keep a handle on access." } p { "iroh auth checks permissions, expiry, and revocation on every request, and records requests and responses in its audit log." } }
+                        div { h3 { "Keep a handle on access." } p { "iroh-auth checks permissions, expiry, and revocation on every request, and records requests and responses in its audit log." } }
                     }
                 }
             }
             section { class: "iroh-auth-closing wrap",
                 div {
-                    p { class: "iroh-auth-label mono", "LET’S BUILD WITH IROH AUTH" }
+                    p { class: "iroh-auth-label mono", "LET’S BUILD WITH IROH-AUTH" }
                     h2 { "Your next secret" br {} "starts here." }
                     p { "Bring your use case. We’ll be in touch about early access." }
                 }

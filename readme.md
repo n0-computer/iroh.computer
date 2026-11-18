@@ -40,7 +40,7 @@ Pass server options after `--`, for example:
 cargo run -- --port 8080 --open false
 ```
 
-The prelaunch iroh auth landing page lives at `/auth` (`src/auth.rs` and
+The prelaunch iroh-auth landing page lives at `/auth` (`src/auth.rs` and
 `assets/auth.css`). It is intentionally absent from navigation, search, and the
 sitemap. The static export includes it via `prerender::UNLISTED_PATHS`, with
 `noindex, nofollow` metadata on direct loads and client navigation. Anyone with

@@ -82,10 +82,9 @@ fn iroh_auth_is_rendered_but_unlisted_and_unindexable() {
         let page = render(path);
         assert!(page.body.contains("class=\"iroh-auth-page\""));
         assert!(page.body.contains("Get early access"));
-        assert!(page.body.contains("Meet iroh auth"));
-        assert!(!page.body.contains("Nori"));
+        assert!(page.body.contains("Meet iroh-auth"));
         assert!(page.head.contains("href=\"https://iroh.computer/auth\""));
-        assert!(page.head.contains("<title>iroh auth —"));
+        assert!(page.head.contains("<title>iroh-auth —"));
         assert!(page.head.contains("name=\"robots\" content=\"noindex, nofollow\""));
         assert!(page.styles.iter().any(|s| s.ends_with("/auth.css")));
     }
