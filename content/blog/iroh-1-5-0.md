@@ -1,7 +1,7 @@
 +++
 title = "iroh 1.5.0 - Stream Affinity, Then Heads Down"
 description = "Release of iroh v1.5.0, alongside noq v1.5.0"
-date = "2026-11-18"
+date = "2026-11-19"
 author = "ramfox"
 social_image = ""
 +++
@@ -18,6 +18,10 @@ On top of everything in 1.4.2, 1.5.0 fixes two more issues:
 
 - **Connections could leak during the relay handshake.** A client could get around the establish timeout and hold a connection open on the relay. The whole handshake is now covered by a timeout, which you can configure with the new `RelayServiceWithNotify::with_timeout` (default 30 seconds). See [PR #4621].
 - **Proxy credentials in the debug log.** Proxy passwords showed up in the relay client's debug-level logs. They're now masked. Thanks to contributor [fluffypony][fp] for reporting it and sending the fix. See [PR #4653] and [GHSA-9v2v-w4v3-3qqq].
+
+## Update Your `iroh-dns-server`
+
+If you run your own `iroh-dns-server`, please update it. 1.5.0 upgrades it to `n0-mainline` 0.8.0, which picks up some fixes and keeps the DHT fallback in the new default client-only mode. See [PR #4698].
 
 ## Stream Affinity
 
@@ -42,28 +46,32 @@ let mut direct_path = paths
     .id();
 
 let mut send_stream = conn.open_uni().await?;
-send_stream.set_affinity(StreamAffinity::Sticky(direct_path))?;
+send_stream.set_affinity(noq::StreamAffinity::Sticky(direct_path))?;
 ```
 
 If that path closes, you choose what happens next: stick to another direct path, or `Block` the stream until one comes back:
 
 ```rust
 while let Some(list) = paths.wait_closed(direct_path).await {
-    direct_path = if let Some(path) = list.iter().find(|p| p.is_ip()) {
+    let other_direct = list.iter().find(|p| p.is_ip()).map(|p| p.id());
+    direct_path = match other_direct {
         // Another direct path is already open. Use it.
-        path.id()
-    } else {
+        Some(id) => id,
         // No direct path left. Block the stream until one comes back.
-        send_stream.set_affinity(StreamAffinity::Block)?;
-        paths.wait_any(|p| p.is_ip()).await.expect("connection closed").id()
+        None => {
+            send_stream.set_affinity(noq::StreamAffinity::Block)?;
+            paths.wait_any(|p| p.is_ip()).await.expect("connection closed").id()
+        }
     };
-    send_stream.set_affinity(StreamAffinity::Sticky(direct_path))?;
+    send_stream.set_affinity(noq::StreamAffinity::Sticky(direct_path))?;
 }
 ```
 
 Use `Block` judiciously. Data written to a blocked stream still uses up the connection's send window, so it's best to wait to open the stream until the path you want exists, rather than opening it blocked and writing ahead.
 
 The [`stream_affinity_direct`][example] example shows the whole thing, running the path watcher in its own task while the data is sent.
+
+See [PR #4654], [PR #4667] and [noq PR #881] for more details.
 
 ## Waiting on Paths
 
@@ -75,7 +83,7 @@ The snippets above use new helpers on the `PathListStream` you get from `Connect
 
 Each one checks the current paths first, so it returns right away if the condition already holds. They return `None` once the connection closes.
 
-See [PR #4654], [PR #4667], [PR #4672] and [noq PR #881] for more details.
+See [PR #4672] for more details.
 
 ## Relay URLs with a Path Prefix
 
@@ -112,8 +120,9 @@ See you at the next release, and keep [filing](https://github.com/n0-computer/ir
 [PR #4654]: https://github.com/n0-computer/iroh/pull/4654
 [PR #4667]: https://github.com/n0-computer/iroh/pull/4667
 [PR #4672]: https://github.com/n0-computer/iroh/pull/4672
+[PR #4698]: https://github.com/n0-computer/iroh/pull/4698
 [noq PR #881]: https://github.com/n0-computer/noq/pull/881
-[example]: https://github.com/n0-computer/iroh/blob/main/iroh/examples/stream_affinity_direct.rs
+[example]: https://github.com/n0-computer/iroh/blob/v1.5.0/iroh/examples/stream_affinity_direct.rs
 [meiyasan]: https://github.com/meiyasan
 [fp]: https://github.com/fluffypony
 [contributor]: https://github.com/n0-computer/iroh/blob/main/CONTRIBUTING.md
