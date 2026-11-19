@@ -1,7 +1,7 @@
 +++
 title = "iroh 1.4.2 - Security Fixes for Relays and Endpoints"
 description = "Release of iroh v1.4.2"
-date = "2026-11-21"
+date = "2026-11-18"
 author = "ramfox"
 social_image = ""
 +++
