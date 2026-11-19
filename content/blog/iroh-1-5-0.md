@@ -1,7 +1,7 @@
 +++
 title = "iroh 1.5.0 - Stream Affinity, Then Heads Down"
 description = "Release of iroh v1.5.0, alongside noq v1.5.0"
-date = "2026-11-21"
+date = "2026-11-18"
 author = "ramfox"
 social_image = ""
 +++
@@ -17,11 +17,11 @@ This is also our last feature release of 2026. More on that below.
 On top of everything in 1.4.2, 1.5.0 fixes two more issues:
 
 - **Connections could leak during the relay handshake.** A client could get around the establish timeout and hold a connection open on the relay. The whole handshake is now covered by a timeout, which you can configure with the new `RelayServiceWithNotify::with_timeout` (default 30 seconds). See [PR #4621].
-- **Proxy credentials in the debug log.** Proxy passwords showed up in the relay client's debug-level logs. They're now masked. Thanks to contributor [fluffypony][fp] for reporting it and sending the fix. See [PR #4653].
+- **Proxy credentials in the debug log.** Proxy passwords showed up in the relay client's debug-level logs. They're now masked. Thanks to contributor [fluffypony][fp] for reporting it and sending the fix. See [PR #4653] and [GHSA-9v2v-w4v3-3qqq].
 
 ## Stream Affinity
 
-`iroh` connections can have several paths at once, usually one through a relay and one or more direct paths. Until now, you could not specify with path your stream data went over.
+`iroh` connections can have several paths at once, usually one through a relay and one or more direct paths. Until now, you could not specify which path your stream data went over.
 
 That's a problem when some data must never go through a relay due to egress cost, or you want to prefer a specific path in particular. Now you can set an affinity on a `SendStream`. The kinds of affinities you can set are as follows:
 
@@ -108,6 +108,7 @@ See you at the next release, and keep [filing](https://github.com/n0-computer/ir
 [PR #4617]: https://github.com/n0-computer/iroh/pull/4617
 [PR #4621]: https://github.com/n0-computer/iroh/pull/4621
 [PR #4653]: https://github.com/n0-computer/iroh/pull/4653
+[GHSA-9v2v-w4v3-3qqq]: https://github.com/n0-computer/iroh/security/advisories/GHSA-9v2v-w4v3-3qqq
 [PR #4654]: https://github.com/n0-computer/iroh/pull/4654
 [PR #4667]: https://github.com/n0-computer/iroh/pull/4667
 [PR #4672]: https://github.com/n0-computer/iroh/pull/4672
