@@ -12,6 +12,13 @@ Welcome to a new release of `iroh`, a modular networking stack in Rust, for buil
 
 This is also our last feature release of 2026. More on that below.
 
+## 🚨 Two More Security Fixes
+
+On top of everything in 1.4.2, 1.5.0 fixes two more issues:
+
+- **Connections could leak during the relay handshake.** A client could get around the establish timeout and hold a connection open on the relay. The whole handshake is now covered by a timeout, which you can configure with the new `RelayServiceWithNotify::with_timeout` (default 30 seconds). See [PR #4621].
+- **Proxy credentials in the debug log.** Proxy passwords showed up in the relay client's debug-level logs. They're now masked. Thanks to contributor [fluffypony][fp] for reporting it and sending the fix. See [PR #4653].
+
 ## Stream Affinity
 
 `iroh` connections can have several paths at once, usually one through a relay and one or more direct paths. Until now, you could not specify with path your stream data went over.
@@ -99,10 +106,13 @@ As always, the full set of changes is in the [changelog](https://github.com/n0-c
 See you at the next release, and keep [filing](https://github.com/n0-computer/iroh/issues) those bugs!
 
 [PR #4617]: https://github.com/n0-computer/iroh/pull/4617
+[PR #4621]: https://github.com/n0-computer/iroh/pull/4621
+[PR #4653]: https://github.com/n0-computer/iroh/pull/4653
 [PR #4654]: https://github.com/n0-computer/iroh/pull/4654
 [PR #4667]: https://github.com/n0-computer/iroh/pull/4667
 [PR #4672]: https://github.com/n0-computer/iroh/pull/4672
 [noq PR #881]: https://github.com/n0-computer/noq/pull/881
 [example]: https://github.com/n0-computer/iroh/blob/main/iroh/examples/stream_affinity_direct.rs
 [meiyasan]: https://github.com/meiyasan
+[fp]: https://github.com/fluffypony
 [contributor]: https://github.com/n0-computer/iroh/blob/main/CONTRIBUTING.md
