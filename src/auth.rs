@@ -12,7 +12,7 @@ pub fn IrohAuth() -> Element {
                     p { class: "iroh-auth-intro", span { class: "iroh-auth-wordmark", "iroh-auth" } span { class: "iroh-auth-status mono", "COMING SOON" } }
                     h1 { "Secrets, in" br {} em { "the right hands." } }
                     p { class: "iroh-auth-lede",
-                        "Secrets and encryption management built for iroh networks. Control and manage endpoint auth without stress."
+                        "Authentication management built for iroh networks. Control and manage iroh endpoints without stress."
                     }
                     div { class: "iroh-auth-actions",
                         ContactButton { class: "button primary", source: "iroh-auth-hero",
@@ -20,14 +20,13 @@ pub fn IrohAuth() -> Element {
                         }
                         a { class: "text-link", href: "#how-iroh-auth-works", "Meet iroh-auth" span { "↓" } }
                     }
-                    p { class: "iroh-auth-footnote", "From the team behind iroh." }
                 }
                 DelegationIllustration {}
             }
             section { class: "iroh-auth-capabilities wrap", "aria-label": "What iroh-auth does",
                 for (number, title, description) in [
-                    ("01", "Keep your secrets.", "Store API keys, passwords, and other sensitive values with version history. Secrets are encrypted before they reach storage."),
-                    ("02", "Put your keys to work.", "Encrypt, decrypt, and sign data. Your encryption and signing keys stay inside the service."),
+                    ("01", "Keep your secrets.", "Store endpoint secrets with version history. Secrets are encrypted before they reach storage."),
+                    ("02", "Works anytime, anywhere.", "Authorize and revoke endpoints even during netsplits or while offline, the system reconciles delegations automatically."),
                     ("03", "Give just enough access.", "Grant specific operations on specific paths. Delegate narrower permissions to a job or device, with an expiry on every grant."),
                 ] {
                     article {
@@ -80,19 +79,16 @@ fn DelegationIllustration() -> Element {
             div { class: "iroh-auth-diagram-heading mono", span { "A LITTLE LESS, AT EVERY STEP" } span { "↘" } }
             div { class: "iroh-auth-grant iroh-auth-grant-team",
                 div { class: "iroh-auth-grant-title", span { "Your team" } span { class: "iroh-auth-key", "⌘" } }
-                p { "Set the scope." }
                 div { class: "iroh-auth-permissions mono", span { "read" } span { "write" } span { "list" } }
                 code { "secret/app/" }
             }
             div { class: "iroh-auth-grant iroh-auth-grant-app",
                 div { class: "iroh-auth-grant-title", span { "Your app" } span { class: "iroh-auth-key", "↳" } }
-                p { "Pass on only what’s needed." }
                 div { class: "iroh-auth-permissions mono", span { "read" } span { "list" } }
                 code { "secret/app/" }
             }
             div { class: "iroh-auth-grant iroh-auth-grant-job",
                 div { class: "iroh-auth-grant-title", span { "One job" } span { class: "iroh-auth-key", "↳" } }
-                p { "One secret. One hour." }
                 div { class: "iroh-auth-permissions mono", span { "read" } span { class: "iroh-auth-expiry", "expires in 1h" } }
                 code { "secret/app/api-key" }
             }
