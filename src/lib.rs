@@ -1,3 +1,4 @@
+mod auth;
 use dioxus::prelude::*;
 mod contact;
 mod contact_fields;

@@ -11,6 +11,7 @@ fn main() {
     for path in paths
         .iter()
         .map(String::as_str)
+        .chain(iroh_computer::prerender::UNLISTED_PATHS.iter().copied())
         .chain(std::iter::once("/404"))
     {
         let file = if path == "/" {
@@ -26,7 +27,8 @@ fn main() {
         .unwrap();
     }
     println!(
-        "Prerendered {} canonical pages and the 404 page",
-        paths.len()
+        "Prerendered {} canonical pages, {} unlisted pages, and the 404 page",
+        paths.len(),
+        iroh_computer::prerender::UNLISTED_PATHS.len()
     );
 }
